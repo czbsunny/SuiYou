@@ -1,0 +1,16 @@
+{
+  "name": "SuiYou UniApp Placeholder",
+  "appid": "",
+  "versionName": "0.0.1",
+  "versionCode": "1",
+  "mp-weixin": {
+    "appid": "",
+    "setting": {}
+  },
+  "h5": {
+    "title": "SuiYou Web H5",
+    "router": {
+      "mode": "hash"
+    }
+  }
+}
