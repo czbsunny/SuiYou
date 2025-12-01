@@ -1,531 +1,269 @@
-<template>
-  <view class="goal-page">
-    <view class="content-view">
-        <!-- 总资产概览卡片 -->
-        <view class="overview-card">
-            <view class="overview-header">
-                 <view>
-                    <view class="overview-label">
-                        <image src="/static/icons/wallet.png" class="icon-sm mr-1" />
-                        <text>目标总资产 (元)</text>
-                    </view>
-                    <text class="overview-amount">
-                        ¥{{ totalGoalAssets }}
-                    </text>
-                 </view>
-                 <view class="gain-badge">
-                     <text>+0.00% 今日</text>
-                 </view>
-            </view>
-
-            <view class="overview-footer">
-                <view class="progress-row">
-                    <text class="progress-label">总完成度</text>
-                    <text class="progress-percent">{{ overallProgress.toFixed(1) }}%</text>
-                </view>
-                
-                <view class="progress-bar-bg">
-                    <view 
-                        class="progress-bar-fill" 
-                        :style="{ width: `${overallProgress}%` }"
-                    ></view>
-                </view>
-                
-                <view class="progress-stats">
-                    <text class="stat-text">目标 ¥{{ totalGoalTarget.toLocaleString() }}</text>
-                    <text class="stat-text">还需 ¥{{ (totalGoalTarget - totalGoalAssets).toLocaleString() }}</text>
-                </view>
-            </view>
-        </view>
-
-        <!-- 目标列表区域 -->
-        <view class="goal-section">
-            <view class="section-header">
-                <text class="section-title">我的目标</text>
-                <view class="manage-btn">
-                    <text>管理</text> 
-                    <image src="/static/images/chevron-right-blue.png" class="icon-xs" />
-                </view>
-            </view>
-
-            <view class="goal-list">
-                <view 
-                    v-for="g in goals"
-                    :key="g.id" 
-                    @click="handleOpenDetail(g)"
-                    class="goal-item"
-                >
-                    <view class="item-header">
-                        <view class="item-left">
-                            <view class="icon-circle">
-                                <text class="emoji-icon">{{ g.icon || '🎯' }}</text>
-                            </view>
-                            <view class="item-info">
-                                <text class="item-name">{{ g.name }}</text>
-                                <view class="item-date">
-                                    <image src="/static/images/clock-gray.png" class="icon-xs mr-1" />
-                                    <text>{{ g.targetDate.substring(0, 7) }} 截止</text>
-                                </view>
-                            </view>
-                        </view>
-                        <view class="item-right">
-                             <text :class="['status-badge', getPercent(g) >= 100 ? 'complete' : 'ongoing']">
-                                {{ getPercent(g).toFixed(0) }}%
-                            </text>
-                        </view>
-                    </view>
-                    
-                    <view class="item-progress-section">
-                        <view class="amount-row">
-                             <text class="label-text">已存</text>
-                             <text class="amount-text">¥{{ g.currentAmount.toLocaleString() }}</text>
-                        </view>
-                        <view class="progress-bar-bg small">
-                             <view :class="['progress-bar-fill', getPercent(g) >= 100 ? 'bg-green' : 'bg-primary']" :style="{ width: `${getPercent(g)}%` }"></view>
-                        </view>
-                    </view>
-                </view>
-            </view>
-        </view>
-
-        <!-- 理财小贴士 -->
-        <view class="tips-card">
-            <view class="tips-header">
-                <view class="tips-title-group">
-                    <image src="/static/images/sparkles.png" class="icon-md text-primary" />
-                    <text class="tips-title">理财小贴士</text>
-                </view>
-                <view class="tips-actions">
-                    <view class="action-icon hover-red"><image src="/static/images/heart.png" class="icon-md" /></view>
-                    <view class="action-icon hover-gray ml-3"><image src="/static/images/thumbs-down.png" class="icon-md" /></view>
-                </view>
-            </view>
-            
-            <view>
-                <text class="tips-content">
-                    定期回顾您的投资组合，确保它符合您的风险承受能力和财务目标。不要因为短期波动而轻易改变长期计划。
-                </text>
-                <view class="tags-row">
-                    <text class="tag">#长期主义</text>
-                    <text class="tag ml-2">#风险控制</text>
-                </view>
-            </view>
-        </view>
-    </view>
-
-    <!-- 添加按钮 -->
-    <view @click="handleCreateGoal" class="fab-btn">
-        <image src="/static/images/plus.png" class="fab-icon" />
-    </view>
-  </view>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
-import { useRouter } from 'vue-router';
-import { getUserGoals, createGoal } from '../../services/goalService.js';
 
-const router = useRouter();
-const goals = ref([]);
+// --- 类型定义 ---
+type StatusType = 'ON_TRACK' | 'AT_RISK' | 'COMPLETED';
 
-const refresh = async () => {
-    const g = await getUserGoals();
-    
-    // 确保goals是数组格式
-    goals.value = Array.isArray(g) ? g : [];
+interface WishlistItem {
+  id: string;
+  icon: string;
+  title: string;
+  current: number;
+  target: number;
+  status: StatusType;
+}
+
+interface AchievementItem {
+  id: string;
+  icon: string;
+  title: string;
+  date: string;
+  amount: number;
+}
+
+// --- 数据状态 (Mock Data) ---
+const primaryGoal = ref({
+  title: '快乐老家',
+  subtitle: '首要目标 · 婚房基金',
+  image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=1000&auto=format&fit=crop',
+  progress: 32,
+  status: 'ON_TRACK' as StatusType,
+  monthlyAuto: 2000,
+  nextDeduction: '11月15日'
+});
+
+const wishlist = ref<WishlistItem[]>([
+  { id: '1', icon: '🏔️', title: '川西徒步', current: 8000, target: 15000, status: 'ON_TRACK' },
+  { id: '2', icon: '📷', title: 'Sony A7M4', current: 5000, target: 18000, status: 'AT_RISK' },
+  { id: '3', icon: '💻', title: 'MacBook Pro', current: 2000, target: 16000, status: 'ON_TRACK' },
+]);
+
+const achievements = ref<AchievementItem[]>([
+  { id: '1', icon: '🎓', title: '助学贷款结清', date: '2023.05', amount: 24000 },
+  { id: '2', icon: '💰', title: '人生第一桶金', date: '2022.12', amount: 100000 },
+]);
+
+// --- 工具函数 ---
+const formatMoney = (val: number) => val.toLocaleString();
+
+// 获取状态样式配置
+const getStatusConfig = (status: StatusType) => {
+  const config = {
+    'ON_TRACK': { class: 'bg-green-100 text-green-700', icon: 'fa-check-circle', text: 'On Track' },
+    'AT_RISK': { class: 'bg-orange-100 text-orange-700', icon: 'fa-triangle-exclamation', text: 'At Risk' },
+    'COMPLETED': { class: 'bg-yellow-100 text-yellow-700', icon: 'fa-trophy', text: 'Done' },
+  };
+  return config[status] || config['ON_TRACK'];
 };
 
-onShow(refresh);
+// 计算百分比
+const getPercent = (current: number, target: number) => Math.round((current / target) * 100);
 
-const handleOpenDetail = (goal) => {
-    uni.navigateTo({
-        url: '/components/goals/detail?id=' + goal.id
-    });
-};
-
-const handleCreateGoal = async () => {
-    uni.showModal({
-        title: '新建目标',
-        editable: true,
-        placeholderText: '请输入目标名称',
-        content: '例如：买车基金',
-        success: async (res) => {
-            if (res.confirm && res.content) {
-                await createGoal({
-                    name: res.content,
-                    targetAmount: 100000,
-                    currentAmount: 0,
-                    riskLevel: 'MODERATE' // 使用字符串代替枚举，避免依赖
-                });
-                refresh();
-            }
-        }
-    });
-};
-
-const getPercent = (g) => Math.min(100, (g.currentAmount / g.targetAmount) * 100);
-
-const totalGoalAssets = computed(() => goals.value.reduce((sum, g) => sum + g.currentAmount, 0));
-const totalGoalTarget = computed(() => goals.value.reduce((sum, g) => sum + g.targetAmount, 0));
-const overallProgress = computed(() => totalGoalTarget.value > 0 ? Math.min(100, (totalGoalAssets.value / totalGoalTarget.value) * 100) : 0);
 </script>
 
-<style lang="scss" scoped>
+<template>
+  <Transition name="slide-fade" appear>
+    <div class="flex-1 flex flex-col h-full bg-[#F5F7F9] overflow-hidden">
+      
+      <!-- Header -->
+      <header class="px-6 pb-2 pt-8 safe-top bg-[#F5F7F9]/95 backdrop-blur-sm sticky top-0 z-20">
+        <div class="flex justify-between items-center mb-4">
+          <h1 class="font-serif text-2xl font-bold text-[#2C3E50]">目标管理</h1>
+          <button class="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-[#2a806c] active:scale-95 transition-transform">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
 
-.goal-page {
-  min-height: 100vh;
-  background-color: $bg-page;
-  padding-bottom: 128px; /* pb-32 */
-  padding-top: 12px; /* pt-6 */
-  position: relative;
-  width: 100%;
+        <!-- Summary Dashboard -->
+        <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+          <div class="pl-1">
+            <p class="text-[10px] text-[#95A5A6] font-bold uppercase tracking-wider mb-1">Total Saved</p>
+            <p class="text-xl font-sans font-bold text-[#2C3E50]">¥684,500</p>
+          </div>
+          <div class="w-px h-8 bg-gray-200"></div>
+          <div>
+            <p class="text-[10px] text-[#95A5A6] font-bold uppercase tracking-wider mb-1">Monthly Auto</p>
+            <p class="text-xl font-sans font-bold text-[#2a806c]">+¥5,500</p>
+          </div>
+          <div class="w-px h-8 bg-gray-200"></div>
+          <div>
+            <p class="text-[10px] text-[#95A5A6] font-bold uppercase tracking-wider mb-1">Avg Progress</p>
+            <p class="text-xl font-sans font-bold text-[#D4AF37]">24%</p>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto no-scrollbar px-6 pb-24 pt-2">
+        
+        <!-- Section: Primary Focus (Hero Card) -->
+        <section class="mb-8">
+          <div class="flex justify-between items-end mb-3">
+            <h2 class="text-sm font-bold text-[#2C3E50]">当前主线 (Focus)</h2>
+          </div>
+          
+          <div class="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden shadow-[0_4px_12px_rgba(44,62,80,0.06)] group">
+            <img 
+              :src="primaryGoal.image" 
+              alt="Dream Goal" 
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+
+            <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <div class="flex justify-between items-start mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <h3 class="text-2xl font-serif font-bold">{{ primaryGoal.title }}</h3>
+                    <!-- Status Pill -->
+                    <span :class="`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border border-white/50 shadow-sm ${getStatusConfig(primaryGoal.status).class}`">
+                      <i :class="`fa-solid ${getStatusConfig(primaryGoal.status).icon}`"></i> 
+                      {{ getStatusConfig(primaryGoal.status).text }}
+                    </span>
+                  </div>
+                  <p class="text-white/70 text-xs">{{ primaryGoal.subtitle }}</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-sans font-bold text-[#D4AF37]">{{ primaryGoal.progress }}%</div>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="w-full h-1.5 bg-white/20 rounded-full mb-4 overflow-hidden backdrop-blur-sm">
+                <div 
+                  class="h-full bg-[#D4AF37] rounded-full shadow-[0_0_10px_rgba(212,175,55,0.5)]" 
+                  :style="{ width: `${primaryGoal.progress}%` }"
+                ></div>
+              </div>
+
+              <!-- Auto-save Info -->
+              <div class="flex items-center gap-3 text-xs font-medium bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                  <i class="fa-solid fa-rotate"></i>
+                </div>
+                <div>
+                  <div class="text-white">每月自动存入 <span class="text-green-300 font-bold">+¥{{ formatMoney(primaryGoal.monthlyAuto) }}</span></div>
+                  <div class="text-white/50 text-[10px]">下一次扣款: {{ primaryGoal.nextDeduction }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Wishlist Grid (In Progress) -->
+        <section class="mb-8">
+          <div class="flex justify-between items-end mb-3">
+            <h2 class="text-sm font-bold text-[#2C3E50]">愿望清单 (Wishlist)</h2>
+            <span class="text-[10px] text-[#95A5A6]">进行中 {{ wishlist.length }}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Wishlist Item Loop -->
+            <div 
+              v-for="item in wishlist" 
+              :key="item.id"
+              class="bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgba(44,62,80,0.04)] border border-white flex flex-col justify-between h-40 relative overflow-hidden active:scale-95 transition-transform cursor-pointer"
+            >
+              <div class="flex justify-between items-start z-10">
+                <div class="w-10 h-10 rounded-2xl bg-[#F5F7F9] flex items-center justify-center text-xl shadow-inner text-[#2C3E50]">
+                  {{ item.icon }}
+                </div>
+                <div v-if="item.status === 'AT_RISK'" class="w-2 h-2 rounded-full bg-[#E67E22] animate-pulse"></div>
+              </div>
+
+              <div class="z-10">
+                <h4 class="font-bold text-[#2C3E50] mb-1">{{ item.title }}</h4>
+                <div class="text-[10px] text-[#95A5A6] mb-2">
+                  ¥{{ formatMoney(item.current) }} / {{ formatMoney(item.target) }}
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    :class="`h-full rounded-full ${item.status === 'AT_RISK' ? 'bg-[#E67E22]' : 'bg-[#2a806c]'}`" 
+                    :style="{ width: `${getPercent(item.current, item.target)}%` }"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- Quick Add Hover Button -->
+              <button class="absolute top-0 right-0 p-4 opacity-0 hover:opacity-100 transition-opacity z-20">
+                <div class="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-[#2a806c] hover:text-white transition-colors">
+                  <i class="fa-solid fa-plus text-xs"></i>
+                </div>
+              </button>
+            </div>
+
+            <!-- New Wish Button -->
+            <div class="bg-white/50 border-2 border-dashed border-gray-200 rounded-3xl flex items-center justify-center h-40 active:scale-95 transition-transform cursor-pointer hover:bg-white/80">
+              <div class="text-center text-gray-300">
+                <i class="fa-solid fa-plus text-2xl mb-2"></i>
+                <div class="text-xs">新愿望</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Achievement Gallery (Completed) -->
+        <section>
+          <div class="flex justify-between items-end mb-3">
+            <h2 class="text-sm font-bold text-[#2C3E50]">成就展馆 (Hall of Fame)</h2>
+            <span class="text-[10px] text-[#95A5A6]">已达成 {{ achievements.length }}</span>
+          </div>
+
+          <div class="space-y-3">
+            <div 
+              v-for="item in achievements" 
+              :key="item.id"
+              class="flex items-center justify-between p-3 bg-white border border-yellow-100 rounded-2xl shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow"
+            >
+              <!-- Background shine effect -->
+              <div class="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-yellow-50 via-white/50 to-transparent opacity-60"></div>
+              
+              <div class="flex items-center gap-3 z-10">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-50 to-white text-yellow-600 flex items-center justify-center text-lg border border-yellow-100 shadow-sm">
+                  {{ item.icon }}
+                </div>
+                <div>
+                  <div class="text-sm font-bold text-[#2C3E50] group-hover:text-yellow-700 transition-colors">
+                    {{ item.title }}
+                  </div>
+                  <div class="text-[10px] text-[#95A5A6]">达成于 {{ item.date }}</div>
+                </div>
+              </div>
+              
+              <div class="text-right z-10">
+                <div class="text-xs font-bold text-[#2C3E50]">¥{{ formatMoney(item.amount) }}</div>
+                <div class="text-[10px] text-yellow-600 font-bold uppercase tracking-wide flex items-center justify-end gap-1">
+                  <i class="fa-solid fa-medal"></i> Done
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </Transition>
+</template>
+
+<style scoped>
+/* 隐藏滚动条 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.content-view {
-  padding: 0 16px; /* px-4 */
-  padding-bottom: 144px; /* pb-36 */
-  box-sizing: border-box;
+/* 简单的进场动画替代 framer-motion */
+.slide-fade-enter-active {
+  transition: all 0.4s ease-out;
 }
-
-/* 总资产卡片 */
-.overview-card {
-  background-color: $bg-white;
-  border-radius: 24px; /* rounded-[24px] */
-  padding: 24px; /* p-6 */
-  box-shadow: 0 10px 15px -3px rgba(243, 244, 246, 0.5); /* shadow-gray-100/50 */
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
-.overview-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px; /* mb-4 */
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
-
-.overview-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-size: 12px; /* text-xs */
-  color: $text-muted; /* text-gray-400 */
-  font-weight: 500;
-  margin-bottom: 4px; /* mb-1 */
-}
-
-.overview-amount {
-  font-size: 36px; /* text-2xl */
-  font-weight: bold;
-  color: $text-main;
-  font-family: monospace;
-  letter-spacing: -0.05em; /* tracking-tighter */
-}
-
-.gain-badge {
-  background-color: $bg-success;
-  color: $primary;
-  padding: 4px 8px; /* px-2 py-1 */
-  border-radius: 8px;
-  font-size: 12px; /* text-xs */
-  font-weight: 500;
-}
-
-.overview-footer {
-  border-top: 1px solid $bg-subtle;
-  padding-top: 16px; /* pt-4 */
-}
-
-.progress-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px; /* mb-2 */
-}
-
-.progress-label {
-  font-size: 12px; /* text-xs */
-  font-weight: bold;
-  color: #4b5563; /* text-gray-600 */
-}
-
-.progress-percent {
-  font-size: 12px; /* text-xs */
-  color: $primary;
-  font-weight: bold;
-  font-family: monospace;
-}
-
-.progress-bar-bg {
-  height: 8px; /* h-2 */
-  background-color: $bg-subtle-hover;
-  border-radius: 9999px;
-  overflow: hidden;
-  
-  &.small {
-    height: 6px; /* h-1.5 */
-    margin-top: 8px; /* mt-2 */
-  }
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background-color: $primary;
-  border-radius: 9999px;
-  transition: width 1s ease;
-}
-.bg-green { background-color: #22c55e; }
-.bg-primary { background-color: $primary; }
-
-.progress-stats {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 4px; /* mt-1 */
-}
-
-.stat-text {
-  font-size: 10px; /* text-[10px] */
-  color: $text-muted;
-}
-
-/* 目标列表 */
-.section-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-  margin-bottom: 12px; /* mb-3 */
-  padding: 0 4px; /* px-1 */
-}
-
-.section-title {
-  font-weight: bold;
-  color: $text-main;
-  font-size: 16px; /* text-base */
-}
-
-.manage-btn {
-  font-size: 12px; /* text-xs */
-  color: $primary;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.goal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px; /* space-y-3 */
-}
-
-.goal-item {
-  background-color: $bg-white;
-  padding: 20px; /* p-5 */
-  border-radius: 20px; /* rounded-[20px] */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* shadow-sm */
-  position: relative;
-  overflow: hidden;
-  border: 1px solid transparent;
-  transition: transform 0.1s;
-
-  &:active {
-    transform: scale(0.99);
-  }
-  
-  /* hover effect not fully supported on mobile but good for structure */
-}
-
-.item-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px; /* mb-3 */
-}
-
-.item-left {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.icon-circle {
-  width: 40px; /* w-10 */
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(42, 128, 108, 0.05); /* bg-primary/5 */
-  color: $primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.emoji-icon {
-  font-size: 20px;
-}
-
-.item-info {
-  margin-left: 12px; /* ml-3 */
-}
-
-.item-name {
-  font-weight: bold;
-  font-size: 16px; /* text-base */
-  color: $text-main;
-  display: block;
-}
-
-.item-date {
-  font-size: 12px; /* text-xs */
-  color: $text-muted;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 2px; /* mt-0.5 */
-}
-
-.status-badge {
-  font-size: 12px; /* text-xs */
-  font-weight: bold;
-  padding: 4px 8px; /* px-2 py-1 */
-  border-radius: 6px; /* rounded-md */
-  
-  &.complete {
-    background-color: $bg-loss-light;
-    color: $green-600;
-  }
-  
-  &.ongoing {
-    background-color: $bg-warning;
-    color: $orange-600;
-  }
-}
-
-.item-progress-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* space-y-2 */
-}
-
-.amount-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.label-text {
-  font-size: 14px; /* text-sm */
-  color: $text-regular;
-}
-
-.amount-text {
-  font-size: 16px; /* text-base */
-  font-weight: bold;
-  color: $text-main;
-  font-family: monospace;
-}
-
-/* 理财小贴士 */
-.tips-card {
-  background-color: $bg-white;
-  padding: 20px; /* p-5 */
-  border-radius: 20px; /* rounded-[20px] */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  border-left: 4px solid $primary;
-  margin-top: 32px; /* mt-8 */
-  margin-bottom: 64px; /* mb-16 */
-}
-
-.tips-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px; /* mb-3 */
-}
-
-.tips-title-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.tips-title {
-  font-weight: bold;
-  color: $text-main;
-  font-size: 14px; /* text-sm */
-  margin-left: 8px; /* ml-2 */
-}
-
-.tips-actions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: $text-muted;
-}
-
-.tips-content {
-  font-size: 12px; /* text-xs */
-  color: #4b5563; /* text-gray-600 */
-  line-height: 1.625; /* leading-relaxed */
-  margin-bottom: 8px; /* mb-2 */
-  display: block;
-}
-
-.tags-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.tag {
-  background-color: rgba(42, 128, 108, 0.1); /* bg-primary/10 */
-  color: $primary;
-  font-size: 10px; /* text-[10px] */
-  padding: 2px 8px; /* px-2 py-0.5 */
-  border-radius: 4px;
-}
-
-.ml-1 { margin-left: 4px; }
-.ml-2 { margin-left: 8px; }
-.ml-3 { margin-left: 12px; }
-.mr-1 { margin-right: 4px; }
-
-.icon-sm { width: 12px; height: 12px; }
-.icon-xs { width: 12px; height: 12px; }
-.icon-md { width: 16px; height: 16px; }
-
-/* 悬浮按钮 */
-.fab-btn {
-  position: fixed;
-  bottom: 128px; /* bottom-32 */
-  right: 24px; /* right-6 */
-  width: 56px; /* w-14 */
-  height: 56px;
-  background-color: $primary;
-  border-radius: 50%;
-  box-shadow: 0 10px 15px -3px rgba(42, 128, 108, 0.4); /* shadow-primary/40 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  z-index: 50;
-  transition: transform 0.1s;
-
-  &:active {
-    transform: scale(0.90);
-  }
-}
-
-.fab-icon {
-  width: 28px;
-  height: 28px;
-}
-
-/* 交互类 */
-.hover-red:active { color: #ef4444; }
-.hover-gray:active { color: #4b5563; }
 </style>

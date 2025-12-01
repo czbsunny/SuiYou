@@ -181,38 +181,6 @@
       ]
     },
     {
-      "root": "components/goals",
-      "pages": [
-        {
-          "path": "detail",
-          "style": {
-            "navigationBarTitleText": "目标详情",
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
-            "backgroundColor": "#F9F8F4"
-          }
-        },
-        {
-          "path": "calculator",
-          "style": {
-            "navigationBarTitleText": "定投测算",
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
-            "backgroundColor": "#F9F8F4"
-          }
-        },
-        {
-          "path": "linkPortfolio",
-          "style": {
-            "navigationBarTitleText": "关联组合",
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
-            "backgroundColor": "#F9F8F4"
-          }
-        }
-      ]
-    },
-    {
       "root": "components/asset",
       "pages": [
         {
