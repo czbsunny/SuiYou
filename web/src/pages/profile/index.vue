@@ -32,8 +32,8 @@
                     <image src="/static/images/trending-up-blue.png" class="icon-md" />
                 </view>
                 <view class="card-text">
-                    <text class="card-title">AI 投资测评</text>
-                    <text class="card-desc">基于 Gemini 生成专业建议</text>
+                    <text class="card-title">理财知识测评</text>
+                    <text class="card-desc">基于 AI 生成测评</text>
                 </view>
             </view>
             <view class="arrow-box">
