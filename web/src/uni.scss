@@ -1,0 +1,133 @@
+/* 
+ * uni.scss - 全局变量整合版
+ * 基于 Tailwind CSS 色板标准进行规范化
+ */
+
+/* =================================== */
+/* 1. 基础色板 (Palette)               */
+/* =================================== */
+
+/* 主色调 */
+$primary: #2a806c;
+$primary-dark: #469e88;
+/* 主色透明度变体 */
+$primary-alpha-10: rgba(42, 128, 108, 0.1);
+$primary-alpha-30: rgb(68, 185, 158);
+$primary-alpha-50: rgba(42, 128, 108, 0.5);
+
+/* 中性灰 (Neutral Grays) */
+$white: #ffffff;
+$gray-50:  #f9fafb; /* 极浅灰，用于卡片内背景/输入框 */
+$gray-100: #f3f4f6; /* 浅灰，用于分割线/次要背景 */
+$gray-200: #e5e7eb; /* 标准边框色 */
+$gray-300: #d1d5db; /* 占位符/禁用 */
+$gray-400: #9ca3af; /* 图标/辅助文字 */
+$gray-500: #6b7280; /* 次要文字 */
+$gray-600: #4b5563; /* 正文/副标题 */
+$gray-700: #374151; /* 强调文字 */
+$gray-800: #1f2937; /* 主要标题 */
+$gray-900: #111827; /* 纯黑替代 */
+
+/* 页面专用底色 (带一点冷色调，区别于 gray-50) */
+$page-bg-color: #F9F8F4; 
+$cream: #fdfbf7;
+
+/* 功能色 (Functional) */
+$red:    #ef4444;
+$red-50: #fef2f2;
+$red-light: #fee2e2;
+$red-200: #fecaca;
+$red-600: #991b1b;
+$red-400: #f87171;
+
+$green:    #22c55e;
+$green-50: #f0fdf4;
+$green-light: #dcfce7;
+$green-200: #bbf7d0;
+$green-400: #86efac;
+$green-600: #16a34a;
+
+$orange:    #f97316;
+$orange-50: #fff7ed;
+$orange-light: #ffedd5;
+$orange-400: #fb923c;
+$orange-600: #ea580c;
+
+$yellow:       #fcd34d;
+$yellow-light: #fefce8;
+
+$stone: #57534e;
+$stone-light: #fafaf9;
+
+$blue: #3b82f6;
+$blue-light: #eff6ff;
+$blue-400: #60a5fa;
+$blue-selected: #4a90e2;
+$blue-selected-bg: rgba(74, 144, 226, 0.05);
+
+/* =================================== */
+/* 2. 语义化映射 (Semantic Mappings)   */
+/* =================================== */
+
+/* 布局背景 */
+$bg-page:  $page-bg-color; /* 页面大背景 */
+$bg-white: $white;         /* 卡片背景 */
+$bg-cream: $cream;         /* 暖色背景 */
+$bg-subtle: $gray-50;      /* 输入框/列表项背景 (原 bg-hover, bg-gray-50) */
+$bg-subtle-hover: $gray-100; /* 悬停状态 */
+$bg-input:  $page-bg-color;
+$bg-warning: $orange-50;
+$bg-progress: $green-200;
+
+/* 文字颜色 */
+$text-primary:     $primary;
+$text-main:        $gray-800; /* #1f2937 - 标题 */
+$text-sub:         $gray-600; /* #4b5563 - 正文 (原 text-sub 有冲突，取了深一点的) */
+$text-regular:     $gray-500; /* #6b7280 - 次要信息 (原 text-sub 的另一个版本) */
+$text-muted:       $gray-400; /* #9ca3af - 注释/图标 */
+$text-placeholder: $gray-300; /* #d1d5db - 占位符 (原 text-light) */
+$text-inverse:     $white;    /* 反白文字 */
+$text-warning:     $orange-600; /* 特殊强调 */
+$text-error:       $red;
+
+
+/* 边框 */
+$border-color: $gray-200;
+$border-light: $primary-alpha-10;
+$border-focus: $primary-alpha-50;
+$border-error: $red-light;
+$border-success: $green-light;
+$border-bottom: $white;
+
+/* 状态颜色 (默认：红涨绿跌) */
+$color-gain: $red;        /* 涨 */
+$text-gain: $red;        /* 涨 */
+$text-gain-light: $red-200; /* 涨 */
+$color-loss: $green;      /* 跌 */
+$text-loss: $green;      /* 跌 */
+$text-loss-light: $green-200; /* 跌 */
+$bg-gain-light: $red-light;
+$bg-loss-light: $green-light;
+
+/* 功能状态 错误/成功/警告 */
+$color-error:   $red;
+$bg-error:      $red-50;
+$bg-error-active: $red-light;
+$color-success: $green;
+$bg-success:    $green-50;
+$color-warning: $orange;
+
+/* 资产配置专用色 (Asset Allocation) */
+$color-stock:     #60a5fa; /* 股票 */
+$color-bond:      #fbbf24; /* 债券 */
+$color-commodity: #e879f9; /* 商品 */
+$color-cash:      #34d399; /* 现金 */
+$color-other:     $gray-400; /* 其他 */
+
+/* 社交媒体 */
+$color-wechat: #07C160;
+
+/* bar */
+$bar-primary: $primary;
+$bar-orange: $orange-400;
+$bar-blue: $blue-400;

@@ -1,17 +1,54 @@
-<template>
-  <div id="app">
-    <h1>SuiYou Vite + uni（占位）</h1>
-    <p>此项目使用 Vite + Vue3，集成 uni 插件以便后续构建 H5 与小程序。</p>
-    <router-link to="/">首页</router-link>
-  </div>
-</template>
-
 <script>
 export default {
-  name: 'App'
+  globalData: {},
+  onLaunch: function() {
+    console.log('App Launch')
+  },
+  onShow: function() {
+    console.log('App Show')
+  },
+  onHide: function() {
+    console.log('App Hide')
+  }
 }
 </script>
 
-<style>
-h1 { color: #42b983 }
+<style lang="scss" scope>
+/* ========================================== */
+/* 全局滚动条隐藏 (H5/App/小程序)             */
+/* ========================================== */
+
+/* Webkit内核 (Chrome, Safari, 新版小程序, H5) */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent;
+  display: none; /* 强制隐藏 */
+}
+
+/* ========================================== */
+/* 全局基础样式                              */
+/* ========================================== */
+
+/* 注意：在 UniApp 中使用 'page' 选择器来控制全局背景和高度 */
+page {
+  width: 100%;
+  height: 100%;
+  background-color: $bg-page; /* 这里对应你之前的 bg-page 颜色 */
+  overflow-x: hidden;
+  
+  /* 字体优化 (可选) */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Vue 路由过渡动画 (如果你的页面组件中有用到 transition) */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

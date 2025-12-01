@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
 import uni from '@dcloudio/vite-plugin-uni'
-
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [uni(), vue()],
+  plugins: [
+    uni(),
+  ],
   server: {
-    port: 5173
+    port: 3000,
+    // 配置代理，解决跨域问题
+    proxy: {
+      '/api': {
+        target: 'https://www.zhitouying.cn',
+        changeOrigin: true,
+        rewrite: (path) => path
+      }
+    }
   }
 })

@@ -1,9 +1,70 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SuiYou - Vite + uni</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>岁有长赢 (Vue)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: '#2A806C',
+                dark: '#1D5C4D',
+                light: '#4DA692',
+                lightest: '#EFFDF9'
+              },
+              page: '#F9F8F4',
+              card: '#FFFFFF',
+              subtle: '#F2EFE5',
+              main: '#1F2937',
+              sub: '#9CA3AF',
+              muted: '#6B7280',
+              inverse: '#FFFFFF',
+              gain: {
+                DEFAULT: '#E74C3C',
+                bg: '#FEF2F2',
+                text: '#E74C3C'
+              },
+              loss: {
+                DEFAULT: '#2ECC71',
+                bg: '#F0FDF4',
+                text: '#2ECC71'
+              },
+              cream: {
+                DEFAULT: '#F9F8F4', 
+                dark: '#F2EFE5'     
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #F9F8F4;
+        color: #1F2937;
+      }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+        "lucide-vue-next": "https://unpkg.com/lucide-vue-next@latest/dist/esm/index.js",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="app"></div>
