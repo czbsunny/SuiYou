@@ -6,7 +6,7 @@
         "navigationBarBackgroundColor": "#2A806C",
         "navigationBarTextStyle": "white",
         "navigationStyle": "default",
-        "navigationBarTitleText": "蓝图",
+        "navigationBarTitleText": "首页",
         "backgroundColor": "#F9F8F4"
       }
     },
@@ -70,15 +70,15 @@
     "list": [
       {
         "pagePath": "pages/home/index",
-        "text": "蓝图",
+        "text": "首页",
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/goals/index",
         "text": "目标",
-        "iconPath": "static/tabbar/goal.png",
-        "selectedIconPath": "static/tabbar/goal-active.png"
+        "iconPath": "static/tabbar/goals.png",
+        "selectedIconPath": "static/tabbar/goals-active.png"
       },
       {
         "pagePath": "pages/assets/index",
