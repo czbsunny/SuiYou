@@ -3,6 +3,7 @@ package com.suiyou.service;
 import com.suiyou.dto.auth.LoginResponseDTO;
 import com.suiyou.model.User;
 import com.suiyou.repository.UserRepository;
+import com.suiyou.service.FamilyService;
 import com.suiyou.security.JwtTokenProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -39,6 +40,9 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    private FamilyService familyService;
+
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     
     // 用户注册
@@ -64,6 +68,10 @@ public class UserService {
         
         // 保存用户
         User savedUser = userRepository.save(user);
+
+        // 自动创建家庭
+        String familyName = user.getUsername() + "的家庭";
+        familyService.createFamily(savedUser.getId(), familyName);
 
         return savedUser;
     }
@@ -172,7 +180,13 @@ public class UserService {
 
         // 更新登录时间
         user.setLastLoginTime(LocalDateTime.now());
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // 如果是新用户，自动创建家庭
+        if (!userOptional.isPresent()) {
+            String familyName = savedUser.getUsername() + "的家庭";
+            familyService.createFamily(savedUser.getId(), familyName);
+        }
 
         // 生成token - 使用手机号作为subject，用户ID作为额外信息
         String token = jwtTokenProvider.generateToken(user.getPhoneNumber(), user.getId());
