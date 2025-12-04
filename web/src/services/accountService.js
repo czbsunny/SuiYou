@@ -17,7 +17,7 @@ import { get, post, put, del } from './apiService';
  */
 export const createAccount = async (accountData) => {
   try {
-    const response = await post('/api/v1/accounts', accountData);
+    const response = await post('/api/accounts', accountData);
     
     if (response.statusCode === 201 || response.statusCode === 200) {
       return response.data;
@@ -31,3 +31,23 @@ export const createAccount = async (accountData) => {
     throw error;
   }
 };
+
+/**
+ * 获取当前用户的所有资产账户
+ * @returns {Promise<Object>} 账户列表和总数
+ */
+export const getAccounts = async () => {
+  try {
+    const response = await get('/api/accounts/');
+    
+    if (response.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || '获取资产账户失败');
+    }
+  } catch (error) {
+    console.error('获取资产账户错误:', error);
+    throw error;
+  }
+};
+

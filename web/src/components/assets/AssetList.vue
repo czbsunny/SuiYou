@@ -20,18 +20,35 @@
         </view>
         <text class="item-amount">{{ item.a }}</text>
       </view>
+      
+      <!-- 添加资产按钮 -->
+      <view class="add-button" @click="navigateToAddAsset">
+        <image src="/static/images/plus-gray.png" class="plus-icon" />
+        <text>添加{{ data.name }}</text>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { defineProps, watch, ref } from 'vue';
+import { defineProps, watch, ref, onMounted } from 'vue';
 
 const props = defineProps({
   data: { type: Object, required: true }
 });
 
+const navigateToAddAsset = () => {
+  uni.navigateTo({
+    url: '/pages/assets/add'
+  });
+};
+
 const animateTrigger = ref(false);
+
+// 组件挂载时触发动画
+onMounted(() => {
+  animateTrigger.value = true;
+});
 
 // 监听数据变化，触发简单动画
 watch(() => props.data, () => {
@@ -123,5 +140,35 @@ watch(() => props.data, () => {
   font-family: monospace;
   font-weight: 700;
   color: #2c3e50;
+}
+/* 添加资产按钮样式 */
+.add-account-btn {
+  width: 100%;
+  padding: 16px 0;
+  border: 2px dashed $border-color;
+  border-radius: 16px;
+  color: $text-muted;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s;
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+
+.add-account-btn:active {
+  background-color: #ffffff;
+  border-color: $primary;
+  color: $primary;
+}
+
+.add-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
 }
 </style>

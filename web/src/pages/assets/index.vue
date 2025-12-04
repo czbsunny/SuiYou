@@ -21,6 +21,7 @@
     <!-- 4. 底部明细列表 -->
     <AssetList 
       :data="currentAssetData" 
+      @add-asset="handleAddAsset"
     />
   </view>
 </template>
@@ -36,7 +37,7 @@ import AssetList from '../../components/assets/AssetList.vue';
 const assets = ref([
   { 
     id: 'cash', 
-    name: "活钱钱包", 
+    name: "流动资产", 
     total: "¥ 50,000", 
     color1: "#4facfe", color2: "#00f2fe",
     icon: "fa-wallet",
@@ -58,7 +59,7 @@ const assets = ref([
   },
   { 
     id: 'fixed', 
-    name: "固产/权益", 
+    name: "固定资产", 
     total: "¥ 3,000,000", 
     color1: "#e3c46e", color2: "#daa520",
     icon: "fa-house",
@@ -68,9 +69,20 @@ const assets = ref([
     ]
   },
   { 
+    id: 'other', 
+    name: "其他资产", 
+    total: "¥ 150,000", 
+    color1: "#833ab4", color2: "#fd1d1d",
+    icon: "fa-cubes",
+    list: [
+      { n: "黄金投资", s: "实物黄金 · 首饰", a: "100,000", i: "fa-solid fa-coins text-yellow-500" },
+      { n: "收藏品", s: "邮票 · 1980年猴票", a: "50,000", i: "fa-solid fa-stamp text-blue-500" }
+    ]
+  },
+  { 
     id: 'debt', 
     name: "负债贷款", 
-    total: "-¥ 1,200,000", 
+    total: "¥ -1,200,000", 
     color1: "#ff512f", color2: "#dd2476",
     icon: "fa-file-invoice-dollar",
     list: [
@@ -85,17 +97,34 @@ const currentIndex = ref(0);
 const currentAssetData = computed(() => {
   return assets.value[currentIndex.value];
 });
+
+// 添加资产按钮点击事件处理函数
+const handleAddAsset = () => {
+  const currentAsset = assets.value[currentIndex.value];
+  console.log(`添加${currentAsset.name}类型的资产`);
+  // 这里可以添加跳转或弹窗逻辑
+};
 </script>
 
 <style lang="scss">
+/* 主题色变量 */
+$primary: #2a806c;
+$primary-dark: #469e88;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-800: #1f2937;
+$bg-page: #F9F8F4;
+
 /* 全局变量与基础样式 */
 page {
-  background-color: #F9F8F4;
+  background-color: $bg-page;
 }
 .page-container {
   padding-bottom: 100px;
   min-height: 100vh;
-  background-color: #F9F8F4;
+  background-color: $bg-page;
   font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
 }
 
@@ -118,4 +147,6 @@ page {
     color: #d1d5db;
   }
 }
+
+
 </style>

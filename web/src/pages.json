@@ -47,6 +47,15 @@
       }
     },
     {
+      "path": "pages/assets/add",
+      "style": {
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "navigationBarTitleText": "添加资产",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",
@@ -176,20 +185,6 @@
             "navigationBarBackgroundColor": "#2A806C",
             "navigationBarTextStyle": "white",
             "navigationBarTitleText": "交易记录"
-          }
-        }
-      ]
-    },
-    {
-      "root": "components/asset",
-      "pages": [
-        {
-          "path": "manager",
-          "style": {
-            "navigationBarTitleText": "资产管理",
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
-            "backgroundColor": "#F9F8F4"
           }
         }
       ]
