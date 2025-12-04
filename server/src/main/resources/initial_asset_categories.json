@@ -1,7 +1,7 @@
 [
   {
     "code": "LIQUID",
-    "name": "活钱管理",
+    "name": "流动资产",
     "groupType": "ASSET",
     "iconUrl": "icon-wallet",
     "sortOrder": 10,
@@ -11,7 +11,7 @@
       { "code": "E_WALLET", "name": "微信", "iconUrl": "icon-wechat", "sortOrder": 2 },
       { "code": "E_WALLET", "name": "支付宝", "iconUrl": "icon-alipay", "sortOrder": 3 },
       { "code": "CASH", "name": "现金", "iconUrl": "icon-cash", "sortOrder": 4 },
-      { "code": "CUSTOM_LIQUID", "name": "其他活钱", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "CUSTOM_LIQUID", "name": "其他流动资产", "iconUrl": "icon-other", "sortOrder": 99 }
     ]
   },
   {
@@ -31,7 +31,7 @@
       { "code": "PORTFOLIO", "name": "投顾组合", "iconUrl": "icon-pie-chart", "sortOrder": 7 },
       { "code": "PRIVATE_FUND", "name": "私募基金", "iconUrl": "icon-diamond-black", "sortOrder": 8 },
       { "code": "CRYPTO", "name": "加密货币", "iconUrl": "icon-bitcoin", "sortOrder": 9 },
-      { "code": "CUSTOM_INVEST", "name": "其他投资", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "CUSTOM_INVEST", "name": "其他投资理财", "iconUrl": "icon-other", "sortOrder": 99 }
     ]
   },
   {
@@ -66,7 +66,7 @@
   },
   {
     "code": "LOAN",
-    "name": "长期贷款",
+    "name": "负债贷款",
     "groupType": "LIABILITY",
     "iconUrl": "icon-loan",
     "sortOrder": 50,

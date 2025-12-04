@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -76,5 +78,11 @@ public class AccountServiceImpl implements AccountService {
         // 临时实现：返回固定值（仅作示例）
         // 实际项目中应该从用户实体中获取currentFamilyId
         return 1L; // 临时返回固定值
+    }
+    
+    @Override
+    public List<Account> getAccountsByUserId(Long userId) {
+        // 查询状态为1（活跃）的账户，不包括已归档的账户
+        return accountRepository.findByOwnerIdAndStatus(userId, 1);
     }
 }

@@ -1,235 +1,159 @@
 <template>
   <view class="add-asset-page">
-    <view class="page-header">
-      <view class="back-button" @click="goBack">
-        <image src="/static/images/back.png" class="back-icon" />
-      </view>
-      <text class="page-title">添加资产</text>
-      <view class="save-button" @click="saveAsset">
-        <text class="save-text">保存</text>
-      </view>
-    </view>
+    <scroll-view scroll-y class="content-scroll">
+      <view class="content-container">
+        
+        <!-- 第一大块：资产归类 (卡片容器) -->
+        <view class="section-card">
+          <view class="card-title">资产归类</view>
+          
+          <view class="card-body">
+            <!-- 1. 大类选择 (横向滚动) -->
+            <scroll-view scroll-x class="type-scroll" :show-scrollbar="false">
+              <view class="type-scroll-inner">
+                <view 
+                  v-for="type in assetTypes" 
+                  :key="type.id"
+                  class="type-item"
+                  :class="{ active: selectedAssetType === type.id }"
+                  @click="selectAssetType(type.id)"
+                >
+                  <view class="icon-circle">
+                    <!-- 请确保 static/images/ 下有对应的图标文件 -->
+                    <image :src="type.icon" class="type-icon" mode="aspectFit" />
+                  </view>
+                  <text class="type-text">{{ type.name }}</text>
+                  <!-- 选中指示点 -->
+                  <view class="active-dot" v-if="selectedAssetType === type.id"></view>
+                </view>
+              </view>
+            </scroll-view>
 
-    <view class="content-container">
-      <!-- 1. 资产大类选择 -->
-      <view class="section">
-        <text class="section-title">资产类别</text>
-        <view class="asset-type-grid">
-          <view 
-            v-for="type in assetTypes" 
-            :key="type.id"
-            class="asset-type-item"
-            :class="{ active: selectedAssetType === type.id }"
-            @click="selectAssetType(type.id)"
-          >
-            <image :src="type.icon" class="type-icon" />
-            <text class="type-name">{{ type.name }}</text>
+            <!-- 分割线 -->
+            <view class="divider" v-if="currentSubcategories.length > 0"></view>
+
+            <!-- 2. 子类选择 -->
+            <view class="tags-container" v-if="currentSubcategories.length > 0">
+              <view class="tags-label">选择类型</view>
+              <view class="tags-wrapper">
+                <view 
+                  v-for="sub in currentSubcategories" 
+                  :key="sub.id"
+                  class="tag-item"
+                  :class="{ active: selectedSubcategory === sub.id }"
+                  @click="selectSubcategory(sub.id)"
+                >
+                  {{ sub.name }}
+                </view>
+              </view>
+            </view>
+
+            <!-- 3. 机构/平台选择 (根据子类联动) -->
+            <block v-if="selectedSubcategory && availableInstitutions.length > 0">
+              <view class="inner-divider"></view>
+              <view class="tags-container">
+                <view class="tags-label">所属机构</view>
+                <view class="tags-wrapper">
+                  <view 
+                    v-for="inst in availableInstitutions" 
+                    :key="inst.id"
+                    class="tag-item"
+                    :class="{ active: assetForm.institution === inst.id }"
+                    @click="assetForm.institution = inst.id"
+                  >
+                    {{ inst.name }}
+                  </view>
+                </view>
+              </view>
+            </block>
           </view>
         </view>
-      </view>
 
-      <!-- 2. 子分类选择 -->
-      <view class="section">
-        <text class="section-title">子分类</text>
-        <view class="subcategory-scroll">
-          <view 
-            v-for="sub in currentSubcategories" 
-            :key="sub.id"
-            class="subcategory-item"
-            :class="{ active: selectedSubcategory === sub.id }"
-            @click="selectSubcategory(sub.id)"
-          >
-            <text class="subcategory-name">{{ sub.name }}</text>
+        <!-- 第二大块：基本信息 (卡片容器) -->
+        <view class="section-card">
+          <view class="card-title">基本信息</view>
+          <view class="card-body form-group">
+            
+            <!-- 名称 -->
+            <view class="form-row">
+              <text class="row-label">资产名称</text>
+              <input 
+                v-model="assetForm.accountName" 
+                type="text" 
+                :placeholder="accountNamePlaceholder"
+                class="row-input"
+                placeholder-class="input-placeholder"
+              />
+            </view>
+            
+            <!-- 金额 -->
+            <view class="form-row last-row">
+              <text class="row-label">金额 <text class="currency-label">{{ assetForm.currency }}</text></text>
+              <input 
+                v-model="assetForm.amount" 
+                type="digit" 
+                placeholder="0.00"
+                class="row-input amount-input"
+                placeholder-class="input-placeholder"
+              />
+            </view>
           </view>
         </view>
+
+        <!-- 第三大块：补充信息 (动态字段，卡片容器) -->
+        <block v-if="selectedSubcategory && currentFields.length > 0">
+          <view class="section-card">
+            <view class="card-title">补充信息</view>
+            <view class="card-body form-group">
+              
+              <template v-for="(field, index) in currentFields" :key="field.key">
+                <!-- 单行输入 (文本/数字/日期) -->
+                <view 
+                  v-if="field.type === 'text' || field.type === 'digit' || field.type === 'number'" 
+                  class="form-row"
+                  :class="{ 'last-row': index === currentFields.length - 1 && field.type !== 'textarea' }"
+                >
+                  <text class="row-label">{{ field.label }}</text>
+                  <input 
+                    v-model="assetForm[field.key]" 
+                    :type="field.type === 'digit' || field.type === 'number' ? field.type : 'text'" 
+                    :placeholder="field.placeholder || '选填'"
+                    class="row-input" 
+                    placeholder-class="input-placeholder"
+                  />
+                </view>
+                
+                <!-- 多行文本 (备注) -->
+                <view 
+                  v-else-if="field.type === 'textarea'" 
+                  class="form-row column-layout"
+                  :class="{ 'last-row': index === currentFields.length - 1 }"
+                >
+                  <text class="row-label mb-8">{{ field.label }}</text>
+                  <textarea 
+                    v-model="assetForm[field.key]" 
+                    :placeholder="field.placeholder || '请输入备注信息...'" 
+                    class="row-textarea"
+                    auto-height
+                    placeholder-class="input-placeholder"
+                  />
+                </view>
+              </template>
+
+            </view>
+          </view>
+        </block>
+
+        <!-- 底部占位，防止按钮遮挡 -->
+        <view class="bottom-spacer"></view>
+
       </view>
-
-      <!-- 3. 机构选择 -->
-      <view class="section">
-        <text class="section-title">机构</text>
-        <view class="input-wrapper">
-          <input 
-            v-model="assetForm.institution" 
-            type="text" 
-            placeholder="请输入机构名称"
-            class="input-field"
-          />
-        </view>
-      </view>
-
-      <!-- 4. 账户名称 -->
-      <view class="section">
-        <text class="section-title">账户名称</text>
-        <view class="input-wrapper">
-          <input 
-            v-model="assetForm.accountName" 
-            type="text" 
-            placeholder="请输入账户名称"
-            class="input-field"
-          />
-        </view>
-      </view>
-
-      <!-- 5. 金额 -->
-      <view class="section">
-        <text class="section-title">金额</text>
-        <view class="input-wrapper">
-          <text class="currency-symbol">¥</text>
-          <input 
-            v-model="assetForm.amount" 
-            type="number" 
-            placeholder="0.00"
-            class="input-field amount-input"
-          />
-        </view>
-      </view>
-
-      <!-- 6. 动态参数区域 -->
-      <view class="section" v-if="selectedSubcategory">
-        <text class="section-title">详细信息</text>
-        <view class="dynamic-params">
-          <!-- 根据子分类显示不同的参数 -->
-          <!-- 定期存款参数 -->
-          <template v-if="selectedSubcategory === 'fixed_deposit'">
-            <view class="param-item">
-              <text class="param-label">定存开始时间</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.startDate" 
-                  type="date" 
-                  placeholder="选择开始日期"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">定存利率(%)</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.interestRate" 
-                  type="number" 
-                  placeholder="0.00"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">定存期限(年)</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.termYears" 
-                  type="number" 
-                  placeholder="0"
-                  class="input-field"
-                />
-              </view>
-            </view>
-          </template>
-
-          <!-- 房贷参数 -->
-          <template v-else-if="selectedSubcategory === 'mortgage'">
-            <view class="param-item">
-              <text class="param-label">贷款利率(%)</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.interestRate" 
-                  type="number" 
-                  placeholder="0.00"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">还款日</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.repaymentDate" 
-                  type="number" 
-                  placeholder="1-31"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">截止日期</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.endDate" 
-                  type="date" 
-                  placeholder="选择截止日期"
-                  class="input-field"
-                />
-              </view>
-            </view>
-          </template>
-
-          <!-- 股票参数 -->
-          <template v-else-if="selectedSubcategory === 'stock'">
-            <view class="param-item">
-              <text class="param-label">股票代码</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.stockCode" 
-                  type="text" 
-                  placeholder="请输入股票代码"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">持有数量</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.quantity" 
-                  type="number" 
-                  placeholder="0"
-                  class="input-field"
-                />
-              </view>
-            </view>
-          </template>
-
-          <!-- 基金参数 -->
-          <template v-else-if="selectedSubcategory === 'fund'">
-            <view class="param-item">
-              <text class="param-label">基金代码</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.fundCode" 
-                  type="text" 
-                  placeholder="请输入基金代码"
-                  class="input-field"
-                />
-              </view>
-            </view>
-            <view class="param-item">
-              <text class="param-label">持有份额</text>
-              <view class="input-wrapper">
-                <input 
-                  v-model="assetForm.shares" 
-                  type="number" 
-                  placeholder="0.00"
-                  class="input-field"
-                />
-              </view>
-            </view>
-          </template>
-
-          <!-- 其他资产参数 -->
-          <template v-else>
-            <view class="param-item">
-              <text class="param-label">备注</text>
-              <view class="input-wrapper">
-                <textarea 
-                  v-model="assetForm.remark" 
-                  placeholder="请输入备注信息"
-                  class="textarea-field"
-                  rows="3"
-                ></textarea>
-              </view>
-            </view>
-          </template>
-        </view>
+    </scroll-view>
+    
+    <!-- 底部悬浮按钮 -->
+    <view class="fixed-bottom">
+      <view class="save-btn" @click="saveAsset" hover-class="save-btn-hover">
+        确认添加
       </view>
     </view>
   </view>
@@ -237,13 +161,11 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 
-// 页面导航
-const goBack = () => {
-  uni.navigateBack();
-};
+// ---------------- 数据定义区 ----------------
 
-// 资产大类
+// 1. 大类定义
 const assetTypes = ref([
   { id: 'cash', name: '流动资产', icon: '/static/images/wallet.png' },
   { id: 'investment', name: '投资理财', icon: '/static/images/chart-pie.png' },
@@ -252,103 +174,172 @@ const assetTypes = ref([
   { id: 'debt', name: '负债贷款', icon: '/static/images/file-invoice-dollar.png' }
 ]);
 
-// 子分类数据
+// 2. 子类定义
 const subcategories = ref([
-  // 流动资产子分类
   { id: 'cash_account', name: '现金账户', parentType: 'cash' },
   { id: 'alipay', name: '支付宝', parentType: 'cash' },
   { id: 'wechat', name: '微信钱包', parentType: 'cash' },
   { id: 'fixed_deposit', name: '定期存款', parentType: 'cash' },
-  // 投资理财子分类
   { id: 'stock', name: '股票', parentType: 'investment' },
   { id: 'fund', name: '基金', parentType: 'investment' },
   { id: 'bond', name: '债券', parentType: 'investment' },
   { id: 'insurance', name: '保险', parentType: 'investment' },
-  // 固定资产子分类
   { id: 'house', name: '房产', parentType: 'fixed' },
   { id: 'car', name: '车辆', parentType: 'fixed' },
-  // 其他资产子分类
   { id: 'gold', name: '黄金', parentType: 'other' },
   { id: 'collectibles', name: '收藏品', parentType: 'other' },
-  // 负债贷款子分类
   { id: 'mortgage', name: '房贷', parentType: 'debt' },
   { id: 'car_loan', name: '车贷', parentType: 'debt' },
   { id: 'credit_card', name: '信用卡', parentType: 'debt' },
   { id: 'personal_loan', name: '个人贷款', parentType: 'debt' }
 ]);
 
-// 选中的资产类别
-const selectedAssetType = ref('cash'); // 默认选中流动资产
-const selectedSubcategory = ref(null);
+// 3. 机构定义 (模拟数据)
+const institutions = ref([
+  { id: 'alipay', name: '支付宝', subcategories: ['cash_account', 'alipay', 'fund', 'stock', 'insurance'] },
+  { id: 'wechat', name: '微信', subcategories: ['cash_account', 'wechat', 'fund', 'stock', 'insurance'] },
+  { id: 'icbc', name: '工商银行', subcategories: ['cash_account', 'fixed_deposit', 'stock', 'fund', 'bond', 'insurance', 'mortgage', 'credit_card'] },
+  { id: 'cmb', name: '招商银行', subcategories: ['cash_account', 'fixed_deposit', 'stock', 'fund', 'bond', 'insurance', 'mortgage', 'credit_card'] },
+  { id: 'other', name: '其他', subcategories: ['cash_account', 'house', 'car', 'gold', 'collectibles', 'personal_loan'] }
+]);
 
-// 当前显示的子分类
-const currentSubcategories = computed(() => {
-  return subcategories.value.filter(sub => sub.parentType === selectedAssetType.value);
+// 4. 动态表单字段配置
+const subcategoryFields = ref({
+  cash_account: [
+    { key: 'accountNumber', label: '账号', type: 'text' },
+    { key: 'remark', label: '备注', type: 'textarea' }
+  ],
+  fixed_deposit: [
+    { key: 'startDate', label: '起息日', type: 'text', placeholder: 'YYYY-MM-DD' },
+    { key: 'endDate', label: '到期日', type: 'text', placeholder: 'YYYY-MM-DD' },
+    { key: 'interestRate', label: '年利率 %', type: 'digit' },
+    { key: 'remark', label: '备注', type: 'textarea' }
+  ],
+  stock: [
+    { key: 'stockCode', label: '股票代码', type: 'text' },
+    { key: 'quantity', label: '持有数量', type: 'digit' },
+    { key: 'purchasePrice', label: '持仓成本', type: 'digit' },
+    { key: 'remark', label: '备注', type: 'textarea' }
+  ],
+  house: [
+    { key: 'address', label: '地址', type: 'text' },
+    { key: 'area', label: '面积(㎡)', type: 'digit' },
+    { key: 'purchaseDate', label: '购买日期', type: 'text' },
+    { key: 'purchasePrice', label: '原价', type: 'digit' },
+    { key: 'remark', label: '备注', type: 'textarea' }
+  ],
+  credit_card: [
+    { key: 'creditLimit', label: '总额度', type: 'digit' },
+    { key: 'billDate', label: '账单日', type: 'number', placeholder: '每月几号' },
+    { key: 'repaymentDate', label: '还款日', type: 'number', placeholder: '每月几号' },
+    { key: 'remark', label: '备注', type: 'textarea' }
+  ],
+  // ... 其他子类的字段配置可按需添加，逻辑同上
 });
 
-// 选择资产大类
-const selectAssetType = (typeId) => {
-  selectedAssetType.value = typeId;
-  selectedSubcategory.value = null; // 重置子分类选择
-};
-
-// 选择子分类
-const selectSubcategory = (subId) => {
-  selectedSubcategory.value = subId;
-};
-
-// 资产表单数据
+// 5. 表单响应式数据
+const selectedAssetType = ref('cash');
+const selectedSubcategory = ref('');
 const assetForm = ref({
   institution: '',
   accountName: '',
   amount: '',
-  // 动态参数
+  currency: 'CNY',
+  // 动态字段的存储池
+  accountNumber: '',
+  remark: '',
   startDate: '',
-  interestRate: '',
-  termYears: '',
-  repaymentDate: '',
   endDate: '',
+  interestRate: '',
   stockCode: '',
   quantity: '',
-  fundCode: '',
-  shares: '',
-  remark: ''
+  purchasePrice: '',
+  address: '',
+  area: '',
+  creditLimit: '',
+  billDate: '',
+  repaymentDate: ''
 });
 
-// 保存资产
+// ---------------- 逻辑处理区 ----------------
+
+// 生命周期
+onLoad((options) => {
+  if (options.type) {
+    selectedAssetType.value = options.type;
+  }
+  // 默认选中当前大类下的第一个子类
+  const firstSub = subcategories.value.find(sub => sub.parentType === selectedAssetType.value);
+  if (firstSub) {
+    selectedSubcategory.value = firstSub.id;
+  }
+});
+
+// 计算属性：当前显示的大类下的子类列表
+const currentSubcategories = computed(() => {
+  return subcategories.value.filter(sub => sub.parentType === selectedAssetType.value);
+});
+
+// 计算属性：当前子类可用的机构
+const availableInstitutions = computed(() => {
+  if (!selectedSubcategory.value) return [];
+  return institutions.value.filter(inst => inst.subcategories.includes(selectedSubcategory.value));
+});
+
+// 计算属性：当前子类需要填写的动态字段
+const currentFields = computed(() => {
+  if (!selectedSubcategory.value) return [];
+  // 如果该子类没有配置特有字段，默认只显示备注
+  return subcategoryFields.value[selectedSubcategory.value] || [{ key: 'remark', label: '备注', type: 'textarea' }];
+});
+
+// 计算属性：智能生成输入框占位符
+const accountNamePlaceholder = computed(() => {
+  if (!selectedSubcategory.value) return '请输入名称';
+  const subName = subcategories.value.find(s => s.id === selectedSubcategory.value)?.name;
+  const instName = institutions.value.find(i => i.id === assetForm.value.institution)?.name;
+  
+  if (instName) return `${instName}${subName}`;
+  return `${subName}`;
+});
+
+// 方法：切换大类
+const selectAssetType = (typeId) => {
+  selectedAssetType.value = typeId;
+  const firstSub = subcategories.value.find(sub => sub.parentType === typeId);
+  selectedSubcategory.value = firstSub ? firstSub.id : '';
+  assetForm.value.institution = ''; // 重置机构
+};
+
+// 方法：切换子类
+const selectSubcategory = (subId) => {
+  selectedSubcategory.value = subId;
+  assetForm.value.institution = ''; // 重置机构
+};
+
+// 方法：保存
 const saveAsset = () => {
-  // 表单验证
-  if (!selectedSubcategory.value) {
-    uni.showToast({ title: '请选择资产子分类', icon: 'none' });
-    return;
-  }
-  if (!assetForm.value.institution) {
-    uni.showToast({ title: '请输入机构名称', icon: 'none' });
-    return;
-  }
   if (!assetForm.value.accountName) {
-    uni.showToast({ title: '请输入账户名称', icon: 'none' });
-    return;
+    // 智能填入默认名
+    assetForm.value.accountName = accountNamePlaceholder.value;
   }
-  if (!assetForm.value.amount || parseFloat(assetForm.value.amount) <= 0) {
-    uni.showToast({ title: '请输入有效金额', icon: 'none' });
+  
+  if (!assetForm.value.amount) {
+    uni.showToast({ title: '请输入金额', icon: 'none' });
     return;
   }
 
-  // 构建资产数据
-  const assetData = {
+  const payload = {
+    group_type: selectedAssetType.value === 'debt' ? 'LIABILITY' : 'ASSET', // 简单映射
     type: selectedAssetType.value,
     subcategory: selectedSubcategory.value,
-    institution: assetForm.value.institution,
-    accountName: assetForm.value.accountName,
-    amount: parseFloat(assetForm.value.amount),
     ...assetForm.value
   };
 
-  console.log('保存资产数据:', assetData);
+  console.log('提交的数据:', payload);
+  uni.showToast({ title: '添加成功', icon: 'success' });
   
-  // 模拟保存成功
-  uni.showToast({ title: '保存成功', icon: 'success' });
+  // 模拟返回
   setTimeout(() => {
     uni.navigateBack();
   }, 1500);
@@ -356,208 +347,271 @@ const saveAsset = () => {
 </script>
 
 <style lang="scss" scoped>
+/* ---------------- 样式定义区 ---------------- */
+
+/* 变量定义 */
+$bg-color: #F9F8F4;      // 米纸色背景
+$card-bg: #FFFFFF;       // 卡片纯白
+$primary-color: #2a806c; // 墨绿
+$primary-light: rgba(42, 128, 108, 0.08);
+$accent-color: #D4AF37;  // 金色
+$text-main: #2C3E50;
+$text-sub: #606266;
+$text-placeholder: #C0C4CC;
+$border-light: rgba(0, 0, 0, 0.04);
+$tag-inactive: #F5F7FA;  // 未选中标签背景
+
 .add-asset-page {
-  min-height: 100vh;
-  background-color: $bg-page;
-}
-
-.page-header {
+  height: 100vh;
+  background-color: $bg-color;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background-color: $white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
 }
 
-.back-button {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.page-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: $text-main;
-}
-
-.save-button {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.save-text {
-  font-size: 16px;
-  color: $primary;
-  font-weight: 600;
+.content-scroll {
+  flex: 1;
+  height: 0;
 }
 
 .content-container {
-  padding: 20px;
+  padding: 16px; // 页面边距
 }
 
-.section {
-  margin-bottom: 24px;
+/* --- 卡片通用样式 --- */
+.section-card {
+  background-color: $card-bg;
+  border-radius: 16px;
+  padding: 20px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); // 轻柔阴影
+  
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $text-main;
+    margin-bottom: 16px;
+    padding-left: 10px;
+    border-left: 3px solid $accent-color; // 金色装饰条
+    line-height: 1;
+  }
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: bold;
-  color: $text-main;
-  margin-bottom: 12px;
-  display: block;
+/* --- 第一大块：资产归类 --- */
+.type-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 4px;
 }
 
-/* 资产大类选择 */
-.asset-type-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-}
-
-.asset-type-item {
+.type-scroll-inner {
   display: flex;
+  padding-bottom: 8px; 
+}
+
+.type-item {
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 8px;
-  background-color: $white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.asset-type-item.active {
-  background-color: $primary;
-  box-shadow: 0 4px 12px rgba(42, 128, 108, 0.2);
-}
-
-.type-icon {
-  width: 32px;
-  height: 32px;
-  margin-bottom: 8px;
-}
-
-.type-name {
-  font-size: 12px;
-  color: $text-main;
-}
-
-.asset-type-item.active .type-name {
-  color: $white;
-}
-
-/* 子分类选择 */
-.subcategory-scroll {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.subcategory-item {
-  padding: 8px 16px;
-  background-color: $white;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  white-space: nowrap;
-}
-
-.subcategory-item.active {
-  background-color: $primary;
-}
-
-.subcategory-name {
-  font-size: 14px;
-  color: $text-main;
-}
-
-.subcategory-item.active .subcategory-name {
-  color: $white;
-}
-
-/* 输入框样式 */
-.input-wrapper {
+  margin-right: 20px;
   position: relative;
-  background-color: $white;
-  border-radius: 12px;
-  padding: 0 16px;
-  height: 48px;
+  
+  .icon-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background-color: $tag-inactive;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    transition: all 0.3s;
+    
+    .type-icon {
+      width: 28px;
+      height: 28px;
+      opacity: 0.6;
+    }
+  }
+  
+  .type-text {
+    font-size: 12px;
+    color: $text-sub;
+    font-weight: 500;
+  }
+  
+  .active-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: $primary-color;
+    margin-top: 4px;
+  }
+  
+  /* 选中状态 */
+  &.active {
+    .icon-circle {
+      background-color: $primary-light;
+      .type-icon {
+        opacity: 1;
+      }
+    }
+    .type-text {
+      color: $primary-color;
+      font-weight: 700;
+    }
+  }
+}
+
+.divider {
+  height: 1px;
+  background-color: $border-light;
+  margin: 12px 0 16px 0;
+}
+
+.inner-divider {
+  height: 1px;
+  background-color: $border-light;
+  margin: 16px 0;
+  border-top: 1px dashed rgba(0,0,0,0.05);
+  background-color: transparent;
+}
+
+.tags-container {
+  .tags-label {
+    font-size: 12px;
+    color: $text-placeholder;
+    margin-bottom: 10px;
+  }
+}
+
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag-item {
+  padding: 6px 16px;
+  border-radius: 8px;
+  background-color: $tag-inactive;
+  color: $text-sub;
+  font-size: 13px;
+  font-weight: 400;
+  transition: all 0.2s;
+  
+  &.active {
+    background-color: $primary-color;
+    color: $card-bg;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba($primary-color, 0.25);
+  }
+}
+
+/* --- 表单列表风格 --- */
+.form-group {
+  // 列表容器
+}
+
+.form-row {
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 16px 0;
+  border-bottom: 1px solid $border-light;
+  
+  &.last-row {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  &.column-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.input-field {
+.row-label {
+  font-size: 15px;
+  color: $text-main;
+  width: 90px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.currency-label {
+  font-size: 12px;
+  color: $accent-color;
+  margin-left: 4px;
+}
+
+.row-input {
   flex: 1;
-  height: 100%;
-  font-size: 16px;
+  font-size: 15px;
   color: $text-main;
-  border: none;
-  outline: none;
-  background-color: transparent;
-}
-
-.input-field::placeholder {
-  color: $text-placeholder;
-}
-
-.currency-symbol {
-  font-size: 16px;
-  color: $text-main;
-  margin-right: 8px;
-}
-
-.amount-input {
   text-align: right;
+  height: 24px;
+  line-height: 24px;
+  
+  &.amount-input {
+    font-size: 20px; 
+    font-weight: 600;
+    color: $primary-color;
+  }
 }
 
-/* 动态参数区域 */
-.dynamic-params {
-  background-color: $white;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.input-placeholder {
+  color: $text-placeholder;
+  font-size: 14px;
+  font-weight: 400;
 }
 
-.param-item {
-  margin-bottom: 20px;
-}
-
-.param-item:last-child {
-  margin-bottom: 0;
-}
-
-.param-label {
+.row-textarea {
+  width: 100%;
   font-size: 14px;
   color: $text-main;
+  min-height: 80px;
+  background-color: $tag-inactive; // 浅灰底色区域
+  border-radius: 8px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.mb-8 {
   margin-bottom: 8px;
-  display: block;
 }
 
-.textarea-field {
-  width: 100%;
-  height: 80px;
+/* --- 底部按钮 --- */
+.bottom-spacer {
+  height: 120px;
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 100;
+  // 底部按钮背景渐变
+  background: linear-gradient(to top, rgba($bg-color, 1) 70%, rgba($bg-color, 0) 100%);
+}
+
+.save-btn {
+  background-color: $primary-color;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
   font-size: 16px;
-  color: $text-main;
-  border: none;
-  outline: none;
-  resize: none;
-  background-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba($primary-color, 0.3);
+  letter-spacing: 2px;
 }
 
-.textarea-field::placeholder {
-  color: $text-placeholder;
+.save-btn-hover {
+  transform: scale(0.99);
+  opacity: 0.95;
 }
 </style>

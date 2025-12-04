@@ -9,16 +9,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("/accounts")
 public class AccountController {
 
     @Autowired
@@ -42,6 +43,29 @@ public class AccountController {
             // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "资产添加失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+    
+    @GetMapping
+    public ResponseEntity<?> getAccounts() {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            
+            // 调用服务获取当前用户的所有活跃账户
+            List<Account> accounts = accountService.getAccountsByUserId(userId);
+            
+            // 返回成功响应
+            return ResponseEntity.ok(Map.of(
+                "accounts", accounts,
+                "count", accounts.size()
+            ));
+        } catch (Exception e) {
+            // 返回错误响应
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "获取资产账户失败",
                 "message", e.getMessage()
             ));
         }

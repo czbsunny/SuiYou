@@ -22,10 +22,10 @@
       </view>
       
       <!-- 添加资产按钮 -->
-      <view class="add-button" @click="navigateToAddAsset">
-        <image src="/static/images/plus-gray.png" class="plus-icon" />
+      <view class="add-account-btn" @click="navigateToAddAsset">
+        <image src="/static/images/plus-gray.png" class="add-icon" />
         <text>添加{{ data.name }}</text>
-      </view>
+      </view> 
     </view>
   </view>
 </template>
