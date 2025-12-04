@@ -1,0 +1,83 @@
+[
+  {
+    "code": "LIQUID",
+    "name": "活钱管理",
+    "groupType": "ASSET",
+    "iconUrl": "icon-wallet",
+    "sortOrder": 10,
+    "color": "#1677FF",
+    "children": [
+      { "code": "BANK_CARD", "name": "银行卡", "iconUrl": "icon-card", "sortOrder": 1 },
+      { "code": "E_WALLET", "name": "微信", "iconUrl": "icon-wechat", "sortOrder": 2 },
+      { "code": "E_WALLET", "name": "支付宝", "iconUrl": "icon-alipay", "sortOrder": 3 },
+      { "code": "CASH", "name": "现金", "iconUrl": "icon-cash", "sortOrder": 4 },
+      { "code": "CUSTOM_LIQUID", "name": "其他活钱", "iconUrl": "icon-other", "sortOrder": 99 }
+    ]
+  },
+  {
+    "code": "INVEST",
+    "name": "投资理财",
+    "groupType": "ASSET",
+    "iconUrl": "icon-chart",
+    "sortOrder": 20,
+    "color": "#FF5722",
+    "children": [
+      { "code": "TIME_DEPOSIT", "name": "银行定存", "iconUrl": "icon-deposit", "sortOrder": 1 },
+      { "code": "FUND", "name": "公募基金", "iconUrl": "icon-fund", "sortOrder": 2 },
+      { "code": "STOCK", "name": "股票", "iconUrl": "icon-stock", "sortOrder": 3 },
+      { "code": "BANK_PRODUCT", "name": "银行理财", "iconUrl": "icon-bank-product", "sortOrder": 4 },
+      { "code": "GOLD_ACCUMULATION", "name": "积存金", "iconUrl": "icon-gold-paper", "sortOrder": 5 },
+      { "code": "PHYSICAL_GOLD", "name": "实物黄金", "iconUrl": "icon-gold-bar", "sortOrder": 6 },
+      { "code": "PORTFOLIO", "name": "投顾组合", "iconUrl": "icon-pie-chart", "sortOrder": 7 },
+      { "code": "PRIVATE_FUND", "name": "私募基金", "iconUrl": "icon-diamond-black", "sortOrder": 8 },
+      { "code": "CRYPTO", "name": "加密货币", "iconUrl": "icon-bitcoin", "sortOrder": 9 },
+      { "code": "CUSTOM_INVEST", "name": "其他投资", "iconUrl": "icon-other", "sortOrder": 99 }
+    ]
+  },
+  {
+    "code": "FIXED",
+    "name": "固定资产",
+    "groupType": "ASSET",
+    "iconUrl": "icon-house",
+    "sortOrder": 30,
+    "color": "#FAAD14",
+    "children": [
+      { "code": "HOUSE", "name": "房产", "iconUrl": "icon-home", "sortOrder": 1 },
+      { "code": "CAR", "name": "汽车", "iconUrl": "icon-car", "sortOrder": 2 },
+      { "code": "JEWELRY", "name": "珠宝首饰", "iconUrl": "icon-diamond", "sortOrder": 3 },
+      { "code": "CUSTOM_FIXED", "name": "其他固定资产", "iconUrl": "icon-other", "sortOrder": 99 }
+    ]
+  },
+  {
+    "code": "OTHER_ASSET",
+    "name": "其他资产",
+    "groupType": "ASSET",
+    "iconUrl": "icon-safe-box",
+    "sortOrder": 40, 
+    "color": "#13C2C2", 
+    "children": [
+      { "code": "HOUSING_FUND", "name": "住房公积金", "iconUrl": "icon-house-fund", "sortOrder": 1 },
+      { "code": "SOCIAL_SECURITY", "name": "社保余额", "iconUrl": "icon-card-id", "sortOrder": 2 },
+      { "code": "MEDICAL_INSURANCE", "name": "医保余额", "iconUrl": "icon-medical", "sortOrder": 3 },
+      { "code": "PRIVATE_PENSION", "name": "个人养老金", "iconUrl": "icon-pension", "sortOrder": 4 },
+      { "code": "RECEIVABLE", "name": "借出款", "iconUrl": "icon-handshake", "sortOrder": 5 },
+      { "code": "OTHER_CUSTOM_ASSET", "name": "自定义资产", "iconUrl": "icon-other", "sortOrder": 99 }
+    ]
+  },
+  {
+    "code": "LOAN",
+    "name": "长期贷款",
+    "groupType": "LIABILITY",
+    "iconUrl": "icon-loan",
+    "sortOrder": 50,
+    "color": "#722ED1",
+    "children": [
+      { "code": "MORTGAGE", "name": "房贷", "iconUrl": "icon-house-loan", "sortOrder": 1 },
+      { "code": "CAR_LOAN", "name": "车贷", "iconUrl": "icon-car-loan", "sortOrder": 2 },
+      { "code": "RENOVATION_LOAN", "name": "装修贷", "iconUrl": "icon-paint", "sortOrder": 3 },
+      { "code": "BUSINESS_LOAN", "name": "经营贷", "iconUrl": "icon-shop", "sortOrder": 4 },
+      { "code": "NET_LOAN", "name": "网贷", "iconUrl": "icon-warning", "sortOrder": 5 },
+      { "code": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "icon-other", "sortOrder": 99 }
+    ]
+  }
+]

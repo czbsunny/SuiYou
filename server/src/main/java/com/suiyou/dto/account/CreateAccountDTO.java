@@ -1,4 +1,4 @@
-package com.suiyou.dto;
+package com.suiyou.dto.account;
 
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;

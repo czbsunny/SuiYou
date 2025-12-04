@@ -16,4 +16,10 @@ public interface SysAssetCategoriesRepository extends JpaRepository<SysAssetCate
     
     // 根据分组类型查询
     List<SysAssetCategories> findByGroupType(String groupType);
+    
+    // 查询所有系统分类
+    List<SysAssetCategories> findAllByIsSystem(boolean isSystem);
+    
+    // 根据代码列表批量删除
+    void deleteByCodeIn(List<String> codes);
 }

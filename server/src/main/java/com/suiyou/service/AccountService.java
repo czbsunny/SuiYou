@@ -1,6 +1,6 @@
 package com.suiyou.service;
 
-import com.suiyou.dto.CreateAccountDTO;
+import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.model.Account;
 import org.springframework.stereotype.Service;
 
