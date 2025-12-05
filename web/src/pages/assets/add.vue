@@ -353,20 +353,14 @@ const saveAsset = () => {
 /* ---------------- 样式定义区 ---------------- */
 
 /* 变量定义 */
-$bg-color: #F9F8F4;      // 米纸色背景
-$card-bg: #FFFFFF;       // 卡片纯白
-$primary-color: #2a806c; // 墨绿
 $primary-light: rgba(42, 128, 108, 0.08);
-$accent-color: #D4AF37;  // 金色
-$text-main: #2C3E50;
-$text-sub: #606266;
-$text-placeholder: #C0C4CC;
+
 $border-light: rgba(0, 0, 0, 0.04);
 $tag-inactive: #F5F7FA;  // 未选中标签背景
 
 .add-asset-page {
   height: 100vh;
-  background-color: $bg-color;
+  background-color: $bg-page;
   display: flex;
   flex-direction: column;
 }
@@ -382,7 +376,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 
 /* --- 卡片通用样式 --- */
 .section-card {
-  background-color: $card-bg;
+  background-color: $bg-white;
   border-radius: 16px;
   padding: 20px 16px;
   margin-bottom: 20px;
@@ -394,7 +388,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
     color: $text-main;
     margin-bottom: 16px;
     padding-left: 10px;
-    border-left: 3px solid $accent-color; // 金色装饰条
+    border-left: 3px solid $primary; // 金色装饰条
     line-height: 1;
   }
 }
@@ -437,7 +431,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
     
     /* 选中状态的图标容器 */
     &.active {
-      background-color: $primary-color; // 选中后使用主题色
+      background-color: $primary; // 选中后使用主题色
       
       .type-icon {
         opacity: 1;
@@ -454,7 +448,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   /* 选中状态 */
   &.active {
     .type-text {
-      color: $primary-color;
+      color: $primary;
       font-weight: 700;
     }
   }
@@ -477,7 +471,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 .tags-container {
   .tags-label {
     font-size: 12px;
-    color: $text-placeholder;
+    color: $text-sub;
     margin-bottom: 10px;
   }
 }
@@ -498,10 +492,10 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   transition: all 0.2s;
   
   &.active {
-    background-color: $primary-color;
-    color: $card-bg;
+    background-color: $primary;
+    color: $bg-white;
     font-weight: 600;
-    box-shadow: 0 4px 8px rgba($primary-color, 0.25);
+    box-shadow: 0 4px 8px rgba($primary, 0.25);
   }
 }
 
@@ -537,7 +531,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 
 .currency-label {
   font-size: 12px;
-  color: $accent-color;
+  color: $primary;
   margin-left: 4px;
 }
 
@@ -552,7 +546,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   &.amount-input {
     font-size: 20px; 
     font-weight: 600;
-    color: $primary-color;
+    color: $primary;
   }
 }
 
@@ -591,11 +585,11 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
   z-index: 100;
   // 底部按钮背景渐变
-  background: linear-gradient(to top, rgba($bg-color, 1) 70%, rgba($bg-color, 0) 100%);
+  background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }
 
 .save-btn {
-  background-color: $primary-color;
+  background-color: $primary;
   height: 50px;
   border-radius: 12px;
   display: flex;
@@ -604,7 +598,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   color: #fff;
   font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba($primary-color, 0.3);
+  box-shadow: 0 8px 24px rgba($primary, 0.3);
   letter-spacing: 2px;
 }
 
