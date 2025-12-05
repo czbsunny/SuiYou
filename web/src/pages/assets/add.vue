@@ -12,19 +12,17 @@
             <scroll-view scroll-x class="type-scroll" :show-scrollbar="false">
               <view class="type-scroll-inner">
                 <view 
-                  v-for="type in assetTypes" 
+                  v-for="type in assetCategories" 
                   :key="type.id"
                   class="type-item"
-                  :class="{ active: selectedAssetType === type.id }"
+                  :class="{ active: selectedAssetCategory === type.id }"
                   @click="selectAssetType(type.id)"
                 >
-                  <view class="icon-circle">
-                    <!-- 请确保 static/images/ 下有对应的图标文件 -->
-                    <image :src="type.icon" class="type-icon" mode="aspectFit" />
+                  <view class="icon-circle" :class="{ active: selectedAssetCategory === type.id }">
+                    <!-- 根据选中状态切换图标 -->
+                    <image :src="selectedAssetCategory === type.id ? type.iconGray : type.icon" class="type-icon" mode="aspectFit" />
                   </view>
                   <text class="type-text">{{ type.name }}</text>
-                  <!-- 选中指示点 -->
-                  <view class="active-dot" v-if="selectedAssetType === type.id"></view>
                 </view>
               </view>
             </scroll-view>
@@ -162,36 +160,37 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
 
 // ---------------- 数据定义区 ----------------
 
-// 1. 大类定义
-const assetTypes = ref([
-  { id: 'cash', name: '流动资产', icon: '/static/images/wallet.png' },
-  { id: 'investment', name: '投资理财', icon: '/static/images/chart-pie.png' },
-  { id: 'fixed', name: '固定资产', icon: '/static/images/home.png' },
-  { id: 'other', name: '其他资产', icon: '/static/images/cubes.png' },
-  { id: 'debt', name: '负债贷款', icon: '/static/images/file-invoice-dollar.png' }
-]);
+// 1. 大类定义 - 从配置文件读取
+const assetCategories = ref(Object.keys(ASSET_CATEGORY_DISPLAY).map(key => ({
+  id: key,
+  name: ASSET_CATEGORY_DISPLAY[key].name,
+  icon: ASSET_CATEGORY_DISPLAY[key].icon,
+  iconGray: ASSET_CATEGORY_DISPLAY[key].iconGray,
+  color: ASSET_CATEGORY_DISPLAY[key].color
+})));
 
-// 2. 子类定义
+// 2. 子类定义 - 与配置文件中的资产类别 ID 对应
 const subcategories = ref([
-  { id: 'cash_account', name: '现金账户', parentType: 'cash' },
-  { id: 'alipay', name: '支付宝', parentType: 'cash' },
-  { id: 'wechat', name: '微信钱包', parentType: 'cash' },
-  { id: 'fixed_deposit', name: '定期存款', parentType: 'cash' },
-  { id: 'stock', name: '股票', parentType: 'investment' },
-  { id: 'fund', name: '基金', parentType: 'investment' },
-  { id: 'bond', name: '债券', parentType: 'investment' },
-  { id: 'insurance', name: '保险', parentType: 'investment' },
-  { id: 'house', name: '房产', parentType: 'fixed' },
-  { id: 'car', name: '车辆', parentType: 'fixed' },
-  { id: 'gold', name: '黄金', parentType: 'other' },
-  { id: 'collectibles', name: '收藏品', parentType: 'other' },
-  { id: 'mortgage', name: '房贷', parentType: 'debt' },
-  { id: 'car_loan', name: '车贷', parentType: 'debt' },
-  { id: 'credit_card', name: '信用卡', parentType: 'debt' },
-  { id: 'personal_loan', name: '个人贷款', parentType: 'debt' }
+  { id: 'cash_account', name: '现金账户', parentType: 'LIQUID' },
+  { id: 'alipay', name: '支付宝', parentType: 'LIQUID' },
+  { id: 'wechat', name: '微信钱包', parentType: 'LIQUID' },
+  { id: 'fixed_deposit', name: '定期存款', parentType: 'LIQUID' },
+  { id: 'stock', name: '股票', parentType: 'INVEST' },
+  { id: 'fund', name: '基金', parentType: 'INVEST' },
+  { id: 'bond', name: '债券', parentType: 'INVEST' },
+  { id: 'insurance', name: '保险', parentType: 'INVEST' },
+  { id: 'house', name: '房产', parentType: 'FIXED' },
+  { id: 'car', name: '车辆', parentType: 'FIXED' },
+  { id: 'gold', name: '黄金', parentType: 'OTHER' },
+  { id: 'collectibles', name: '收藏品', parentType: 'OTHER' },
+  { id: 'mortgage', name: '房贷', parentType: 'LOAN' },
+  { id: 'car_loan', name: '车贷', parentType: 'LOAN' },
+  { id: 'credit_card', name: '信用卡', parentType: 'LOAN' },
+  { id: 'personal_loan', name: '个人贷款', parentType: 'LOAN' }
 ]);
 
 // 3. 机构定义 (模拟数据)
@@ -234,11 +233,11 @@ const subcategoryFields = ref({
     { key: 'repaymentDate', label: '还款日', type: 'number', placeholder: '每月几号' },
     { key: 'remark', label: '备注', type: 'textarea' }
   ],
-  // ... 其他子类的字段配置可按需添加，逻辑同上
 });
 
 // 5. 表单响应式数据
-const selectedAssetType = ref('cash');
+// 默认选中第一个资产类别
+const selectedAssetCategory = ref(assetCategories.value[0]?.id || 'LIQUID');
 const selectedSubcategory = ref('');
 const assetForm = ref({
   institution: '',
@@ -266,10 +265,14 @@ const assetForm = ref({
 // 生命周期
 onLoad((options) => {
   if (options.type) {
-    selectedAssetType.value = options.type;
+    // 检查传入的 type 是否存在于 assetCategories 中
+    const isValidType = assetCategories.value.some(type => type.id === options.type);
+    if (isValidType) {
+      selectedAssetCategory.value = options.type;
+    }
   }
   // 默认选中当前大类下的第一个子类
-  const firstSub = subcategories.value.find(sub => sub.parentType === selectedAssetType.value);
+  const firstSub = subcategories.value.find(sub => sub.parentType === selectedAssetCategory.value);
   if (firstSub) {
     selectedSubcategory.value = firstSub.id;
   }
@@ -277,7 +280,7 @@ onLoad((options) => {
 
 // 计算属性：当前显示的大类下的子类列表
 const currentSubcategories = computed(() => {
-  return subcategories.value.filter(sub => sub.parentType === selectedAssetType.value);
+  return subcategories.value.filter(sub => sub.parentType === selectedAssetCategory.value);
 });
 
 // 计算属性：当前子类可用的机构
@@ -305,7 +308,7 @@ const accountNamePlaceholder = computed(() => {
 
 // 方法：切换大类
 const selectAssetType = (typeId) => {
-  selectedAssetType.value = typeId;
+  selectedAssetCategory.value = typeId;
   const firstSub = subcategories.value.find(sub => sub.parentType === typeId);
   selectedSubcategory.value = firstSub ? firstSub.id : '';
   assetForm.value.institution = ''; // 重置机构
@@ -330,8 +333,8 @@ const saveAsset = () => {
   }
 
   const payload = {
-    group_type: selectedAssetType.value === 'debt' ? 'LIABILITY' : 'ASSET', // 简单映射
-    type: selectedAssetType.value,
+    group_type: selectedAssetCategory.value === 'debt' ? 'LIABILITY' : 'ASSET', // 简单映射
+    category: selectedAssetCategory.value,
     subcategory: selectedSubcategory.value,
     ...assetForm.value
   };
@@ -416,10 +419,10 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   position: relative;
   
   .icon-circle {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 16px;
-    background-color: $tag-inactive;
+    background-color: $tag-inactive; // 默认浅色背景
     display: flex;
     align-items: center;
     justify-content: center;
@@ -431,6 +434,15 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
       height: 28px;
       opacity: 0.6;
     }
+    
+    /* 选中状态的图标容器 */
+    &.active {
+      background-color: $primary-color; // 选中后使用主题色
+      
+      .type-icon {
+        opacity: 1;
+      }
+    }
   }
   
   .type-text {
@@ -438,23 +450,9 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
     color: $text-sub;
     font-weight: 500;
   }
-  
-  .active-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: $primary-color;
-    margin-top: 4px;
-  }
-  
+
   /* 选中状态 */
   &.active {
-    .icon-circle {
-      background-color: $primary-light;
-      .type-icon {
-        opacity: 1;
-      }
-    }
     .type-text {
       color: $primary-color;
       font-weight: 700;

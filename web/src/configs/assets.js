@@ -1,48 +1,51 @@
 // 资产模块配置
 
-// 资产类型
 export const ASSET_TYPES = {
-  BANK: 'bank',
-  FUND: 'fund',
-  STOCK: 'stock',
-  REAL_ESTATE: 'real_estate',
-  CASH: 'cash',
-  OTHER: 'other'
+  ASSET: 'asset',
+  LIABILITY: 'liability'
 };
 
-// 资产类型显示配置
-export const ASSET_TYPE_DISPLAY = {
-  [ASSET_TYPES.BANK]: {
-    name: '银行账户',
-    icon: '/static/icons/bank.png',
-    color: '#4a90e2'
+export const ASSET_CATEGORY = {
+  LIQUID: 'LIQUID',
+  INVEST: 'INVEST',
+  FIXED: 'FIXED',
+  OTHER: 'OTHER_ASSET',
+  LOAN: 'LOAN'
+};
+
+export const ASSET_CATEGORY_DISPLAY = {
+  [ASSET_CATEGORY.LIQUID]: {
+    name: '流动资产',
+    icon: '/static/assets/cash.png',
+    iconGray: '/static/assets/cash-gray.png',
+    color: '#5e6266ff'
   },
-  [ASSET_TYPES.FUND]: {
-    name: '基金',
-    icon: '/static/icons/fund.png',
+  [ASSET_CATEGORY.INVEST]: {
+    name: '投资理财',
+    icon: '/static/assets/invest.png',
+    iconGray: '/static/assets/invest-gray.png',
     color: '#50e3c2'
   },
-  [ASSET_TYPES.STOCK]: {
-    name: '股票',
-    icon: '/static/icons/stock.png',
+  [ASSET_CATEGORY.FIXED]: {
+    name: '固定资产',
+    icon: '/static/assets/fixed.png',
+    iconGray: '/static/assets/fixed-gray.png',
     color: '#f5a623'
   },
-  [ASSET_TYPES.REAL_ESTATE]: {
-    name: '房产',
-    icon: '/static/icons/real_estate.png',
-    color: '#7ed321'
-  },
-  [ASSET_TYPES.CASH]: {
-    name: '现金',
-    icon: '/static/icons/cash.png',
+  [ASSET_CATEGORY.OTHER]: {
+    name: '其他资产',
+    icon: '/static/assets/receipt.png',
+    iconGray: '/static/assets/receipt-gray.png',
     color: '#9013fe'
   },
-  [ASSET_TYPES.OTHER]: {
-    name: '其他',
-    icon: '/static/icons/other.png',
-    color: '#bd10e0'
+  [ASSET_CATEGORY.LOAN]: {
+    name: '负债贷款',
+    icon: '/static/assets/debt.png',
+    iconGray: '/static/assets/debt-gray.png',
+    color: '#9013fe'
   }
 };
+
 
 // 资产添加表单配置
 export const ASSET_FORM_CONFIG = {

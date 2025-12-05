@@ -37,10 +37,12 @@ const props = defineProps({
   data: { type: Object, required: true }
 });
 
+// 定义事件
+const emit = defineEmits(['add-asset']);
+
 const navigateToAddAsset = () => {
-  uni.navigateTo({
-    url: '/pages/assets/add'
-  });
+  // 发出添加资产事件，让父组件处理跳转逻辑
+  emit('add-asset');
 };
 
 const animateTrigger = ref(false);

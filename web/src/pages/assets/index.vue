@@ -36,7 +36,7 @@ import AssetList from '../../components/assets/AssetList.vue';
 // === 数据源 ===
 const assets = ref([
   { 
-    id: 'cash', 
+    id: 'LIQUID', 
     name: "流动资产", 
     total: "¥ 50,000", 
     color1: "#4facfe", color2: "#00f2fe",
@@ -47,7 +47,7 @@ const assets = ref([
     ]
   },
   { 
-    id: 'invest', 
+    id: 'INVEST', 
     name: "投资理财", 
     total: "¥ 1,200,000", 
     color1: "#1e5c4e", color2: "#2a806c",
@@ -58,7 +58,7 @@ const assets = ref([
     ]
   },
   { 
-    id: 'fixed', 
+    id: 'FIXED', 
     name: "固定资产", 
     total: "¥ 3,000,000", 
     color1: "#e3c46e", color2: "#daa520",
@@ -69,7 +69,7 @@ const assets = ref([
     ]
   },
   { 
-    id: 'other', 
+    id: 'OTHER_ASSET', 
     name: "其他资产", 
     total: "¥ 150,000", 
     color1: "#833ab4", color2: "#fd1d1d",
@@ -80,7 +80,7 @@ const assets = ref([
     ]
   },
   { 
-    id: 'debt', 
+    id: 'LOAN', 
     name: "负债贷款", 
     total: "¥ -1,200,000", 
     color1: "#ff512f", color2: "#dd2476",
@@ -102,20 +102,17 @@ const currentAssetData = computed(() => {
 const handleAddAsset = () => {
   const currentAsset = assets.value[currentIndex.value];
   console.log(`添加${currentAsset.name}类型的资产`);
-  // 这里可以添加跳转或弹窗逻辑
+    
+  const assetType = currentAsset.id;
+  
+  // 跳转到添加资产页面并传递资产类型
+  uni.navigateTo({
+    url: `/pages/assets/add?type=${assetType}`
+  });
 };
 </script>
 
 <style lang="scss">
-/* 主题色变量 */
-$primary: #2a806c;
-$primary-dark: #469e88;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-500: #6b7280;
-$gray-600: #4b5563;
-$gray-800: #1f2937;
-$bg-page: #F9F8F4;
 
 /* 全局变量与基础样式 */
 page {
