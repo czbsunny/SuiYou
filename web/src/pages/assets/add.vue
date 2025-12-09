@@ -49,17 +49,14 @@
             <!-- 3. 机构/平台选择 (根据子类联动) -->
             <block v-if="selectedSubcategory && availableInstitutions.length > 0">
               <view class="inner-divider"></view>
-              <view class="tags-container">
-                <view class="tags-label">所属机构</view>
-                <view class="tags-wrapper">
-                  <view 
-                    v-for="inst in availableInstitutions" 
-                    :key="inst.id"
-                    class="tag-item"
-                    :class="{ active: assetForm.institution === inst.id }"
-                    @click="assetForm.institution = inst.id"
-                  >
-                    {{ inst.name }}
+              <view class="form-row">
+                <text class="row-label">所属机构</text>
+                <view 
+                  class="picker" 
+                  @click="openInstitutionSelect"
+                >
+                  <view class="row-input">
+                    {{ selectedInstitution ? selectedInstitution.name : '请选择机构' }}
                   </view>
                 </view>
               </view>
@@ -158,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
 
@@ -239,6 +236,7 @@ const subcategoryFields = ref({
 // 默认选中第一个资产类别
 const selectedAssetCategory = ref(assetCategories.value[0]?.id || 'LIQUID');
 const selectedSubcategory = ref('');
+const selectedInstitution = ref(null);
 const assetForm = ref({
   institution: '',
   accountName: '',
@@ -276,6 +274,17 @@ onLoad((options) => {
   if (firstSub) {
     selectedSubcategory.value = firstSub.id;
   }
+  
+  // 监听机构选择事件
+  uni.$on('institutionSelected', (institution) => {
+    selectedInstitution.value = institution;
+    assetForm.value.institution = institution.id;
+  });
+});
+
+// 页面卸载时移除事件监听
+onUnmounted(() => {
+  uni.$off('institutionSelected');
 });
 
 // 计算属性：当前显示的大类下的子类列表
@@ -318,6 +327,15 @@ const selectAssetType = (typeId) => {
 const selectSubcategory = (subId) => {
   selectedSubcategory.value = subId;
   assetForm.value.institution = ''; // 重置机构
+  selectedInstitution.value = null;
+};
+
+// 打开机构选择页面
+const openInstitutionSelect = () => {
+  // 跳转到机构选择页面，并传递机构列表
+  uni.navigateTo({
+    url: `/pages/assets/institution-select?institutions=${encodeURIComponent(JSON.stringify(availableInstitutions.value))}`
+  });
 };
 
 // 方法：保存
@@ -565,6 +583,13 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   border-radius: 8px;
   padding: 12px;
   box-sizing: border-box;
+}
+
+.picker {
+  flex: 1;
+  font-size: 15px;
+  color: $text-main;
+  text-align: right;
 }
 
 .mb-8 {

@@ -56,6 +56,15 @@
       }
     },
     {
+      "path": "pages/assets/institution-select",
+      "style": {
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "navigationBarTitleText": "选择机构",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",
