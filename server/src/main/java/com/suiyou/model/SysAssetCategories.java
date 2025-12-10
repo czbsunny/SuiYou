@@ -23,6 +23,9 @@ public class SysAssetCategories {
     @Column(name = "icon_url", length = 255)
     private String iconUrl;
     
+    @Column(name = "description", length = 1023)
+    private String description;
+    
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;
     

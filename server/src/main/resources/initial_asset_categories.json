@@ -7,11 +7,11 @@
     "sortOrder": 10,
     "color": "#1677FF",
     "children": [
-      { "code": "BANK_CARD", "name": "银行卡", "iconUrl": "icon-card", "sortOrder": 1 },
-      { "code": "E_WALLET", "name": "微信", "iconUrl": "icon-wechat", "sortOrder": 2 },
-      { "code": "E_WALLET", "name": "支付宝", "iconUrl": "icon-alipay", "sortOrder": 3 },
-      { "code": "CASH", "name": "现金", "iconUrl": "icon-cash", "sortOrder": 4 },
-      { "code": "CUSTOM_LIQUID", "name": "其他流动资产", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "DEBIT_CARD", "name": "银行储蓄卡", "iconUrl": "icon-debit-card", "sortOrder": 1, "description": "活期存款" },
+      { "code": "E_WALLET", "name": "网络钱包余额", "iconUrl": "icon-wallet", "sortOrder": 2, "description": "不产生收益的零钱 (微信零钱、支付宝余额)" },
+      { "code": "CASH_PLUS", "name": "活期理财",  "iconUrl": "icon-cash-plus", "sortOrder": 3,"description": "余额宝、零钱通、朝朝宝等可随时消费的生息资产" },
+      { "code": "CASH", "name": "现金", "iconUrl": "icon-money", "sortOrder": 4, "description": "手头持有的纸币、硬币" },
+      { "code": "CUSTOM_LIQUID", "name": "其他流动资产", "iconUrl": "icon-liquid-asset", "sortOrder": 99, "description": "其他流动资产" }
     ]
   },
   {
@@ -22,16 +22,17 @@
     "sortOrder": 20,
     "color": "#FF5722",
     "children": [
-      { "code": "TIME_DEPOSIT", "name": "银行定存", "iconUrl": "icon-deposit", "sortOrder": 1 },
-      { "code": "FUND", "name": "公募基金", "iconUrl": "icon-fund", "sortOrder": 2 },
-      { "code": "STOCK", "name": "股票", "iconUrl": "icon-stock", "sortOrder": 3 },
-      { "code": "BANK_PRODUCT", "name": "银行理财", "iconUrl": "icon-bank-product", "sortOrder": 4 },
-      { "code": "GOLD_ACCUMULATION", "name": "积存金", "iconUrl": "icon-gold-paper", "sortOrder": 5 },
-      { "code": "PHYSICAL_GOLD", "name": "实物黄金", "iconUrl": "icon-gold-bar", "sortOrder": 6 },
-      { "code": "PORTFOLIO", "name": "投顾组合", "iconUrl": "icon-pie-chart", "sortOrder": 7 },
-      { "code": "PRIVATE_FUND", "name": "私募基金", "iconUrl": "icon-diamond-black", "sortOrder": 8 },
-      { "code": "CRYPTO", "name": "加密货币", "iconUrl": "icon-bitcoin", "sortOrder": 9 },
-      { "code": "CUSTOM_INVEST", "name": "其他投资理财", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "TIME_DEPOSIT", "name": "银行定存", "iconUrl": "icon-deposit", "sortOrder": 1, "description": "定期存款、大额存单、结构性存款" },
+      { "code": "FUND", "name": "公募基金", "iconUrl": "icon-fund", "sortOrder": 2, "description": "股票基、混合基、债基、货币基金、商品类基金等" },
+      { "code": "STOCK", "name": "股票", "iconUrl": "icon-stock", "sortOrder": 3, "description": "A股、港美股、北交所" },
+      { "code": "BANK_PRODUCT", "name": "银行理财", "iconUrl": "icon-bank-product", "sortOrder": 4, "description": "R1-R5级的银行理财子公司产品" },
+      { "code": "GOLD_ACCUMULATION", "name": "积存金", "iconUrl": "icon-accu-gold", "sortOrder": 5, "description": "银行积存金" },
+      { "code": "PHYSICAL_GOLD", "name": "实物黄金", "iconUrl": "icon-gold", "sortOrder": 6, "description": "实物金条、金饰等" },
+      { "code": "PORTFOLIO", "name": "投顾组合", "iconUrl": "icon-portfolio", "sortOrder": 7, "description": "金融平台的基金组合策略" },
+      { "code": "PRIVATE_FUND", "name": "私募证券基金", "iconUrl": "icon-private-fund", "sortOrder": 8, "description": "高净值理财、资管计划" },
+      { "code": "SAVING_INSURANCE", "name": "储蓄型保险", "iconUrl": "icon-insurance", "sortOrder": 9,"description": "年金险、增额终身寿、万能险" },
+      { "code": "CRYPTO", "name": "加密货币", "iconUrl": "icon-crypto", "sortOrder": 10, "description": "BTC, ETH, USDT等" },
+      { "code": "CUSTOM_INVEST", "name": "其他投资理财", "iconUrl": "icon-invest-asset", "sortOrder": 99, "description": "其他投资理财" }
     ]
   },
   {
@@ -42,10 +43,12 @@
     "sortOrder": 30,
     "color": "#FAAD14",
     "children": [
-      { "code": "HOUSE", "name": "房产", "iconUrl": "icon-home", "sortOrder": 1 },
-      { "code": "CAR", "name": "汽车", "iconUrl": "icon-car", "sortOrder": 2 },
-      { "code": "JEWELRY", "name": "珠宝首饰", "iconUrl": "icon-diamond", "sortOrder": 3 },
-      { "code": "CUSTOM_FIXED", "name": "其他固定资产", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "REAL_ESTATE", "name": "房产/不动产", "iconUrl": "icon-real-estate", "sortOrder": 1, "description": "住宅、商铺、公寓、自用车位" },
+      { "code": "VEHICLE", "name": "车辆", "iconUrl": "icon-vehicle", "sortOrder": 2, "description": "私家车、摩托车、新能源车" },
+      { "code": "JEWELRY", "name": "名表/珠宝/奢品", "iconUrl": "icon-jewelry", "sortOrder": 3, "description": "钻戒、名表、名牌包、翡翠玉石" },
+      { "code": "COLLECTIBLES", "name": "文玩/收藏", "iconUrl": "icon-collectibles", "sortOrder": 4, "description": "古董、字画、陈年茅台、潮玩手办、集邮" },
+      { "code": "EQUIPMENT", "name": "昂贵设备", "iconUrl": "icon-equipment", "sortOrder": 5, "description": "摄影器材、高端电脑、乐器" },
+      { "code": "CUSTOM_FIXED", "name": "其他固定资产", "iconUrl": "icon-fixed-asset", "sortOrder": 99, "description": "其他固定资产" }
     ]
   },
   {
@@ -56,28 +59,31 @@
     "sortOrder": 40, 
     "color": "#13C2C2", 
     "children": [
-      { "code": "HOUSING_FUND", "name": "住房公积金", "iconUrl": "icon-house-fund", "sortOrder": 1 },
-      { "code": "SOCIAL_SECURITY", "name": "社保余额", "iconUrl": "icon-card-id", "sortOrder": 2 },
-      { "code": "MEDICAL_INSURANCE", "name": "医保余额", "iconUrl": "icon-medical", "sortOrder": 3 },
-      { "code": "PRIVATE_PENSION", "name": "个人养老金", "iconUrl": "icon-pension", "sortOrder": 4 },
-      { "code": "RECEIVABLE", "name": "借出款", "iconUrl": "icon-handshake", "sortOrder": 5 },
-      { "code": "OTHER_CUSTOM_ASSET", "name": "自定义资产", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "HOUSING_FUND", "name": "住房公积金", "iconUrl": "icon-housing-fund", "sortOrder": 1, "description": "公积金中心管理的个人账户余额" },
+      { "code": "MEDICAL_INSURANCE", "name": "医保个人账户", "iconUrl": "icon-medical-insurance", "sortOrder": 2, "description": "社保卡/医保电子凭证里的可用余额" },
+      { "code": "PENSION_ACCOUNT", "name": "社保养老账户", "iconUrl": "icon-pension-account", "sortOrder": 3, "description": "基本养老保险个人账户累计储存额" },
+      { "code": "PRIVATE_PENSION", "name": "个人养老金", "iconUrl": "icon-private-pension", "sortOrder": 4, "description": "个人养老金资金账户" },
+      { "code": "CORP_ANNUITY", "name": "企业/职业年金", "iconUrl": "icon-corp-annuity", "sortOrder": 5, "description": "公司缴纳的补充养老金" },
+      { "code": "RECEIVABLE", "name": "借出款/应收", "iconUrl": "icon-receivable", "sortOrder": 6, "description": "借给朋友、公司的款项" },
+      { "code": "OTHER_CUSTOM_ASSET", "name": "自定义资产", "iconUrl": "icon-other-asset", "sortOrder": 99, "description": "自定义资产" }
     ]
   },
   {
     "code": "LOAN",
-    "name": "负债贷款",
+    "name": "负债管理",
     "groupType": "LIABILITY",
     "iconUrl": "icon-loan",
     "sortOrder": 50,
     "color": "#722ED1",
     "children": [
-      { "code": "MORTGAGE", "name": "房贷", "iconUrl": "icon-house-loan", "sortOrder": 1 },
-      { "code": "CAR_LOAN", "name": "车贷", "iconUrl": "icon-car-loan", "sortOrder": 2 },
-      { "code": "RENOVATION_LOAN", "name": "装修贷", "iconUrl": "icon-paint", "sortOrder": 3 },
-      { "code": "BUSINESS_LOAN", "name": "经营贷", "iconUrl": "icon-shop", "sortOrder": 4 },
-      { "code": "NET_LOAN", "name": "网贷", "iconUrl": "icon-warning", "sortOrder": 5 },
-      { "code": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "icon-other", "sortOrder": 99 }
+      { "code": "MORTGAGE", "name": "房贷", "iconUrl": "icon-house-loan", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "code": "CAR_LOAN", "name": "车贷", "iconUrl": "icon-car-loan", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "code": "CREDIT_CARD", "name": "信用卡", "iconUrl": "icon-credit-card", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
+      { "code": "INTERNET_CREDIT", "name": "互联网信贷/消费", "iconUrl": "icon-mobile-pay-loan", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "code": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "icon-consumer-loan", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
+      { "code": "BUSINESS_LOAN", "name": "经营贷", "iconUrl": "icon-business-loan", "sortOrder": 6, "description": "个体户或企业主经营周转贷款" },
+      { "code": "PAYABLE", "name": "应付款/欠款", "iconUrl": "icon-payable", "sortOrder": 7, "description": "欠朋友、家人的私人借款" },
+      { "code": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "icon-other-loan", "sortOrder": 99, "description": "其他贷款" }
     ]
   }
 ]
