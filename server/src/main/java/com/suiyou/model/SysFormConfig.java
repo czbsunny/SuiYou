@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "sys_form_configs")
+@Table(name = "sys_form_config")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SysFormConfig {
     

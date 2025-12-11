@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "sys_asset_categories")
+@Table(name = "sys_asset_category")
 @Data
-public class SysAssetCategories {
+public class SysAssetCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

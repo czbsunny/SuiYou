@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "goal_account_relations", uniqueConstraints = {
+@Table(name = "goal_account_relation", uniqueConstraints = {
     @UniqueConstraint(name = "uk_goal_account", columnNames = {"goalId", "accountId"})
 })
 @Data

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "allocations")
+@Table(name = "allocation")
 @Data
 public class Allocation {
     @Id

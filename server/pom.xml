@@ -6,17 +6,18 @@
   <groupId>com.suiyou</groupId>
   <artifactId>server</artifactId>
   <version>1.0.0</version>
-
+  <properties>
+      <java.version>17</java.version>
+      <maven.compiler.source>${java.version}</maven.compiler.source>
+      <maven.compiler.target>${java.version}</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.6</version>
+    <version>3.2.0</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
-
-  <properties>
-    <java.version>17</java.version>
-  </properties>
 
   <dependencies>
     <!-- Spring Boot 核心 -->
@@ -89,6 +90,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.2.0</version>
       </plugin>
     </plugins>
   </build>

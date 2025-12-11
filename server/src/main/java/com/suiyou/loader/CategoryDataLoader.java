@@ -3,8 +3,8 @@ package com.suiyou.loader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suiyou.dto.account.CategoryInitDTO;
-import com.suiyou.model.SysAssetCategories;
-import com.suiyou.repository.SysAssetCategoriesRepository;
+import com.suiyou.model.SysAssetCategory;
+import com.suiyou.repository.SysAssetCategoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ import java.util.List;
 public class CategoryDataLoader implements CommandLineRunner {
 
     @Autowired
-    private SysAssetCategoriesRepository repository;
+    private SysAssetCategoryRepository repository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -41,7 +41,7 @@ public class CategoryDataLoader implements CommandLineRunner {
 
         // 收集所有需要存在的分类code
         List<String> expectedCodes = new ArrayList<>();
-        List<SysAssetCategories> entitiesToSave = new ArrayList<>();
+        List<SysAssetCategory> entitiesToSave = new ArrayList<>();
 
         // 处理一级分类和二级分类
         for (CategoryInitDTO parent : dtos) {
@@ -49,7 +49,7 @@ public class CategoryDataLoader implements CommandLineRunner {
             expectedCodes.add(parent.getCode());
             
             // 转换并保存一级分类
-            SysAssetCategories parentEntity = processCategory(parent, null);
+            SysAssetCategory parentEntity = processCategory(parent, null);
             entitiesToSave.add(parentEntity);
 
             // 处理二级分类
@@ -62,7 +62,7 @@ public class CategoryDataLoader implements CommandLineRunner {
                     expectedCodes.add(child.getCode());
                     
                     // 转换并保存二级分类
-                    SysAssetCategories childEntity = processCategory(child, parent.getCode());
+                    SysAssetCategory childEntity = processCategory(child, parent.getCode());
                     entitiesToSave.add(childEntity);
                 }
             }
@@ -73,9 +73,9 @@ public class CategoryDataLoader implements CommandLineRunner {
         
         // 可选：删除数据库中存在但JSON文件中不存在的系统分类
         // 注意：如果有用户自定义分类关联到这些系统分类，可能需要额外处理
-        List<SysAssetCategories> existingSystemCategories = repository.findAllByIsSystem(true);
+        List<SysAssetCategory> existingSystemCategories = repository.findAllByIsSystem(true);
         List<String> existingCodes = existingSystemCategories.stream()
-            .map(SysAssetCategories::getCode)
+            .map(SysAssetCategory::getCode)
             .toList();
         
         List<String> codesToDelete = existingCodes.stream()
@@ -93,9 +93,9 @@ public class CategoryDataLoader implements CommandLineRunner {
     /**
      * 处理单个分类：如果存在则更新，不存在则创建
      */
-    private SysAssetCategories processCategory(CategoryInitDTO dto, String parentCode) {
+    private SysAssetCategory processCategory(CategoryInitDTO dto, String parentCode) {
         // 根据code查询现有分类
-        SysAssetCategories existingEntity = repository.findByCode(dto.getCode());
+        SysAssetCategory existingEntity = repository.findByCode(dto.getCode());
         
         if (existingEntity != null) {
             // 更新现有分类的属性
@@ -113,8 +113,8 @@ public class CategoryDataLoader implements CommandLineRunner {
         }
     }
 
-    private SysAssetCategories convert(CategoryInitDTO dto, String parentCode) {
-        SysAssetCategories entity = new SysAssetCategories();
+    private SysAssetCategory convert(CategoryInitDTO dto, String parentCode) {
+        SysAssetCategory entity = new SysAssetCategory();
         entity.setCode(dto.getCode());
         entity.setName(dto.getName());
         entity.setGroupType(dto.getGroupType());

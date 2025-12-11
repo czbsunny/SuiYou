@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "sys_category_institution_relations", uniqueConstraints = {
+@Table(name = "sys_category_institution_relation", uniqueConstraints = {
     @UniqueConstraint(name = "uk_category_institution", columnNames = {"category_id", "institution_id"})
 })
 @Data
@@ -26,7 +26,7 @@ public class SysCategoryInstitutionRelation {
     // 外键关系
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private SysAssetCategories sysAssetCategories;
+    private SysAssetCategory sysAssetCategory;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "institution_id", referencedColumnName = "id", insertable = false, updatable = false)

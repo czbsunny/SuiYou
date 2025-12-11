@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "sys_exchange_rates")
+@Table(name = "sys_exchange_rate")
 @Data
 @IdClass(SysExchangeRateId.class)
 public class SysExchangeRate {
