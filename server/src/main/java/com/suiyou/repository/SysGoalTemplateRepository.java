@@ -11,4 +11,13 @@ import java.util.Optional;
 public interface SysGoalTemplateRepository extends JpaRepository<SysGoalTemplate, Long> {
     List<SysGoalTemplate> findByCategoryOrderBySortOrderAsc(String category);
     Optional<SysGoalTemplate> findBySubCategory(String subCategory);
+    
+    // 根据模板编码查询
+    SysGoalTemplate findByTemplateCode(String templateCode);
+    
+    // 根据模板编码列表批量查询
+    List<SysGoalTemplate> findByTemplateCodeIn(List<String> templateCodes);
+    
+    // 根据模板编码列表批量删除
+    void deleteByTemplateCodeIn(List<String> templateCodes);
 }

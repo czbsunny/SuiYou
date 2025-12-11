@@ -18,7 +18,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class CategoryDataLoader implements CommandLineRunner {
+public class AssetDataLoader implements CommandLineRunner {
 
     @Autowired
     private SysAssetCategoryRepository repository;
@@ -26,7 +26,7 @@ public class CategoryDataLoader implements CommandLineRunner {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("classpath:initial_asset_categories.json")
+    @Value("classpath:sys_asset_category_init.json")
     private Resource jsonResource;
 
     @Override

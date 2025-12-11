@@ -5,6 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.springframework.data.annotation.LastModifiedDate;
+
 @Entity
 @Table(name = "allocation")
 @Data
@@ -33,13 +35,7 @@ public class Allocation {
     @Column(nullable = false, columnDefinition = "decimal(19,4)")
     private BigDecimal amount;
     
+    @LastModifiedDate
     @Column(name = "allocation_time", nullable = false)
     private LocalDateTime allocationTime;
-    
-    // 快照/记录
-    private String memo;
-    
-    // 时间戳
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
 }

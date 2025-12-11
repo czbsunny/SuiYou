@@ -7,7 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "goal")
+@Table(name = "goal", indexes = {
+    @Index(name = "idx_deadline", columnList = "deadline"),
+    @Index(name = "idx_user_status", columnList = "user_id, status")
+})
 @Data
 public class Goal {
     @Id
@@ -15,6 +18,9 @@ public class Goal {
     private Long id;
     
     // 归属与权限
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+    
     @Column(name = "family_id", nullable = false)
     private Long familyId;
     
@@ -24,45 +30,44 @@ public class Goal {
     @Column(name = "visible_scope", nullable = false, columnDefinition = "varchar(20) default 'PRIVATE'")
     private String visibleScope = "PRIVATE";
     
-    // 核心分类
-    @Column(nullable = false)
-    private String category;
-    
-    @Column(name = "sub_category", nullable = false)
-    private String subCategory;
-    
-    // 展示信息
-    @Column(nullable = false, length = 50)
+    // 目标基本信息
+    @Column(nullable = false, length = 128, name = "name")
     private String name;
     
-    private String icon;
-    
-    private String color;
-    
-    // 金额管理
-    @Column(name = "target_amount", nullable = false, columnDefinition = "decimal(19,4)")
+    @Column(name = "target_amount", nullable = false, columnDefinition = "decimal(18,2)")
     private BigDecimal targetAmount;
     
-    // 进度快照
-    @Column(name = "current_amount", nullable = false, columnDefinition = "decimal(19,4) default '0.0000'")
-    private BigDecimal currentAmount = BigDecimal.ZERO;
-    
-    // 时间规划
-    private String horizon = "SHORT";
-    
-    @Column(name = "start_date", nullable = false, columnDefinition = "date default CURRENT_DATE")
-    private LocalDate startDate;
-    
+    @Column(name = "deadline", columnDefinition = "date DEFAULT NULL")
     private LocalDate deadline;
     
+    // 进度信息 (核心高频字段)
+    @Column(name = "current_amount", nullable = false, columnDefinition = "decimal(18,2) default '0.00'")
+    private BigDecimal currentAmount = BigDecimal.ZERO;
+    
+    @Column(name = "spent_amount", nullable = false, columnDefinition = "decimal(18,2) default '0.00'")
+    private BigDecimal spentAmount = BigDecimal.ZERO;
+    
+    @Column(name = "progress_percent", nullable = false, columnDefinition = "decimal(5,2) default '0.00'")
+    private BigDecimal progressPercent = BigDecimal.ZERO;
+    
     // 状态管理
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Integer status = 1;
+    @Column(name = "start_date", nullable = false, columnDefinition = "date")
+    private LocalDate startDate;
+    
+    @Column(name = "status", nullable = false, length = 32, columnDefinition = "varchar(32) default 'ON_GOING'")
+    private String status = "ON_GOING";
+    
+    @Column(name = "complete_date", columnDefinition = "date DEFAULT NULL")
+    private LocalDate completeDate;
+    
+    // 扩展信息
+    @Column(name = "wizard_result_snapshot", columnDefinition = "json DEFAULT NULL")
+    private String wizardResultSnapshot;
     
     // 时间戳
-    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
+    @Column(name = "created_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
     
-    @Column(name = "updated_at", nullable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 }
