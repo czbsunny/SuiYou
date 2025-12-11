@@ -46,7 +46,9 @@ public class AccountServiceImpl implements AccountService {
         if ("LIABILITY".equals(createAccountDTO.getGroupType()) && balance.compareTo(BigDecimal.ZERO) > 0) {
             balance = balance.negate();
         }
-        account.setBalance(balance);
+        account.setTotalBalance(balance);
+        account.setFrozenBalance(BigDecimal.ZERO);
+        account.setAvailableBalance(balance);
         
         // 设置用户ID和家庭ID
         account.setOwnerId(userId);
