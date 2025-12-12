@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Entity
 @Table(name = "transaction")
@@ -45,12 +44,13 @@ public class Transaction {
     @Column(name = "category_id")
     private Long categoryId;
     
-    // 元数据
+    @Column(name = "description", nullable = false, length = 255)
     private String description;
     
-    @Column(columnDefinition = "json")
-    private Map<String, Object> tags;
-    
+    @Column(name = "tags", columnDefinition = "json")
+    private String tags;
+
+    @Column(name = "location", length = 255)
     private String location;
     
     // 时间戳

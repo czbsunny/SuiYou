@@ -2,6 +2,7 @@ package com.suiyou.repository;
 
 import com.suiyou.model.SysFormConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -10,6 +11,7 @@ public interface SysFormConfigRepository extends JpaRepository<SysFormConfig, Lo
      * 查询当前最大的版本号
      * @return 最大版本号
      */
+    @Query("SELECT MAX(sfc.version) FROM SysFormConfig sfc")
     Long findMaxVersion();
     
     /**

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -141,7 +142,8 @@ public class GoalDataLoader implements CommandLineRunner {
     }
 
     private SysGoalTemplate processTemplate(GoalTemplateInitDTO dto) {
-        SysGoalTemplate entity = templateRepository.findByTemplateCode(dto.getTemplateCode());
+        Optional<SysGoalTemplate> optionalEntity = templateRepository.findByTemplateCode(dto.getTemplateCode());
+        SysGoalTemplate entity = optionalEntity.orElse(null);
         if (entity == null) {
             entity = new SysGoalTemplate();
             entity.setTemplateCode(dto.getTemplateCode());

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface GoalRepository extends JpaRepository<Goal, Long> {
-    List<Goal> findByFamilyIdAndStatus(Long familyId, Integer status);
+    List<Goal> findByFamilyIdAndStatus(Long familyId, String status);
     List<Goal> findByCreatorId(Long creatorId);
     List<Goal> findByFamilyId(Long familyId);
 }

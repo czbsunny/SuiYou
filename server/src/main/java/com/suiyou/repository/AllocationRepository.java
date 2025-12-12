@@ -2,6 +2,7 @@ package com.suiyou.repository;
 
 import com.suiyou.model.Allocation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,8 +29,10 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long> {
     List<Allocation> findByVisibleScope(String visibleScope);
     
     // 统计目标的总分配金额
+    @Query("SELECT SUM(a.amount) FROM Allocation a WHERE a.goalId = ?1")
     BigDecimal sumAmountByGoalId(Long goalId);
     
     // 统计账户的总分配金额
+    @Query("SELECT SUM(a.amount) FROM Allocation a WHERE a.accountId = ?1")
     BigDecimal sumAmountByAccountId(Long accountId);
 }

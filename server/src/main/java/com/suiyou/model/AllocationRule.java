@@ -35,7 +35,7 @@ public class AllocationRule {
     @Column(precision = 5, scale = 4, columnDefinition = "decimal(5,4) comment '比例因子 (用于 RATIO_INCOME，如 0.10 代表 10%)'")
     private BigDecimal ratio;
 
-    @Column(length = 64, columnDefinition = "varchar(64) comment 'Cron表达式 (用于 SCHEDULE，如 \'0 0 1 * * ?\')'")
+    @Column(length = 64, columnDefinition = "varchar(64) comment 'Cron表达式 (用于 SCHEDULE，如 \"0 0 1 * * ?\")'")
     private String cronExpression;
 
     // --- 状态控制 ---
