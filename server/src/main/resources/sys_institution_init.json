@@ -1,0 +1,182 @@
+[
+  {
+    "instCode": "ICBC",
+    "instName": "中国工商银行",
+    "shortName": "工商银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/icbc.png",
+    "themeColor": "#C71B24",
+    "sortOrder": 10
+  },
+  {
+    "instCode": "CCB",
+    "instName": "中国建设银行",
+    "shortName": "建设银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/ccb.png",
+    "themeColor": "#094C99",
+    "sortOrder": 20
+  },
+  {
+    "instCode": "ABC",
+    "instName": "中国农业银行",
+    "shortName": "农业银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/abc.png",
+    "themeColor": "#009174",
+    "sortOrder": 30
+  },
+  {
+    "instCode": "BOC",
+    "instName": "中国银行",
+    "shortName": "中国银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/boc.png",
+    "themeColor": "#B71C1E",
+    "sortOrder": 40
+  },
+  {
+    "instCode": "BOCOM",
+    "instName": "交通银行",
+    "shortName": "交通银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/bocom.png",
+    "themeColor": "#00367A",
+    "sortOrder": 50
+  },
+  {
+    "instCode": "PSBC",
+    "instName": "中国邮政储蓄银行",
+    "shortName": "邮储银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/psbc.png",
+    "themeColor": "#007E3E",
+    "sortOrder": 60
+  },
+  {
+    "instCode": "CMB",
+    "instName": "招商银行",
+    "shortName": "招商银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/cmb.png",
+    "themeColor": "#C8102E",
+    "sortOrder": 70
+  },
+  {
+    "instCode": "PINGAN",
+    "instName": "平安银行",
+    "shortName": "平安银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/pab.png",
+    "themeColor": "#EA5504",
+    "sortOrder": 80
+  },
+  {
+    "instCode": "CIB",
+    "instName": "兴业银行",
+    "shortName": "兴业银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/cib.png",
+    "themeColor": "#00418F",
+    "sortOrder": 90
+  },
+  {
+    "instCode": "SPDB",
+    "instName": "上海浦东发展银行",
+    "shortName": "浦发银行",
+    "instType": "BANK",
+    "logoUrl": "/images/inst/spdb.png",
+    "themeColor": "#1D2088",
+    "sortOrder": 100
+  },
+  {
+    "instCode": "CITIC",
+    "instName": "中信证券",
+    "shortName": "中信证券",
+    "instType": "SECURITY",
+    "logoUrl": "/images/inst/citic_sec.png",
+    "themeColor": "#B20000",
+    "sortOrder": 200
+  },
+  {
+    "instCode": "CICC",
+    "instName": "中国国际金融股份有限公司",
+    "shortName": "中金公司",
+    "instType": "SECURITY",
+    "logoUrl": "/images/inst/cicc.png",
+    "themeColor": "#A1845A",
+    "sortOrder": 210
+  },
+  {
+    "instCode": "GTJA",
+    "instName": "国泰君安证券",
+    "shortName": "国泰君安",
+    "instType": "SECURITY",
+    "logoUrl": "/images/inst/gtja.png",
+    "themeColor": "#00539B",
+    "sortOrder": 220
+  },
+  {
+    "instCode": "HTSC",
+    "instName": "华泰证券",
+    "shortName": "华泰证券",
+    "instType": "SECURITY",
+    "logoUrl": "/images/inst/htsc.png",
+    "themeColor": "#448ACA",
+    "sortOrder": 230
+  },
+  {
+    "instCode": "CMS",
+    "instName": "招商证券",
+    "shortName": "招商证券",
+    "instType": "SECURITY",
+    "logoUrl": "/images/inst/cms.png",
+    "themeColor": "#E60012",
+    "sortOrder": 240
+  },
+  {
+    "instCode": "CL",
+    "instName": "中国人寿保险(集团)公司",
+    "shortName": "中国人寿",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/chinalife.png",
+    "themeColor": "#009944",
+    "sortOrder": 300
+  },
+  {
+    "instCode": "PA",
+    "instName": "中国平安保险(集团)股份有限公司",
+    "shortName": "中国平安",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/pingan_grp.png",
+    "themeColor": "#FF6600",
+    "sortOrder": 310
+  },
+  {
+    "instCode": "CPIC",
+    "instName": "中国太平洋保险(集团)股份有限公司",
+    "shortName": "中国太保",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/cpic.png",
+    "themeColor": "#005596",
+    "sortOrder": 320
+  },
+  {
+    "instCode": "PICC",
+    "instName": "中国人民保险集团股份有限公司",
+    "shortName": "中国人保",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/picc.png",
+    "themeColor": "#E60012",
+    "sortOrder": 330
+  },
+  {
+    "instCode": "TAIKANG",
+    "instName": "泰康保险集团",
+    "shortName": "泰康保险",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/taikang.png",
+    "themeColor": "#F37021",
+    "sortOrder": 340
+  }
+]
