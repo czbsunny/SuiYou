@@ -12,6 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@Order(4)
 public class GoalDataLoader implements CommandLineRunner {
 
     @Autowired
