@@ -12,6 +12,9 @@ public class RelationRuleConfigDTO {
     // 对应 JSON 中的 "specialCases": [ ... ]
     private List<SpecialCaseDTO> specialCases;
 
+    // 对应 JSON 中的 "categoryRules": [ "HOUSING_FUND": [...]] 中的每个对象
+    private Map<String, List<String>> categoryRules;
+    
     @Data
     public static class SpecialCaseDTO {
         private String instCode;

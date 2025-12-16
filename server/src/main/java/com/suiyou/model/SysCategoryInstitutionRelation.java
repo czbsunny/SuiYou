@@ -41,4 +41,9 @@ public class SysCategoryInstitutionRelation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inst_code", referencedColumnName = "inst_code", insertable = false, updatable = false)
     private SysInstitution sysInstitution;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

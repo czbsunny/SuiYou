@@ -11,8 +11,8 @@ public class SysAssetCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "code", nullable = false, unique = true, length = 50)
-    private String code;
+    @Column(name = "category_code", nullable = false, unique = true, length = 50)
+    private String categoryCode;
     
     @Column(name = "parent_code", length = 50)
     private String parentCode;

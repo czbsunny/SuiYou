@@ -1,112 +1,196 @@
 [
-  {
-    "instCode": "ICBC",
-    "instName": "中国工商银行",
-    "shortName": "工商银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/icbc.png",
-    "themeColor": "#C71B24",
-    "sortOrder": 10
-  },
-  {
-    "instCode": "CCB",
-    "instName": "中国建设银行",
-    "shortName": "建设银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/ccb.png",
-    "themeColor": "#094C99",
-    "sortOrder": 20
-  },
-  {
-    "instCode": "ABC",
-    "instName": "中国农业银行",
-    "shortName": "农业银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/abc.png",
-    "themeColor": "#009174",
-    "sortOrder": 30
-  },
-  {
-    "instCode": "BOC",
-    "instName": "中国银行",
-    "shortName": "中国银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/boc.png",
-    "themeColor": "#B71C1E",
-    "sortOrder": 40
-  },
-  {
-    "instCode": "CMB",
-    "instName": "招商银行",
-    "shortName": "招商银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/cmb.png",
-    "themeColor": "#C8102E",
-    "sortOrder": 50
-  },
-  {
-    "instCode": "PAB",
-    "instName": "平安银行",
-    "shortName": "平安银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/pab.png",
-    "themeColor": "#EA5504",
-    "sortOrder": 60
-  },
-  {
-    "instCode": "CITIC",
-    "instName": "中信证券",
-    "shortName": "中信证券",
-    "instType": "SECURITY",
-    "logoUrl": "/images/inst/citic_sec.png",
-    "themeColor": "#B20000",
-    "sortOrder": 200
-  },
-  {
-    "instCode": "CICC",
-    "instName": "中国国际金融股份有限公司",
-    "shortName": "中金公司",
-    "instType": "SECURITY",
-    "logoUrl": "/images/inst/cicc.png",
-    "themeColor": "#A1845A",
-    "sortOrder": 210
-  },
-  {
-    "instCode": "GTJA",
-    "instName": "国泰君安证券",
-    "shortName": "国泰君安",
-    "instType": "SECURITY",
-    "logoUrl": "/images/inst/gtja.png",
-    "themeColor": "#00539B",
-    "sortOrder": 220
-  },
-  {
-    "instCode": "PINGAN_GRP",
-    "instName": "中国平安保险(集团)股份有限公司",
-    "shortName": "中国平安",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/pingan_grp.png",
-    "themeColor": "#FF6600",
-    "sortOrder": 300
-  },
-  {
-    "instCode": "CHINALIFE",
-    "instName": "中国人寿保险(集团)公司",
-    "shortName": "中国人寿",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/chinalife.png",
-    "themeColor": "#009944",
-    "sortOrder": 310
-  },
-  {
-    "instCode": "CPIC",
-    "instName": "中国太平洋保险(集团)股份有限公司",
-    "shortName": "中国太保",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/cpic.png",
-    "themeColor": "#005596",
-    "sortOrder": 320
-  },
+
+  { "instCode": "ICBC", "instName": "中国工商银行", "shortName": "工商银行", "instType": "BANK", "themeColor": "#C71B24", "sortOrder": 1, "logoUrl": "/images/inst/icbc.png" },
+  { "instCode": "CCB", "instName": "中国建设银行", "shortName": "建设银行", "instType": "BANK", "themeColor": "#094C99", "sortOrder": 2, "logoUrl": "/images/inst/ccb.png" },
+  { "instCode": "ABC", "instName": "中国农业银行", "shortName": "农业银行", "instType": "BANK", "themeColor": "#009174", "sortOrder": 3, "logoUrl": "/images/inst/abc.png" },
+  { "instCode": "BOC", "instName": "中国银行", "shortName": "中国银行", "instType": "BANK", "themeColor": "#B71C1E", "sortOrder": 4, "logoUrl": "/images/inst/boc.png" },
+  { "instCode": "BOCOM", "instName": "交通银行", "shortName": "交通银行", "instType": "BANK", "themeColor": "#00367A", "sortOrder": 5, "logoUrl": "/images/inst/bocom.png" },
+  { "instCode": "PSBC", "instName": "中国邮政储蓄银行", "shortName": "邮储银行", "instType": "BANK", "themeColor": "#007E3E", "sortOrder": 6, "logoUrl": "/images/inst/psbc.png" },
+
+  { "instCode": "CMB", "instName": "招商银行", "shortName": "招商银行", "instType": "BANK", "themeColor": "#C8102E", "sortOrder": 11, "logoUrl": "/images/inst/cmb.png" },
+  { "instCode": "PAB", "instName": "平安银行", "shortName": "平安银行", "instType": "BANK", "themeColor": "#EA5504", "sortOrder": 12, "logoUrl": "/images/inst/pab.png" },
+  { "instCode": "CITIC_BANK", "instName": "中信银行", "shortName": "中信银行", "instType": "BANK", "themeColor": "#D7000F", "sortOrder": 13, "logoUrl": "/images/inst/citic.png" },
+  { "instCode": "SPDB", "instName": "上海浦东发展银行", "shortName": "浦发银行", "instType": "BANK", "themeColor": "#1D2088", "sortOrder": 14, "logoUrl": "/images/inst/spdb.png" },
+  { "instCode": "CIB", "instName": "兴业银行", "shortName": "兴业银行", "instType": "BANK", "themeColor": "#00418F", "sortOrder": 15, "logoUrl": "/images/inst/cib.png" },
+  { "instCode": "CMBC", "instName": "中国民生银行", "shortName": "民生银行", "instType": "BANK", "themeColor": "#005EAC", "sortOrder": 16, "logoUrl": "/images/inst/cmbc.png" },
+  { "instCode": "CEB", "instName": "中国光大银行", "shortName": "光大银行", "instType": "BANK", "themeColor": "#6A2679", "sortOrder": 17, "logoUrl": "/images/inst/ceb.png" },
+  { "instCode": "HXB", "instName": "华夏银行", "shortName": "华夏银行", "instType": "BANK", "themeColor": "#DF0024", "sortOrder": 18, "logoUrl": "/images/inst/hxb.png" },
+  { "instCode": "CGB", "instName": "广发银行", "shortName": "广发银行", "instType": "BANK", "themeColor": "#BE0027", "sortOrder": 19, "logoUrl": "/images/inst/cgb.png" },
+  { "instCode": "CZB", "instName": "浙商银行", "shortName": "浙商银行", "instType": "BANK", "themeColor": "#E64A19", "sortOrder": 20, "logoUrl": "/images/inst/czb.png" },
+  { "instCode": "CBHB", "instName": "渤海银行", "shortName": "渤海银行", "instType": "BANK", "themeColor": "#104E90", "sortOrder": 21, "logoUrl": "/images/inst/cbhb.png" },
+  { "instCode": "HFB", "instName": "恒丰银行", "shortName": "恒丰银行", "instType": "BANK", "themeColor": "#B48F56", "sortOrder": 22, "logoUrl": "/images/inst/hfb.png" },
+
+  { "instCode": "WEBANK", "instName": "微众银行", "shortName": "微众银行", "instType": "INTERNET_BANK", "themeColor": "#3370FF", "sortOrder": 31, "logoUrl": "/images/inst/webank.png" },
+  { "instCode": "MYBANK", "instName": "网商银行", "shortName": "网商银行", "instType": "INTERNET_BANK", "themeColor": "#0D92F4", "sortOrder": 32, "logoUrl": "/images/inst/mybank.png" },
+  { "instCode": "XW", "instName": "新网银行", "shortName": "新网银行", "instType": "INTERNET_BANK", "themeColor": "#00C3B3", "sortOrder": 33, "logoUrl": "/images/inst/xw.png" },
+  { "instCode": "ZHB", "instName": "众邦银行", "shortName": "众邦银行", "instType": "INTERNET_BANK", "themeColor": "#FF4400", "sortOrder": 34, "logoUrl": "/images/inst/zhb.png" },
+
+
+  { "instCode": "BOB", "instName": "北京银行", "shortName": "北京银行", "instType": "BANK", "themeColor": "#E70012", "sortOrder": 41, "logoUrl": "/images/inst/bob.png" },
+  { "instCode": "BOS", "instName": "上海银行", "shortName": "上海银行", "instType": "BANK", "themeColor": "#18356F", "sortOrder": 42, "logoUrl": "/images/inst/bos.png" },
+  { "instCode": "JSB", "instName": "江苏银行", "shortName": "江苏银行", "instType": "BANK", "themeColor": "#154295", "sortOrder": 43, "logoUrl": "/images/inst/jsb.png" },
+  { "instCode": "NBCB", "instName": "宁波银行", "shortName": "宁波银行", "instType": "BANK", "themeColor": "#F59C1A", "sortOrder": 44, "logoUrl": "/images/inst/nbcb.png" },
+  { "instCode": "NJCB", "instName": "南京银行", "shortName": "南京银行", "instType": "BANK", "themeColor": "#B60029", "sortOrder": 45, "logoUrl": "/images/inst/njcb.png" },
+  { "instCode": "HZB", "instName": "杭州银行", "shortName": "杭州银行", "instType": "BANK", "themeColor": "#0093DD", "sortOrder": 46, "logoUrl": "/images/inst/hzb.png" },
+  { "instCode": "SZCB", "instName": "苏州银行", "shortName": "苏州银行", "instType": "BANK", "themeColor": "#22AC38", "sortOrder": 47, "logoUrl": "/images/inst/szcb.png" },
+  { "instCode": "BSB", "instName": "包商银行", "shortName": "包商银行", "instType": "BANK", "themeColor": "#F59C1A", "sortOrder": 48, "logoUrl": "/images/inst/bsb.png" },
+  { "instCode": "CQB", "instName": "重庆银行", "shortName": "重庆银行", "instType": "BANK", "themeColor": "#005BAC", "sortOrder": 49, "logoUrl": "/images/inst/cqb.png" },
+  { "instCode": "CDCB", "instName": "成都银行", "shortName": "成都银行", "instType": "BANK", "themeColor": "#E60012", "sortOrder": 50, "logoUrl": "/images/inst/cdcb.png" },
+  { "instCode": "CSCB", "instName": "长沙银行", "shortName": "长沙银行", "instType": "BANK", "themeColor": "#D9001B", "sortOrder": 51, "logoUrl": "/images/inst/cscb.png" },
+  { "instCode": "GZCB", "instName": "广州银行", "shortName": "广州银行", "instType": "BANK", "themeColor": "#E60012", "sortOrder": 52, "logoUrl": "/images/inst/gzcb.png" },
+  { "instCode": "DLB", "instName": "大连银行", "shortName": "大连银行", "instType": "BANK", "themeColor": "#D9001B", "sortOrder": 53, "logoUrl": "/images/inst/dlb.png" },
+  { "instCode": "HRB", "instName": "哈尔滨银行", "shortName": "哈尔滨银行", "instType": "BANK", "themeColor": "#104E90", "sortOrder": 54, "logoUrl": "/images/inst/hrb.png" },
+  { "instCode": "TJB", "instName": "天津银行", "shortName": "天津银行", "instType": "BANK", "themeColor": "#00479D", "sortOrder": 55, "logoUrl": "/images/inst/tjb.png" },
+  { "instCode": "HKB", "instName": "汉口银行", "shortName": "汉口银行", "instType": "BANK", "themeColor": "#005BAC", "sortOrder": 56, "logoUrl": "/images/inst/hkb.png" },
+  { "instCode": "SRCB", "instName": "上海农商银行", "shortName": "上海农商", "instType": "BANK", "themeColor": "#003E7E", "sortOrder": 57, "logoUrl": "/images/inst/srcb.png" },
+  { "instCode": "BJRCB", "instName": "北京农商银行", "shortName": "北京农商", "instType": "BANK", "themeColor": "#E70012", "sortOrder": 58, "logoUrl": "/images/inst/bjrcb.png" },
+  { "instCode": "GRCB", "instName": "广州农商银行", "shortName": "广州农商", "instType": "BANK", "themeColor": "#F39800", "sortOrder": 59, "logoUrl": "/images/inst/grcb.png" },
+  { "instCode": "DRCB", "instName": "东莞农商银行", "shortName": "东莞农商", "instType": "BANK", "themeColor": "#E60012", "sortOrder": 60, "logoUrl": "/images/inst/drcb.png" },
+
+  { "instCode": "HSBC", "instName": "汇丰银行(中国)", "shortName": "汇丰银行", "instType": "FOREIGN_BANK", "themeColor": "#DB0011", "sortOrder": 201, "logoUrl": "/images/inst/hsbc.png" },
+  { "instCode": "SC", "instName": "渣打银行(中国)", "shortName": "渣打银行", "instType": "FOREIGN_BANK", "themeColor": "#007934", "sortOrder": 202, "logoUrl": "/images/inst/sc.png" },
+  { "instCode": "BEA", "instName": "东亚银行(中国)", "shortName": "东亚银行", "instType": "FOREIGN_BANK", "themeColor": "#BE0027", "sortOrder": 203, "logoUrl": "/images/inst/bea.png" },
+  { "instCode": "CITI", "instName": "花旗银行(中国)", "shortName": "花旗银行", "instType": "FOREIGN_BANK", "themeColor": "#003B70", "sortOrder": 204, "logoUrl": "/images/inst/citi.png" },
+  { "instCode": "DBS", "instName": "星展银行(中国)", "shortName": "星展银行", "instType": "FOREIGN_BANK", "themeColor": "#FF3300", "sortOrder": 205, "logoUrl": "/images/inst/dbs.png" },
+
+  { "instCode": "RCC", "instName": "农村信用社/农商行", "shortName": "农信社", "instType": "BANK", "themeColor": "#009174", "sortOrder": 300, "logoUrl": "/images/inst/rcc.png" },
+
+  
+  { "instCode": "CITIC", "instName": "中信证券", "shortName": "中信证券", "instType": "SECURITY", "themeColor": "#B20000", "sortOrder": 1001, "logoUrl": "/images/inst/citic.png" },
+  { "instCode": "GTJA", "instName": "国泰君安证券", "shortName": "国泰君安", "instType": "SECURITY", "themeColor": "#00539B", "sortOrder": 1002, "logoUrl": "/images/inst/gtja.png" },
+  { "instCode": "HTSC", "instName": "华泰证券", "shortName": "华泰证券", "instType": "SECURITY", "themeColor": "#448ACA", "sortOrder": 1003, "logoUrl": "/images/inst/htsc.png" },
+  { "instCode": "CSC", "instName": "中信建投证券", "shortName": "中信建投", "instType": "SECURITY", "themeColor": "#FFD700", "sortOrder": 1004, "logoUrl": "/images/inst/csc.png" },
+  { "instCode": "CICC", "instName": "中国国际金融股份有限公司", "shortName": "中金公司", "instType": "SECURITY", "themeColor": "#A1845A", "sortOrder": 1005, "logoUrl": "/images/inst/cicc.png" },
+  { "instCode": "GALAXY", "instName": "中国银河证券", "shortName": "银河证券", "instType": "SECURITY", "themeColor": "#006CBA", "sortOrder": 1006, "logoUrl": "/images/inst/galaxy.png" },
+  { "instCode": "HAITONG", "instName": "海通证券", "shortName": "海通证券", "instType": "SECURITY", "themeColor": "#004EA2", "sortOrder": 1007, "logoUrl": "/images/inst/haitong.png" },
+  { "instCode": "CMS", "instName": "招商证券", "shortName": "招商证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1008, "logoUrl": "/images/inst/cms.png" },
+  { "instCode": "GF", "instName": "广发证券", "shortName": "广发证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1009, "logoUrl": "/images/inst/gf.png" },
+  { "instCode": "SWHY", "instName": "申万宏源证券", "shortName": "申万宏源", "instType": "SECURITY", "themeColor": "#D0021B", "sortOrder": 1010, "logoUrl": "/images/inst/swhy.png" },
+
+  { "instCode": "EASTMONEY", "instName": "东方财富证券", "shortName": "东方财富", "instType": "SECURITY", "themeColor": "#FF5000", "sortOrder": 1011, "logoUrl": "/images/inst/eastmoney.png" },
+  { "instCode": "PA_SEC", "instName": "平安证券", "shortName": "平安证券", "instType": "SECURITY", "themeColor": "#FF6600", "sortOrder": 1012, "logoUrl": "/images/inst/pa_sec.png" },
+
+  { "instCode": "GTJA_Y", "instName": "国信证券", "shortName": "国信证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1020 },
+  { "instCode": "DFZQ", "instName": "东方证券", "shortName": "东方证券", "instType": "SECURITY", "themeColor": "#C60C30", "sortOrder": 1021 },
+  { "instCode": "EBSCN", "instName": "光大证券", "shortName": "光大证券", "instType": "SECURITY", "themeColor": "#6A2679", "sortOrder": 1022 },
+  { "instCode": "XYZQ", "instName": "兴业证券", "shortName": "兴业证券", "instType": "SECURITY", "themeColor": "#00418F", "sortOrder": 1023 },
+  { "instCode": "ZTS", "instName": "中泰证券", "shortName": "中泰证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1024 },
+  { "instCode": "ZSZQ", "instName": "浙商证券", "shortName": "浙商证券", "instType": "SECURITY", "themeColor": "#E64A19", "sortOrder": 1025 },
+  { "instCode": "YSC", "instName": "银泰证券", "shortName": "银泰证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1026 },
+  { "instCode": "FZC", "instName": "方正证券", "shortName": "方正证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1027 },
+  { "instCode": "CJSC", "instName": "长江证券", "shortName": "长江证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1028 },
+  { "instCode": "AJZQ", "instName": "安信证券", "shortName": "安信证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1029 },
+  { "instCode": "MSZQ", "instName": "民生证券", "shortName": "民生证券", "instType": "SECURITY", "themeColor": "#005EAC", "sortOrder": 1030 },
+  { "instCode": "HYZQ", "instName": "华安证券", "shortName": "华安证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1031 },
+  { "instCode": "DXZQ", "instName": "东兴证券", "shortName": "东兴证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1032 },
+  { "instCode": "WSC", "instName": "万联证券", "shortName": "万联证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1033 },
+  { "instCode": "NJZQ", "instName": "南京证券", "shortName": "南京证券", "instType": "SECURITY", "themeColor": "#B60029", "sortOrder": 1034 },
+  { "instCode": "XN", "instName": "西南证券", "shortName": "西南证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1035 },
+  { "instCode": "CCZQ", "instName": "长城证券", "shortName": "长城证券", "instType": "SECURITY", "themeColor": "#B20000", "sortOrder": 1036 },
+  { "instCode": "GJZQ", "instName": "国金证券", "shortName": "国金证券", "instType": "SECURITY", "themeColor": "#7C6854", "sortOrder": 1037 },
+  { "instCode": "DBZQ", "instName": "东北证券", "shortName": "东北证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1038 },
+  { "instCode": "SX", "instName": "山西证券", "shortName": "山西证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1039 },
+  { "instCode": "GZ", "instName": "国元证券", "shortName": "国元证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1040 },
+  { "instCode": "XB", "instName": "西部证券", "shortName": "西部证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1041 },
+  { "instCode": "HY", "instName": "华西证券", "shortName": "华西证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1042 },
+  { "instCode": "DW", "instName": "东吴证券", "shortName": "东吴证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1043 },
+  { "instCode": "TF", "instName": "天风证券", "shortName": "天风证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1044 },
+  { "instCode": "SD", "instName": "首创证券", "shortName": "首创证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1045 },
+  { "instCode": "CNHT", "instName": "财通证券", "shortName": "财通证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1046 },
+  { "instCode": "HJZQ", "instName": "华金证券", "shortName": "华金证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1047 },
+  { "instCode": "BJZQ", "instName": "渤海证券", "shortName": "渤海证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1048 },
+  { "instCode": "CLSC", "instName": "华林证券", "shortName": "华林证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1049 },
+
+  { "instCode": "CEFC", "instName": "华信证券", "shortName": "华信证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1060 },
+  { "instCode": "XCZQ", "instName": "湘财证券", "shortName": "湘财证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1061 },
+  { "instCode": "LZZQ", "instName": "联储证券", "shortName": "联储证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1062 },
+  { "instCode": "MZZQ", "instName": "民族证券", "shortName": "民族证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1063 },
+  { "instCode": "XLZQ", "instName": "新令证券", "shortName": "新令证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1064 },
+  { "instCode": "HUZQ", "instName": "华创证券", "shortName": "华创证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1065 },
+  { "instCode": "JZZQ", "instName": "九州证券", "shortName": "九州证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1066 },
+  { "instCode": "XYZQ_HK", "instName": "兴证国际", "shortName": "兴证国际", "instType": "SECURITY", "themeColor": "#00418F", "sortOrder": 1067 },
+  { "instCode": "DLZQ", "instName": "大同证券", "shortName": "大同证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1068 },
+  { "instCode": "DYZQ", "instName": "第一创业证券", "shortName": "第一创业", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1069 },
+  { "instCode": "GLZQ", "instName": "国联证券", "shortName": "国联证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1070 },
+  { "instCode": "GHZQ", "instName": "国海证券", "shortName": "国海证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1071 },
+  { "instCode": "KYZQ", "instName": "开源证券", "shortName": "开源证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1072 },
+  { "instCode": "HZZQ", "instName": "华之证券", "shortName": "华之证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1073 },
+  { "instCode": "CJZQ", "instName": "财达证券", "shortName": "财达证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1074 },
+  { "instCode": "CDZQ", "instName": "财都证券", "shortName": "财都证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1075 },
+  { "instCode": "RHZQ", "instName": "瑞鹤证券", "shortName": "瑞鹤证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1076 },
+  { "instCode": "ZYZQ", "instName": "中原证券", "shortName": "中原证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1077 },
+  { "instCode": "ZXZJ", "instName": "中信浙江", "shortName": "中信浙江", "instType": "SECURITY", "themeColor": "#B20000", "sortOrder": 1078 },
+  { "instCode": "ZAZQ", "instName": "中天国富", "shortName": "中天国富", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1079 },
+  { "instCode": "ZYZQ_HK", "instName": "中银国际", "shortName": "中银国际", "instType": "SECURITY", "themeColor": "#B71C1E", "sortOrder": 1080 },
+  { "instCode": "ZJZQ", "instName": "中山证券", "shortName": "中山证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1081 },
+  { "instCode": "CPS", "instName": "中邮证券", "shortName": "中邮证券", "instType": "SECURITY", "themeColor": "#007E3E", "sortOrder": 1082 },
+  { "instCode": "CHZQ", "instName": "川财证券", "shortName": "川财证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1083 },
+  { "instCode": "DSZQ", "instName": "大通证券", "shortName": "大通证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1084 },
+  { "instCode": "TS", "instName": "德邦证券", "shortName": "德邦证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1085 },
+  { "instCode": "DGCZQ", "instName": "东莞证券", "shortName": "东莞证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1086 },
+  { "instCode": "DHZQ", "instName": "东海证券", "shortName": "东海证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1087 },
+  { "instCode": "GRZQ", "instName": "国融证券", "shortName": "国融证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1088 },
+  { "instCode": "GSZQ", "instName": "国盛证券", "shortName": "国盛证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1089 },
+  { "instCode": "GDSZQ", "instName": "国都证券", "shortName": "国都证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1090 },
+  { "instCode": "HHZQ", "instName": "红塔证券", "shortName": "红塔证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1091 },
+  { "instCode": "HXZQ", "instName": "宏信证券", "shortName": "宏信证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1092 },
+  { "instCode": "HBZQ", "instName": "华宝证券", "shortName": "华宝证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1093 },
+  { "instCode": "HFZQ", "instName": "华福证券", "shortName": "华福证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1094 },
+  { "instCode": "HLZQ", "instName": "华龙证券", "shortName": "华龙证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1095 },
+  { "instCode": "JXZQ", "instName": "江海证券", "shortName": "江海证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1096 },
+  { "instCode": "JYZQ", "instName": "金元证券", "shortName": "金元证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1097 },
+  { "instCode": "RXZQ", "instName": "日信证券", "shortName": "日信证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1098 },
+  { "instCode": "SXZQ", "instName": "上海证券", "shortName": "上海证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1099 },
+  { "instCode": "SJZQ", "instName": "世纪证券", "shortName": "世纪证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1100 },
+  { "instCode": "TBZQ", "instName": "通办证券", "shortName": "通办证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1101 },
+  { "instCode": "WLZQ", "instName": "万和证券", "shortName": "万和证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1102 },
+  { "instCode": "WDZQ", "instName": "五矿证券", "shortName": "五矿证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1103 },
+  { "instCode": "XBZQ", "instName": "西部证券", "shortName": "西部证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1104 },
+  { "instCode": "XDZQ", "instName": "信达证券", "shortName": "信达证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1105 },
+  { "instCode": "YHZQ", "instName": "英大证券", "shortName": "英大证券", "instType": "SECURITY", "themeColor": "#007934", "sortOrder": 1106 },
+  { "instCode": "YXZQ", "instName": "甬兴证券", "shortName": "甬兴证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1107 },
+  { "instCode": "YKZQ", "instName": "粤开证券", "shortName": "粤开证券", "instType": "SECURITY", "themeColor": "#E60012", "sortOrder": 1108 },
+  { "instCode": "AVIC", "instName": "中航证券", "shortName": "中航证券", "instType": "SECURITY", "themeColor": "#005BAC", "sortOrder": 1109 },
+  { "instCode": "ZJCF", "instName": "中金财富", "shortName": "中金财富", "instType": "SECURITY", "themeColor": "#A1845A", "sortOrder": 1110 },
+  { "instCode": "ZTZQ", "instName": "中天证券", "shortName": "中天证券", "instType": "SECURITY", "themeColor": "#1890FF", "sortOrder": 1111 },
+  { "instCode": "BOCSC", "instName": "中银证券", "shortName": "中银证券", "instType": "SECURITY", "themeColor": "#B71C1E", "sortOrder": 1112 },
+
+  { "instCode": "PINGAN_GRP", "instName": "中国平安保险(集团)股份有限公司", "shortName": "中国平安", "instType": "INSURANCE", "logoUrl": "/images/inst/pingan_grp.png", "themeColor": "#FF6600", "sortOrder": 2001},
+  { "instCode": "CHINALIFE", "instName": "中国人寿保险(集团)公司", "shortName": "中国人寿", "instType": "INSURANCE", "logoUrl": "/images/inst/chinalife.png", "themeColor": "#009944", "sortOrder": 2002 },
+  { "instCode": "CPIC", "instName": "中国太平洋保险(集团)股份有限公司", "shortName": "中国太保", "instType": "INSURANCE", "logoUrl": "/images/inst/cpic.png", "themeColor": "#005596", "sortOrder": 2003 },
+
+  { "instCode": "TAIKANG", "instName": "泰康人寿", "shortName": "泰康人寿", "instType": "INSURANCE", "themeColor": "#F37021", "sortOrder": 2021, "logoUrl": "/images/inst/taikang.png" },
+  { "instCode": "NCI", "instName": "新华人寿保险", "shortName": "新华保险", "instType": "INSURANCE", "themeColor": "#0075C2", "sortOrder": 2022, "logoUrl": "/images/inst/nci.png" },
+  { "instCode": "TAIPING", "instName": "中国太平保险集团", "shortName": "中国太平", "instType": "INSURANCE", "themeColor": "#0068B7", "sortOrder": 2022, "logoUrl": "/images/inst/taiping.png" },
+  { "instCode": "PICC_LIFE", "instName": "中国人民人寿保险", "shortName": "人保寿险", "instType": "INSURANCE", "themeColor": "#E60012", "sortOrder": 2023, "logoUrl": "/images/inst/picc.png" },
+  { "instCode": "SUNSHINE", "instName": "阳光人寿保险", "shortName": "阳光保险", "instType": "INSURANCE", "themeColor": "#F19110", "sortOrder": 2024, "logoUrl": "/images/inst/sunshine.png" },
+  { "instCode": "SINO_LIFE", "instName": "富德生命人寿", "shortName": "富德生命", "instType": "INSURANCE", "themeColor": "#009140", "sortOrder": 2025, "logoUrl": "/images/inst/sino_life.png" },
+  { "instCode": "FORESEA", "instName": "前海人寿", "shortName": "前海人寿", "instType": "INSURANCE", "themeColor": "#C69C6D", "sortOrder": 2026, "logoUrl": "/images/inst/foresea.png" },
+  { "instCode": "HUAXIA_LIFE", "instName": "华夏人寿(瑞众人寿)", "shortName": "瑞众人寿", "instType": "INSURANCE", "themeColor": "#E60012", "sortOrder": 2027, "logoUrl": "/images/inst/huaxia.png" },
+  { "instCode": "DAAJIA", "instName": "大家保险集团", "shortName": "大家保险", "instType": "INSURANCE", "themeColor": "#E60012", "sortOrder": 2028, "logoUrl": "/images/inst/daajia.png" },
+  { "instCode": "ZHONGHUI", "instName": "中汇人寿(原天安人寿)", "shortName": "中汇人寿", "instType": "INSURANCE", "themeColor": "#C71B24", "sortOrder": 2029, "logoUrl": "/images/inst/zhonghui.png" },
+  { "instCode": "HAIGANG", "instName": "海港人寿(原恒大人寿)", "shortName": "海港人寿", "instType": "INSURANCE", "themeColor": "#005BAC", "sortOrder": 2030, "logoUrl": "/images/inst/haigang.png" },
+  
+  { "instCode": "HONGKANG", "instName": "弘康人寿", "shortName": "弘康人寿", "instType": "INSURANCE", "themeColor": "#E60012", "sortOrder": 2040, "logoUrl": "/images/inst/hongkang.png" },
+  { "instCode": "SINTAI", "instName": "信泰人寿", "shortName": "信泰人寿", "instType": "INSURANCE", "themeColor": "#F19110", "sortOrder": 2041, "logoUrl": "/images/inst/sintai.png" },
+
+  { "instCode": "ICBC_AXA", "instName": "工银安盛人寿", "shortName": "工银安盛", "instType": "INSURANCE", "themeColor": "#C71B24", "sortOrder": 2101, "logoUrl": "/images/inst/icbc_axa.png" },
+  { "instCode": "CCB_LIFE", "instName": "建信人寿", "shortName": "建信人寿", "instType": "INSURANCE", "themeColor": "#094C99", "sortOrder": 2102, "logoUrl": "/images/inst/ccb_life.png" },
+  { "instCode": "ABC_LIFE", "instName": "农银人寿", "shortName": "农银人寿", "instType": "INSURANCE", "themeColor": "#009174", "sortOrder": 2103, "logoUrl": "/images/inst/abc_life.png" },
+  { "instCode": "BOC_SAMSUNG", "instName": "中银三星人寿", "shortName": "中银三星", "instType": "INSURANCE", "themeColor": "#B71C1E", "sortOrder": 2104, "logoUrl": "/images/inst/boc_samsung.png" },
+  { "instCode": "BOCOM_LIFE", "instName": "交银人寿", "shortName": "交银人寿", "instType": "INSURANCE", "themeColor": "#00367A", "sortOrder": 2105, "logoUrl": "/images/inst/bocom_life.png" },
+  { "instCode": "CMB_CIGNA", "instName": "招商信诺人寿", "shortName": "招商信诺", "instType": "INSURANCE", "themeColor": "#C8102E", "sortOrder": 2106, "logoUrl": "/images/inst/cmb_cigna.png" },
+  { "instCode": "POST_LIFE", "instName": "中邮人寿保险", "shortName": "中邮人寿", "instType": "INSURANCE", "themeColor": "#007E3E", "sortOrder": 2107, "logoUrl": "/images/inst/post_life.png" },
+  { "instCode": "EB_LIFE", "instName": "光大永明人寿", "shortName": "光大永明", "instType": "INSURANCE", "themeColor": "#6A2679", "sortOrder": 2108, "logoUrl": "/images/inst/eb_life.png" },
+  
+  { "instCode": "AIA", "instName": "友邦人寿", "shortName": "友邦保险", "instType": "INSURANCE", "themeColor": "#D31145", "sortOrder": 2201, "logoUrl": "/images/inst/aia.png" },
+  { "instCode": "CITIC_PRU", "instName": "中信保诚人寿", "shortName": "中信保诚", "instType": "INSURANCE", "themeColor": "#D7000F", "sortOrder": 2202, "logoUrl": "/images/inst/citic_pru.png" },
+  { "instCode": "METLIFE", "instName": "中美联泰大都会", "shortName": "大都会人寿", "instType": "INSURANCE", "themeColor": "#0090DA", "sortOrder": 2203, "logoUrl": "/images/inst/metlife.png" },
+  { "instCode": "MANULIFE", "instName": "中宏人寿", "shortName": "中宏保险", "instType": "INSURANCE", "themeColor": "#00B48D", "sortOrder": 2204, "logoUrl": "/images/inst/manulife.png" },
+  { "instCode": "AVIVA", "instName": "中英人寿", "shortName": "中英人寿", "instType": "INSURANCE", "themeColor": "#FFD100", "sortOrder": 2205, "logoUrl": "/images/inst/aviva.png" },
+  { "instCode": "AEGON", "instName": "同方全球人寿", "shortName": "同方全球", "instType": "INSURANCE", "themeColor": "#005BAC", "sortOrder": 2206, "logoUrl": "/images/inst/aegon.png" },
+  { "instCode": "HENGAN", "instName": "恒安标准人寿", "shortName": "恒安标准", "instType": "INSURANCE", "themeColor": "#00418F", "sortOrder": 2207, "logoUrl": "/images/inst/hengan.png" },
+ 
   {
     "instCode": "ALIPAY",
     "instName": "支付宝",
@@ -114,7 +198,7 @@
     "instType": "PAYMENT",
     "logoUrl": "/images/inst/alipay.png",
     "themeColor": "#1677FF",
-    "sortOrder": 400
+    "sortOrder": 3001
   },
   {
     "instCode": "WECHAT",
@@ -123,7 +207,7 @@
     "instType": "PAYMENT",
     "logoUrl": "/images/inst/wechatpay.png",
     "themeColor": "#07C160",
-    "sortOrder": 410
+    "sortOrder": 3002
   },
   {
     "instCode": "UNIONPAY",
@@ -132,7 +216,7 @@
     "instType": "PAYMENT",
     "logoUrl": "/images/inst/unionpay.png",
     "themeColor": "#DC241F",
-    "sortOrder": 420
+    "sortOrder": 3003
   },
   {
     "instCode": "JDFINANCE",
@@ -141,7 +225,7 @@
     "instType": "FINTECH",
     "logoUrl": "/images/inst/jdfinance.png",
     "themeColor": "#F10000",
-    "sortOrder": 500
+    "sortOrder": 5001
   },
   {
     "instCode": "DOUYIN",
@@ -150,7 +234,7 @@
     "instType": "FINTECH",
     "logoUrl": "/images/inst/douyin.png",
     "themeColor": "#FE2C55",
-    "sortOrder": 510
+    "sortOrder": 5002
   },
   {
     "instCode": "MEITUAN",
@@ -159,7 +243,7 @@
     "instType": "FINTECH",
     "logoUrl": "/images/inst/meituan.png",
     "themeColor": "#FFC300",
-    "sortOrder": 520
+    "sortOrder": 5003
   },
   {
     "instCode": "DUXIAOMAN",
@@ -168,7 +252,7 @@
     "instType": "FINTECH",
     "logoUrl": "/images/inst/duxiaoman.png",
     "themeColor": "#E71F19",
-    "sortOrder": 530
+    "sortOrder": 5004
   },
   {
     "instCode": "360SHUKE",
@@ -177,7 +261,7 @@
     "instType": "FINTECH",
     "logoUrl": "/images/inst/360shuke.png",
     "themeColor": "#00BE00",
-    "sortOrder": 540
+    "sortOrder": 5005
   },
     {
     "instCode": "TIANTIAN",
@@ -186,7 +270,7 @@
     "instType": "FUND_PLATFORM",
     "logoUrl": "/images/inst/tiantian.png",
     "themeColor": "#FF5000",
-    "sortOrder": 600
+    "sortOrder": 6001
   },
   {
     "instCode": "DANJUAN",
@@ -195,7 +279,7 @@
     "instType": "FUND_PLATFORM",
     "logoUrl": "/images/inst/danjuan.png",
     "themeColor": "#4592EC",
-    "sortOrder": 610
+    "sortOrder": 6002
   },
   {
     "instCode": "QIEMAN",
@@ -204,7 +288,7 @@
     "instType": "FUND_PLATFORM",
     "logoUrl": "/images/inst/qieman.png",
     "themeColor": "#00B698",
-    "sortOrder": 620
+    "sortOrder": 6003
   },
   {
     "instCode": "HOWBUY",
@@ -213,7 +297,7 @@
     "instType": "FUND_PLATFORM",
     "logoUrl": "/images/inst/howbuy.png",
     "themeColor": "#E60012",
-    "sortOrder": 630
+    "sortOrder": 6004
   },
   {
     "instCode": "YINGMI",
@@ -222,6 +306,6 @@
     "instType": "FUND_PLATFORM",
     "logoUrl": "/images/inst/yingmi.png",
     "themeColor": "#1D2088",
-    "sortOrder": 640
+    "sortOrder": 6005
   }
 ]

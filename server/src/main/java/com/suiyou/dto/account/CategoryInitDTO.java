@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class CategoryInitDTO {
-    private String code;
+    private String categoryCode;
     private String name;
     private String groupType;
     private String iconUrl;

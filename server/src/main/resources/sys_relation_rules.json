@@ -2,8 +2,18 @@
   "defaultRules": {
     "BANK": [
       "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", 
-      "GOLD_ACCUMULATION", "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "HOUSING_FUND", "MEDICAL_INSURANCE", "PENSION_ACCOUNT", "PRIVATE_PENSION", "BUSINESS_LOAN"
+      "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "MEDICAL_INSURANCE", "PENSION_ACCOUNT", "BUSINESS_LOAN"
     ],
+
+    "INTERNET_BANK": [
+      "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", "CONSUMER_LOAN", "BUSINESS_LOAN"
+    ],
+
+    "FOREIGN_BANK": [
+      "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT",
+      "CREDIT_CARD", "MORTGAGE"
+    ],
+
     "SECURITY": [
       "STOCK", "FUND", "PRIVATE_FUND"
     ],
@@ -17,34 +27,46 @@
       "E_WALLET"
     ]
   },
+  "categoryRules": {
+    "HOUSING_FUND": [
+      "ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC",
+      "CMB", "CITIC_BANK", "SPDB", "CIB", "BOB", "BOS"
+    ],
+    "PRIVATE_PENSION": [
+      "ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC",
+      "CMB", "CITIC_BANK", "SPDB", "CIB", "CMBC", "CEB", 
+      "HXB", "CGB", "PAB", "CZB", "CBHB", "HFB",
+      "BOB", "BOS", "JSB", "NBCB", "NJCB"
+    ],
+    "GOLD_ACCUMULATION": [
+      "ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC",
+      "CMB", "SPDB", "CIB", "PAB",
+      "ALIPAY", "JDFINANCE"
+    ],
+    "INTERNET_CREDIT": [
+      "ALIPAY", "WECHAT", "JDFINANCE", "DOUYIN", "MEITUAN", "360SHUKE", "DUXIAOMAN"
+    ]
+  },
   "specialCases": [
     { 
       "instCode": "ALIPAY", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
     },
     { 
       "instCode": "WECHAT", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
     },
     { 
       "instCode": "JDFINANCE", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
     },
     { 
       "instCode": "DOUYIN", 
-      "categories": ["E_WALLET", "INTERNET_CREDIT"] 
+      "categories": ["E_WALLET"] 
     },
     { 
       "instCode": "MEITUAN", 
-      "categories": ["INTERNET_CREDIT", "CONSUMER_LOAN"] 
-    },
-    { 
-      "instCode": "360SHUKE", 
-      "categories": ["INTERNET_CREDIT"] 
-    },
-    { 
-      "instCode": "DUXIAOMAN", 
-      "categories": ["INTERNET_CREDIT"] 
+      "categories": ["CONSUMER_LOAN"] 
     }
   ]
 }

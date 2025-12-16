@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface SysAssetCategoryRepository extends JpaRepository<SysAssetCategory, Long> {
     // 根据分类代码查询
-    SysAssetCategory findByCode(String code);
+    SysAssetCategory findByCategoryCode(String categoryCode);
     
     // 根据父级代码查询所有子分类
     List<SysAssetCategory> findByParentCode(String parentCode);
@@ -19,7 +19,7 @@ public interface SysAssetCategoryRepository extends JpaRepository<SysAssetCatego
     
     // 查询所有系统分类
     List<SysAssetCategory> findAllByIsSystem(boolean isSystem);
-    
-    // 根据代码列表批量删除
-    void deleteByCodeIn(List<String> codes);
+        
+    // 根据分类代码列表批量删除
+    void deleteByCategoryCodeIn(List<String> categoryCodes);
 }

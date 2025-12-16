@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-@Order(3) // 确保最后执行
+@Order(3)
 @Slf4j
 public class RelationDataLoader implements CommandLineRunner {
 

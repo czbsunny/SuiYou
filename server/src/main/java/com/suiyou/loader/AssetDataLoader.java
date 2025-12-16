@@ -48,7 +48,7 @@ public class AssetDataLoader implements CommandLineRunner {
         // 处理一级分类和二级分类
         for (CategoryInitDTO parent : dtos) {
             // 添加一级分类code
-            expectedCodes.add(parent.getCode());
+            expectedCodes.add(parent.getCategoryCode());
             
             // 转换并保存一级分类
             SysAssetCategory parentEntity = processCategory(parent, null);
@@ -61,10 +61,10 @@ public class AssetDataLoader implements CommandLineRunner {
                         child.setGroupType(parent.getGroupType());
                     }
                     // 添加二级分类code
-                    expectedCodes.add(child.getCode());
+                    expectedCodes.add(child.getCategoryCode());
                     
                     // 转换并保存二级分类
-                    SysAssetCategory childEntity = processCategory(child, parent.getCode());
+                    SysAssetCategory childEntity = processCategory(child, parent.getCategoryCode());
                     entitiesToSave.add(childEntity);
                 }
             }
@@ -77,7 +77,7 @@ public class AssetDataLoader implements CommandLineRunner {
         // 注意：如果有用户自定义分类关联到这些系统分类，可能需要额外处理
         List<SysAssetCategory> existingSystemCategories = repository.findAllByIsSystem(true);
         List<String> existingCodes = existingSystemCategories.stream()
-            .map(SysAssetCategory::getCode)
+            .map(SysAssetCategory::getCategoryCode)
             .toList();
         
         List<String> codesToDelete = existingCodes.stream()
@@ -85,7 +85,7 @@ public class AssetDataLoader implements CommandLineRunner {
             .toList();
         
         if (!codesToDelete.isEmpty()) {
-            repository.deleteByCodeIn(codesToDelete);
+            repository.deleteByCategoryCodeIn(codesToDelete);
             log.info("删除了 {} 个不存在于JSON文件中的系统分类。", codesToDelete.size());
         }
         
@@ -96,8 +96,8 @@ public class AssetDataLoader implements CommandLineRunner {
      * 处理单个分类：如果存在则更新，不存在则创建
      */
     private SysAssetCategory processCategory(CategoryInitDTO dto, String parentCode) {
-        // 根据code查询现有分类
-        SysAssetCategory existingEntity = repository.findByCode(dto.getCode());
+        // 根据分类code查询现有分类
+        SysAssetCategory existingEntity = repository.findByCategoryCode(dto.getCategoryCode());
         
         if (existingEntity != null) {
             // 更新现有分类的属性
@@ -117,7 +117,7 @@ public class AssetDataLoader implements CommandLineRunner {
 
     private SysAssetCategory convert(CategoryInitDTO dto, String parentCode) {
         SysAssetCategory entity = new SysAssetCategory();
-        entity.setCode(dto.getCode());
+        entity.setCategoryCode(dto.getCategoryCode());
         entity.setName(dto.getName());
         entity.setGroupType(dto.getGroupType());
         entity.setIconUrl(dto.getIconUrl());
