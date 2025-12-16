@@ -1,0 +1,50 @@
+{
+  "defaultRules": {
+    "BANK": [
+      "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", 
+      "GOLD_ACCUMULATION", "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "HOUSING_FUND", "MEDICAL_INSURANCE", "PENSION_ACCOUNT", "PRIVATE_PENSION", "BUSINESS_LOAN"
+    ],
+    "SECURITY": [
+      "STOCK", "FUND", "PRIVATE_FUND"
+    ],
+    "FUND_PLATFORM": [
+      "FUND", "PORTFOLIO"
+    ],
+    "INSURANCE": [
+      "SAVING_INSURANCE"
+    ],
+    "PAYMENT": [
+      "E_WALLET"
+    ]
+  },
+  "specialCases": [
+    { 
+      "instCode": "ALIPAY", 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+    },
+    { 
+      "instCode": "WECHAT", 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+    },
+    { 
+      "instCode": "JDFINANCE", 
+      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "INTERNET_CREDIT", "GOLD_ACCUMULATION"] 
+    },
+    { 
+      "instCode": "DOUYIN", 
+      "categories": ["E_WALLET", "INTERNET_CREDIT"] 
+    },
+    { 
+      "instCode": "MEITUAN", 
+      "categories": ["INTERNET_CREDIT", "CONSUMER_LOAN"] 
+    },
+    { 
+      "instCode": "360SHUKE", 
+      "categories": ["INTERNET_CREDIT"] 
+    },
+    { 
+      "instCode": "DUXIAOMAN", 
+      "categories": ["INTERNET_CREDIT"] 
+    }
+  ]
+}

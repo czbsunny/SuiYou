@@ -36,58 +36,22 @@
     "sortOrder": 40
   },
   {
-    "instCode": "BOCOM",
-    "instName": "交通银行",
-    "shortName": "交通银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/bocom.png",
-    "themeColor": "#00367A",
-    "sortOrder": 50
-  },
-  {
-    "instCode": "PSBC",
-    "instName": "中国邮政储蓄银行",
-    "shortName": "邮储银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/psbc.png",
-    "themeColor": "#007E3E",
-    "sortOrder": 60
-  },
-  {
     "instCode": "CMB",
     "instName": "招商银行",
     "shortName": "招商银行",
     "instType": "BANK",
     "logoUrl": "/images/inst/cmb.png",
     "themeColor": "#C8102E",
-    "sortOrder": 70
+    "sortOrder": 50
   },
   {
-    "instCode": "PINGAN",
+    "instCode": "PAB",
     "instName": "平安银行",
     "shortName": "平安银行",
     "instType": "BANK",
     "logoUrl": "/images/inst/pab.png",
     "themeColor": "#EA5504",
-    "sortOrder": 80
-  },
-  {
-    "instCode": "CIB",
-    "instName": "兴业银行",
-    "shortName": "兴业银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/cib.png",
-    "themeColor": "#00418F",
-    "sortOrder": 90
-  },
-  {
-    "instCode": "SPDB",
-    "instName": "上海浦东发展银行",
-    "shortName": "浦发银行",
-    "instType": "BANK",
-    "logoUrl": "/images/inst/spdb.png",
-    "themeColor": "#1D2088",
-    "sortOrder": 100
+    "sortOrder": 60
   },
   {
     "instCode": "CITIC",
@@ -117,39 +81,21 @@
     "sortOrder": 220
   },
   {
-    "instCode": "HTSC",
-    "instName": "华泰证券",
-    "shortName": "华泰证券",
-    "instType": "SECURITY",
-    "logoUrl": "/images/inst/htsc.png",
-    "themeColor": "#448ACA",
-    "sortOrder": 230
-  },
-  {
-    "instCode": "CMS",
-    "instName": "招商证券",
-    "shortName": "招商证券",
-    "instType": "SECURITY",
-    "logoUrl": "/images/inst/cms.png",
-    "themeColor": "#E60012",
-    "sortOrder": 240
-  },
-  {
-    "instCode": "CL",
-    "instName": "中国人寿保险(集团)公司",
-    "shortName": "中国人寿",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/chinalife.png",
-    "themeColor": "#009944",
-    "sortOrder": 300
-  },
-  {
-    "instCode": "PA",
+    "instCode": "PINGAN_GRP",
     "instName": "中国平安保险(集团)股份有限公司",
     "shortName": "中国平安",
     "instType": "INSURANCE",
     "logoUrl": "/images/inst/pingan_grp.png",
     "themeColor": "#FF6600",
+    "sortOrder": 300
+  },
+  {
+    "instCode": "CHINALIFE",
+    "instName": "中国人寿保险(集团)公司",
+    "shortName": "中国人寿",
+    "instType": "INSURANCE",
+    "logoUrl": "/images/inst/chinalife.png",
+    "themeColor": "#009944",
     "sortOrder": 310
   },
   {
@@ -162,21 +108,120 @@
     "sortOrder": 320
   },
   {
-    "instCode": "PICC",
-    "instName": "中国人民保险集团股份有限公司",
-    "shortName": "中国人保",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/picc.png",
-    "themeColor": "#E60012",
-    "sortOrder": 330
+    "instCode": "ALIPAY",
+    "instName": "支付宝",
+    "shortName": "支付宝",
+    "instType": "PAYMENT",
+    "logoUrl": "/images/inst/alipay.png",
+    "themeColor": "#1677FF",
+    "sortOrder": 400
   },
   {
-    "instCode": "TAIKANG",
-    "instName": "泰康保险集团",
-    "shortName": "泰康保险",
-    "instType": "INSURANCE",
-    "logoUrl": "/images/inst/taikang.png",
-    "themeColor": "#F37021",
-    "sortOrder": 340
+    "instCode": "WECHAT",
+    "instName": "微信支付",
+    "shortName": "微信支付",
+    "instType": "PAYMENT",
+    "logoUrl": "/images/inst/wechatpay.png",
+    "themeColor": "#07C160",
+    "sortOrder": 410
+  },
+  {
+    "instCode": "UNIONPAY",
+    "instName": "中国银联",
+    "shortName": "云闪付",
+    "instType": "PAYMENT",
+    "logoUrl": "/images/inst/unionpay.png",
+    "themeColor": "#DC241F",
+    "sortOrder": 420
+  },
+  {
+    "instCode": "JDFINANCE",
+    "instName": "京东金融",
+    "shortName": "京东金融",
+    "instType": "FINTECH",
+    "logoUrl": "/images/inst/jdfinance.png",
+    "themeColor": "#F10000",
+    "sortOrder": 500
+  },
+  {
+    "instCode": "DOUYIN",
+    "instName": "抖音支付",
+    "shortName": "抖音钱包",
+    "instType": "FINTECH",
+    "logoUrl": "/images/inst/douyin.png",
+    "themeColor": "#FE2C55",
+    "sortOrder": 510
+  },
+  {
+    "instCode": "MEITUAN",
+    "instName": "美团金融",
+    "shortName": "美团钱包",
+    "instType": "FINTECH",
+    "logoUrl": "/images/inst/meituan.png",
+    "themeColor": "#FFC300",
+    "sortOrder": 520
+  },
+  {
+    "instCode": "DUXIAOMAN",
+    "instName": "度小满金融",
+    "shortName": "度小满",
+    "instType": "FINTECH",
+    "logoUrl": "/images/inst/duxiaoman.png",
+    "themeColor": "#E71F19",
+    "sortOrder": 530
+  },
+  {
+    "instCode": "360SHUKE",
+    "instName": "360数科",
+    "shortName": "360借条",
+    "instType": "FINTECH",
+    "logoUrl": "/images/inst/360shuke.png",
+    "themeColor": "#00BE00",
+    "sortOrder": 540
+  },
+    {
+    "instCode": "TIANTIAN",
+    "instName": "天天基金",
+    "shortName": "天天基金",
+    "instType": "FUND_PLATFORM",
+    "logoUrl": "/images/inst/tiantian.png",
+    "themeColor": "#FF5000",
+    "sortOrder": 600
+  },
+  {
+    "instCode": "DANJUAN",
+    "instName": "蛋卷基金",
+    "shortName": "蛋卷基金",
+    "instType": "FUND_PLATFORM",
+    "logoUrl": "/images/inst/danjuan.png",
+    "themeColor": "#4592EC",
+    "sortOrder": 610
+  },
+  {
+    "instCode": "QIEMAN",
+    "instName": "且慢",
+    "shortName": "且慢",
+    "instType": "FUND_PLATFORM",
+    "logoUrl": "/images/inst/qieman.png",
+    "themeColor": "#00B698",
+    "sortOrder": 620
+  },
+  {
+    "instCode": "HOWBUY",
+    "instName": "好买基金",
+    "shortName": "好买基金",
+    "instType": "FUND_PLATFORM",
+    "logoUrl": "/images/inst/howbuy.png",
+    "themeColor": "#E60012",
+    "sortOrder": 630
+  },
+  {
+    "instCode": "YINGMI",
+    "instName": "盈米基金",
+    "shortName": "盈米基金",
+    "instType": "FUND_PLATFORM",
+    "logoUrl": "/images/inst/yingmi.png",
+    "themeColor": "#1D2088",
+    "sortOrder": 640
   }
 ]
