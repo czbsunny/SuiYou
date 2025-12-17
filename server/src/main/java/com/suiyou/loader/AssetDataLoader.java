@@ -1,7 +1,6 @@
 package com.suiyou.loader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.model.SysAssetCategory;
 import com.suiyou.repository.SysAssetCategoryRepository;
@@ -12,7 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +19,17 @@ import java.util.List;
 @Component
 @Slf4j
 @Order(1)
-public class AssetDataLoader implements CommandLineRunner {
+public class AssetDataLoader extends AbstractConfigLoader {
 
     @Autowired
     private SysAssetCategoryRepository repository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Value("classpath:sys_asset_category_init.json")
     private Resource jsonResource;
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    protected void loadConfig() throws Exception {
         log.info("开始同步资产分类数据...");
         
         List<CategoryInitDTO> dtos = objectMapper.readValue(
@@ -73,7 +69,6 @@ public class AssetDataLoader implements CommandLineRunner {
         // 保存所有更新或新增的分类
         repository.saveAll(entitiesToSave);
         
-        // 可选：删除数据库中存在但JSON文件中不存在的系统分类
         // 注意：如果有用户自定义分类关联到这些系统分类，可能需要额外处理
         List<SysAssetCategory> existingSystemCategories = repository.findAllByIsSystem(true);
         List<String> existingCodes = existingSystemCategories.stream()
@@ -88,6 +83,9 @@ public class AssetDataLoader implements CommandLineRunner {
             repository.deleteByCategoryCodeIn(codesToDelete);
             log.info("删除了 {} 个不存在于JSON文件中的系统分类。", codesToDelete.size());
         }
+        
+        // 使用父类提供的方法更新配置版本
+        updateConfigVersion("asset_category", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(dtos)));
         
         log.info("资产分类同步完成，共处理 {} 条记录。", entitiesToSave.size());
     }

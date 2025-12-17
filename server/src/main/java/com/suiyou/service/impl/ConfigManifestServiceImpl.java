@@ -7,8 +7,19 @@ import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.suiyou.model.SysConfigVersion;
+import com.suiyou.repository.SysConfigVersionRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
 @Service
+@Slf4j
 public class ConfigManifestServiceImpl implements ConfigManifestService {
+
+    @Autowired
+    private SysConfigVersionRepository versionRepository;
 
     // 模拟的配置数据
     private final Map<String, Object> configData = new HashMap<>();
@@ -169,5 +180,9 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
             // 如果MD5算法不可用，返回一个默认值
             return "default_global_hash";
         }
+    }
+    @Override
+    public List<SysConfigVersion> getAllVersionsSorted() {
+        return versionRepository.findAllByOrderByModuleKeyAsc();
     }
 }
