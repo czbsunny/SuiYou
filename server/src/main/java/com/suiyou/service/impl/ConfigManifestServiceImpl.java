@@ -51,6 +51,11 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
                     resultMap.put(key, goalConfigService.getAllCategories());
                     break;
                     
+                case "goal_templates":
+                    // 如果是简单的列表，直接返回 List
+                    resultMap.put(key, goalConfigService.getAllTemplates());
+                    break;
+                    
                 default:
                     // 忽略未知的 Key
                     break;

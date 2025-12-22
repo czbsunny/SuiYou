@@ -9,7 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface SysGoalTemplateRepository extends JpaRepository<SysGoalTemplate, Long> {
+    
     List<SysGoalTemplate> findByCategoryCodeOrderBySortOrderAsc(String categoryCode);
+
     Optional<SysGoalTemplate> findByCategoryCode(String categoryCode);
     
     // 根据模板编码查询

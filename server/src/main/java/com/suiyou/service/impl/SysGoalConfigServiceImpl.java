@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Slf4j
 @Service
 public class SysGoalConfigServiceImpl implements SysGoalConfigService {
@@ -28,24 +27,6 @@ public class SysGoalConfigServiceImpl implements SysGoalConfigService {
     @Autowired
     private SysGoalTemplateRepository templateRepository;
     
-    /**
-     * 获取所有目标分类
-     * @return 目标分类列表
-     */
-    @Override
-    public List<GoalCategoryRespDTO> getAllCategories() {
-        return null;
-    }
-    
-    /**
-     * 获取所有目标模板
-     * @return 目标模板列表
-     */
-    @Override
-    public List<GoalTemplateRespDTO> getAllTemplates() {
-        return null;
-    }
-
     @Override
     public void initCategories(List<GoalCategoryInitDTO> dtos) {
         log.info("正在同步 [目标分类] 数据...");
@@ -138,4 +119,56 @@ public class SysGoalConfigServiceImpl implements SysGoalConfigService {
         
         return entity;
     } 
+
+    /**
+     * 获取所有目标分类
+     * @return 目标分类列表
+     */
+    @Override
+    public List<GoalCategoryRespDTO> getAllCategories() {
+        List<SysGoalCategory> categories = categoryRepository.findAllByIsEnabledOrderBySortOrderAsc(true);
+        return categories.stream()
+                .map(this::convertToRespDTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * 获取所有目标模板
+     * @return 目标模板列表
+     */
+    @Override
+    public List<GoalTemplateRespDTO> getAllTemplates() {
+        List<SysGoalTemplate> templates = templateRepository.findAll();
+        return templates.stream()
+                .map(this::convertToRespDTO)
+                .collect(Collectors.toList());
+    }
+
+    private GoalCategoryRespDTO convertToRespDTO(SysGoalCategory entity) {
+        GoalCategoryRespDTO dto = new GoalCategoryRespDTO();
+        dto.setCode(entity.getCategoryCode());
+        dto.setName(entity.getName());
+        dto.setSlogan(entity.getSlogan());
+        dto.setIconUrl(entity.getIconUrl());
+        dto.setBgColor(entity.getBgColor());
+        dto.setSortOrder(entity.getSortOrder());
+        dto.setIsHot(Boolean.FALSE);
+        return dto;
+    }
+    
+    private GoalTemplateRespDTO convertToRespDTO(SysGoalTemplate entity) {
+        GoalTemplateRespDTO dto = new GoalTemplateRespDTO();
+        dto.setCode(entity.getTemplateCode());
+        dto.setCategoryCode(entity.getCategoryCode());
+        dto.setName(entity.getName());
+        dto.setIconUrl(entity.getIconUrl());
+        dto.setDefaultAmount(entity.getDefaultAmount());
+        dto.setDefaultPeriodDays(entity.getDefaultPeriodDays());
+        dto.setInputMode(entity.getInputMode());
+        dto.setMilestoneStrategy(entity.getMilestoneStrategy());
+        dto.setSortOrder(entity.getSortOrder());
+        dto.setIsHot(entity.getIsHot().equals(Boolean.TRUE));
+
+        return dto;
+    }
 }

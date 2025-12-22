@@ -18,12 +18,7 @@ import org.springframework.util.DigestUtils;
 import com.suiyou.dto.goal.GoalCategoryInitDTO;
 import com.suiyou.dto.goal.GoalTemplateInitDTO;
 
-import java.math.BigDecimal;
-import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j

@@ -1,4 +1,4 @@
-package com.suiyou.dto;
+package com.suiyou.dto.goal;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,4 +37,13 @@ public class GoalCategoryRespDTO {
     private String bgColor;
     
     // 如果前端排序完全依赖后端返回的数组顺序，这里甚至不需要 sortOrder 字段
+    /**
+     * 排序序号 (用于前端排序)
+     */
+    private Integer sortOrder;
+    
+    /**
+     * 是否热门分类 (用于前端展示)
+     */
+    private Boolean isHot;
 }
