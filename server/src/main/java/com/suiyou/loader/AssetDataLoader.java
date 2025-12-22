@@ -31,13 +31,21 @@ public class AssetDataLoader extends AbstractConfigLoader {
     protected void loadConfig() throws Exception {
         log.info("开始同步资产分类数据...");
         
+        if (!jsonResource.exists()) {
+            log.warn("资产分类配置文件不存在，跳过加载");
+            return;
+        }
+        
+        // 1. 读取配置
         List<CategoryInitDTO> dtos = objectMapper.readValue(
             jsonResource.getInputStream(),
             new TypeReference<List<CategoryInitDTO>>() {}
         );
 
+        // 2. 初始化资产分类
         sysAssetCategoryService.initCategories(dtos);
         
+        // 3. 更新配置版本
         updateConfigVersion("asset_category", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(dtos)));
     }
 }

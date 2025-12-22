@@ -32,15 +32,21 @@ public class InstitutionDataLoader extends AbstractConfigLoader {
         log.info("开始同步金融机构数据...");
 
         // 解析JSON数据
+        if (!jsonResource.exists()) {
+            log.warn("金融机构配置文件不存在，跳过加载");
+            return;
+        }
+
+        // 1. 读取配置
         List<InstitutionInitDTO> dtos = objectMapper.readValue(
             jsonResource.getInputStream().readAllBytes(), 
             new TypeReference<List<InstitutionInitDTO>>() {}
         );
         
-        // 同步数据
+        // 2. 初始化金融机构
         assetConfigService.initInstitutions(dtos);
         
-        // 更新配置版本
+        // 3. 更新配置版本
         updateConfigVersion("institution_data", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(dtos)));
         
         log.info("金融机构数据同步完成。");

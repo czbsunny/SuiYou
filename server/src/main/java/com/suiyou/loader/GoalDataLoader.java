@@ -56,7 +56,7 @@ public class GoalDataLoader extends AbstractConfigLoader {
         );
         goalConfigService.initTemplates(templateDtos);
         
-        // 更新配置版本
+        // 3. 更新配置版本
         updateConfigVersion("goal_template", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(templateDtos)));
         
         log.info("<<< 目标模块数据初始化完成。");
