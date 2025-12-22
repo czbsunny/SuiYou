@@ -4,10 +4,9 @@ import com.suiyou.dto.account.AssetCategoryRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.repository.SysAssetCategoryRepository;
 import com.suiyou.model.SysAssetCategory;
-import com.suiyou.service.SysAssetCategoryService;
+import com.suiyou.service.SysAssetConfigService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.annotation.Resource;
@@ -15,11 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class SysAssetCategoryServiceImpl implements SysAssetCategoryService {
+public class SysAssetConfigServiceImpl implements SysAssetConfigService {
 
     @Resource
     private SysAssetCategoryRepository repository;
