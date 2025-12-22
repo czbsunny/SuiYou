@@ -5,12 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import com.suiyou.model.SysConfigVersion;
-import com.suiyou.service.SysAssetCategoryService;
-import com.suiyou.service.SysGoalCategoryService;
+import com.suiyou.service.SysAssetConfigService;
+import com.suiyou.service.SysGoalConfigService;
 import com.suiyou.repository.SysConfigVersionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +23,10 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
     private SysConfigVersionRepository versionRepository;
 
     @Autowired
-    private SysAssetCategoryService assetCategoryService;
+    private SysAssetConfigService assetConfigService;
     
     @Autowired
-    private SysGoalCategoryService goalCategoryService;
+    private SysGoalConfigService goalConfigService;
     
     public ConfigManifestServiceImpl() {
 
@@ -45,12 +43,12 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
             switch (key) {
                 case "asset_categories":
                     // 业务 Service 负责查库并组装成 Tree
-                    resultMap.put(key, assetCategoryService.getCategoryTree()); 
+                    resultMap.put(key, assetConfigService.getCategoryTree()); 
                     break;
                     
                 case "goal_categories":
                     // 如果是简单的列表，直接返回 List
-                    resultMap.put(key, goalCategoryService.getGoalCategories());
+                    resultMap.put(key, goalConfigService.getAllCategories());
                     break;
                     
                 default:
@@ -61,11 +59,8 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
         return resultMap;
     }
 
-    private
-
     @Override
-    public 
- getConfigManifest() {
+    public ConfigManifestRespDTO getConfigManifest() {
 
         // 1. 查出所有版本 (一定要按 Key 排序！否则 GlobalHash 会乱跳)
         List<SysConfigVersion> versions = versionRepository.findAllByOrderByModuleKeyAsc();

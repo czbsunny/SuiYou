@@ -86,7 +86,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
      * 供 DataLoader 使用的方法 (之前提到的)
      */
     @Override
-    public void syncFromLoader(List<CategoryInitDTO> dtos) {
+    public void initCategories(List<CategoryInitDTO> dtos) {
          // 收集所有需要存在的分类code
         List<String> expectedCodes = new ArrayList<>();
         List<SysAssetCategory> entitiesToSave = new ArrayList<>();

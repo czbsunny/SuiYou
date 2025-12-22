@@ -5,7 +5,7 @@ import com.suiyou.dto.account.CategoryInitDTO;
 
 import java.util.List;
 
-public interface SysAssetCategoryService {
+public interface SysAssetConfigService {
     /**
      * 获取资产分类树
      */
@@ -14,5 +14,5 @@ public interface SysAssetCategoryService {
     /**
      * 供 DataLoader 使用的方法 (之前提到的)
      */
-    public void syncFromLoader(List<CategoryInitDTO> dtos);
+    public void initCategories(List<CategoryInitDTO> dtos);
 }

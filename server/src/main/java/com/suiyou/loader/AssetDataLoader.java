@@ -2,7 +2,7 @@ package com.suiyou.loader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.suiyou.dto.account.CategoryInitDTO;
-import com.suiyou.service.SysAssetCategoryService;
+import com.suiyou.service.SysAssetConfigService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.List;
 public class AssetDataLoader extends AbstractConfigLoader {
 
     @Autowired
-    private SysAssetCategoryService sysAssetCategoryService;
+    private SysAssetConfigService sysAssetCategoryService;
 
     @Value("classpath:sys_asset_category_init.json")
     private Resource jsonResource;
@@ -36,7 +36,7 @@ public class AssetDataLoader extends AbstractConfigLoader {
             new TypeReference<List<CategoryInitDTO>>() {}
         );
 
-        sysAssetCategoryService.syncFromLoader(dtos);
+        sysAssetCategoryService.initCategories(dtos);
         
         updateConfigVersion("asset_category", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(dtos)));
     }
