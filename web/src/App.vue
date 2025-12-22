@@ -1,8 +1,14 @@
 <script setup>
 import { onLaunch } from '@dcloudio/uni-app'
+import { useConfigStore } from '@/stores/config.js'
+
+const configStore = useConfigStore()
 
 onLaunch(() => {
   console.log('App Launch')
+  
+  // 全局静默加载配置
+  await configStore.initConfigs()
 })
 </script>
 

@@ -1,111 +1,79 @@
-import { get } from './apiService';
-
-// 本地存储键名
-const CONFIG_STORAGE_KEY = 'system_config';
-const CONFIG_VERSION_KEY = 'system_config_version';
+const STORAGE_KEY_PREFIX = 'cfg_data_';
+const HASH_MAP_KEY = 'cfg_hashes';
 
 /**
  * 配置管理服务
  * 提供配置的版本控制和本地缓存功能
  */
 class ConfigService {
-  /**
-   * 检查配置版本
-   * @returns {Promise<boolean>} 是否需要更新配置
-   */
-  async checkConfigVersion() {
-    try {
-      const response = await get('/sys/config/version');
-      if (response.statusCode === 200) {
-        const serverVersion = response.data.version;
-        const localVersion = uni.getStorageSync(CONFIG_VERSION_KEY);
-        
-        return serverVersion !== localVersion;
-      }
-      return true; // 默认需要更新
-    } catch (error) {
-      console.error('检查配置版本失败:', error);
-      return false; // 网络错误时使用本地缓存
-    }
-  }
+  constructor() {
+		// 本地缓存的 hash 映射表 { moduleKey: hash }
+		this.localHashes = uni.getStorageSync(HASH_MAP_KEY) || {};
+    this.manifestPromise = null; // 用于防止重复请求 manifest
+	}
 
   /**
-   * 获取最新配置
-   * @param {boolean} forceUpdate 是否强制更新
-   * @returns {Promise<Object>} 配置对象
-   */
-  async getConfig(forceUpdate = false) {
-    // 先尝试从本地获取配置
-    const localConfig = uni.getStorageSync(CONFIG_STORAGE_KEY);
-    
-    // 如果不需要强制更新且本地有配置
-    if (!forceUpdate && localConfig) {
-      return localConfig;
-    }
-    
-    // 检查版本是否需要更新
-    const needUpdate = await this.checkConfigVersion();
-    
-    if (needUpdate || forceUpdate) {
+	 * 获取指定配置模块
+	 * @param {Array} keys 需要获取的配置键列表，如 ['banks', 'categories']
+	 */
+	async getConfigs(keys) {
       try {
-        // 从服务器获取全量配置
-        const response = await get('/sys/config/all');
-        if (response.statusCode === 200) {
-          const newConfig = response.data;
-          
-          // 保存到本地存储
-          uni.setStorageSync(CONFIG_STORAGE_KEY, newConfig);
-          uni.setStorageSync(CONFIG_VERSION_KEY, newConfig.version);
-          
-          return newConfig;
-        }
-      } catch (error) {
-        console.error('获取配置失败:', error);
-        // 如果获取失败且本地有配置，使用本地配置
-        if (localConfig) {
-          return localConfig;
-        }
-        throw error;
+          // 防止并发请求 manifest
+          if (!this.manifestPromise) {
+              this.manifestPromise = this._fetchManifest();
+          }
+          const manifest = await this.manifestPromise;
+          // 请求完后清空，方便下次手动刷新
+          this.manifestPromise = null;
+
+          if (!manifest) return this._loadAllFromCache(keys);
+
+          const { modules } = manifest;
+          const keysToFetch = keys.filter(key => {
+              const isExpired = this.localHashes[key] !== modules[key];
+              const notInCache = !uni.getStorageSync(STORAGE_KEY_PREFIX + key);
+              return isExpired || notInCache;
+          });
+
+          if (keysToFetch.length > 0) {
+              const newData = await this._fetchRemoteConfigs(keysToFetch);
+              Object.keys(newData).forEach(key => {
+                  uni.setStorageSync(STORAGE_KEY_PREFIX + key, newData[key]);
+                  this.localHashes[key] = modules[key];
+              });
+              uni.setStorageSync(HASH_MAP_KEY, this.localHashes);
+          }
+
+          return this._loadAllFromCache(keys);
+      } catch (e) {
+          this.manifestPromise = null;
+          return this._loadAllFromCache(keys);
       }
-    }
-    
-    return localConfig || {};
   }
 
-  /**
-   * 获取特定配置项
-   * @param {string} key 配置项键名
-   * @param {any} defaultValue 默认值
-   * @returns {Promise<any>} 配置项值
-   */
-  async getConfigItem(key, defaultValue = null) {
-    const config = await this.getConfig();
-    return config[key] || defaultValue;
-  }
+  async _fetchManifest() {
+		return new Promise((resolve) => {
+			uni.request({
+				url: '/api/config/manifest', // 替换为实际地址
+				method: 'GET',
+				success: (res) => resolve(res.data),
+				fail: () => resolve(null)
+			});
+		});
+	}
 
-  /**
-   * 清除本地配置缓存
-   */
-  clearCache() {
-    uni.removeStorageSync(CONFIG_STORAGE_KEY);
-    uni.removeStorageSync(CONFIG_VERSION_KEY);
-  }
-
-  /**
-   * 获取账户创建相关配置
-   * @returns {Promise<Object>} 账户创建配置
-   */
-  async getAccountCreationConfig() {
-    return this.getConfigItem('accountCreation', {});
-  }
-
-  /**
-   * 获取目标创建相关配置
-   * @returns {Promise<Object>} 目标创建配置
-   */
-  async getGoalCreationConfig() {
-    return this.getConfigItem('goalCreation', {});
-  }
+  // 从后端批量获取配置数据
+	async _fetchRemoteConfigs(keys) {
+		return new Promise((resolve, reject) => {
+			uni.request({
+				url: '/api/config/fetch',
+				method: 'POST',
+				data: keys,
+				success: (res) => resolve(res.data),
+				fail: (err) => reject(err)
+			});
+		});
+	}
 }
 
 export default new ConfigService();
