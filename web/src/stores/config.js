@@ -8,7 +8,6 @@ export const useConfigStore = defineStore('config', {
     goalTemplates: [], // 目标模板
     institutionData: [], // 机构数据
     relations: [], // 关联关系
-    
     isLoaded: false // 是否加载完成
   }),
   actions: {
@@ -24,7 +23,6 @@ export const useConfigStore = defineStore('config', {
       this.institutionData = data.institution_data || [];
       this.relations = data.relation || [];
 
-      
       return data;
     }
   }
