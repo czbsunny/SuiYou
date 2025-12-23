@@ -7,18 +7,8 @@ export function createApp() {
   const app = createSSRApp(App)
   
   app.use(Pinia.createPinia())
-
-  // 初始化配置服务
-  configService.getConfig().then(() => {
-    console.log('配置初始化完成')
-  }).catch(error => {
-    console.error('配置初始化失败:', error)
-  })
-  
-  // 将配置服务挂载到全局，方便组件使用
-  app.config.globalProperties.$configService = configService
   
   return {
-    app
+    app, Pinia
   }
 }

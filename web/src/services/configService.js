@@ -74,6 +74,27 @@ class ConfigService {
 			});
 		});
 	}
+
+	_loadAllFromCache(keys) {
+		const result = {};
+		keys.forEach(key => {
+			result[key] = uni.getStorageSync(STORAGE_KEY_PREFIX + key);
+		});
+		return result;
+	}
+
+  /**
+   * 清除本地所有配置缓存（通常用于调试或强制刷新）
+   */
+  clearCache() {
+      const info = uni.getStorageInfoSync();
+      info.keys.forEach(key => {
+          if (key.startsWith(STORAGE_KEY_PREFIX) || key === HASH_MAP_KEY) {
+              uni.removeStorageSync(key);
+          }
+      });
+      this.localHashes = {};
+  }
 }
 
 export default new ConfigService();

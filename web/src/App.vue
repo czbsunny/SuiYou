@@ -4,7 +4,7 @@ import { useConfigStore } from '@/store/config.js'
 
 const configStore = useConfigStore()
 
-onLaunch(() => {
+onLaunch(async () => {
   console.log('App Launch')
 
   // 全局静默加载配置
