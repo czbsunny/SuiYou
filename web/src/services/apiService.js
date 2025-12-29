@@ -1,4 +1,4 @@
-const BASE_URL = 'https://www.zhitouying.cn';
+const BASE_URL = 'http://localhost:8080';
 
 export const request = async (options) => {
   try {

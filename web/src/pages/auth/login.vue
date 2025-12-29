@@ -128,7 +128,7 @@ const handlePhoneLogin = async () => {
 
             successMessage.value = '登录成功，正在跳转...';
             setTimeout(() => {
-                uni.switchTab({ url: '/pages/asset/index' });
+                uni.switchTab({ url: '/pages/home/index' });
             }, 1000);
         } else {
             let errorText = '登录失败，请检查用户名和密码';
@@ -194,7 +194,7 @@ const handleWechatLogin = async () => {
 
             successMessage.value = '登录成功，正在跳转...';
             setTimeout(() => {
-                uni.switchTab({ url: '/pages/asset/index' });
+                uni.switchTab({ url: '/pages/home/index' });
             }, 1000);
         } else {
             let errorText = '微信登录失败';

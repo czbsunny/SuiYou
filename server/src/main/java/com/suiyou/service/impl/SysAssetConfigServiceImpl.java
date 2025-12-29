@@ -285,6 +285,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             existingEntity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
             existingEntity.setColor(dto.getColor());
             existingEntity.setParentCode(parentCode);
+            existingEntity.setDescription(dto.getDescription());
             existingEntity.setIsSystem(true);
             return existingEntity;
         } else {
@@ -296,6 +297,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             entity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
             entity.setColor(dto.getColor());
             entity.setParentCode(parentCode);
+            entity.setDescription(dto.getDescription());
             entity.setIsSystem(true);
             return entity;
         }
@@ -311,14 +313,20 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
         if (existingEntity != null) {
             // 更新现有机构的属性
             existingEntity.setInstName(dto.getInstName());
+            existingEntity.setShortName(dto.getShortName());
+            existingEntity.setInstType(dto.getInstType());
             existingEntity.setLogoUrl(dto.getLogoUrl());
+            existingEntity.setThemeColor(dto.getThemeColor());
             existingEntity.setSortOrder(dto.getSortOrder());
             return existingEntity;
         } else {
             SysInstitution entity = new SysInstitution();
             entity.setInstCode(dto.getInstCode());
             entity.setInstName(dto.getInstName());
+            entity.setShortName(dto.getShortName());
+            entity.setInstType(dto.getInstType());
             entity.setLogoUrl(dto.getLogoUrl());
+            entity.setThemeColor(dto.getThemeColor());
             entity.setSortOrder(dto.getSortOrder());
             return entity;
         }

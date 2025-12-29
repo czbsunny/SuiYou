@@ -38,7 +38,7 @@ export const createAccount = async (accountData) => {
  */
 export const getAccounts = async () => {
   try {
-    const response = await get('/api/accounts/');
+    const response = await get('/api/accounts');
     
     if (response.statusCode === 200) {
       return response.data;
