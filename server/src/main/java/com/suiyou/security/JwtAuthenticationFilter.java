@@ -103,7 +103,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 从请求头中提取token
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        logger.info("doFilterInternal Authorization: {}", bearerToken);
 
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

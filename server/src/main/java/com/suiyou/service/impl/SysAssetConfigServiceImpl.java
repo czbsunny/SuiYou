@@ -1,6 +1,7 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.AssetCategoryRespDTO;
+import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.dto.account.InstitutionInitDTO;
 import com.suiyou.dto.account.RelationRuleConfigDTO;
@@ -60,7 +61,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
         
         // 转换 Entity -> VO 并放入 Map
         for (SysAssetCategory entity : allEntities) {
-            lookupMap.put(entity.getCategoryCode(), toRespDTO(entity));
+            lookupMap.put(entity.getCategoryCode(), toCategoryRespDTO(entity));
         }
 
         // 3. 组装树 (再遍历一次，O(N))
@@ -93,14 +94,44 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
      * 辅助方法：Entity 转 VO
      * 实际项目中可以使用 MapStruct 或 BeanUtils 简化
      */
-    private AssetCategoryRespDTO toRespDTO(SysAssetCategory entity) {
+    private AssetCategoryRespDTO toCategoryRespDTO(SysAssetCategory entity) {
         return AssetCategoryRespDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .code(entity.getCategoryCode())
-                .icon(entity.getIconUrl())
+                .categoryCode(entity.getCategoryCode())
+                .iconUrl(entity.getIconUrl())
+                .color(entity.getColor())
                 // .formKey(entity.getFormKey()) // 假设实体里有这个字段
                 .sortOrder(entity.getSortOrder())
+                .build();
+    }
+
+     /**
+     * 获取所有资产机构
+     */
+    @Override
+    public List<InstitutionRespDTO> getAllInstitutions() {
+        // 从数据库查询所有机构
+        List<SysInstitution> institutionEntities = institutionRepository.findAll();
+        
+        // 转换为 DTO 列表
+        return institutionEntities.stream()
+            .map(this::toInstitutionRespDTO)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 辅助方法：Entity 转 InstitutionInitDTO
+     */
+    private InstitutionRespDTO toInstitutionRespDTO(SysInstitution entity) {
+        return InstitutionRespDTO.builder()
+                .id(entity.getId())
+                .instCode(entity.getInstCode())
+                .instName(entity.getInstName())
+                .shortName(entity.getShortName())
+                .instType(entity.getInstType())
+                .logoUrl(entity.getLogoUrl())
+                .themeColor(entity.getThemeColor())
                 .build();
     }
     

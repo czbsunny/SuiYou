@@ -41,17 +41,22 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
         for (String key : keys) {
             // 根据 Key 路由到不同的业务 Service
             switch (key) {
-                case "asset_categories":
+                case "asset_category":
                     // 业务 Service 负责查库并组装成 Tree
                     resultMap.put(key, assetConfigService.getCategoryTree()); 
                     break;
                     
-                case "goal_categories":
+                case "institution_data":
+                    // 如果是简单的列表，直接返回 List
+                    resultMap.put(key, assetConfigService.getAllInstitutions());
+                    break;
+
+                case "goal_category":
                     // 如果是简单的列表，直接返回 List
                     resultMap.put(key, goalConfigService.getAllCategories());
                     break;
                     
-                case "goal_templates":
+                case "goal_template":
                     // 如果是简单的列表，直接返回 List
                     resultMap.put(key, goalConfigService.getAllTemplates());
                     break;
