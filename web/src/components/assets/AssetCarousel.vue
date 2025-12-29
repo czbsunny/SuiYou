@@ -5,12 +5,13 @@
       :key="item.id"
       class="apple-card"
       :class="getCardClass(index)"
+      :style="getDynamicStyle(item)"
       @click="handleCardClick(index)"
     >
       <!-- 卡片内容 -->
-      <view class="card-content">
+      <view class="card-content" :style="{ color: getTextColor(item.color) }">
         <view class="card-top">
-          <view class="icon-circle">
+          <view class="icon-circle" :style="{ backgroundColor: getIconBgColor(item.color) }">
              <i class="fa-solid text-sm" :class="item.icon"></i>
           </view>
           <text class="card-name">{{ item.name }}</text>
@@ -53,6 +54,39 @@ const getCardClass = (index) => {
   if (diff === 1) return 'next';
   if (diff === -1) return 'prev';
   return 'hidden-card';
+};
+
+const getDynamicStyle = (item) => {
+  const baseColor = item.color || '#2a806c';
+  return {
+    background: `linear-gradient(145deg, rgba(255,255,255,0.3) 0%, rgba(0,0,0,0) 100%), ${baseColor}`,
+    boxShadow: `0 12px 30px ${hexToRgba(baseColor, 0.3)}`
+  };
+};
+
+const getTextColor = (hexcolor) => {
+  if (!hexcolor) return '#FFFFFF';
+  hexcolor = hexcolor.replace("#", "");
+  const r = parseInt(hexcolor.substr(0, 2), 16);
+  const g = parseInt(hexcolor.substr(2, 2), 16);
+  const b = parseInt(hexcolor.substr(4, 2), 16);
+  
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  
+  return brightness > 180 ? '#1f2937' : '#FFFFFF';
+};
+
+const getIconBgColor = (hexcolor) => {
+  const isLight = getTextColor(hexcolor) === '#1f2937';
+  return isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.2)';
+};
+
+const hexToRgba = (hex, alpha) => {
+  hex = hex.replace("#", "");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 // 点击处理

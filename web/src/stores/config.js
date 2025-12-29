@@ -21,6 +21,15 @@ export const useConfigStore = defineStore('config', {
         color: item.color,
         sortOrder: item.sortOrder,
       }))
+    },
+    
+    getSubCategoriesByCode: (state) => (code) => {
+      const category = state.assetCategories.find(item => item.categoryCode === code);
+
+      if (category) {
+        return category.children || [];
+      }
+      return [];
     }
   },
 
@@ -38,14 +47,6 @@ export const useConfigStore = defineStore('config', {
       this.relations = data.relation || [];
 
       return data;
-    },
-
-    // 根据索引获取某个大类下的子资产
-    getSubCategoriesByIndex(index) {
-      if (this.assetCategories[index]) {
-        return this.assetCategories[index].children || [];
-      }
-      return [];
     }
   }
 })

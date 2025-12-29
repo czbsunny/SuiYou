@@ -158,6 +158,10 @@
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
+import { createAccount } from '@/services/accountService';
+import { useConfigStore } from '@/stores/config.js'
+
+const configStore = useConfigStore()
 
 // ---------------- 数据定义区 ----------------
 
@@ -169,26 +173,6 @@ const assetCategories = ref(Object.keys(ASSET_CATEGORY_DISPLAY).map(key => ({
   iconGray: ASSET_CATEGORY_DISPLAY[key].iconGray,
   color: ASSET_CATEGORY_DISPLAY[key].color
 })));
-
-// 2. 子类定义 - 与配置文件中的资产类别 ID 对应
-const subcategories = ref([
-  { id: 'cash_account', name: '现金账户', parentType: 'LIQUID' },
-  { id: 'alipay', name: '支付宝', parentType: 'LIQUID' },
-  { id: 'wechat', name: '微信钱包', parentType: 'LIQUID' },
-  { id: 'fixed_deposit', name: '定期存款', parentType: 'LIQUID' },
-  { id: 'stock', name: '股票', parentType: 'INVEST' },
-  { id: 'fund', name: '基金', parentType: 'INVEST' },
-  { id: 'bond', name: '债券', parentType: 'INVEST' },
-  { id: 'insurance', name: '保险', parentType: 'INVEST' },
-  { id: 'house', name: '房产', parentType: 'FIXED' },
-  { id: 'car', name: '车辆', parentType: 'FIXED' },
-  { id: 'gold', name: '黄金', parentType: 'OTHER' },
-  { id: 'collectibles', name: '收藏品', parentType: 'OTHER' },
-  { id: 'mortgage', name: '房贷', parentType: 'LOAN' },
-  { id: 'car_loan', name: '车贷', parentType: 'LOAN' },
-  { id: 'credit_card', name: '信用卡', parentType: 'LOAN' },
-  { id: 'personal_loan', name: '个人贷款', parentType: 'LOAN' }
-]);
 
 // 3. 机构定义 (模拟数据)
 const institutions = ref([
@@ -270,7 +254,7 @@ onLoad((options) => {
     }
   }
   // 默认选中当前大类下的第一个子类
-  const firstSub = subcategories.value.find(sub => sub.parentType === selectedAssetCategory.value);
+  const firstSub = currentSubcategories.value[0];
   if (firstSub) {
     selectedSubcategory.value = firstSub.id;
   }
@@ -289,7 +273,8 @@ onUnmounted(() => {
 
 // 计算属性：当前显示的大类下的子类列表
 const currentSubcategories = computed(() => {
-  return subcategories.value.filter(sub => sub.parentType === selectedAssetCategory.value);
+  console.log('当前大类:', selectedAssetCategory.value);
+  return configStore.getSubCategoriesByCode(selectedAssetCategory.value);
 });
 
 // 计算属性：当前子类可用的机构
@@ -308,7 +293,7 @@ const currentFields = computed(() => {
 // 计算属性：智能生成输入框占位符
 const accountNamePlaceholder = computed(() => {
   if (!selectedSubcategory.value) return '请输入名称';
-  const subName = subcategories.value.find(s => s.id === selectedSubcategory.value)?.name;
+  const subName = currentSubcategories.value.find(s => s.id === selectedSubcategory.value)?.name;
   const instName = institutions.value.find(i => i.id === assetForm.value.institution)?.name;
   
   if (instName) return `${instName}${subName}`;
@@ -318,7 +303,9 @@ const accountNamePlaceholder = computed(() => {
 // 方法：切换大类
 const selectAssetType = (typeId) => {
   selectedAssetCategory.value = typeId;
-  const firstSub = subcategories.value.find(sub => sub.parentType === typeId);
+  console.log('切换大类:', typeId);
+  const firstSub = currentSubcategories.value[0];
+  console.log('切换大类后第一个子类:', firstSub);
   selectedSubcategory.value = firstSub ? firstSub.id : '';
   assetForm.value.institution = ''; // 重置机构
 };
@@ -339,7 +326,7 @@ const openInstitutionSelect = () => {
 };
 
 // 方法：保存
-const saveAsset = () => {
+const saveAsset = async () => {
   if (!assetForm.value.accountName) {
     // 智能填入默认名
     assetForm.value.accountName = accountNamePlaceholder.value;
@@ -351,19 +338,26 @@ const saveAsset = () => {
   }
 
   const payload = {
-    group_type: selectedAssetCategory.value === 'debt' ? 'LIABILITY' : 'ASSET', // 简单映射
+    groupType: selectedAssetCategory.value === 'debt' ? 'LIABILITY' : 'ASSET',
     category: selectedAssetCategory.value,
-    subcategory: selectedSubcategory.value,
-    ...assetForm.value
+    subCategory: selectedSubcategory.value,
+    institution: assetForm.value.institution,
+    name: assetForm.value.accountName,
+    currency: assetForm.value.currency,
+    balance: parseFloat(assetForm.value.amount),
   };
 
   console.log('提交的数据:', payload);
-  uni.showToast({ title: '添加成功', icon: 'success' });
-  
-  // 模拟返回
-  setTimeout(() => {
-    uni.navigateBack();
-  }, 1500);
+
+  try {
+    const result = await createAccount(payload);
+    uni.showToast({ title: '添加成功', icon: 'success' });
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
+  } catch (error) {
+    uni.showToast({ title: error.message || '添加失败', icon: 'none' });
+  }
 };
 </script>
 

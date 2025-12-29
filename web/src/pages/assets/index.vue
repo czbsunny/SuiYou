@@ -22,16 +22,9 @@
       :list="configStore.topCategories"
       v-model:current="currentIndex" 
     />
-
-    <!-- 空状态 -->
-    <view v-if="assets.length === 0" class="empty-container">
-      <text class="empty-text">暂无资产数据</text>
-      <button class="add-btn" @click="handleAddAsset">添加资产</button>
-    </view>
     
     <!-- 4. 底部明细列表 -->
     <AssetList 
-      v-if="!loading && assets.length > 0"
       :data="currentAssetData" 
       @add-asset="handleAddAsset"
     />
@@ -59,7 +52,7 @@ const currentIndex = ref(0);
 
 // 计算当前选中的资产数据
 const currentAssetData = computed(() => {
-  return assets.value[currentIndex.value] || null;
+  return assets.value[currentIndex.value] || [];
 });
 
 // 格式化金额显示
@@ -86,6 +79,7 @@ const transformAccountData = (accounts) => {
     'LIABILITY': { id: 'LIABILITY', name: '负债', color1: '#ff512f', color2: '#dd2476', icon: 'fa-file-invoice-dollar' }
   };
 
+  
   accounts.accounts.forEach(account => {
     const groupType = account.groupType || 'ASSET';
     const category = account.category || 'OTHER';
@@ -231,29 +225,5 @@ page {
     font-size: 14px;
   }
 }
-
-.empty-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 0;
-  
-  .empty-text {
-    color: #9ca3af;
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-  
-  .add-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 30px;
-    font-size: 14px;
-  }
-}
-
 
 </style>
