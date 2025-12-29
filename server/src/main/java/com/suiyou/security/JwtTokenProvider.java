@@ -18,7 +18,7 @@ public class JwtTokenProvider {
     @Value("${app.jwtExpirationInMs:86400000}")
     private int jwtExpirationInMs;
     
-    @Value("${app.jwtSecret:Sunny%@)926}")
+    @Value("${app.jwtSecret:SuiYouSecretKeyForJWTTokenGenerationAndValidationMustBeAtLeast64Characters!}")
     private String jwtSecret;
     
     // 使用配置的密钥创建HS512算法密钥

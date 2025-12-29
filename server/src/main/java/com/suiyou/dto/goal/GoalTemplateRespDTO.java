@@ -1,4 +1,4 @@
-package com.suiyou.dto;
+package com.suiyou.dto.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

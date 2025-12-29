@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
-
     @Autowired
     private AccountService accountService;
 

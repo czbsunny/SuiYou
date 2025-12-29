@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         // 获取请求路径
         String requestPath = request.getRequestURI();
-        
+
         // 如果是无需认证的路径，直接跳过JWT验证
         if (isPublicPath(requestPath)) {
             filterChain.doFilter(request, response);
@@ -49,16 +49,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // 如果token存在且有效
+            // 验证token
             if (jwtTokenProvider.validateToken(token)) {
                 // 获取用户ID
                 Long userId = jwtTokenProvider.getUserIdFromJWT(token);
                 String username = jwtTokenProvider.getUsernameFromJWT(token);
-
-                // 将用户ID设置到请求属性中，以便在控制器中通过@RequestAttribute获取
+                
+                // 将用户ID设置到请求属性中
                 request.setAttribute("userId", userId);
 
-                // 创建认证对象 - 将用户ID作为name传递，确保控制器能正确获取用户ID
+                // 创建认证对象
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userId.toString(), null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -74,10 +74,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token is invalid");
             }
         } catch (Exception ex) {
-            // 如果token验证失败，清空上下文并记录日志
+            // 如果token验证失败
             logger.error("JWT token validation failed: {}", ex.getMessage(), ex);
             SecurityContextHolder.clearContext();
-            // 返回认证错误响应
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token authentication failed: " + ex.getMessage());
         }
     }
@@ -104,6 +103,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 从请求头中提取token
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+        logger.info("doFilterInternal Authorization: {}", bearerToken);
+
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

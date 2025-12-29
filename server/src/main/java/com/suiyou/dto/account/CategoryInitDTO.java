@@ -12,5 +12,6 @@ public class CategoryInitDTO {
     private String iconUrl;
     private Integer sortOrder;
     private String color;
+    private String description;
     private List<CategoryInitDTO> children;
 }
