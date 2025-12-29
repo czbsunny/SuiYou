@@ -10,6 +10,20 @@ export const useConfigStore = defineStore('config', {
     relations: [], // 关联关系
     isLoaded: false // 是否加载完成
   }),
+  getters: {
+    // Getter: 直接获取 5 大类，给轮播组件用
+    topCategories: (state) => {
+      return state.assetCategories.map(item => ({
+        id: item.id,
+        name: item.name,
+        categoryCode: item.categoryCode,
+        iconUrl: item.iconUrl,
+        color: item.color,
+        sortOrder: item.sortOrder,
+      }))
+    }
+  },
+
   actions: {
     // 这就是你刚才问的 initConfigs
     async initConfigs() {
@@ -24,6 +38,14 @@ export const useConfigStore = defineStore('config', {
       this.relations = data.relation || [];
 
       return data;
+    },
+
+    // 根据索引获取某个大类下的子资产
+    getSubCategoriesByIndex(index) {
+      if (this.assetCategories[index]) {
+        return this.assetCategories[index].children || [];
+      }
+      return [];
     }
   }
 })

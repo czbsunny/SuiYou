@@ -46,7 +46,6 @@ export const ASSET_CATEGORY_DISPLAY = {
   }
 };
 
-
 // 资产添加表单配置
 export const ASSET_FORM_CONFIG = {
   MIN_AMOUNT: 0.01,

@@ -16,20 +16,19 @@
     <view v-if="loading" class="loading-container">
       <text class="loading-text">加载中...</text>
     </view>
-    
+
+    <!-- 轮播组件：双向绑定当前索引 -->
+    <AssetCarousel
+      :list="configStore.topCategories"
+      v-model:current="currentIndex" 
+    />
+
     <!-- 空状态 -->
-    <view v-else-if="assets.length === 0" class="empty-container">
+    <view v-if="assets.length === 0" class="empty-container">
       <text class="empty-text">暂无资产数据</text>
       <button class="add-btn" @click="handleAddAsset">添加资产</button>
     </view>
     
-    <!-- 轮播组件：双向绑定当前索引 -->
-    <AssetCarousel 
-      v-else
-      :list="assets" 
-      v-model:current="currentIndex" 
-    />
-
     <!-- 4. 底部明细列表 -->
     <AssetList 
       v-if="!loading && assets.length > 0"
@@ -47,6 +46,9 @@ import HealthGrid from '../../components/assets/HealthGrid.vue';
 import AssetCarousel from '../../components/assets/AssetCarousel.vue';
 import AssetList from '../../components/assets/AssetList.vue';
 import { getAccounts } from '../../services/accountService.js';
+import { useConfigStore } from '@/stores/config.js'
+
+const configStore = useConfigStore()
 
 // === 数据源 ===
 const assets = ref([]);

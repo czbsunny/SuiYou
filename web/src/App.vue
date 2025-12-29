@@ -1,6 +1,6 @@
 <script setup>
 import { onLaunch } from '@dcloudio/uni-app'
-import { useConfigStore } from '@/store/config.js'
+import { useConfigStore } from '@/stores/config.js'
 
 const configStore = useConfigStore()
 

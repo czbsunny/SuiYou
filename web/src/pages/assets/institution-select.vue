@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useConfigStore } from '@/store/config.js';
+import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
 const searchText = ref('');
