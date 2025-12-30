@@ -30,6 +30,16 @@ export const useConfigStore = defineStore('config', {
         return category.children || [];
       }
       return [];
+    },
+
+    getInstitutionsBySubCategoryCode: (state) => (subCategoryCode) => {
+      const matchedRelations = state.relations.filter(rel => rel.categoryCode === subCategoryCode);
+
+      const institutionCodes = matchedRelations.map(rel => rel.institutionCode);
+
+      return state.institutionData.filter(inst => 
+        institutionCodes.includes(inst.code)
+      );
     }
   },
 

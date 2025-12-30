@@ -174,15 +174,6 @@ const assetCategories = ref(Object.keys(ASSET_CATEGORY_DISPLAY).map(key => ({
   color: ASSET_CATEGORY_DISPLAY[key].color
 })));
 
-// 3. 机构定义 (模拟数据)
-const institutions = ref([
-  { id: 'alipay', name: '支付宝', subcategories: ['cash_account', 'alipay', 'fund', 'stock', 'insurance'] },
-  { id: 'wechat', name: '微信', subcategories: ['cash_account', 'wechat', 'fund', 'stock', 'insurance'] },
-  { id: 'icbc', name: '工商银行', subcategories: ['cash_account', 'fixed_deposit', 'stock', 'fund', 'bond', 'insurance', 'mortgage', 'credit_card'] },
-  { id: 'cmb', name: '招商银行', subcategories: ['cash_account', 'fixed_deposit', 'stock', 'fund', 'bond', 'insurance', 'mortgage', 'credit_card'] },
-  { id: 'other', name: '其他', subcategories: ['cash_account', 'house', 'car', 'gold', 'collectibles', 'personal_loan'] }
-]);
-
 // 4. 动态表单字段配置
 const subcategoryFields = ref({
   cash_account: [
@@ -279,7 +270,7 @@ const currentSubcategories = computed(() => {
 // 计算属性：当前子类可用的机构
 const availableInstitutions = computed(() => {
   if (!selectedSubcategory.value) return [];
-  return institutions.value.filter(inst => inst.subcategories.includes(selectedSubcategory.value));
+  return configStore.getInstitutionsBySubCategoryCode(selectedSubcategory.value);
 });
 
 // 计算属性：当前子类需要填写的动态字段
@@ -293,7 +284,7 @@ const currentFields = computed(() => {
 const accountNamePlaceholder = computed(() => {
   if (!selectedSubcategory.value) return '请输入名称';
   const subName = currentSubcategories.value.find(s => s.categoryCode === selectedSubcategory.value)?.name;
-  const instName = institutions.value.find(i => i.id === assetForm.value.institution)?.name;
+  const instName = availableInstitutions.value.find(i => i.id === assetForm.value.institution)?.name;
   
   if (instName) return `${instName}${subName}`;
   return `${subName}`;
@@ -318,7 +309,7 @@ const selectSubcategory = (subCode) => {
 const openInstitutionSelect = () => {
   // 跳转到机构选择页面，并传递机构列表
   uni.navigateTo({
-    url: `/pages/assets/institution-select?institutions=${encodeURIComponent(JSON.stringify(availableInstitutions.value))}`
+    url: `/pages/assets/institution-select?subCode=${selectedSubcategory.value}`
   });
 };
 

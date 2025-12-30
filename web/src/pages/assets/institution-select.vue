@@ -29,7 +29,7 @@
           class="institution-item"
           @click="selectInstitution(item)"
         >
-          <text class="institution-name">{{ item.name }}</text>
+          <text class="institution-name">{{ item.instName }}</text>
         </view>
         <view v-if="filteredList.length === 0" class="empty-tip">未找到相关机构</view>
       </view>
@@ -44,7 +44,7 @@
             class="institution-item"
             @click="selectInstitution(item)"
           >
-            <text class="institution-name">{{ item.name }}</text>
+            <text class="institution-name">{{ item.instName }}</text>
           </view>
         </view>
       </view>
@@ -69,54 +69,68 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { onLoad } from '@dcloudio/uni-app'; // 必须引入 onLoad 来接收参数
 import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
 const searchText = ref('');
 const scrollIntoId = ref('');
+const subCode = ref(''); // 用于存储接收到的子分类 Code
 
-// 1. 获取原始数据 (假设后端已经给每个机构带了 initial 字段，如果没有，前端需用 pinyin 库处理)
-const rawInstitutions = computed(() => configStore.institutionData || []);
-
-// 2. 字母表索引
-const alphabet = computed(() => {
-  const letters = groupedInstitutions.value.map(g => g.letter);
-  return letters;
+// 1. 接收从上个页面传来的参数
+onLoad((options) => {
+  if (options.subCode) {
+    subCode.value = options.subCode;
+    console.log('当前筛选子分类:', subCode.value);
+  }
 });
 
-// 3. 将数据按字母分组
+// 2. 核心：获取数据源 (改为基于 subCode 过滤)
+const rawInstitutions = computed(() => {
+  return configStore.getInstitutionsBySubCategoryCode(subCode.value);
+});
+
+// 3. 字母表索引 (基于过滤后的数据生成)
+const alphabet = computed(() => {
+  return groupedInstitutions.value.map(g => g.letter);
+});
+
+// 4. 将过滤后的数据按字母分组
 const groupedInstitutions = computed(() => {
   const groups = {};
+  console.log(rawInstitutions.value);
   rawInstitutions.value.forEach(item => {
-    const letter = (item.initial || '#').toUpperCase(); // 假设后端返回 initial 字段
+    // 优先使用后端返回的 initial 字段，如果没有则默认为 #
+    const letter = (item.initial || '#').toUpperCase(); 
     if (!groups[letter]) groups[letter] = [];
     groups[letter].push(item);
   });
   
-  // 排序 A-Z
   return Object.keys(groups).sort().map(key => ({
     letter: key,
     data: groups[key]
   }));
 });
 
-// 4. 搜索过滤 (扁平化)
+// 5. 搜索过滤 (在当前已过滤的机构池中进行搜索)
 const filteredList = computed(() => {
   const kw = searchText.value.toLowerCase();
+  if (!kw) return [];
   return rawInstitutions.value.filter(item => 
-    item.name.includes(kw) || (item.pinyin && item.pinyin.includes(kw))
+    item.name.toLowerCase().includes(kw) || 
+    (item.pinyin && item.pinyin.toLowerCase().includes(kw))
   );
 });
 
-// 5. 跳转到指定字母
+// 6. 跳转定位
 const scrollToLetter = (letter) => {
   scrollIntoId.value = 'letter-' + letter;
-  // 震动反馈
-  uni.vibrateShort();
+  uni.vibrateShort(); // 触感反馈
 };
 
-// 6. 选择机构并返回
+// 7. 选择并返回
 const selectInstitution = (institution) => {
+  // 发送全局事件
   uni.$emit('institutionSelected', institution);
   uni.navigateBack();
 };
