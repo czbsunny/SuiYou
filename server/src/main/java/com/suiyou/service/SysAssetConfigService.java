@@ -5,6 +5,7 @@ import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.dto.account.InstitutionInitDTO;
 import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.RelationRuleConfigDTO;
+import com.suiyou.dto.account.CategoryInstitutionRelationRespDTO;
 
 import java.util.List;
 
@@ -19,6 +20,11 @@ public interface SysAssetConfigService {
      */
     public List<InstitutionRespDTO> getAllInstitutions();
     
+    /**
+     * 获取资产分类与机构的关联关系
+     */
+    public List<CategoryInstitutionRelationRespDTO> getCategoryInstitutionRelations();
+
     /**
      * 供 DataLoader 使用的方法 (之前提到的)
      */

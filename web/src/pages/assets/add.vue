@@ -13,14 +13,14 @@
               <view class="type-scroll-inner">
                 <view 
                   v-for="type in assetCategories" 
-                  :key="type.id"
+                  :key="type.code"
                   class="type-item"
-                  :class="{ active: selectedAssetCategory === type.id }"
-                  @click="selectAssetType(type.id)"
+                  :class="{ active: selectedAssetCategory === type.code }"
+                  @click="selectAssetType(type.code)"
                 >
-                  <view class="icon-circle" :class="{ active: selectedAssetCategory === type.id }">
+                  <view class="icon-circle" :class="{ active: selectedAssetCategory === type.code }">
                     <!-- 根据选中状态切换图标 -->
-                    <image :src="selectedAssetCategory === type.id ? type.iconGray : type.icon" class="type-icon" mode="aspectFit" />
+                    <image :src="selectedAssetCategory === type.code ? type.iconGray : type.icon" class="type-icon" mode="aspectFit" />
                   </view>
                   <text class="type-text">{{ type.name }}</text>
                 </view>
@@ -36,10 +36,10 @@
               <view class="tags-wrapper">
                 <view 
                   v-for="sub in currentSubcategories" 
-                  :key="sub.id"
+                  :key="sub.categoryCode"
                   class="tag-item"
-                  :class="{ active: selectedSubcategory === sub.id }"
-                  @click="selectSubcategory(sub.id)"
+                  :class="{ active: selectedSubcategory === sub.categoryCode }"
+                  @click="selectSubcategory(sub.categoryCode)"
                 >
                   {{ sub.name }}
                 </view>
@@ -167,7 +167,7 @@ const configStore = useConfigStore()
 
 // 1. 大类定义 - 从配置文件读取
 const assetCategories = ref(Object.keys(ASSET_CATEGORY_DISPLAY).map(key => ({
-  id: key,
+  code: key,
   name: ASSET_CATEGORY_DISPLAY[key].name,
   icon: ASSET_CATEGORY_DISPLAY[key].icon,
   iconGray: ASSET_CATEGORY_DISPLAY[key].iconGray,
@@ -218,7 +218,7 @@ const subcategoryFields = ref({
 
 // 5. 表单响应式数据
 // 默认选中第一个资产类别
-const selectedAssetCategory = ref(assetCategories.value[0]?.id || 'LIQUID');
+const selectedAssetCategory = ref(assetCategories.value[0]?.code || 'LIQUID');
 const selectedSubcategory = ref('');
 const selectedInstitution = ref(null);
 const assetForm = ref({
@@ -248,7 +248,7 @@ const assetForm = ref({
 onLoad((options) => {
   if (options.type) {
     // 检查传入的 type 是否存在于 assetCategories 中
-    const isValidType = assetCategories.value.some(type => type.id === options.type);
+    const isValidType = assetCategories.value.some(type => type.code === options.type);
     if (isValidType) {
       selectedAssetCategory.value = options.type;
     }
@@ -256,7 +256,7 @@ onLoad((options) => {
   // 默认选中当前大类下的第一个子类
   const firstSub = currentSubcategories.value[0];
   if (firstSub) {
-    selectedSubcategory.value = firstSub.id;
+    selectedSubcategory.value = firstSub.categoryCode;
   }
   
   // 监听机构选择事件
@@ -273,7 +273,6 @@ onUnmounted(() => {
 
 // 计算属性：当前显示的大类下的子类列表
 const currentSubcategories = computed(() => {
-  console.log('当前大类:', selectedAssetCategory.value);
   return configStore.getSubCategoriesByCode(selectedAssetCategory.value);
 });
 
@@ -293,7 +292,7 @@ const currentFields = computed(() => {
 // 计算属性：智能生成输入框占位符
 const accountNamePlaceholder = computed(() => {
   if (!selectedSubcategory.value) return '请输入名称';
-  const subName = currentSubcategories.value.find(s => s.id === selectedSubcategory.value)?.name;
+  const subName = currentSubcategories.value.find(s => s.categoryCode === selectedSubcategory.value)?.name;
   const instName = institutions.value.find(i => i.id === assetForm.value.institution)?.name;
   
   if (instName) return `${instName}${subName}`;
@@ -301,18 +300,16 @@ const accountNamePlaceholder = computed(() => {
 });
 
 // 方法：切换大类
-const selectAssetType = (typeId) => {
-  selectedAssetCategory.value = typeId;
-  console.log('切换大类:', typeId);
+const selectAssetType = (typeCode) => {
+  selectedAssetCategory.value = typeCode;
   const firstSub = currentSubcategories.value[0];
-  console.log('切换大类后第一个子类:', firstSub);
-  selectedSubcategory.value = firstSub ? firstSub.id : '';
+  selectedSubcategory.value = firstSub ? firstSub.categoryCode : '';
   assetForm.value.institution = ''; // 重置机构
 };
 
 // 方法：切换子类
-const selectSubcategory = (subId) => {
-  selectedSubcategory.value = subId;
+const selectSubcategory = (subCode) => {
+  selectedSubcategory.value = subCode;
   assetForm.value.institution = ''; // 重置机构
   selectedInstitution.value = null;
 };

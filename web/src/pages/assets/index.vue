@@ -102,10 +102,10 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
-const getSubCategoryIcon = (category, sub) => {
+const getSubCategoryIcon = (category, subCategoryCode) => {
   const categoryObj = configStore.topCategories.find(cat => cat.categoryCode === category);
   const subCategories = configStore.getSubCategoriesByCode(category);
-  const subCategory = subCategories[sub];
+  const subCategory = subCategories.find(s => s.categoryCode === subCategoryCode);
   return subCategory?.iconUrl || categoryObj?.iconUrl; 
 };
 

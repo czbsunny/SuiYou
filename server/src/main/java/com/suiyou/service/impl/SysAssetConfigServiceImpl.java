@@ -5,6 +5,7 @@ import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.dto.account.InstitutionInitDTO;
 import com.suiyou.dto.account.RelationRuleConfigDTO;
+import com.suiyou.dto.account.CategoryInstitutionRelationRespDTO;
 
 import com.suiyou.repository.SysAssetCategoryRepository;
 import com.suiyou.repository.SysInstitutionRepository;
@@ -132,6 +133,30 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .instType(entity.getInstType())
                 .logoUrl(entity.getLogoUrl())
                 .themeColor(entity.getThemeColor())
+                .build();
+    }
+    
+     /**
+     * 获取资产分类与机构的关联关系
+     */
+    @Override
+    public List<CategoryInstitutionRelationRespDTO> getCategoryInstitutionRelations() {
+        // 从数据库查询所有关联关系
+        List<SysCategoryInstitutionRelation> relationEntities = categoryInstitutionRelationRepository.findAll();
+        
+        // 转换为 DTO 列表
+        return relationEntities.stream()
+            .map(this::toCategoryInstitutionRelationRespDTO)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 辅助方法：Entity 转 CategoryInstitutionRelationRespDTO
+     */
+    private CategoryInstitutionRelationRespDTO toCategoryInstitutionRelationRespDTO(SysCategoryInstitutionRelation entity) {
+        return CategoryInstitutionRelationRespDTO.builder()
+                .categoryCode(entity.getCategoryCode())
+                .instCode(entity.getInstCode())
                 .build();
     }
     

@@ -50,7 +50,12 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
                     // 如果是简单的列表，直接返回 List
                     resultMap.put(key, assetConfigService.getAllInstitutions());
                     break;
-
+                    
+                case "relation":
+                    // 如果是简单的列表，直接返回 List
+                    resultMap.put(key, assetConfigService.getCategoryInstitutionRelations());
+                    break;
+                    
                 case "goal_category":
                     // 如果是简单的列表，直接返回 List
                     resultMap.put(key, goalConfigService.getAllCategories());
