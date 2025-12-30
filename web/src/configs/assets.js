@@ -16,8 +16,8 @@ export const ASSET_CATEGORY = {
 export const ASSET_CATEGORY_DISPLAY = {
   [ASSET_CATEGORY.LIQUID]: {
     name: '流动资产',
-    icon: '/static/assets/cash.png',
-    iconGray: '/static/assets/cash-gray.png',
+    icon: '/static/assets/liquid.png',
+    iconGray: '/static/assets/liquid-gray.png',
     color: '#5e6266ff'
   },
   [ASSET_CATEGORY.INVEST]: {

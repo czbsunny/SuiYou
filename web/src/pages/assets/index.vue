@@ -1,38 +1,41 @@
 <template>
   <view class="page-container">
-    <!-- 1. 净值趋势 -->
-    <NetWorthCard />
+    <!-- 1. 净值趋势 (传入所有资产计算后的净值) -->
+    <NetWorthCard :accounts="allAccounts" />
 
     <!-- 2. 财务体检 -->
-    <HealthGrid />
+    <HealthGrid :accounts="allAccounts" />
 
-    <!-- 3. 资产概览 (3D 轮播) -->
+    <!-- 3. 资产概览 -->
     <view class="section-header">
       <text class="title">资产概览</text>
-      <text class="subtitle">滑动切换</text>
+      <text class="subtitle">左右滑动切换分类</text>
     </view>
     
-    <!-- 加载状态 -->
-    <view v-if="loading" class="loading-container">
-      <text class="loading-text">加载中...</text>
+    <view v-if="loading && !allAccounts.length" class="loading-container">
+      <uni-load-more status="loading"></uni-load-more>
     </view>
 
-    <!-- 轮播组件：双向绑定当前索引 -->
+    <!-- 轮播组件：数据源来自配置仓库 -->
     <AssetCarousel
-      :list="configStore.topCategories"
+      :list="displayCategories"
       v-model:current="currentIndex" 
     />
     
-    <!-- 4. 底部明细列表 -->
+    <!-- 4. 底部明细列表：根据当前选中的分类，过滤并展示账户 -->
     <AssetList 
-      :data="currentAssetData" 
-      @add-asset="handleAddAsset"
+      :categoryName="activeCategory?.name"
+      :color="activeCategory?.color"
+      :totalAmount="activeCategoryTotal"
+      :list="filteredAccountList" 
+      @add-click="handleAddAsset"
+      @item-click="handleItemClick"
     />
   </view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
@@ -41,189 +44,130 @@ import AssetList from '../../components/assets/AssetList.vue';
 import { getAccounts } from '../../services/accountService.js';
 import { useConfigStore } from '@/stores/config.js'
 
-const configStore = useConfigStore()
+const configStore = useConfigStore();
 
-// === 数据源 ===
-const assets = ref([]);
+// === 状态变量 ===
+const allAccounts = ref([]); // 存储后端返回的原始数组
 const loading = ref(true);
-const error = ref(null);
-
 const currentIndex = ref(0);
 
-// 计算当前选中的资产数据
-const currentAssetData = computed(() => {
-  return assets.value[currentIndex.value] || [];
+// 1. 获取轮播用的 5 大类配置，并动态计算每个大类的总金额
+const displayCategories = computed(() => {
+  return configStore.topCategories.map(cat => {
+    // 过滤出属于该分类的账户
+    const catAccounts = allAccounts.value.filter(acc => acc.category === cat.categoryCode);
+    // 计算总额
+    const total = catAccounts.reduce((sum, acc) => sum + (Number(acc.totalBalance) || 0), 0);
+    return {
+      ...cat,
+      total: formatCurrency(total) // 在卡片上显示的格式化金额
+    };
+  });
 });
 
-// 格式化金额显示
+// 2. 当前选中的分类对象
+const activeCategory = computed(() => {
+  return displayCategories.value[currentIndex.value];
+});
+
+// 3. 当前分类下的账户明细总额（传给 AssetList 头部）
+const activeCategoryTotal = computed(() => {
+  return activeCategory.value?.total || '¥ 0.00';
+});
+
+// 4. 核心：过滤并转换账户数据给 AssetList 组件
+const filteredAccountList = computed(() => {
+  if (!activeCategory.value) return [];
+
+  return allAccounts.value
+    .filter(acc => acc.category === activeCategory.value.categoryCode)
+    .map(acc => ({
+      id: acc.id,
+      name: acc.name,
+      platform: acc.institution || '未指定机构',
+      balance: acc.totalBalance,
+      color: activeCategory.value.color, // 列表Logo背景色跟随大类
+      icon: getSubCategoryIcon(acc.category, acc.subCategory),
+      trendText: acc.frozenBalance > 0 ? `冻结: ¥${acc.frozenBalance}` : '', 
+      type: 'neutral'
+    }));
+});
+
+// 辅助：金额格式化
 const formatCurrency = (value) => {
-  if (value === null || value === undefined) return '¥ 0';
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
     currency: 'CNY',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2
   }).format(value);
 };
 
-// 转换账户数据为页面所需格式
-const transformAccountData = (accounts) => {
-  if (!accounts || !accounts.accounts || accounts.accounts.length === 0) {
-    return [];
-  }
-
-  // 按账户组类型分组
-  const groupMap = new Map();
-  const groupConfig = {
-    'ASSET': { id: 'ASSET', name: '资产', color1: '#4facfe', color2: '#00f2fe', icon: 'fa-wallet' },
-    'LIABILITY': { id: 'LIABILITY', name: '负债', color1: '#ff512f', color2: '#dd2476', icon: 'fa-file-invoice-dollar' }
-  };
-
-  
-  accounts.accounts.forEach(account => {
-    const groupType = account.groupType || 'ASSET';
-    const category = account.category || 'OTHER';
-    const groupKey = groupType;
-    
-    if (!groupMap.has(groupKey)) {
-      const config = groupConfig[groupType] || groupConfig['ASSET'];
-      groupMap.set(groupKey, {
-        id: groupKey,
-        name: config.name,
-        total: 0,
-        color1: config.color1,
-        color2: config.color2,
-        icon: config.icon,
-        list: []
-      });
-    }
-
-    const group = groupMap.get(groupKey);
-    group.total += account.balance || 0;
-    
-    // 获取机构名称
-    let institutionName = account.institution || '';
-    let subInfo = '';
-    
-    if (category === 'LIQUID') {
-      subInfo = account.subCategory === 'BANK_CARD' ? '银行卡' : '电子账户';
-    } else if (category === 'INVEST') {
-      subInfo = '投资账户';
-    } else if (category === 'FIXED') {
-      subInfo = '固定资产';
-    } else {
-      subInfo = category;
-    }
-    
-    group.list.push({
-      id: account.id,
-      n: account.name,
-      s: subInfo + (institutionName ? ` · ${institutionName}` : ''),
-      a: account.balance,
-      i: getCategoryIcon(category)
-    });
-  });
-
-  // 转换总金额格式
-  return Array.from(groupMap.values()).map(group => ({
-    ...group,
-    total: formatCurrency(group.total)
-  }));
+const getSubCategoryIcon = (category, sub) => {
+  const categoryObj = configStore.topCategories.find(cat => cat.categoryCode === category);
+  const subCategories = configStore.getSubCategoriesByCode(category);
+  const subCategory = subCategories[sub];
+  return subCategory?.iconUrl || categoryObj?.iconUrl; 
 };
 
-// 获取分类图标
-const getCategoryIcon = (category) => {
-  const iconMap = {
-    'LIQUID': 'fa-wallet',
-    'INVEST': 'fa-chart-line',
-    'FIXED': 'fa-house',
-    'OTHER': 'fa-cubes',
-    'LOAN': 'fa-file-invoice-dollar'
-  };
-  return iconMap[category] || 'fa-wallet';
-};
-
-// 加载资产数据
-const loadAssets = async () => {
+// 加载数据
+const loadData = async () => {
   loading.value = true;
-  error.value = null;
-  
   try {
-    const result = await getAccounts();
-    console.log('获取资产数据成功:', result);
-    assets.value = transformAccountData(result);
+    const res = await getAccounts();
+    // 此时 res 就是你刚才给我的那个包含 accounts 数组的对象
+    allAccounts.value = res.accounts || [];
   } catch (err) {
-    console.error('获取资产数据失败:', err);
-    error.value = err.message || '加载资产数据失败';
-    // 如果加载失败，使用空数组
-    assets.value = [];
+    console.error('加载账户失败:', err);
   } finally {
     loading.value = false;
   }
 };
 
-// 页面显示时刷新数据
 onShow(() => {
-  loadAssets();
+  loadData();
 });
 
-// 添加资产按钮点击事件处理函数
 const handleAddAsset = () => {
-  const currentAsset = assets.value[currentIndex.value];
-  const assetType = currentAsset?.id || 'ASSET';
-  
-  console.log(`添加${currentAsset?.name || '资产'}类型的资产`);
-  
-  // 跳转到添加资产页面并传递资产类型
   uni.navigateTo({
-    url: `/pages/assets/add?type=${assetType}`
+    url: `/pages/assets/add?category=${activeCategory.value?.categoryCode}`
+  });
+};
+
+const handleItemClick = (item) => {
+  uni.navigateTo({
+    url: `/pages/assets/detail?id=${item.id}`
   });
 };
 </script>
 
 <style lang="scss">
-
-/* 全局变量与基础样式 */
 page {
-  background-color: $bg-page;
+  background-color: #F9F8F4; // 统一使用你预览页的米色
 }
 .page-container {
-  padding-bottom: 100px;
-  min-height: 100vh;
-  background-color: $bg-page;
-  font-family: -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
+  padding-bottom: 60px;
 }
 
 .section-header {
-  padding: 0 24px;
-  margin-bottom: 12px;
+  padding: 0 40rpx;
+  margin: 30rpx 0 10rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   .title {
-    font-size: 12px;
+    font-size: 24rpx;
     font-weight: 700;
     color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2rpx;
   }
   .subtitle {
-    font-size: 10px;
+    font-size: 20rpx;
     color: #d1d5db;
   }
 }
 
 .loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 60px 0;
-  
-  .loading-text {
-    color: #9ca3af;
-    font-size: 14px;
-  }
+  padding: 40rpx 0;
 }
-
 </style>
