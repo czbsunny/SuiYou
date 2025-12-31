@@ -52,11 +52,22 @@
               <view class="form-row">
                 <text class="row-label">所属机构</text>
                 <view 
-                  class="picker" 
+                  class="picker-trigger" 
                   @click="openInstitutionSelect"
                 >
-                  <view class="row-input">
-                    {{ selectedInstitution ? selectedInstitution.name : '请选择机构' }}
+                  <view class="selected-inst-box">
+                    <!-- 选中的机构 Logo -->
+                    <view v-if="selectedInstitution" class="mini-logo-wrapper">
+                      <image 
+                        :src="selectedInstitution.logoUrl || '/static/icons/default-bank.png'" 
+                        class="mini-logo" 
+                        mode="aspectFit" 
+                      />
+                    </view>
+                    <!-- 选中的机构名称 -->
+                    <text class="inst-display-text" :class="{ 'placeholder': !selectedInstitution }">
+                      {{ selectedInstitution ? selectedInstitution.instName : '请选择机构' }}
+                    </text>
                   </view>
                 </view>
               </view>
@@ -253,7 +264,7 @@ onLoad((options) => {
   // 监听机构选择事件
   uni.$on('institutionSelected', (institution) => {
     selectedInstitution.value = institution;
-    assetForm.value.institution = institution.id;
+    assetForm.value.institution = institution.instCode;
   });
 });
 
@@ -270,6 +281,7 @@ const currentSubcategories = computed(() => {
 // 计算属性：当前子类可用的机构
 const availableInstitutions = computed(() => {
   if (!selectedSubcategory.value) return [];
+  console.log('selectedSubcategory.value', selectedSubcategory.value);
   return configStore.getInstitutionsBySubCategoryCode(selectedSubcategory.value);
 });
 
@@ -499,9 +511,47 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   }
 }
 
-/* --- 表单列表风格 --- */
-.form-group {
-  // 列表容器
+.picker-trigger {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.selected-inst-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  
+  .mini-logo-wrapper {
+    width: 44rpx;
+    height: 44rpx;
+    background-color: #f8f9fa;
+    border-radius: 8px; // 圆形小头像风格
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12rpx;
+    overflow: hidden;
+    border: 1rpx solid rgba(0,0,0,0.03);
+  }
+
+  .mini-logo {
+    width: 100%;
+    height: 100%;
+  }
+
+  .inst-display-text {
+    font-size: 15px;
+    color: $text-main;
+    margin-right: 4rpx;
+    
+    &.placeholder {
+      color: $text-placeholder;
+      font-size: 14px;
+    }
+  }
 }
 
 .form-row {
@@ -509,7 +559,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   align-items: center;
   padding: 16px 0;
   border-bottom: 1px solid $border-light;
-  
+
   &.last-row {
     border-bottom: none;
     padding-bottom: 0;

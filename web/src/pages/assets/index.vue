@@ -84,7 +84,7 @@ const filteredAccountList = computed(() => {
     .map(acc => ({
       id: acc.id,
       name: acc.name,
-      platform: acc.institution || '未指定机构',
+      instInfo: configStore.getInstitutionByCode(acc.institution),
       balance: acc.totalBalance,
       color: activeCategory.value.color, // 列表Logo背景色跟随大类
       icon: getSubCategoryIcon(acc.category, acc.subCategory),

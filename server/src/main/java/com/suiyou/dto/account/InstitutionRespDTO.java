@@ -26,4 +26,6 @@ public class InstitutionRespDTO {
     private String themeColor;
 
     private String indexLetter;
+    
+    private Boolean isHot;
 }

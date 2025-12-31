@@ -56,6 +56,15 @@
       }
     },
     {
+      "path": "pages/assets/detail",
+      "style": {
+        "navigationBarTitleText": "资产详情",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/assets/institution-select",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",

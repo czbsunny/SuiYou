@@ -32,6 +32,9 @@ public class SysInstitution {
     @Column(name = "index_letter", length = 1)
     private String indexLetter;
     
+    @Column(name = "is_hot", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean isHot = false;
+    
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;
 }

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -106,7 +107,6 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .categoryCode(entity.getCategoryCode())
                 .iconUrl(entity.getIconUrl())
                 .color(entity.getColor())
-                // .formKey(entity.getFormKey()) // 假设实体里有这个字段
                 .sortOrder(entity.getSortOrder())
                 .build();
     }
@@ -138,6 +138,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .logoUrl(entity.getLogoUrl())
                 .themeColor(entity.getThemeColor())
                 .indexLetter(entity.getIndexLetter())
+                .isHot(entity.getIsHot())
                 .build();
     }
     
@@ -386,6 +387,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             existingEntity.setThemeColor(dto.getThemeColor());
             existingEntity.setIndexLetter(indexLetter);
             existingEntity.setSortOrder(dto.getSortOrder());
+            existingEntity.setIsHot(Optional.ofNullable(dto.getIsHot()).orElse(false));
             return existingEntity;
         } else {
             SysInstitution entity = new SysInstitution();
@@ -397,6 +399,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             entity.setThemeColor(dto.getThemeColor());
             entity.setIndexLetter(indexLetter);
             entity.setSortOrder(dto.getSortOrder());
+            entity.setIsHot(Optional.ofNullable(dto.getIsHot()).orElse(false));
             return entity;
         }
     }

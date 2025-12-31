@@ -8,6 +8,7 @@ export const useConfigStore = defineStore('config', {
     goalTemplates: [], // 目标模板
     institutionData: [], // 机构数据
     relations: [], // 关联关系
+    institutionMap: {}, // 机构数据映射表
     isLoaded: false // 是否加载完成
   }),
   getters: {
@@ -34,12 +35,17 @@ export const useConfigStore = defineStore('config', {
 
     getInstitutionsBySubCategoryCode: (state) => (subCategoryCode) => {
       const matchedRelations = state.relations.filter(rel => rel.categoryCode === subCategoryCode);
-
-      const institutionCodes = matchedRelations.map(rel => rel.institutionCode);
+      const institutionCodes = matchedRelations.map(rel => rel.instCode);
+      
+      if (!institutionCodes.length) return [];
 
       return state.institutionData.filter(inst => 
-        institutionCodes.includes(inst.code)
+        institutionCodes.includes(inst.instCode)
       );
+    },
+
+    getInstitutionByCode: (state) => (instCode) => {
+      return state.institutionMap[instCode] || null;
     }
   },
 
@@ -55,6 +61,10 @@ export const useConfigStore = defineStore('config', {
       this.goalTemplates = data.goal_template || [];
       this.institutionData = data.institution_data || [];
       this.relations = data.relation || [];
+      this.institutionMap = this.institutionData.reduce((map, inst) => {
+        map[inst.instCode] = inst;
+        return map;
+      }, {});
 
       return data;
     }

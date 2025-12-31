@@ -11,4 +11,5 @@ public class InstitutionInitDTO {
     private String logoUrl;
     private String themeColor;
     private Integer sortOrder;
+    private Boolean isHot;
 }

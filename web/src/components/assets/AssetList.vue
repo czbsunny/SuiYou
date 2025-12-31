@@ -18,13 +18,13 @@
       >
         <view class="card-left">
           <view class="logo-box">
-            <image class="icon-img" :src="item.icon" mode="aspectFit"></image>
+            <image class="logo-img" :src="item.instInfo?.logoUrl || item.icon" mode="aspectFit"></image>
           </view>
         </view>
 
         <view class="card-center">
           <view class="asset-title">{{ item.name }}</view>
-          <view class="asset-sub">{{ item.platform }}</view>
+          <view class="asset-sub">{{ item.instInfo?.instName || '未指定机构' }}</view>
         </view>
 
         <view class="card-right">
@@ -161,17 +161,29 @@ $text-muted: #9ca3af;
 }
 
 /* 卡片内部元素 */
-.card-left { margin-right: 32rpx; }
+.card-left { 
+  margin-right: 32rpx; 
+}
+
 .logo-box {
-  width: 88rpx; height: 88rpx;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: bold; color: white; font-size: 36rpx;
-  .icon-img {
-    width: 72rpx;
-    height: 72rpx;
+  width: 88rpx; 
+  height: 88rpx;
+  border-radius: 20rpx;
+  background-color: #f8f9fa;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+
+  overflow: hidden; 
+  
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+
+  .logo-img {
+    width: 100%;
+    height: 100%;
   }
 }
+
 .card-center { flex: 1; }
 .asset-title { font-size: 30rpx; font-weight: 600; color: #111827; margin-bottom: 4rpx; }
 .asset-sub { font-size: 24rpx; color: $text-muted; }
