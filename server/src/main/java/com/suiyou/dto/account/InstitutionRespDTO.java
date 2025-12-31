@@ -24,4 +24,6 @@ public class InstitutionRespDTO {
     private String logoUrl;
 
     private String themeColor;
+
+    private String indexLetter;
 }

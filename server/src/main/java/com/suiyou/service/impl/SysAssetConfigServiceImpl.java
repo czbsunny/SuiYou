@@ -24,6 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import jakarta.annotation.Resource;
 
+// pinyin4j 导入
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +41,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SysAssetConfigServiceImpl implements SysAssetConfigService {
-
     @Resource
     private SysAssetCategoryRepository assetCategoryRepository;
 
@@ -133,6 +137,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .instType(entity.getInstType())
                 .logoUrl(entity.getLogoUrl())
                 .themeColor(entity.getThemeColor())
+                .indexLetter(entity.getIndexLetter())
                 .build();
     }
     
@@ -366,6 +371,12 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
         // 根据机构code查询现有机构
         SysInstitution existingEntity = institutionRepository.findByInstCode(dto.getInstCode());
         
+        // 自动生成首字母（如果提供了shortName）
+        String indexLetter = null;
+        if (dto.getShortName() != null && !dto.getShortName().trim().isEmpty()) {
+            indexLetter = getChineseInitialLetters(dto.getShortName());
+        }
+        
         if (existingEntity != null) {
             // 更新现有机构的属性
             existingEntity.setInstName(dto.getInstName());
@@ -373,6 +384,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             existingEntity.setInstType(dto.getInstType());
             existingEntity.setLogoUrl(dto.getLogoUrl());
             existingEntity.setThemeColor(dto.getThemeColor());
+            existingEntity.setIndexLetter(indexLetter);
             existingEntity.setSortOrder(dto.getSortOrder());
             return existingEntity;
         } else {
@@ -383,8 +395,48 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             entity.setInstType(dto.getInstType());
             entity.setLogoUrl(dto.getLogoUrl());
             entity.setThemeColor(dto.getThemeColor());
+            entity.setIndexLetter(indexLetter);
             entity.setSortOrder(dto.getSortOrder());
             return entity;
+        }
+    }
+
+    /**
+     * 获取中文字符串的首字母
+     * @param chineseStr 中文字符串
+     * @return 首字母字符串（如：工商银行 -> G）
+     */
+    private String getChineseInitialLetters(String chineseStr) {
+        if (chineseStr == null || chineseStr.trim().isEmpty()) {
+            return "";
+        }
+        
+        try {
+            HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+            // 设置格式为大写首字母
+            format.setCaseType(net.sourceforge.pinyin4j.format.HanyuPinyinCaseType.UPPERCASE);
+            format.setToneType(net.sourceforge.pinyin4j.format.HanyuPinyinToneType.WITHOUT_TONE);
+            
+            char[] chars = chineseStr.toCharArray();
+            
+            for (char c : chars) {
+                if (Character.toString(c).matches("[\\u4e00-\\u9fa5]")) { // 中文字符
+                    String[] pinyinArray = PinyinHelper.toHanyuPinyinStringArray(c, format);
+                    if (pinyinArray != null && pinyinArray.length > 0) {
+                        return String.valueOf(pinyinArray[0].charAt(0)); // 返回第一个中文字符的首字母
+                    }
+                } else if (Character.isLetter(c)) { // 英文字母
+                    return String.valueOf(Character.toUpperCase(c)); // 返回第一个英文字母
+                }
+                // 跳过数字和特殊字符，继续查找下一个字符
+            }
+            
+            // 如果没有找到任何字母，返回#
+            return "#";
+        } catch (BadHanyuPinyinOutputFormatCombination e) {
+            log.warn("拼音转换失败: {}, 错误: {}", chineseStr, e.getMessage());
+            // 如果拼音转换失败，返回第一个字符
+            return chineseStr.substring(0, 1).toUpperCase();
         }
     }
 }

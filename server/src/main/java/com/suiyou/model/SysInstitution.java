@@ -28,6 +28,9 @@ public class SysInstitution {
     
     @Column(name = "theme_color", length = 16)
     private String themeColor;
+
+    @Column(name = "index_letter", length = 1)
+    private String indexLetter;
     
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;
