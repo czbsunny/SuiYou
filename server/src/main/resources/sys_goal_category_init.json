@@ -3,7 +3,7 @@
     "categoryCode": "100_WISHES",
     "name": "心愿拔草",
     "slogan": "取悦自己，奔赴每一场热爱",
-    "iconUrl": "/static/icons/cat/wishes.png",
+    "iconUrl": "/static/goals/category/wishes.png",
     "bgColor": "#FF9F43",
     "sortOrder": 1,
     "isEnabled": true
@@ -12,7 +12,7 @@
     "categoryCode": "200_BIG_ITEMS",
     "name": "人生大件",
     "slogan": "改变生活状态的重要里程碑",
-    "iconUrl": "/static/icons/cat/big_items.png",
+    "iconUrl": "/static/goals/category/big_items.png",
     "bgColor": "#54A0FF",
     "sortOrder": 2,
     "isEnabled": true
@@ -21,7 +21,7 @@
     "categoryCode": "300_SECURITY",
     "name": "安全护盾",
     "slogan": "构建财务防线，无惧风雨",
-    "iconUrl": "/static/icons/cat/security.png",
+    "iconUrl": "/static/goals/category/security.png",
     "bgColor": "#1DD1A1",
     "sortOrder": 3,
     "isEnabled": true
@@ -30,7 +30,7 @@
     "categoryCode": "400_GROWTH",
     "name": "挚爱成长",
     "slogan": "投资自己，也关爱家人",
-    "iconUrl": "/static/icons/cat/growth.png",
+    "iconUrl": "/static/goals/category/growth.png",
     "bgColor": "#FF6B6B",
     "sortOrder": 4,
     "isEnabled": true
@@ -39,7 +39,7 @@
     "categoryCode": "500_WEALTH",
     "name": "财富雪球",
     "slogan": "积累资产，赢取未来的选择权",
-    "iconUrl": "/static/icons/cat/wealth.png",
+    "iconUrl": "/static/goals/category/wealth.png",
     "bgColor": "#5F27CD",
     "sortOrder": 5,
     "isEnabled": true

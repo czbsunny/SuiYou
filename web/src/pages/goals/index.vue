@@ -1,50 +1,70 @@
 <template>
-  <view class="page-container">
-    <!-- 1. 统计面板 -->
-    <GoalStats :stats="summaryStats" @add="handleAddGoal" />
-
-    <view class="main-content">
-      <!-- 2. 当前主线 -->
-      <GoalMain :data="primaryGoal" @click="goDetail" />
-
-      <!-- 3. 愿望清单 -->
-      <GoalList :list="goallist" @add="handleAddGoal" @clickItem="goDetail" />
-
-      <!-- 4. 成就展馆 -->
-      <GoalAchievements :list="achievements" />
+  <view class="goals-tab-container">
+    <!-- 1. 全局加载状态 -->
+    <view v-if="isLoading" class="loading-box">
+      <uni-load-more status="loading" />
     </view>
+
+    <block v-else>
+      <!-- 2. 空状态：显示引导组件 -->
+      <GoalGuide 
+        v-if="goalList.length === 0" 
+        :categories="configStore.goalCategories"
+        :templates="configStore.goalTemplates"
+      />
+
+      <!-- 3. 有数据：显示仪表盘组件 -->
+      <GoalDashboard 
+        v-else 
+        :primaryGoal="primaryGoal"
+        :wishlist="wishlist"
+        :achievements="achievements"
+        @add="onAddClick"
+      />
+    </block>
   </view>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue';
-import GoalStats from '@/components/goals/GoalStats.vue';
-import GoalMain from '@/components/goals/GoalMain.vue';
-import GoalList from '@/components/goals/GoalList.vue';
-import GoalAchievements from '@/components/goals/GoalAchievements.vue';
+import { onShow } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
+// 引入组件
+import GoalGuide from '@/components/goals/GoalGuide.vue';
+import GoalDashboard from '@/components/goals/GoalDashboard.vue';
 
-// 页面状态数据 (同你之前的定义)
-const primaryGoal = ref({ });
-const goallist = ref([]);
-const achievements = ref([ ]);
+const configStore = useConfigStore();
+const isLoading = ref(true);
+const goalList = ref([]); // 这里存储后端返回的真实目标列表
 
-// 格式化后的统计数据给 Stats 组件
-const summaryStats = computed(() => [
-  { label: '累计储备', value: '¥684,500' },
-  { label: '每月定存', value: '+¥5,500', valueClass: 'text-primary' },
-  { label: '平均进度', value: '24%', valueClass: 'text-gold' }
-]);
+// 从列表中提取“当前主线”（比如取第一个或者标记为主线的）
+const primaryGoal = computed(() => goalList.value.find(g => g.isPrimary) || goalList.value[0]);
+// 提取愿望清单
+const wishlist = computed(() => goalList.value.filter(g => g.status !== 'COMPLETED' && !g.isPrimary));
+// 提取成就馆
+const achievements = computed(() => goalList.value.filter(g => g.status === 'COMPLETED'));
 
-const handleAddGoal = () => uni.navigateTo({ url: '/pages/goals/add' });
-const goDetail = (item) => console.log('详情', item);
+onShow(async () => {
+  isLoading.value = true;
+  try {
+    // 调用后端接口获取目标列表
+    // const res = await getGoalsApi();
+    // goalList.value = res;
+    
+    // 模拟测试：如果没有目标，显示引导；如果有，显示列表
+    // goalList.value = []; 
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+// 处理在 Dashboard 里的点击新增（跳转到专门的选择页）
+const onAddClick = () => {
+  uni.navigateTo({ url: '/pages/goals/select-goal' });
+};
 </script>
 
-<style lang="scss" scoped>
-.page-container {
-  min-height: 100vh;
-  background-color: #F5F7F9;
-}
-.main-content {
-  padding: 30rpx 48rpx;
-}
+<style scoped>
+.goals-tab-container { min-height: 100vh; background-color: #F8F7F2; }
+.loading-box { padding-top: 200rpx; }
 </style>
