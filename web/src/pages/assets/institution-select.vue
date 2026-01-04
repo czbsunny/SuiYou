@@ -3,9 +3,7 @@
     <!-- 1. 搜索栏 (保持不变) -->
     <view class="header-section">
       <view class="search-bar">
-        <uni-icons type="search" size="18" color="#999"></uni-icons>
         <input type="text" v-model="searchText" placeholder="搜索机构名称" class="search-input" />
-        <uni-icons v-if="searchText" type="closeempty" size="18" color="#ccc" @click="searchText = ''"></uni-icons>
       </view>
     </view>
     

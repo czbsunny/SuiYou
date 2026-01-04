@@ -3,164 +3,42 @@
     <scroll-view scroll-y class="content-scroll">
       <view class="content-container">
         
-        <!-- 第一大块：资产归类 (卡片容器) -->
-        <view class="section-card">
-          <view class="card-title">资产归类</view>
-          
-          <view class="card-body">
-            <!-- 1. 大类选择 (横向滚动) -->
-            <scroll-view scroll-x class="type-scroll" :show-scrollbar="false">
-              <view class="type-scroll-inner">
-                <view 
-                  v-for="type in assetCategories" 
-                  :key="type.code"
-                  class="type-item"
-                  :class="{ active: selectedAssetCategory === type.code }"
-                  @click="selectAssetType(type.code)"
-                >
-                  <view class="icon-circle" :class="{ active: selectedAssetCategory === type.code }">
-                    <!-- 根据选中状态切换图标 -->
-                    <image :src="selectedAssetCategory === type.code ? type.iconGray : type.icon" class="type-icon" mode="aspectFit" />
-                  </view>
-                  <text class="type-text">{{ type.name }}</text>
-                </view>
-              </view>
-            </scroll-view>
+        <!-- 1. 分类选择 -->
+        <CategorySelector 
+          v-model="selectedAssetCategory"
+          v-model:subValue="selectedSubcategory"
+          :categories="assetCategories"
+          :subcategories="currentSubcategories"
+        />
 
-            <!-- 分割线 -->
-            <view class="divider" v-if="currentSubcategories.length > 0"></view>
+        <!-- 2. 机构选择与标识码 -->
+        <InstitutionPicker 
+          v-if="selectedSubcategory && availableInstitutions.length > 0"
+          :selected="selectedInstitution"
+          v-model:identifier="assetForm.accountIdentifier"
+          @click="openInstitutionSelect"
+        />
 
-            <!-- 2. 子类选择 -->
-            <view class="tags-container" v-if="currentSubcategories.length > 0">
-              <view class="tags-label">选择类型</view>
-              <view class="tags-wrapper">
-                <view 
-                  v-for="sub in currentSubcategories" 
-                  :key="sub.categoryCode"
-                  class="tag-item"
-                  :class="{ active: selectedSubcategory === sub.categoryCode }"
-                  @click="selectSubcategory(sub.categoryCode)"
-                >
-                  {{ sub.name }}
-                </view>
-              </view>
-            </view>
+        <!-- 3. 基础信息组件 -->
+        <AssetBasicForm 
+          v-model:name="assetForm.accountName"
+          v-model:amount="assetForm.amount"
+          :placeholder="accountNamePlaceholder"
+          :currency="assetForm.currency"
+        />
 
-            <!-- 3. 机构/平台选择 (根据子类联动) -->
-            <block v-if="selectedSubcategory && availableInstitutions.length > 0">
-              <view class="inner-divider"></view>
-              <view class="form-row">
-                <text class="row-label">所属机构</text>
-                <view 
-                  class="picker-trigger" 
-                  @click="openInstitutionSelect"
-                >
-                  <view class="selected-inst-box">
-                    <!-- 选中的机构 Logo -->
-                    <view v-if="selectedInstitution" class="mini-logo-wrapper">
-                      <image 
-                        :src="selectedInstitution.logoUrl || '/static/icons/default-bank.png'" 
-                        class="mini-logo" 
-                        mode="aspectFit" 
-                      />
-                    </view>
-                    <!-- 选中的机构名称 -->
-                    <text class="inst-display-text" :class="{ 'placeholder': !selectedInstitution }">
-                      {{ selectedInstitution ? selectedInstitution.instName : '请选择机构' }}
-                    </text>
-                  </view>
-                </view>
-              </view>
-            </block>
-          </view>
-        </view>
+        <!-- 4. 补充信息 -->
+        <DynamicFieldGroup 
+          v-model="assetForm"
+          :fields="currentFields"
+        />
 
-        <!-- 第二大块：基本信息 (卡片容器) -->
-        <view class="section-card">
-          <view class="card-title">基本信息</view>
-          <view class="card-body form-group">
-            
-            <!-- 名称 -->
-            <view class="form-row">
-              <text class="row-label">资产名称</text>
-              <input 
-                v-model="assetForm.accountName" 
-                type="text" 
-                :placeholder="accountNamePlaceholder"
-                class="row-input"
-                placeholder-class="input-placeholder"
-              />
-            </view>
-            
-            <!-- 金额 -->
-            <view class="form-row last-row">
-              <text class="row-label">金额 <text class="currency-label">{{ assetForm.currency }}</text></text>
-              <input 
-                v-model="assetForm.amount" 
-                type="digit" 
-                placeholder="0.00"
-                class="row-input amount-input"
-                placeholder-class="input-placeholder"
-              />
-            </view>
-          </view>
-        </view>
-
-        <!-- 第三大块：补充信息 (动态字段，卡片容器) -->
-        <block v-if="selectedSubcategory && currentFields.length > 0">
-          <view class="section-card">
-            <view class="card-title">补充信息</view>
-            <view class="card-body form-group">
-              
-              <template v-for="(field, index) in currentFields" :key="field.key">
-                <!-- 单行输入 (文本/数字/日期) -->
-                <view 
-                  v-if="field.type === 'text' || field.type === 'digit' || field.type === 'number'" 
-                  class="form-row"
-                  :class="{ 'last-row': index === currentFields.length - 1 && field.type !== 'textarea' }"
-                >
-                  <text class="row-label">{{ field.label }}</text>
-                  <input 
-                    v-model="assetForm[field.key]" 
-                    :type="field.type === 'digit' || field.type === 'number' ? field.type : 'text'" 
-                    :placeholder="field.placeholder || '选填'"
-                    class="row-input" 
-                    placeholder-class="input-placeholder"
-                  />
-                </view>
-                
-                <!-- 多行文本 (备注) -->
-                <view 
-                  v-else-if="field.type === 'textarea'" 
-                  class="form-row column-layout"
-                  :class="{ 'last-row': index === currentFields.length - 1 }"
-                >
-                  <text class="row-label mb-8">{{ field.label }}</text>
-                  <textarea 
-                    v-model="assetForm[field.key]" 
-                    :placeholder="field.placeholder || '请输入备注信息...'" 
-                    class="row-textarea"
-                    auto-height
-                    placeholder-class="input-placeholder"
-                  />
-                </view>
-              </template>
-
-            </view>
-          </view>
-        </block>
-
-        <!-- 底部占位，防止按钮遮挡 -->
         <view class="bottom-spacer"></view>
-
       </view>
     </scroll-view>
     
-    <!-- 底部悬浮按钮 -->
     <view class="fixed-bottom">
-      <view class="save-btn" @click="saveAsset" hover-class="save-btn-hover">
-        确认添加
-      </view>
+      <view class="save-btn" @click="saveAsset">确认添加</view>
     </view>
   </view>
 </template>
@@ -168,11 +46,17 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
 import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
-import { createAccount } from '@/services/accountService';
-import { useConfigStore } from '@/stores/config.js'
+import { createAccount } from '@/services/accountService.js';
 
-const configStore = useConfigStore()
+// 导入子组件
+import CategorySelector from '@/components/assets/add/CategorySelector.vue';
+import InstitutionPicker from '@/components/assets/add/InstitutionPicker.vue';
+import AssetBasicForm from '@/components/assets/add/AssetBasicForm.vue';
+import DynamicFieldGroup from '@/components/assets/add/DynamicFieldGroup.vue';
+
+const configStore = useConfigStore();
 
 // ---------------- 数据定义区 ----------------
 
@@ -265,6 +149,7 @@ onLoad((options) => {
   uni.$on('institutionSelected', (institution) => {
     selectedInstitution.value = institution;
     assetForm.value.institution = institution.instCode;
+    console.log('selectedInstitution', selectedInstitution.value);
   });
 });
 
@@ -302,24 +187,8 @@ const accountNamePlaceholder = computed(() => {
   return `${subName}`;
 });
 
-// 方法：切换大类
-const selectAssetType = (typeCode) => {
-  selectedAssetCategory.value = typeCode;
-  const firstSub = currentSubcategories.value[0];
-  selectedSubcategory.value = firstSub ? firstSub.categoryCode : '';
-  assetForm.value.institution = ''; // 重置机构
-};
-
-// 方法：切换子类
-const selectSubcategory = (subCode) => {
-  selectedSubcategory.value = subCode;
-  assetForm.value.institution = ''; // 重置机构
-  selectedInstitution.value = null;
-};
-
 // 打开机构选择页面
 const openInstitutionSelect = () => {
-  // 跳转到机构选择页面，并传递机构列表
   uni.navigateTo({
     url: `/pages/assets/institution-select?subCode=${selectedSubcategory.value}`
   });
@@ -362,8 +231,6 @@ const saveAsset = async () => {
 </script>
 
 <style lang="scss" scoped>
-/* ---------------- 样式定义区 ---------------- */
-
 /* 变量定义 */
 $primary-light: rgba(42, 128, 108, 0.08);
 

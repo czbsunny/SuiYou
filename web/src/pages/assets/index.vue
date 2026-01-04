@@ -7,30 +7,29 @@
     <HealthGrid :accounts="allAccounts" />
 
     <!-- 3. 资产概览 -->
-    <view class="section-header">
-      <text class="title">资产概览</text>
-      <text class="subtitle">左右滑动切换分类</text>
-    </view>
-    
+    <AssetViewToggle v-model="viewMode" />
+
     <view v-if="loading && !allAccounts.length" class="loading-container">
-      <uni-load-more status="loading"></uni-load-more>
+      <uni-load-more status="loading" />
     </view>
 
-    <!-- 轮播组件：数据源来自配置仓库 -->
-    <AssetCarousel
-      :list="displayCategories"
-      v-model:current="currentIndex" 
-    />
-    
-    <!-- 4. 底部明细列表：根据当前选中的分类，过滤并展示账户 -->
-    <AssetList 
-      :categoryName="activeCategory?.name"
-      :color="activeCategory?.color"
-      :totalAmount="activeCategoryTotal"
-      :list="filteredAccountList" 
-      @add-click="handleAddAsset"
-      @item-click="handleItemClick"
-    />
+    <view class="content-view">
+      <!-- 视角 A：按类别 (折叠块) -->
+      <CategoryListView 
+        v-if="viewMode === 'category'" 
+        :list="categoryGroupedList"
+        @item-click="handleItemClick"
+        @add-click="handleAddAsset"
+      />
+
+      <!-- 视角 B：按账户/机构 -->
+      <InstitutionListView 
+        v-else 
+        :list="institutionGroupedList"
+        @item-click="handleItemClick"
+        @add-click="handleAddAsset"
+      />
+    </view>
   </view>
 </template>
 
@@ -39,75 +38,56 @@ import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
-import AssetCarousel from '../../components/assets/AssetCarousel.vue';
-import AssetList from '../../components/assets/AssetList.vue';
 import { getAccounts } from '../../services/accountService.js';
 import { useConfigStore } from '@/stores/config.js'
+
+import AssetViewToggle from '@/components/assets/AssetViewToggle.vue';
+import CategoryListView from '@/components/assets/CategoryListView.vue';
+import InstitutionListView from '@/components/assets/InstitutionListView.vue';
 
 const configStore = useConfigStore();
 
 // === 状态变量 ===
 const allAccounts = ref([]); // 存储后端返回的原始数组
 const loading = ref(true);
-const currentIndex = ref(0);
+const viewMode = ref('category'); // 'category' | 'institution'
 
-// 1. 获取轮播用的 5 大类配置，并动态计算每个大类的总金额
-const displayCategories = computed(() => {
+// --- 数据聚合：视角 A (按 5 大类) ---
+const categoryGroupedList = computed(() => {
   return configStore.topCategories.map(cat => {
-    // 过滤出属于该分类的账户
-    const catAccounts = allAccounts.value.filter(acc => acc.category === cat.categoryCode);
-    // 计算总额
-    const total = catAccounts.reduce((sum, acc) => sum + (Number(acc.totalBalance) || 0), 0);
+    const items = allAccounts.value
+      .filter(acc => acc.category === cat.categoryCode)
+      .map(acc => ({
+        ...acc,
+        instInfo: configStore.getInstitutionByCode(acc.institution)
+      }));
+    
+    const total = items.reduce((sum, i) => sum + (Number(i.totalBalance) || 0), 0);
     return {
       ...cat,
-      total: formatCurrency(total) // 在卡片上显示的格式化金额
+      totalBalance: total,
+      items: items
     };
   });
 });
 
-// 2. 当前选中的分类对象
-const activeCategory = computed(() => {
-  return displayCategories.value[currentIndex.value];
+// --- 数据聚合：视角 B (按机构平台) ---
+const institutionGroupedList = computed(() => {
+  const groups = {};
+  const instMap = configStore.institutionMap;
+
+  allAccounts.value.forEach(acc => {
+    const instCode = acc.institution || 'OTHER';
+    if (!groups[instCode]) {
+      const instInfo = instMap[instCode] || { instName: '其他', logoUrl: '/static/icons/default.png' };
+      groups[instCode] = { ...instInfo, total: 0, accounts: [] };
+    }
+    groups[instCode].total += Number(acc.totalBalance);
+    groups[instCode].accounts.push(acc);
+  });
+
+  return Object.values(groups).sort((a, b) => b.total - a.total);
 });
-
-// 3. 当前分类下的账户明细总额（传给 AssetList 头部）
-const activeCategoryTotal = computed(() => {
-  return activeCategory.value?.total || '¥ 0.00';
-});
-
-// 4. 核心：过滤并转换账户数据给 AssetList 组件
-const filteredAccountList = computed(() => {
-  if (!activeCategory.value) return [];
-
-  return allAccounts.value
-    .filter(acc => acc.category === activeCategory.value.categoryCode)
-    .map(acc => ({
-      id: acc.id,
-      name: acc.name,
-      instInfo: configStore.getInstitutionByCode(acc.institution),
-      balance: acc.totalBalance,
-      color: activeCategory.value.color, // 列表Logo背景色跟随大类
-      icon: getSubCategoryIcon(acc.category, acc.subCategory),
-      trendText: acc.frozenBalance > 0 ? `冻结: ¥${acc.frozenBalance}` : '', 
-      type: 'neutral'
-    }));
-});
-
-// 辅助：金额格式化
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('zh-CN', {
-    style: 'currency',
-    currency: 'CNY',
-    minimumFractionDigits: 2
-  }).format(value);
-};
-
-const getSubCategoryIcon = (category, subCategoryCode) => {
-  const categoryObj = configStore.topCategories.find(cat => cat.categoryCode === category);
-  const subCategories = configStore.getSubCategoriesByCode(category);
-  const subCategory = subCategories.find(s => s.categoryCode === subCategoryCode);
-  return subCategory?.iconUrl || categoryObj?.iconUrl; 
-};
 
 // 加载数据
 const loadData = async () => {
@@ -129,7 +109,7 @@ onShow(() => {
 
 const handleAddAsset = () => {
   uni.navigateTo({
-    url: `/pages/assets/add?category=${activeCategory.value?.categoryCode}`
+    url: `/pages/assets/add`
   });
 };
 
@@ -145,29 +125,23 @@ page {
   background-color: #F9F8F4; // 统一使用你预览页的米色
 }
 .page-container {
-  padding-bottom: 60px;
-}
-
-.section-header {
-  padding: 0 40rpx;
-  margin: 30rpx 0 10rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .title {
-    font-size: 24rpx;
-    font-weight: 700;
-    color: #9ca3af;
-    letter-spacing: 2rpx;
-  }
-  .subtitle {
-    font-size: 20rpx;
-    color: #d1d5db;
-  }
+  min-height: 100vh;
+  background-color: #F9F8F4;
+  padding-bottom: 40rpx;
 }
 
 .loading-container {
   padding: 40rpx 0;
 }
+
+.global-add-btn {
+  width: 64rpx; height: 64rpx; background: #fff; border-radius: 20rpx;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  .plus-icon { width: 28rpx; height: 28rpx; opacity: 0.6; }
+  &:active { transform: scale(0.9); }
+}
+
+.content-view { padding: 0 32rpx; }
+
 </style>
