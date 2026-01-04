@@ -70,4 +70,13 @@ public class Goal {
     
     @Column(name = "updated_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_primary", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean isPrimary = false; // 是否为主线目标
+
+    @Column(name = "icon_url", length = 255)
+    private String iconUrl; // 存储图标路径或 Emoji 字符
+
+    @Column(name = "bg_url", length = 255)
+    private String bgUrl; // 主线目标的背景大图
 }

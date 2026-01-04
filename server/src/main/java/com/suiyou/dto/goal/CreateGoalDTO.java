@@ -1,11 +1,13 @@
-package com.suiyou.dto;
+package com.suiyou.dto.goal;
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class GoalDTO {
-
+@Data
+public class CreateGoalDTO {
     @NotBlank(message = "目标名称不能为空")
     @Size(max = 128, message = "目标名称长度不能超过128个字符")
     private String name;
@@ -23,44 +25,12 @@ public class GoalDTO {
     @Size(max = 20, message = "可见范围长度不能超过20个字符")
     private String visibleScope = "PRIVATE";
 
-    // Getters and Setters
-    public String getName() {
-        return name;
-    }
+    @Size(max = 255, message = "图标URL长度不能超过255个字符")
+    private String iconUrl; // 存储图标路径或 Emoji 字符
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Size(max = 255, message = "背景URL长度不能超过255个字符")
+    private String bgUrl; // 主线目标的背景大图
 
-    public BigDecimal getTargetAmount() {
-        return targetAmount;
-    }
-
-    public void setTargetAmount(BigDecimal targetAmount) {
-        this.targetAmount = targetAmount;
-    }
-
-    public LocalDate getDeadline() {
-        return deadline;
-    }
-
-    public void setDeadline(LocalDate deadline) {
-        this.deadline = deadline;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getVisibleScope() {
-        return visibleScope;
-    }
-
-    public void setVisibleScope(String visibleScope) {
-        this.visibleScope = visibleScope;
-    }
+    @NotNull(message = "是否为主线目标不能为空")
+    private Boolean isPrimary = false; // 是否为主线目标
 }

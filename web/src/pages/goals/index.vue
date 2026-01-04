@@ -20,6 +20,7 @@
         :wishlist="wishlist"
         :achievements="achievements"
         @add="onAddClick"
+        @clickItem="onItemClick"
       />
     </block>
   </view>
@@ -27,41 +28,55 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { onShow, onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
 // 引入组件
 import GoalGuide from '@/components/goals/GoalGuide.vue';
 import GoalDashboard from '@/components/goals/GoalDashboard.vue';
+import { goalService } from '@/services/goalService.js';
+
 
 const configStore = useConfigStore();
 const isLoading = ref(true);
 const goalList = ref([]); // 这里存储后端返回的真实目标列表
 
 // 从列表中提取“当前主线”（比如取第一个或者标记为主线的）
-const primaryGoal = computed(() => goalList.value.find(g => g.isPrimary) || goalList.value[0]);
+const primaryGoal = computed(() => goalList.value.filter(g => g.isPrimary)[0]);
 // 提取愿望清单
 const wishlist = computed(() => goalList.value.filter(g => g.status !== 'COMPLETED' && !g.isPrimary));
 // 提取成就馆
 const achievements = computed(() => goalList.value.filter(g => g.status === 'COMPLETED'));
 
-onShow(async () => {
+const fetchGoalListData = async () => {
   isLoading.value = true;
   try {
-    // 调用后端接口获取目标列表
-    // const res = await getGoalsApi();
-    // goalList.value = res;
-    
-    // 模拟测试：如果没有目标，显示引导；如果有，显示列表
-    // goalList.value = []; 
+    const res = await goalService.fetchUserGoals();
+    goalList.value = res.goals || []; // 这一步会让 index.vue 里的 v-if 判断生效
   } finally {
     isLoading.value = false;
   }
+};
+
+onLoad(() => {
+  uni.$on('refreshGoalList', () => {
+    fetchGoalListData();
+  });
 });
 
-// 处理在 Dashboard 里的点击新增（跳转到专门的选择页）
+onShow(() => {
+  fetchGoalListData();
+});
+
 const onAddClick = () => {
-  uni.navigateTo({ url: '/pages/goals/select-goal' });
+  uni.navigateTo({ url: '/pages/goals/add' });
 };
+
+const onItemClick = (item) => {
+  uni.navigateTo({
+    url: `/pages/goals/detail?id=${item.id}`
+  });
+};
+
 </script>
 
 <style scoped>

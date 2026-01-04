@@ -8,7 +8,15 @@
     <view v-if="data && data.id" class="focus-card" @click="$emit('click', data)">
       <view class="focus-top">
         <view class="goal-info">
-          <text class="goal-icon">{{ data.icon }}</text>
+          <image 
+            v-if="isIconUrl(data.iconUrl)" 
+            :src="data.iconUrl" 
+            class="goal-icon-img" 
+            mode="aspectFit"
+          />
+          <view v-else class="goal-icon-box">
+            {{ data.iconUrl || '💰' }}
+          </view>
           <view class="goal-texts">
             <text class="goal-name">{{ data.title }}</text>
             <text class="goal-sub">目标日期: {{ data.deadline || '未设置' }}</text>
@@ -19,11 +27,11 @@
       
       <view class="progress-box">
         <view class="progress-bar">
-          <view class="progress-fill" :style="{ width: data.progress + '%' }"></view>
+          <view class="progress-fill" :style="{ width: calculateProgress(data) + '%' }"></view>
         </view>
         <view class="progress-data">
-          <text class="percent">{{ data.progress }}%</text>
-          <text class="amount">已筹 ¥{{ data.current?.toLocaleString() }} / ¥{{ data.target?.toLocaleString() }}</text>
+          <text class="percent">{{ calculateProgress(data) }}%</text>
+          <text class="amount">已筹 ¥{{ data.currentAmount }} / ¥{{ data.targetAmount }}</text>
         </view>
       </view>
     </view>
@@ -42,6 +50,18 @@
 <script setup>
 defineProps({ data: Object });
 defineEmits(['click', 'add']);
+
+const isIconUrl = (url) => {
+  if (!url) return false;
+  return url.startsWith('http') || url.startsWith('/static') || url.startsWith('/');
+};
+
+const calculateProgress = (item) => {
+  if (!item.targetAmount || item.targetAmount === 0) return 0;
+  const percent = Math.round((item.currentAmount / item.targetAmount) * 100);
+  return percent > 100 ? 100 : percent;
+};
+
 </script>
 
 <style lang="scss" scoped>
@@ -59,6 +79,11 @@ defineEmits(['click', 'add']);
       .goal-name { font-size: 32rpx; font-weight: bold; color: #2C3E50; display: block; }
       .goal-sub { font-size: 22rpx; color: #95A5A6; }
     }
+    .goal-icon-img, .goal-icon-box { 
+      width: 64rpx; 
+      height: 64rpx; 
+      flex-shrink: 0;
+    }
     .goal-status { font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 8rpx; background: #eefdf5; color: #27ae60; }
   }
 }
@@ -75,7 +100,7 @@ defineEmits(['click', 'add']);
 
 /* 空白态样式 */
 .empty-focus-card {
-  width: 100%; height: 260rpx; background: #fff; border-radius: 32rpx;
+  width: 100%; height: 320rpx; background: #fff; border-radius: 32rpx;
   border: 2rpx dashed #d1d5db; display: flex; align-items: center; justify-content: center;
   &:active { background: #f8fafc; }
   .empty-content {

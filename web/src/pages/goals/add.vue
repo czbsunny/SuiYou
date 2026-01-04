@@ -34,9 +34,9 @@
         <text class="item-label">选择图标</text>
         <view class="item-value">
           <!-- 图片图标：增加了具体的 class 和限制 -->
-          <image v-if="isUrlIcon" :src="form.icon" class="selected-icon-img" mode="aspectFit" />
+          <image v-if="isUrlIcon" :src="form.iconUrl" class="selected-icon-img" mode="aspectFit" />
           <!-- Emoji 图标 -->
-          <text v-else class="selected-icon-emoji">{{ form.icon }}</text>
+          <text v-else class="selected-icon-emoji">{{ form.iconUrl }}</text>
           <uni-icons type="chevron-right" size="14" color="#ccc"></uni-icons>
         </view>
       </view>
@@ -76,7 +76,7 @@
             v-for="emoji in emojiList" 
             :key="emoji" 
             class="emoji-item"
-            :class="{ active: form.icon === emoji }"
+            :class="{ active: form.iconUrl === emoji }"
             @click="selectIcon(emoji)"
           >
             {{ emoji }}
@@ -96,24 +96,26 @@
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
+import { goalService } from '@/services/goalService.js';
 
 const configStore = useConfigStore();
 
 const form = ref({
   title: '',
   targetAmount: '',
-  icon: '💰',
+  iconUrl: '💰',
   deadline: '',
   isPrimary: false,
   categoryCode: '',
-  templateCode: ''
+  templateCode: '',
+  bgUrl: ''
 });
 
 const showIconPicker = ref(false);
 const emojiList = ['💰', '🏠', '🚗', '🏔️', '📷', '💻', '🎓', '✈️', '💍', '🎁', '👶', '🏥'];
 
 const isUrlIcon = computed(() => {
-  return form.value.icon && (form.value.icon.startsWith('http') || form.value.icon.startsWith('/static'));
+  return form.value.iconUrl && (form.value.iconUrl.startsWith('http') || form.value.iconUrl.startsWith('/static'));
 });
 
 onLoad((options) => {
@@ -124,7 +126,7 @@ onLoad((options) => {
       form.value.categoryCode = tplData.categoryCode;
       form.value.title = tplData.name;
       form.value.targetAmount = tplData.defaultAmount;
-      form.value.icon = tplData.iconUrl;
+      form.value.iconUrl = tplData.iconUrl;
 
       if (tplData.defaultPeriodDays) {
         const date = new Date();
@@ -140,7 +142,7 @@ const toggleIconPicker = () => {
 };
 
 const selectIcon = (emoji) => {
-  form.value.icon = emoji;
+  form.value.iconUrl = emoji;
   showIconPicker.value = false;
 };
 
@@ -152,17 +154,42 @@ const onPrimaryChange = (e) => {
   form.value.isPrimary = e.detail.value;
 };
 
-const handleSave = () => {
+const handleSave = async () => {
   if (!form.value.title || !form.value.targetAmount) {
     uni.showToast({ title: '请填写名称和金额', icon: 'none' });
     return;
   }
-  uni.showLoading({ title: '创建中...' });
-  setTimeout(() => {
+
+  uni.showLoading({ title: '创建中...', mask: true });
+
+  try {
+    // 1. 调用 Service
+    await goalService.createGoal(form.value);
+
+    // 2. 成功反馈
     uni.hideLoading();
     uni.showToast({ title: '目标已开启！', icon: 'success' });
-    setTimeout(() => uni.navigateBack(), 1500);
-  }, 800);
+    
+    // 3. 延时返回并刷新列表
+    setTimeout(() => {
+      // 🟢 方案 A：如果是返回 TabBar 页面，用 switchTab 最稳
+      uni.switchTab({
+        url: '/pages/goals/index',
+        success: () => {
+          // 这里的小技巧：通过全局事件或标志位通知目标页刷新
+          // 虽然目标页 onShow 也会执行，但发个事件更精准
+          uni.$emit('refreshGoalList'); 
+        }
+      });
+    }, 1500);
+  } catch (error) {
+    uni.hideLoading();
+    uni.showModal({
+      title: '提示',
+      content: error.message || '系统繁忙，请稍后再试',
+      showCancel: false
+    });
+  }
 };
 </script>
 

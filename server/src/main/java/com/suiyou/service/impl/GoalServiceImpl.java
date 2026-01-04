@@ -65,6 +65,11 @@ public class GoalServiceImpl implements GoalService {
         goal.setProgressPercent(BigDecimal.ZERO);
         goal.setStatus("ON_GOING");
         
+        // 设置图标和背景
+        goal.setIconUrl(goalDTO.getIconUrl());
+        goal.setBgUrl(goalDTO.getBgUrl());
+        goal.setIsPrimary(goalDTO.getIsPrimary());
+
         // 设置时间戳
         goal.setCreatedAt(LocalDateTime.now());
         goal.setUpdatedAt(LocalDateTime.now());
