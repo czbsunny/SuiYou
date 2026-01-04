@@ -20,6 +20,15 @@
       }
     },
     {
+      "path": "pages/goals/add",
+      "style": {
+        "navigationBarTitleText": "添加新目标",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "black",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/auth/login",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",
