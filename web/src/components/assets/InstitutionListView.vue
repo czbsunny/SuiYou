@@ -85,72 +85,31 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config.js';
 
 const props = defineProps({ 
   list: { type: Array, default: () => [] },
   mode: { type: String, default: 'detailed' },
-  // 新增：接收父组件当前的“一键展开/收起”状态
-  defaultExpandAll: { type: Boolean, default: true }
+  expandedCodes: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits(['item-click', 'add-click', 'sync-expand-status']);
+const emit = defineEmits(['item-click', 'add-click', 'update:expandedCodes']);
 const configStore = useConfigStore();
 
-// 1. 初始化展开数组为空
-const expandedInstCodes = ref([]);
+const toggle = (code) => {
+  // 复制一份数组进行操作（遵循单向数据流）
+  let newCodes = [...props.expandedCodes];
+  const index = newCodes.indexOf(code);
+  
+  if (index > -1) newCodes.splice(index, 1);
+  else newCodes.push(code);
+  
+  // 发送给父组件更新
+  emit('update:expandedCodes', newCodes);
+};
 
 // 判断是否展开
-const isExpanded = (code) => expandedInstCodes.value.includes(code);
-
-/**
- * 监听 list 变化：处理视图切换或数据加载时的状态对齐
- */
-watch(() => props.list, (newList) => {
-  if (newList && newList.length > 0) {
-    applyExpandStrategy(props.defaultExpandAll);
-  }
-}, { immediate: true });
-
-/**
- * 切换单个机构
- */
-const toggle = (code) => {
-  const index = expandedInstCodes.value.indexOf(code);
-  if (index > -1) {
-    expandedInstCodes.value.splice(index, 1);
-  } else {
-    expandedInstCodes.value.push(code);
-  }
-  
-  // 回传同步状态
-  if (expandedInstCodes.value.length === 0) {
-    emit('sync-expand-status', false);
-  } else if (expandedInstCodes.value.length === props.list.length) {
-    emit('sync-expand-status', true);
-  }
-};
-
-/**
- * 执行策略方法
- */
-const applyExpandStrategy = (isExpand) => {
-  if (isExpand) {
-    expandedInstCodes.value = props.list.map(inst => inst.instCode);
-  } else {
-    expandedInstCodes.value = [];
-  }
-};
-
-/**
- * 暴露 API 给父组件
- */
-const toggleAll = (isExpand) => {
-  applyExpandStrategy(isExpand);
-};
-
-defineExpose({ toggleAll });
+const isExpanded = (code) => props.expandedCodes.includes(code);
 
 // --- 工具函数 ---
 const getSubCatIcon = (catCode, subCode) => {
@@ -227,12 +186,12 @@ const getSubCatName = (catCode, subCode) => {
   position: relative;
 
   .asset-icon-box {
-    width: 56rpx; height: 56rpx; border-radius: 16rpx;
+    width: 56rpx; height: 56rpx; border-radius: 8rpx;
     margin-right: 20rpx; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     position: relative;
     &::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.8); border-radius: inherit; }
-    .sub-icon { width: 36rpx; height: 36rpx; z-index: 1; }
+    .sub-icon { width: 56rpx; height: 56rpx; z-index: 1; }
   }
 
   .asset-info {

@@ -21,24 +21,20 @@
     <view class="content-view">
       <!-- 视角 A：按类别 (折叠块) -->
       <CategoryListView 
-        ref="categoryRef"
-        v-if="viewMode === 'category'" 
+        v-if="viewMode === 'category'"
+        v-model:expandedCodes="categoryExpands" 
         :list="categoryGroupedList"
         :mode="displayMode"
-        :defaultExpandAll="isAllExpanded"
-        @sync-expand-status="handleSyncExpand"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
 
       <!-- 视角 B：按账户/机构 -->
       <InstitutionListView 
-        ref="institutionRef"
         v-else
+        v-model:expandedCodes="institutionExpands"
         :list="institutionGroupedList"
         :mode="displayMode"
-        :defaultExpandAll="isAllExpanded"
-        @sync-expand-status="handleSyncExpand"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
@@ -66,28 +62,27 @@ const loading = ref(true);
 const viewMode = ref('category'); // 'category' | 'institution'
 
 const displayMode = ref('detailed'); // 'detailed' | 'simple'
-const categoryRef = ref(null);
-const institutionRef = ref(null);
+const categoryExpands = ref([]);
+const institutionExpands = ref([]); 
 
-// 切换明细/简略模式
-const toggleDisplayMode = () => {
-  displayMode.value = displayMode.value === 'detailed' ? 'simple' : 'detailed';
-};
+// 2. 计算顶层按钮的状态：当前视图是否有展开项？
+const isAllExpanded = computed(() => {
+  if (viewMode.value === 'category') {
+    return categoryExpands.value.length > 0;
+  } else {
+    return institutionExpands.value.length > 0;
+  }
+});
 
-// 一键展开/收缩逻辑
-const isAllExpanded = ref(true);
-
-// 监听子组件手动点击回传的状态同步
-const handleSyncExpand = (status) => {
-  isAllExpanded.value = status;
-};
-
-// 一键展开/收缩方法
+// 3. 一键操作逻辑：直接操作父组件的数组
 const handleToggleAll = () => {
-  isAllExpanded.value = !isAllExpanded.value;
-  // 手动调用子组件暴露的 toggleAll
-  categoryRef.value?.toggleAll(isAllExpanded.value);
-  institutionRef.value?.toggleAll(isAllExpanded.value);
+  const shouldExpand = !isAllExpanded.value;
+  
+  if (viewMode.value === 'category') {
+    categoryExpands.value = shouldExpand ? categoryGroupedList.value.map(c => c.categoryCode) : [];
+  } else {
+    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.instCode) : [];
+  }
 };
 
 // --- 数据聚合：视角 A (按 5 大类) ---

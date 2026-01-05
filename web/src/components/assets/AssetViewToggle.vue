@@ -100,7 +100,7 @@ export default { name: 'AssetViewToggle' }
   flex: 1;
   text-align: center;
   line-height: 72rpx;
-  font-size: 40rpx;
+  font-size: 32rpx;
   font-weight: 900;
   color: #9CA3AF;
   z-index: 2;

@@ -89,7 +89,6 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
@@ -98,66 +97,25 @@ const configStore = useConfigStore();
 const props = defineProps({
   list: { type: Array, default: () => [] },
   mode: { type: String, default: 'detailed' },
-  // 新增：接收父组件当前的“一键展开/收起”状态
-  defaultExpandAll: { type: Boolean, default: true }
+  expandedCodes: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits(['item-click', 'add-click', 'sync-expand-status']);
+const emit = defineEmits(['item-click', 'add-click', 'update:expandedCodes']);
 
-// 1. 初始化展开数组为空
-const expandedCodes = ref([]);
-
-// 判断是否展开
-const isExpanded = (code) => expandedCodes.value.includes(code);
-
-/**
- * 进阶优化：监听 list 的变化
- * 当切换视图（v-if 切换）或数据重载时，根据父组件的意图初始化展开状态
- */
-watch(() => props.list, (newList) => {
-  if (newList && newList.length > 0) {
-    applyExpandStrategy(props.defaultExpandAll);
-  }
-}, { immediate: true });
-
-/**
- * 切换逻辑处理
- */
 const toggle = (code) => {
-  const index = expandedCodes.value.indexOf(code);
-  if (index > -1) {
-    expandedCodes.value.splice(index, 1);
-  } else {
-    expandedCodes.value.push(code);
-  }
+  // 复制一份数组进行操作（遵循单向数据流）
+  let newCodes = [...props.expandedCodes];
+  const index = newCodes.indexOf(code);
   
-  // 进阶优化：回传状态同步。如果全部手动收起了，通知父组件修改按钮文字
-  if (expandedCodes.value.length === 0) {
-    emit('sync-expand-status', false);
-  } else if (expandedCodes.value.length === props.list.length) {
-    emit('sync-expand-status', true);
-  }
+  if (index > -1) newCodes.splice(index, 1);
+  else newCodes.push(code);
+  
+  // 发送给父组件更新
+  emit('update:expandedCodes', newCodes);
 };
 
-/**
- * 执行展开/收起策略
- */
-const applyExpandStrategy = (isExpand) => {
-  if (isExpand) {
-    expandedCodes.value = props.list.map(cat => cat.categoryCode);
-  } else {
-    expandedCodes.value = [];
-  }
-};
-
-/**
- * 暴露给父组件的主动调用方法
- */
-const toggleAll = (isExpand) => {
-  applyExpandStrategy(isExpand);
-};
-
-defineExpose({ toggleAll });
+// 内部判断是否展开
+const isExpanded = (code) => props.expandedCodes.includes(code);
 
 // --- 数据处理辅助方法 ---
 const groupItemsBySub = (items) => {
