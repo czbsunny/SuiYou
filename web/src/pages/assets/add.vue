@@ -15,7 +15,7 @@
         <InstitutionPicker 
           v-if="selectedSubcategory && availableInstitutions.length > 0"
           :selected="selectedInstitution"
-          v-model:identifier="assetForm.accountIdentifier"
+          v-model:identifier="assetForm.identifier"
           @click="openInstitutionSelect"
         />
 
@@ -25,6 +25,7 @@
           v-model:amount="assetForm.amount"
           :placeholder="accountNamePlaceholder"
           :currency="assetForm.currency"
+          v-model:includeInNetWorth="assetForm.includeInNetWorth"
         />
 
         <!-- 4. 补充信息 -->
@@ -48,7 +49,7 @@ import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
 import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
-import { createAccount } from '@/services/accountService.js';
+import { createAsset } from '@/services/assetService.js';
 
 // 导入子组件
 import CategorySelector from '@/components/assets/add/CategorySelector.vue';
@@ -112,8 +113,8 @@ const assetForm = ref({
   accountName: '',
   amount: '',
   currency: 'CNY',
-  // 动态字段的存储池
-  accountNumber: '',
+  includeInNetWorth: true,
+  identifier: '',
   remark: '',
   startDate: '',
   endDate: '',
@@ -206,20 +207,27 @@ const saveAsset = async () => {
     return;
   }
 
+  if (assetForm.value.institution && !assetForm.value.identifier) {
+    uni.showToast({ title: '请输入机构账号末4位', icon: 'none' });
+    return;
+  }
+
   const payload = {
     groupType: selectedAssetCategory.value === 'debt' ? 'LIABILITY' : 'ASSET',
     category: selectedAssetCategory.value,
     subCategory: selectedSubcategory.value,
     institution: assetForm.value.institution,
+    institutionIdentifier: assetForm.value.identifier,
     name: assetForm.value.accountName,
     currency: assetForm.value.currency,
+    includeInNetWorth: assetForm.value.includeInNetWorth,
     balance: parseFloat(assetForm.value.amount),
   };
 
   console.log('提交的数据:', payload);
 
   try {
-    const result = await createAccount(payload);
+    await createAsset(payload);
     uni.showToast({ title: '添加成功', icon: 'success' });
     setTimeout(() => {
       uni.navigateBack();

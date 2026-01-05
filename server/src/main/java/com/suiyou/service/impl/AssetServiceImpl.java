@@ -40,6 +40,7 @@ public class AssetServiceImpl implements AssetService {
         }
         Asset asset = new Asset();
         asset.setAccountId(account.getId());
+        asset.setOwnerId(userId);
         asset.setGroupType(assetDTO.getGroupType());
         asset.setCategory(assetDTO.getCategory());
         asset.setSubCategory(assetDTO.getSubCategory());

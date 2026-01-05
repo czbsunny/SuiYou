@@ -18,7 +18,7 @@
       </view>
       
       <!-- 金额录入 -->
-      <view class="form-row last-row">
+      <view class="form-row">
         <view class="row-label">
           金额 <text class="currency-label">{{ currency }}</text>
         </view>
@@ -32,6 +32,21 @@
         />
       </view>
 
+      <!-- 计入资产统计开关 -->
+      <view class="form-row last-row">
+        <view class="item-label-group">
+          <text class="row-label">计入总资产</text>
+          <text class="item-desc">开启后金额将纳入资产统计</text>
+        </view>
+        
+        <view class="switch-wrapper">
+          <switch 
+            :checked="includeInNetWorth" 
+            color="#2A806C" 
+            @change="e => $emit('update:includeInNetWorth', e.detail.value)"
+          />
+        </view>
+      </view>
     </view>
   </view>
 </template>
@@ -41,14 +56,15 @@ defineProps({
   name: String,
   amount: [String, Number],
   placeholder: { type: String, default: '请输入名称' },
-  currency: { type: String, default: 'CNY' }
+  currency: { type: String, default: 'CNY' },
+  // 🟢 新增 Prop：是否计入净值，默认开启
+  includeInNetWorth: { type: Boolean, default: true }
 });
 
-defineEmits(['update:name', 'update:amount']);
+defineEmits(['update:name', 'update:amount', 'update:includeInNetWorth']);
 </script>
 
 <style lang="scss" scoped>
-/* 统一样式，确保卡片视觉一致 */
 .section-card {
   background-color: #ffffff;
   border-radius: 16px;
@@ -72,6 +88,7 @@ defineEmits(['update:name', 'update:amount']);
   align-items: center;
   padding: 16px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  justify-content: space-between; // 确保左右对齐
   
   &.last-row {
     border-bottom: none;
@@ -79,10 +96,30 @@ defineEmits(['update:name', 'update:amount']);
   }
 }
 
+// 左侧标签组样式
+.item-label-group {
+  display: flex;
+  flex-direction: column;
+  .item-desc {
+    font-size: 22rpx;
+    color: #9CA3AF;
+    margin-top: 4rpx;
+    font-weight: 400;
+  }
+}
+
+.switch-wrapper {
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  /* 如果在小程序中觉得 switch 还是太小，可以设置这里的宽度来辅助对齐 */
+  margin-right: -10rpx; 
+}
 .row-label {
   font-size: 15px;
   color: #1F2937;
-  width: 180rpx;
+  width: 200rpx; // 稍微加宽一点适配文字
   flex-shrink: 0;
   font-weight: 500;
 }

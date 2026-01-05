@@ -1,5 +1,5 @@
 <template>
-  <view class="detail-container" v-if="account">
+  <view class="detail-container" v-if="asset">
     <!-- 1. 顶部资产卡片 (还原 Apple Card 质感) -->
     <view class="asset-hero" :style="{ backgroundColor: categoryColor }">
       <view class="hero-gloss"></view>
@@ -13,15 +13,15 @@
         </view>
         
         <view class="balance-section">
-          <text class="label">当前余额 ({{ account.currency }})</text>
+          <text class="label">当前余额 ({{ asset.currency }})</text>
           <view class="amount-row">
             <text class="symbol">¥</text>
-            <text class="num">{{ formatNumber(account.totalBalance) }}</text>
+            <text class="num">{{ formatNumber(asset.totalBalance) }}</text>
           </view>
         </view>
 
         <view class="hero-footer">
-          <text class="account-name">{{ account.name }}</text>
+          <text class="account-name">{{ asset.name }}</text>
           <text class="account-type">{{ subCategoryName }}</text>
         </view>
       </view>
@@ -32,17 +32,17 @@
       <view class="info-card">
         <view class="info-item">
           <text class="info-label">冻结金额</text>
-          <text class="info-value">¥ {{ formatNumber(account.frozenBalance) }}</text>
+          <text class="info-value">¥ {{ formatNumber(asset.frozenBalance) }}</text>
         </view>
         <view class="divider"></view>
         <view class="info-item">
           <text class="info-label">可见范围</text>
-          <text class="info-value">{{ account.visibleScope === 'PRIVATE' ? '仅自己可见' : '家庭共享' }}</text>
+          <text class="info-value">{{ asset.visibleScope === 'PRIVATE' ? '仅自己可见' : '家庭共享' }}</text>
         </view>
         <view class="divider"></view>
         <view class="info-item">
           <text class="info-label">计入净值</text>
-          <text class="info-value">{{ account.includeInNetWorth ? '是' : '否' }}</text>
+          <text class="info-value">{{ asset.includeInNetWorth ? '是' : '否' }}</text>
         </view>
       </view>
     </view>
@@ -52,12 +52,12 @@
       <view class="info-card">
         <view class="info-item">
           <text class="info-label">创建时间</text>
-          <text class="info-value">{{ formatDate(account.createdAt) }}</text>
+          <text class="info-value">{{ formatDate(asset.createdAt) }}</text>
         </view>
         <view class="divider"></view>
         <view class="info-item">
           <text class="info-label">最后更新</text>
-          <text class="info-value">{{ formatDate(account.updatedAt) }}</text>
+          <text class="info-value">{{ formatDate(asset.updatedAt) }}</text>
         </view>
       </view>
     </view>
@@ -80,22 +80,30 @@
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
-import { getAccounts } from '@/services/accountService.js';
+import { getAssets } from '@/services/assetService.js';
 
 const configStore = useConfigStore();
-const account = ref(null);
-const accountId = ref(null);
+const asset = ref(null);
+const assetId = ref(null);
 
 onLoad(async (options) => {
-  accountId.value = options.id;
+  assetId.value = options.id;
   await fetchDetail();
 });
 
 // 获取详情（由于后端目前没提供单独详情接口，我们从列表里找）
 const fetchDetail = async () => {
   try {
-    const res = await getAccounts();
-    account.value = res.accounts.find(a => String(a.id) === String(accountId.value));
+    const res = await getAssets();
+    asset.value = res.assets.find(a => String(a.id) === String(assetId.value));
+    if (!asset.value) {
+      uni.showToast({ title: '资产不存在', icon: 'none' });
+      return;
+    }
+    if (String(asset.value.ownerId) !== String(configStore.userId)) {
+      uni.showToast({ title: '您没有权限查看此资产', icon: 'none' });
+      return;
+    }
   } catch (e) {
     uni.showToast({ title: '加载失败', icon: 'none' });
   }
@@ -103,17 +111,17 @@ const fetchDetail = async () => {
 
 // --- 数据映射 ---
 const instInfo = computed(() => {
-  return configStore.institutionMap[account.value?.institution] || {};
+  return configStore.institutionMap[asset.value?.institution] || {};
 });
 
 const categoryColor = computed(() => {
-  const cat = configStore.assetCategories.find(c => c.categoryCode === account.value?.category);
+  const cat = configStore.assetCategories.find(c => c.categoryCode === asset.value?.category);
   return cat?.color || '#2A806C';
 });
 
 const subCategoryName = computed(() => {
-  const sub = configStore.getSubCategoriesByCode(account.value?.category)
-    .find(s => String(s.id) === String(account.value?.subCategory));
+  const sub = configStore.getSubCategoriesByCode(asset.value?.category)
+    .find(s => String(s.id) === String(asset.value?.subCategory));
   return sub?.name || '普通资产';
 });
 
@@ -131,7 +139,7 @@ const formatDate = (dateStr) => {
 
 // --- 动作处理 ---
 const handleEdit = () => {
-  uni.navigateTo({ url: `/pages/assets/add?id=${accountId.value}&mode=edit` });
+  uni.navigateTo({ url: `/pages/assets/add?id=${assetId.value}&mode=edit` });
 };
 
 const confirmDelete = () => {

@@ -18,8 +18,6 @@ import com.suiyou.dto.asset.CreateAssetDTO;
 import com.suiyou.model.Asset;
 import com.suiyou.service.AssetService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/assets")
 public class AssetController {

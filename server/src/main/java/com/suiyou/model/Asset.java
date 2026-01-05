@@ -16,6 +16,9 @@ public class Asset {
     @Column(name = "account_id", nullable = false)
     private Long accountId;
 
+    @Column(name = "owner_id", nullable = false)
+    private Long ownerId;
+    
     @Column(nullable = false)
     private String groupType;
     

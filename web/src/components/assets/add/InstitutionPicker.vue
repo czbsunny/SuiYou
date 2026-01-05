@@ -33,7 +33,7 @@
           @input="e => $emit('update:identifier', e.detail.value)"
           type="number" 
           maxlength="4"
-          placeholder="如卡号/账号末4位(选填)"
+          placeholder="如卡号/账号末4位(必填)"
           class="row-input identifier-input"
           placeholder-class="input-placeholder"
         />
@@ -120,7 +120,7 @@ $border-color: rgba(0, 0, 0, 0.04);
     width: 44rpx;
     height: 44rpx;
     background-color: #f8f9fa;
-    border-radius: 8px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -130,8 +130,8 @@ $border-color: rgba(0, 0, 0, 0.04);
   }
 
   .mini-logo {
-    width: 32rpx;
-    height: 32rpx;
+    width: 40rpx;
+    height: 40rpx;
   }
 
   .inst-display-text {

@@ -1,15 +1,15 @@
 <template>
   <view class="page-container">
     <!-- 1. 净值趋势 (传入所有资产计算后的净值) -->
-    <NetWorthCard :accounts="allAccounts" />
+    <NetWorthCard :assets="allAssets" />
 
     <!-- 2. 财务体检 -->
-    <HealthGrid :accounts="allAccounts" />
+    <HealthGrid :assets="allAssets" />
 
     <!-- 3. 资产概览 -->
     <AssetViewToggle v-model="viewMode" />
 
-    <view v-if="loading && !allAccounts.length" class="loading-container">
+    <view v-if="loading && !allAssets.length" class="loading-container">
       <uni-load-more status="loading" />
     </view>
 
@@ -38,7 +38,7 @@ import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
-import { getAccounts } from '../../services/accountService.js';
+import { getAssets } from '../../services/assetService.js';
 import { useConfigStore } from '@/stores/config.js'
 
 import AssetViewToggle from '@/components/assets/AssetViewToggle.vue';
@@ -48,6 +48,7 @@ import InstitutionListView from '@/components/assets/InstitutionListView.vue';
 const configStore = useConfigStore();
 
 // === 状态变量 ===
+const allAssets = ref([]); // 存储后端返回的原始数组
 const allAccounts = ref([]); // 存储后端返回的原始数组
 const loading = ref(true);
 const viewMode = ref('category'); // 'category' | 'institution'
@@ -55,7 +56,7 @@ const viewMode = ref('category'); // 'category' | 'institution'
 // --- 数据聚合：视角 A (按 5 大类) ---
 const categoryGroupedList = computed(() => {
   return configStore.topCategories.map(cat => {
-    const items = allAccounts.value
+    const items = allAssets.value
       .filter(acc => acc.category === cat.categoryCode)
       .map(acc => ({
         ...acc,
@@ -93,11 +94,11 @@ const institutionGroupedList = computed(() => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const res = await getAccounts();
-    // 此时 res 就是你刚才给我的那个包含 accounts 数组的对象
-    allAccounts.value = res.accounts || [];
+    const res = await getAssets();
+    // 此时 res 就是你刚才给我的那个包含 assets 数组的对象
+    allAssets.value = res.assets || [];
   } catch (err) {
-    console.error('加载账户失败:', err);
+    console.error('加载资产项失败:', err);
   } finally {
     loading.value = false;
   }
