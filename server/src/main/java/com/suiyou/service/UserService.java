@@ -71,7 +71,7 @@ public class UserService {
 
         // 自动创建家庭
         String familyName = user.getUsername() + "的家庭";
-        familyService.createFamily(savedUser.getId(), familyName);
+        familyService.createFamily(savedUser.getId(), familyName, "CNY");
 
         return savedUser;
     }
@@ -185,7 +185,7 @@ public class UserService {
         // 如果是新用户，自动创建家庭
         if (!userOptional.isPresent()) {
             String familyName = savedUser.getUsername() + "的家庭";
-            familyService.createFamily(savedUser.getId(), familyName);
+            familyService.createFamily(savedUser.getId(), familyName, "CNY");
         }
 
         // 生成token - 使用手机号作为subject，用户ID作为额外信息

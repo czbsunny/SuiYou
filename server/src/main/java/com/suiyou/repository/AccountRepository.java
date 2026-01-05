@@ -11,4 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     // 根据用户ID和状态查询账户
     List<Account> findByOwnerIdAndStatus(Long ownerId, Integer status);
+
+    // 根据机构代码和机构唯一标识查询账户
+    Account findByInstitutionAndInstitutionIdentifier(String institution, String institutionIdentifier);
 }

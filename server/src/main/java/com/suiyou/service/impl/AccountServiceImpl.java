@@ -1,26 +1,27 @@
 package com.suiyou.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.model.Account;
+import com.suiyou.model.Family;
 import com.suiyou.repository.AccountRepository;
+import com.suiyou.service.FamilyService;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
 
+    @Autowired
+    private FamilyService familyService;
+    
     @Override
     @Transactional
     public Account createAccount(Account account) {
@@ -32,58 +33,63 @@ public class AccountServiceImpl implements AccountService {
     public Account createAccount(CreateAccountDTO createAccountDTO, Long userId) {
         // 创建Account实体
         Account account = new Account();
-        account.setName(createAccountDTO.getName());
-        account.setGroupType(createAccountDTO.getGroupType());
-        account.setCategory(createAccountDTO.getCategory());
-        account.setSubCategory(createAccountDTO.getSubCategory());
         account.setInstitution(createAccountDTO.getInstitution());
-        account.setCurrency(createAccountDTO.getCurrency());
-        account.setVisibleScope(createAccountDTO.getVisibleScope());
-        
-        // 处理余额：如果是负债类型，余额转为负数
-        BigDecimal balance = createAccountDTO.getBalance();
-        if ("LIABILITY".equals(createAccountDTO.getGroupType()) && balance.compareTo(BigDecimal.ZERO) > 0) {
-            balance = balance.negate();
-        }
-        account.setTotalBalance(balance);
-        account.setFrozenBalance(BigDecimal.ZERO);
-        account.setAvailableBalance(balance);
-        
+        account.setInstitutionIdentifier(createAccountDTO.getInstitutionIdentifier());
+        account.setStatus(1); // 设置为活跃状态
+        account.setVisibleScope("PRIVATE");
+
         // 设置用户ID和家庭ID
         account.setOwnerId(userId);
-        // 这里需要从用户服务获取当前家庭ID
-        Long familyId = getCurrentFamilyId(userId);
-        account.setFamilyId(familyId);
-        
-        // 处理扩展属性
-        if (createAccountDTO.getAttributes() != null && !createAccountDTO.getAttributes().isEmpty()) {
-            try {
-                String attributesJson = objectMapper.writeValueAsString(createAccountDTO.getAttributes());
-                account.setAttributes(attributesJson);
-            } catch (Exception e) {
-                // 如果序列化失败，记录错误但继续创建账户
-                System.err.println("Failed to serialize attributes: " + e.getMessage());
-            }
+
+        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        if (Objects.isNull(family)) {
+            throw new IllegalArgumentException("用户未关联任何家庭");
         }
+        account.setFamilyId(family.getId());
         
         // 保存账户
         return accountRepository.save(account);
     }
     
-    /**
-     * 获取用户的当前家庭ID
-     * 这里需要调用用户服务或家庭服务来获取
-     */
-    private Long getCurrentFamilyId(Long userId) {
-        // 这里应该调用用户服务或家庭服务来获取当前家庭ID
-        // 临时实现：返回固定值（仅作示例）
-        // 实际项目中应该从用户实体中获取currentFamilyId
-        return 1L; // 临时返回固定值
+    @Override
+    @Transactional
+    public Account createAccount(String institution, String institutionIdentifier, Long userId) {
+        // 检查是否已存在该机构标识的账户
+        Account existingAccount = accountRepository.findByInstitutionAndInstitutionIdentifier(institution, institutionIdentifier);
+        if (existingAccount != null) {
+            throw new IllegalArgumentException("该机构标识已存在账户");
+        }
+        
+        // 创建新账户
+        Account account = new Account();
+        account.setInstitution(institution);
+        account.setInstitutionIdentifier(institutionIdentifier);
+        account.setOwnerId(userId);
+        // 这里需要从用户服务获取当前家庭ID
+        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        if (Objects.isNull(family)) {
+            throw new IllegalArgumentException("用户未关联任何家庭");
+        }
+        account.setFamilyId(family.getId());
+        account.setStatus(1); // 设置为活跃状态
+        
+        // 保存账户
+        return accountRepository.save(account);
     }
     
     @Override
     public List<Account> getAccountsByUserId(Long userId) {
         // 查询状态为1（活跃）的账户，不包括已归档的账户
         return accountRepository.findByOwnerIdAndStatus(userId, 1);
+    }
+
+    @Override
+    public Account getAccountByInstitutionAndIdentifier(String institution, String institutionIdentifier) {
+        return accountRepository.findByInstitutionAndInstitutionIdentifier(institution, institutionIdentifier);
+    }
+
+    @Override
+    public Account getAccountById(Long id) {
+        return accountRepository.findById(id).orElse(null);
     }
 }

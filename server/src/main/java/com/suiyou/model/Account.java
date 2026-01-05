@@ -22,42 +22,15 @@ public class Account {
     
     @Column(nullable = false, columnDefinition = "varchar(20) default 'PRIVATE'")
     private String visibleScope = "PRIVATE";
-    
-    @Column(nullable = false)
-    private String groupType;
-    
-    @Column(nullable = false)
-    private String category;
-    
-    @Column(nullable = false)
-    private String subCategory;
+
     
     private String institution;
     
     @Column(nullable = false)
-    private String name;
-    
-    @Column(name = "total_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
-    private BigDecimal totalBalance = BigDecimal.ZERO;
-    
-    @Column(name = "frozen_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
-    private BigDecimal frozenBalance = BigDecimal.ZERO;
-    
-    @Formula("total_balance - frozen_balance")
-    @Column(name = "available_balance", insertable = false, updatable = false)
-    private BigDecimal availableBalance;
-    
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")
-    private String currency = "CNY";
-    
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Integer includeInNetWorth = 1;
-    
+    private String institutionIdentifier;
+        
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
-    
-    @Column(columnDefinition = "json")
-    private String attributes;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
