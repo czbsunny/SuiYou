@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.suiyou.dto.asset.CreateAssetDTO;
-import com.suiyou.model.Asset;
+import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.service.AssetService;
 
 @RestController
@@ -31,11 +31,11 @@ public class AssetController {
         try {
             Long userId = getCurrentUserId();
             
-            Asset createdAsset = assetService.createAsset(asset, userId);
+            AssetRespDTO createdAsset = assetService.createAsset(asset, userId);
             
             // 返回创建成功的响应
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "id", createdAsset.getId(),
+                "asset", createdAsset,
                 "message", "资产添加成功"
             ));
         } catch (Exception e) {
@@ -54,7 +54,7 @@ public class AssetController {
             Long userId = getCurrentUserId();
             
             // 调用服务获取当前用户的所有活跃资产账户
-            List<Asset> assets = assetService.getAssetsByUserId(userId);
+            List<AssetRespDTO> assets = assetService.getAssetsByUserId(userId);
             
             // 返回成功响应
             return ResponseEntity.ok(Map.of(

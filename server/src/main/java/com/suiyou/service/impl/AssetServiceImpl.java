@@ -1,5 +1,6 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.dto.asset.CreateAssetDTO;
 import com.suiyou.dto.asset.UpdateAssetDTO;
 import com.suiyou.model.Asset;
@@ -13,6 +14,7 @@ import com.suiyou.model.Account;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Objects;
 
@@ -30,7 +32,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional
-    public Asset createAsset(CreateAssetDTO assetDTO, Long userId) {
+    public AssetRespDTO createAsset(CreateAssetDTO assetDTO, Long userId) {
         Account account = accountService.getAccountByInstitutionAndIdentifier(assetDTO.getInstitution(), assetDTO.getInstitutionIdentifier());
         if (account == null) {
             account = accountService.createAccount(assetDTO.getInstitution(), assetDTO.getInstitutionIdentifier(), userId);
@@ -39,7 +41,7 @@ public class AssetServiceImpl implements AssetService {
             }
         }
         Asset asset = new Asset();
-        asset.setAccountId(account.getId());
+        asset.setAccount(account);
         asset.setOwnerId(userId);
         asset.setGroupType(assetDTO.getGroupType());
         asset.setCategory(assetDTO.getCategory());
@@ -65,12 +67,12 @@ public class AssetServiceImpl implements AssetService {
             }
         }
 
-        return assetRepository.save(asset);
+        return AssetRespDTO.fromEntity(assetRepository.save(asset));
     }
 
     @Override
     @Transactional
-    public Asset updateAsset(UpdateAssetDTO assetDTO, Long userId) {
+    public AssetRespDTO updateAsset(UpdateAssetDTO assetDTO, Long userId) {
         Asset asset = assetRepository.findById(assetDTO.getId()).orElse(null);
         if (asset == null) {
             throw new IllegalArgumentException("资产不存在");
@@ -98,39 +100,31 @@ public class AssetServiceImpl implements AssetService {
                 throw new IllegalArgumentException("创建资产账户失败");
             }
         }
-        asset.setAccountId(account.getId());
+        asset.setAccount(account);
 
-        return assetRepository.save(asset);
+        return AssetRespDTO.fromEntity(assetRepository.save(asset));
     }
 
     @Override
-    public Asset getAssetById(Long id) {
-        return assetRepository.findById(id).orElse(null);
+    public AssetRespDTO getAssetById(Long id) {
+        return AssetRespDTO.fromEntity(assetRepository.findById(id).orElse(null));
     }
 
     @Override
-    public List<Asset> getAssetsByAccountId(Long accountId) {
-        return assetRepository.findByAccountId(accountId);
+    public List<AssetRespDTO> getAssetsByAccountId(Long accountId) {
+        return assetRepository.findByAccountId(accountId).stream()
+                .map(AssetRespDTO::fromEntity)
+                .collect(Collectors.toList());  
     }
 
     @Override
-    public List<Asset> getAssetsByUserId(Long userId) {
-        return assetRepository.findByOwnerIdAndStatus(userId, 1);
-    }
+    public List<AssetRespDTO> getAssetsByUserId(Long userId) {
+        List<Asset> assets = assetRepository.findByOwnerIdAndStatus(userId, 1);
 
-    @Override
-    public List<Asset> getAssetsByAccountIdAndStatus(Long accountId, Integer status) {
-        return assetRepository.findByAccountIdAndStatus(accountId, status);
-    }
-
-    @Override
-    public List<Asset> getAssetsByAccountIdAndCategory(Long accountId, String category) {
-        return assetRepository.findByAccountIdAndCategory(accountId, category);
-    }
-
-    @Override
-    public List<Asset> getAssetsByAccountIdAndGroupType(Long accountId, String groupType) {
-        return assetRepository.findByAccountIdAndGroupType(accountId, groupType);
+        List<AssetRespDTO> assetRespDTOs = assets.stream()
+                .map(AssetRespDTO::fromEntity)
+                .collect(Collectors.toList());
+        return assetRespDTOs;
     }
 
     @Override

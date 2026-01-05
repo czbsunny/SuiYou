@@ -5,62 +5,81 @@
       v-for="cat in list" 
       :key="cat.categoryCode" 
       class="cat-card" 
-      :class="{ expanded: expandedCode === cat.categoryCode }"
+      :class="{ 'is-expanded': isExpanded(cat.categoryCode) }"
     >
-      <!-- 1. 分类头部 -->
-      <view class="card-header" @click="toggle(cat.categoryCode)">
+      <!-- 1. 第一层：大分类头部 -->
+      <view class="card-header" @tap="toggle(cat.categoryCode)">
         <view class="icon-box" :style="{ backgroundColor: cat.color }">
           <image :src="cat.iconUrl" mode="aspectFit" class="cat-icon" />
         </view>
+        
         <view class="cat-info">
           <text class="cat-name">{{ cat.name }}</text>
           <text class="cat-count">{{ cat.items.length }}项资产</text>
         </view>
+
         <view class="cat-right">
-          <text class="cat-amount">¥{{ formatAmount(cat.totalBalance) }}</text>
-          <view class="arrow" :class="{ rotate: expandedCode === cat.categoryCode }"></view>
+          <text class="cat-amount">¥ {{ formatAmount(cat.totalBalance) }}</text>
+          <view class="arrow-icon" :class="{ 'rotate': isExpanded(cat.categoryCode) }"></view>
         </view>
       </view>
 
-      <!-- 2. 展开的明细列表（优化重点） -->
+      <!-- 2. 展开区域 -->
       <view 
         class="details-container" 
-        :style="{ maxHeight: expandedCode === cat.categoryCode ? (cat.items.length * 140 + 120) + 'rpx' : '0' }"
+        :style="{ maxHeight: isExpanded(cat.categoryCode) ? '3000rpx' : '0' }"
       >
         <view class="details-inner">
           <view 
-            v-for="item in cat.items" 
-            :key="item.id" 
-            class="detail-item" 
-            @click="$emit('item-click', item)"
+            v-for="(group, subCode) in groupItemsBySub(cat.items)" 
+            :key="subCode" 
+            class="sub-section"
           >
-            <!-- 左侧：机构Logo -->
-            <view class="item-logo-box">
-              <image 
-                :src="item.instInfo?.logoUrl || '/static/icons/default-bank.png'" 
-                class="item-logo" 
-                mode="aspectFit" 
-              />
+            <!-- 第二层：二级分类标题 -->
+            <view class="sub-header-bar">
+              <view class="sub-left">
+                <view class="sub-indicator"></view>
+                <text class="sub-title">{{ getSubCatName(cat.categoryCode, subCode) }}</text>
+              </view>
+              <text class="sub-total">¥ {{ formatAmount(calculateSubTotal(group)) }}</text>
             </view>
-            
-            <!-- 中间：具体名称 + 账户描述 -->
-            <view class="item-info">
-              <text class="item-name">{{ item.name }}</text>
-              <text class="item-sub-type">{{ getSubCatName(cat.categoryCode, item.subCategory) }}</text>
-            </view>
-            
-            <!-- 右侧：金额 -->
-            <view class="item-right">
-              <text class="item-amt">¥{{ formatAmount(item.totalBalance) }}</text>
-              <uni-icons type="chevron-right" size="12" color="#D1D5DB" />
+
+            <!-- 第三层：具体明细 -->
+            <view class="l3-group" v-if="mode === 'detailed'">
+              <view 
+                v-for="item in group" 
+                :key="item.id" 
+                class="detail-item" 
+                @tap="$emit('item-click', item)"
+              >
+                <view class="item-logo-box">
+                  <image 
+                    :src="item.instInfo?.logoUrl || '/static/icons/default-bank.png'" 
+                    class="item-logo" 
+                    mode="aspectFit" 
+                  />
+                </view>
+                
+                <view class="item-info">
+                  <text class="item-main-row">
+                    {{ item.instInfo?.shortName || '未知机构' }}
+                    <text class="item-id-tag" v-if="item.institutionIdentifier">({{item.institutionIdentifier}})</text>
+                  </text>
+                  <text class="item-sub-row">{{ item.accountName || "默认账户" }}</text>
+                </view>
+                
+                <view class="item-right">
+                  <text class="item-amt">¥ {{ formatAmount(item.totalBalance) }}</text>
+                  <uni-icons type="right" size="10" color="#D1D5DB" />
+                </view>
+              </view>
             </view>
           </view>
           
-          <!-- 3. 上下文添加按钮（更精致的虚线设计） -->
-          <view class="add-guide-row" @click="$emit('add-click', cat.categoryCode)">
+          <view v-if="mode === 'detailed'" class="add-guide-row" @tap.stop="$emit('add-click', cat.categoryCode)">
             <view class="add-guide-inner">
-              <image src="/static/images/plus-gray.png" class="plus-mini" />
-              <text>添加{{ cat.name }}项</text>
+              <uni-icons type="plus" size="14" color="#9CA3AF" />
+              <text>添加{{ cat.name }}明细</text>
             </view>
           </view>
         </view>
@@ -70,120 +89,238 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
-const props = defineProps(['list']);
-const expandedCode = ref('LIQUID');
 
+// 接收父组件传入的参数
+const props = defineProps({
+  list: { type: Array, default: () => [] },
+  mode: { type: String, default: 'detailed' },
+  // 新增：接收父组件当前的“一键展开/收起”状态
+  defaultExpandAll: { type: Boolean, default: true }
+});
+
+const emit = defineEmits(['item-click', 'add-click', 'sync-expand-status']);
+
+// 1. 初始化展开数组为空
+const expandedCodes = ref([]);
+
+// 判断是否展开
+const isExpanded = (code) => expandedCodes.value.includes(code);
+
+/**
+ * 进阶优化：监听 list 的变化
+ * 当切换视图（v-if 切换）或数据重载时，根据父组件的意图初始化展开状态
+ */
+watch(() => props.list, (newList) => {
+  if (newList && newList.length > 0) {
+    applyExpandStrategy(props.defaultExpandAll);
+  }
+}, { immediate: true });
+
+/**
+ * 切换逻辑处理
+ */
 const toggle = (code) => {
-  expandedCode.value = expandedCode.value === code ? '' : code;
+  const index = expandedCodes.value.indexOf(code);
+  if (index > -1) {
+    expandedCodes.value.splice(index, 1);
+  } else {
+    expandedCodes.value.push(code);
+  }
+  
+  // 进阶优化：回传状态同步。如果全部手动收起了，通知父组件修改按钮文字
+  if (expandedCodes.value.length === 0) {
+    emit('sync-expand-status', false);
+  } else if (expandedCodes.value.length === props.list.length) {
+    emit('sync-expand-status', true);
+  }
 };
 
-const formatAmount = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+/**
+ * 执行展开/收起策略
+ */
+const applyExpandStrategy = (isExpand) => {
+  if (isExpand) {
+    expandedCodes.value = props.list.map(cat => cat.categoryCode);
+  } else {
+    expandedCodes.value = [];
+  }
+};
 
-// 获取子类名称的逻辑
+/**
+ * 暴露给父组件的主动调用方法
+ */
+const toggleAll = (isExpand) => {
+  applyExpandStrategy(isExpand);
+};
+
+defineExpose({ toggleAll });
+
+// --- 数据处理辅助方法 ---
+const groupItemsBySub = (items) => {
+  if (!items) return {};
+  return items.reduce((groups, item) => {
+    const sub = item.subCategory || 'OTHER';
+    if (!groups[sub]) groups[sub] = [];
+    groups[sub].push(item);
+    return groups;
+  }, {});
+};
+
+const calculateSubTotal = (group) => group.reduce((sum, item) => sum + Number(item.totalBalance || 0), 0);
+const formatAmount = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const getSubCatName = (catCode, subCode) => {
   const sub = configStore.getSubCategoriesByCode(catCode).find(s => s.categoryCode === subCode);
-  return sub ? sub.name : '普通资产';
+  return sub ? sub.name : '其他明细';
 };
 </script>
 
 <style lang="scss" scoped>
+/* 保持原样，无需修改 */
 .cat-card {
-  background: #ffffff;
-  border-radius: 40rpx;
-  margin-bottom: 24rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.02);
-  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  background: #ffffff; border-radius: 40rpx; margin-bottom: 24rpx;
+  overflow: hidden; box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
   transition: all 0.3s ease;
+  &.is-expanded { box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.06); }
 }
 
 .card-header {
-  padding: 32rpx;
-  display: flex;
+  padding: 36rpx 32rpx; 
+  display: flex; 
   align-items: center;
+
+  .icon-box { 
+    width: 96rpx; height: 96rpx; border-radius: 24rpx; 
+    display: flex; align-items: center; justify-content: center; 
+    margin-right: 24rpx; flex-shrink: 0;
+    box-shadow: inset 0 0 10rpx rgba(0,0,0,0.05);
+    .cat-icon { width: 72rpx; height: 72rpx; }
+  }
+
+  .cat-info { 
+    flex: 1; 
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    min-width: 0;
+
+    .cat-name { 
+      font-size: 32rpx; 
+      font-weight: 800; 
+      color: #1F2937; 
+      margin-bottom: 4rpx;
+    } 
+    .cat-count { 
+      font-size: 22rpx; 
+      color: #9CA3AF; 
+      font-weight: 500;
+    } 
+  }
+
+  .cat-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 16rpx; 
+    flex-shrink: 0;
+
+    .cat-amount { 
+      font-size: 36rpx; 
+      font-weight: 800; 
+      font-family: 'DIN Alternate', sans-serif; 
+      color: #111827;
+    } 
+    .arrow-icon { 
+      width: 12rpx; height: 12rpx; border-bottom: 4rpx solid #D1D5DB; border-right: 4rpx solid #D1D5DB; 
+      transform: rotate(45deg); transition: 0.3s; 
+      &.rotate { transform: rotate(-135deg); margin-top: 8rpx; } 
+    } 
+  }
+}
+
+.details-container { background-color: #FAFBFC; overflow: hidden; transition: max-height 0.4s ease; }
+
+.sub-section {
+  margin-top: 10rpx;
+  padding-bottom: 16rpx; 
   
-  .icon-box {
-    width: 88rpx; height: 88rpx; border-radius: 28rpx;
-    display: flex; align-items: center; justify-content: center;
-    margin-right: 24rpx; position: relative;
-    &::after { content: ''; position: absolute; inset: 0; opacity: 0.15; border-radius: inherit; background: inherit; }
-    .cat-icon { width: 52rpx; height: 52rpx; z-index: 1; }
-  }
+  .sub-header-bar {
+    background: rgba(0, 0, 0, 0.03);
+    margin: 0 24rpx; padding: 16rpx 24rpx; border-radius: 12rpx;
+    display: flex; align-items: center; justify-content: space-between;
 
-  .cat-info {
-    flex: 1;
-    .cat-name { font-size: 32rpx; font-weight: 800; color: #1F2937; display: block; margin-bottom: 4rpx; }
-    .cat-count { font-size: 22rpx; color: #9CA3AF; font-weight: 500; }
-  }
-
-  .cat-right {
-    display: flex; align-items: center; gap: 20rpx;
-    .cat-amount { font-size: 32rpx; font-weight: 700; font-family: 'DIN Alternate'; color: #1F2937; }
-    .arrow {
-      width: 10rpx; height: 10rpx; border-bottom: 4rpx solid #D1D5DB; border-right: 4rpx solid #D1D5DB;
-      transform: rotate(45deg); transition: 0.3s;
-      &.rotate { transform: rotate(-135deg); margin-top: 8rpx; }
+    .sub-left {
+      display: flex; align-items: center;
+      .sub-indicator { width: 8rpx; height: 8rpx; background: #2A806C; border-radius: 50%; margin-right: 12rpx; }
+      .sub-title { font-size: 28rpx; font-weight: 800; color: #374151; }
     }
+    .sub-total { font-size: 28rpx; color: #64748B; font-weight: 800; font-family: 'DIN Alternate'; }
   }
 }
 
-/* 🟢 明细列表容器优化 */
-.details-container {
-  background-color: #F9FAFB; // 使用浅灰色背景，营造内嵌感
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.details-inner {
-  padding: 10rpx 0 20rpx;
-}
+.l3-group { padding-left: 32rpx; }
 
 .detail-item {
-  padding: 24rpx 32rpx;
-  display: flex;
+  padding: 28rpx 32rpx 28rpx 16rpx; 
+  display: flex; 
   align-items: center;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.03);
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.02);
   
   &:active { background-color: #F3F4F6; }
 
   .item-logo-box {
-    width: 64rpx; height: 64rpx; border-radius: 16rpx;
-    background: #fff; margin-right: 20rpx;
+    width: 64rpx; height: 64rpx;
+    background: #fff; margin-right: 24rpx; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.02);
-    .item-logo { width: 44rpx; height: 44rpx; }
+    border: 1rpx solid #F3F4F6;
+    .item-logo { width: 64rpx; height: 64rpx; border-radius: 8rpx }
   }
 
   .item-info {
     flex: 1;
-    .item-name { font-size: 28rpx; font-weight: 600; color: #4B5563; display: block; }
-    .item-sub-type { font-size: 20rpx; color: #9CA3AF; }
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    .item-main-row { 
+      font-size: 28rpx; 
+      font-weight: 700; 
+      color: #374151; 
+      margin-bottom: 6rpx;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .item-id-tag {
+        font-size: 24rpx;
+        color: #9CA3AF;
+        font-weight: 500;
+        margin-left: 4rpx;
+      }
+    }
+    .item-sub-row { 
+      font-size: 22rpx; 
+      color: #9CA3AF; 
+      font-weight: 500;
+    }
   }
 
   .item-right {
-    display: flex; align-items: center; gap: 12rpx;
-    .item-amt { font-size: 28rpx; font-weight: 700; font-family: 'Monaco', monospace; color: #1F2937; }
+    display: flex; 
+    align-items: center; 
+    gap: 8rpx;
+    flex-shrink: 0;
+
+    .item-amt { 
+      font-size: 30rpx; 
+      font-weight: 700; 
+      font-family: 'DIN Alternate'; 
+      color: #1F2937; 
+    }
   }
 }
 
-/* 🟢 添加按钮优化 */
-.add-guide-row {
-  padding: 30rpx 40rpx;
-  .add-guide-inner {
-    height: 80rpx;
-    border: 2rpx dashed #E5E7EB;
-    border-radius: 20rpx;
-    display: flex; align-items: center; justify-content: center; gap: 12rpx;
-    background: rgba(255,255,255,0.5);
-    
-    image { width: 24rpx; height: 24rpx; opacity: 0.4; }
-    text { font-size: 24rpx; color: #9CA3AF; font-weight: 600; }
-    
-    &:active { background: #fff; border-color: #2A806C; text { color: #2A806C; } }
-  }
-}
+.add-guide-row { padding: 32rpx 40rpx; .add-guide-inner { height: 84rpx; border: 2rpx dashed #E5E7EB; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; gap: 12rpx; text { font-size: 26rpx; color: #9CA3AF; font-weight: 600; } } }
 </style>

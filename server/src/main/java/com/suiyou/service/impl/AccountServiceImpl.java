@@ -37,7 +37,8 @@ public class AccountServiceImpl implements AccountService {
         account.setInstitutionIdentifier(createAccountDTO.getInstitutionIdentifier());
         account.setStatus(1); // 设置为活跃状态
         account.setVisibleScope("PRIVATE");
-
+        account.setAccountName(createAccountDTO.getAccountName());
+        
         // 设置用户ID和家庭ID
         account.setOwnerId(userId);
 
@@ -64,7 +65,9 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account();
         account.setInstitution(institution);
         account.setInstitutionIdentifier(institutionIdentifier);
+        account.setAccountName(institutionIdentifier);
         account.setOwnerId(userId);
+
         // 这里需要从用户服务获取当前家庭ID
         Family family = familyService.getFirstActiveFamilyByUserId(userId);
         if (Objects.isNull(family)) {

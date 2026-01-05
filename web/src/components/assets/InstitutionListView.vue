@@ -5,249 +5,258 @@
       v-for="inst in list" 
       :key="inst.instCode" 
       class="inst-card" 
-      :class="{ expanded: expandedInstCode === inst.instCode }"
+      :class="{ 'is-expanded': isExpanded(inst.instCode) }"
     >
-      <!-- 1. 机构卡片头部：展示汇总信息 -->
-      <view class="card-header" @click="toggle(inst.instCode)">
+      <!-- 1. 第一层：机构头部 -->
+      <view class="card-header" @tap="toggle(inst.instCode)">
         <view class="logo-wrapper">
           <image :src="inst.logoUrl || '/static/icons/default.png'" mode="aspectFit" class="inst-logo" />
         </view>
         <view class="inst-info">
           <text class="inst-name">{{ inst.instName }}</text>
-          <text class="inst-count">{{ 2 }}个账户，{{ inst.accounts.length }} 项资产</text>
+          <text class="inst-count">共 {{ inst.accounts?.length || 0 }} 个账户，{{ getAssetCount(inst) }} 项资产</text>
         </view>
-        <view class="inst-amount">
-            <text class="amt">¥{{ formatAmount(inst.total) }}</text>
-            <view class="arrow" :class="{ rotate: expandedInstCode === inst.instCode }"></view>
+        <view class="inst-amount-box">
+            <text class="amt">¥ {{ formatAmount(inst.total) }}</text>
+            <view class="arrow-icon" :class="{ 'rotate': isExpanded(inst.instCode) }"></view>
         </view>
       </view>
 
-      <!-- 2. 展开的账户明细列表 -->
-      <view 
-        class="details-list" 
-        :style="{ maxHeight: expandedInstCode === inst.instCode ? (inst.accounts.length + 1) * 120 + 'rpx' : '0' }"
-      >
-        <view 
-          v-for="acc in inst.accounts" 
-          :key="acc.id" 
-          class="acc-item" 
-          @click="$emit('item-click', acc)"
-        >
-          <view class="acc-left">
-            <view class="acc-name-group">
-              <text class="acc-name">{{ acc.name }}</text>
-              <!-- 核心：显示该账户属于哪个资产类别 -->
-              <text class="cat-tag">{{ getCatName(acc.category) }}</text>
+      <!-- 2. 展开的账户及资产列表 -->
+      <view class="details-container" :style="{ maxHeight: isExpanded(inst.instCode) ? '3000rpx' : '0' }">
+        <view class="details-inner">
+          
+          <view v-for="acc in inst.accounts" :key="acc.name" class="account-group">
+            <!-- 第二层：账户行 (始终展示) -->
+            <view class="acc-row" @tap="$emit('item-click', acc.items[0])">
+              <view class="acc-left">
+                <view class="acc-badge">卡</view>
+                <view class="acc-title-area">
+                  <text class="acc-name">{{ acc.name }}</text>
+                </view>
+              </view>
+              <view class="acc-right">
+                <text class="acc-amt">¥ {{ formatAmount(acc.totalBalance) }}</text>
+              </view>
+            </view>
+
+            <!-- 第三层：具体资产项 - 仅在明细模式下展示 -->
+            <view class="asset-list" v-if="mode === 'detailed'">
+              <view 
+                v-for="asset in acc.items" 
+                :key="asset.id" 
+                class="asset-item"
+                @tap.stop="$emit('item-click', asset)"
+              >
+                <view class="asset-icon-box" :style="{ backgroundColor: getCatColor(asset.category) }">
+                  <image :src="getSubCatIcon(asset.category, asset.subCategory)" class="sub-icon" mode="aspectFit" />
+                </view>
+
+                <view class="asset-info">
+                  <text class="asset-type-name">{{ getSubCatName(asset.category, asset.subCategory) }}</text>
+                  <text class="asset-remark">{{ asset.name }}</text>
+                </view>
+
+                <view class="asset-right">
+                  <text class="asset-amt">¥ {{ formatAmount(asset.totalBalance) }}</text>
+                  <uni-icons type="right" size="10" color="#E5E7EB" />
+                </view>
+              </view>
             </view>
           </view>
-          <view class="acc-right">
-            <text class="acc-amt">¥{{ formatAmount(acc.totalBalance) }}</text>
-            <uni-icons type="chevron-right" size="12" color="#D1D5DB" />
+          
+          <!-- 添加引导按钮仅在明细模式下展示 -->
+          <view v-if="mode === 'detailed'" class="add-guide-row" @tap.stop="$emit('add-click', '', inst.instCode)">
+            <view class="add-guide-inner">
+              <uni-icons type="plus" size="14" color="#9CA3AF" />
+              <text>在 {{ inst.instName }} 添加资产</text>
+            </view>
           </view>
-        </view>
-        
-        <!-- 3. 上下文添加按钮：点击直接带入该机构编码 -->
-        <view class="add-guide" @click="$emit('add-click', '', inst.instCode)">
-          <image src="/static/images/plus-gray.png" class="plus-mini" />
-          <text>在{{ inst.instName }}添加资产</text>
         </view>
       </view>
     </view>
 
     <!-- 无数据兜底 -->
     <view v-if="list.length === 0" class="empty-tip">
-      暂无关联机构
+      <image src="/static/images/empty-asset.png" class="empty-img" />
+      <text>暂无持仓机构</text>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config.js';
 
-const props = defineProps({
-  list: { type: Array, default: () => [] }
+const props = defineProps({ 
+  list: { type: Array, default: () => [] },
+  mode: { type: String, default: 'detailed' },
+  // 新增：接收父组件当前的“一键展开/收起”状态
+  defaultExpandAll: { type: Boolean, default: true }
 });
 
-const emit = defineEmits(['item-click', 'add-click']);
+const emit = defineEmits(['item-click', 'add-click', 'sync-expand-status']);
 const configStore = useConfigStore();
 
-// 状态：当前展开的机构编码
-const expandedInstCode = ref('');
+// 1. 初始化展开数组为空
+const expandedInstCodes = ref([]);
 
+// 判断是否展开
+const isExpanded = (code) => expandedInstCodes.value.includes(code);
+
+/**
+ * 监听 list 变化：处理视图切换或数据加载时的状态对齐
+ */
+watch(() => props.list, (newList) => {
+  if (newList && newList.length > 0) {
+    applyExpandStrategy(props.defaultExpandAll);
+  }
+}, { immediate: true });
+
+/**
+ * 切换单个机构
+ */
 const toggle = (code) => {
-  expandedInstCode.value = expandedInstCode.value === code ? '' : code;
+  const index = expandedInstCodes.value.indexOf(code);
+  if (index > -1) {
+    expandedInstCodes.value.splice(index, 1);
+  } else {
+    expandedInstCodes.value.push(code);
+  }
+  
+  // 回传同步状态
+  if (expandedInstCodes.value.length === 0) {
+    emit('sync-expand-status', false);
+  } else if (expandedInstCodes.value.length === props.list.length) {
+    emit('sync-expand-status', true);
+  }
 };
 
-// 工具函数
-const formatAmount = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+/**
+ * 执行策略方法
+ */
+const applyExpandStrategy = (isExpand) => {
+  if (isExpand) {
+    expandedInstCodes.value = props.list.map(inst => inst.instCode);
+  } else {
+    expandedInstCodes.value = [];
+  }
+};
 
-const getCatName = (code) => {
-  return configStore.assetCategories.find(c => c.categoryCode === code)?.name || '其他';
+/**
+ * 暴露 API 给父组件
+ */
+const toggleAll = (isExpand) => {
+  applyExpandStrategy(isExpand);
+};
+
+defineExpose({ toggleAll });
+
+// --- 工具函数 ---
+const getSubCatIcon = (catCode, subCode) => {
+  const sub = configStore.getSubCategoriesByCode(catCode).find(s => s.categoryCode === subCode);
+  return sub ? sub.iconUrl : '/static/icons/default-asset.png';
+};
+
+const getCatColor = (catCode) => {
+  return configStore.assetCategories.find(c => c.categoryCode === catCode)?.color || '#E5E7EB';
+};
+
+const getAssetCount = (inst) => inst.accounts?.reduce((sum, acc) => sum + (acc.items?.length || 0), 0);
+const formatAmount = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+const getSubCatName = (catCode, subCode) => {
+  const sub = configStore.getSubCategoriesByCode(catCode).find(s => s.categoryCode === subCode);
+  return sub ? sub.name : '普通资产';
 };
 </script>
 
 <style lang="scss" scoped>
+/* 样式部分保持一致 */
 .inst-card {
-  background: #ffffff;
-  border-radius: 40rpx;
-  margin-bottom: 24rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.02);
-  border: 1rpx solid rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-  
-  &.expanded {
-    box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.04);
-  }
+  background: #ffffff; border-radius: 40rpx; margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.02); transition: all 0.3s ease;
+  &.is-expanded { box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.04); }
 }
 
 .card-header {
-  padding: 32rpx;
-  display: flex;
-  align-items: center;
+  padding: 36rpx 32rpx; display: flex; align-items: center;
+  .logo-wrapper { 
+    width: 88rpx; height: 88rpx; border-radius: 24rpx; background: #F9FAFB;
+    display: flex; align-items: center; justify-content: center; margin-right: 24rpx; flex-shrink: 0;
+    .inst-logo { width: 56rpx; height: 56rpx; }
+  }
   
-  .logo-wrapper {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 24rpx;
-    background-color: #F9FAFB;
+  .inst-info { 
+    flex: 1; 
     display: flex;
-    align-items: center;
+    flex-direction: column; 
     justify-content: center;
-    margin-right: 24rpx;
-    border: 1rpx solid rgba(0,0,0,0.03);
-    
-    .inst-logo {
-      width: 52rpx;
-      height: 52rpx;
-    }
+    .inst-name { font-size: 32rpx; font-weight: 800; color: #1F2937; line-height: 1.2; } 
+    .inst-count { font-size: 22rpx; color: #9CA3AF; margin-top: 6rpx; font-weight: 500; } 
   }
 
-  .inst-info {
-    flex: 1;
-    .inst-name {
-      font-size: 30rpx;
-      font-weight: 800;
-      color: #1F2937;
-      display: block;
-      margin-bottom: 4rpx;
-    }
-    .inst-count {
-      font-size: 22rpx;
-      color: #9CA3AF;
-      font-weight: 500;
-    }
+  .inst-amount-box {
+    display: flex; align-items: center; gap: 16rpx; flex-shrink: 0;
+    .amt { font-size: 34rpx; font-weight: 700; font-family: 'DIN Alternate'; color: #1F2937; }
+    .arrow-icon { width: 12rpx; height: 12rpx; border-bottom: 4rpx solid #D1D5DB; border-right: 4rpx solid #D1D5DB; transform: rotate(45deg); transition: 0.3s; &.rotate { transform: rotate(-135deg); margin-top: 8rpx; } }
   }
+}
 
-  .inst-amount {
-    display: flex;
-    flex-direction: column; // 改为水平排列
-    align-items: center; // 垂直居中
-    .amt {
-      font-size: 32rpx;
-      font-weight: 700;
-      font-family: 'DIN Alternate', sans-serif;
-      display: block;
-      color: #1F2937;
-    }
-    .arrow {
-      width: 12rpx;
-      height: 12rpx;
-      border-top: 4rpx solid #D1D5DB;
-      border-right: 4rpx solid #D1D5DB;
-      transform: rotate(135deg);
-      margin: 12rpx auto 0;
-      transition: all 0.3s ease;
-      &.rotate {
-        transform: rotate(-45deg);
-        margin-top: 20rpx;
+.details-container { background-color: #FAFBFC; overflow: hidden; transition: max-height 0.4s ease; }
+
+.account-group {
+  margin-bottom: 10rpx;
+  .acc-row {
+    padding: 24rpx 32rpx; display: flex; justify-content: space-between; align-items: center;
+    background-color: rgba(0,0,0,0.02);
+    .acc-left { 
+      display: flex; align-items: center;
+      .acc-badge { font-size: 18rpx; color: #2A806C; background: rgba(42, 128, 108, 0.1); width: 32rpx; height: 32rpx; border-radius: 8rpx; display: flex; align-items: center; justify-content: center; margin-right: 16rpx; font-weight: bold; }
+      .acc-title-area { 
+        display: flex; align-items: center;
+        .acc-name { font-size: 28rpx; font-weight: 800; color: #374151; } 
       }
     }
+    .acc-amt { font-size: 28rpx; font-weight: 700; font-family: 'DIN Alternate'; color: #4B5563; }
   }
 }
 
-.details-list {
-  background: #FAFAFA;
-  overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.asset-item {
+  padding: 24rpx 32rpx 24rpx 48rpx; 
+  display: flex; align-items: center;
+  position: relative;
 
-.acc-item {
-  padding: 28rpx 32rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.03);
-  
-  &:active {
-    background-color: #F3F4F6;
+  .asset-icon-box {
+    width: 56rpx; height: 56rpx; border-radius: 16rpx;
+    margin-right: 20rpx; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    &::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.8); border-radius: inherit; }
+    .sub-icon { width: 36rpx; height: 36rpx; z-index: 1; }
   }
 
-  .acc-left {
-    .acc-name-group {
-      display: flex;
-      align-items: center;
-      gap: 16rpx;
-    }
-    .acc-name {
-      font-size: 26rpx;
-      color: #4B5563;
-      font-weight: 600;
-    }
-    .cat-tag {
-      font-size: 18rpx;
-      background: #E5E7EB;
-      color: #6B7280;
-      padding: 2rpx 10rpx;
-      border-radius: 6rpx;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
+  .asset-info {
+    flex: 1; min-width: 0;
+    .asset-type-name { font-size: 26rpx; color: #4B5563; font-weight: 700; display: block; margin-bottom: 4rpx; }
+    .asset-remark { font-size: 20rpx; color: #9CA3AF; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   }
 
-  .acc-right {
-    display: flex;
-    align-items: center;
-    gap: 12rpx;
-    .acc-amt {
-      font-size: 26rpx;
-      font-weight: 700;
-      font-family: 'Monaco', monospace;
-      color: #1F2937;
-    }
+  .asset-right {
+    display: flex; align-items: center; gap: 8rpx;
+    .asset-amt { font-size: 28rpx; font-weight: 700; color: #4B5563; font-family: 'DIN Alternate'; }
+  }
+
+  &::before {
+    content: ''; position: absolute; left: 32rpx; top: -24rpx; bottom: 50%;
+    width: 2rpx; border-left: 2rpx dashed #E5E7EB;
   }
 }
 
-.add-guide {
-  padding: 32rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12rpx;
-  
-  .plus-mini {
-    width: 24rpx;
-    height: 24rpx;
-    opacity: 0.4;
-  }
-  
-  text {
-    font-size: 24rpx;
-    color: #9CA3AF;
-    font-weight: 600;
-  }
-
-  &:active {
-    background-color: #ffffff;
-    text { color: #2A806C; }
-  }
-}
+.add-guide-row { padding: 32rpx; .add-guide-inner { height: 80rpx; border: 2rpx dashed #E5E7EB; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; gap: 12rpx; text { font-size: 24rpx; color: #9CA3AF; font-weight: 600; } } }
 
 .empty-tip {
-  text-align: center;
-  padding: 100rpx 0;
-  color: #9CA3AF;
-  font-size: 26rpx;
+  padding: 120rpx 0; text-align: center;
+  .empty-img { width: 200rpx; height: 200rpx; opacity: 0.5; margin-bottom: 20rpx; }
+  text { color: #9CA3AF; font-size: 26rpx; display: block; }
 }
 </style>

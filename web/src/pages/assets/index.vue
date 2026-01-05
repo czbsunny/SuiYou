@@ -7,7 +7,12 @@
     <HealthGrid :assets="allAssets" />
 
     <!-- 3. 资产概览 -->
-    <AssetViewToggle v-model="viewMode" />
+    <AssetViewToggle 
+      v-model:viewMode="viewMode" 
+      v-model:displayMode="displayMode"
+      :isAllExpanded="isAllExpanded"
+      @toggle-all="handleToggleAll"
+    />
 
     <view v-if="loading && !allAssets.length" class="loading-container">
       <uni-load-more status="loading" />
@@ -16,16 +21,24 @@
     <view class="content-view">
       <!-- 视角 A：按类别 (折叠块) -->
       <CategoryListView 
+        ref="categoryRef"
         v-if="viewMode === 'category'" 
         :list="categoryGroupedList"
+        :mode="displayMode"
+        :defaultExpandAll="isAllExpanded"
+        @sync-expand-status="handleSyncExpand"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
 
       <!-- 视角 B：按账户/机构 -->
       <InstitutionListView 
-        v-else 
+        ref="institutionRef"
+        v-else
         :list="institutionGroupedList"
+        :mode="displayMode"
+        :defaultExpandAll="isAllExpanded"
+        @sync-expand-status="handleSyncExpand"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
@@ -49,9 +62,33 @@ const configStore = useConfigStore();
 
 // === 状态变量 ===
 const allAssets = ref([]); // 存储后端返回的原始数组
-const allAccounts = ref([]); // 存储后端返回的原始数组
 const loading = ref(true);
 const viewMode = ref('category'); // 'category' | 'institution'
+
+const displayMode = ref('detailed'); // 'detailed' | 'simple'
+const categoryRef = ref(null);
+const institutionRef = ref(null);
+
+// 切换明细/简略模式
+const toggleDisplayMode = () => {
+  displayMode.value = displayMode.value === 'detailed' ? 'simple' : 'detailed';
+};
+
+// 一键展开/收缩逻辑
+const isAllExpanded = ref(true);
+
+// 监听子组件手动点击回传的状态同步
+const handleSyncExpand = (status) => {
+  isAllExpanded.value = status;
+};
+
+// 一键展开/收缩方法
+const handleToggleAll = () => {
+  isAllExpanded.value = !isAllExpanded.value;
+  // 手动调用子组件暴露的 toggleAll
+  categoryRef.value?.toggleAll(isAllExpanded.value);
+  institutionRef.value?.toggleAll(isAllExpanded.value);
+};
 
 // --- 数据聚合：视角 A (按 5 大类) ---
 const categoryGroupedList = computed(() => {
@@ -64,6 +101,7 @@ const categoryGroupedList = computed(() => {
       }));
     
     const total = items.reduce((sum, i) => sum + (Number(i.totalBalance) || 0), 0);
+
     return {
       ...cat,
       totalBalance: total,
@@ -77,17 +115,41 @@ const institutionGroupedList = computed(() => {
   const groups = {};
   const instMap = configStore.institutionMap;
 
-  allAccounts.value.forEach(acc => {
-    const instCode = acc.institution || 'OTHER';
+  allAssets.value.forEach(asset => {
+    const instCode = asset.institution || 'OTHER';
+    // 1. 机构层级 (L1)
     if (!groups[instCode]) {
       const instInfo = instMap[instCode] || { instName: '其他', logoUrl: '/static/icons/default.png' };
-      groups[instCode] = { ...instInfo, total: 0, accounts: [] };
+      groups[instCode] = { 
+        ...instInfo, 
+        instCode, 
+        total: 0, 
+        accountMap: {} // 用于二级聚合
+      };
     }
-    groups[instCode].total += Number(acc.totalBalance);
-    groups[instCode].accounts.push(acc);
+    groups[instCode].total += Number(asset.totalBalance);
+
+    // 2. 账户层级 (L2) - 以账号标识符或名称作为 Key
+    // 注意：如果是微信/支付宝，可以用 accountName；如果是银行，建议用 institutionIdentifier
+    const accKey = asset.institutionIdentifier || asset.accountName || 'default';
+    
+    if (!groups[instCode].accountMap[accKey]) {
+      groups[instCode].accountMap[accKey] = {
+        name: accKey,
+        totalBalance: 0,
+        items: [] // 存放具体的资产明细 (L3)
+      };
+    }
+    
+    groups[instCode].accountMap[accKey].totalBalance += Number(asset.totalBalance);
+    groups[instCode].accountMap[accKey].items.push(asset);
   });
 
-  return Object.values(groups).sort((a, b) => b.total - a.total);
+  // 转换为数组结构供 Vue 渲染
+  return Object.values(groups).map(inst => ({
+    ...inst,
+    accounts: Object.values(inst.accountMap)
+  })).sort((a, b) => b.total - a.total);
 });
 
 // 加载数据

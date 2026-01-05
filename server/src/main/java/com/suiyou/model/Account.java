@@ -23,12 +23,14 @@ public class Account {
     @Column(nullable = false, columnDefinition = "varchar(20) default 'PRIVATE'")
     private String visibleScope = "PRIVATE";
 
-    
+    @Column(nullable = false)
     private String institution;
     
     @Column(nullable = false)
     private String institutionIdentifier;
-        
+    
+    private String accountName;
+    
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
     

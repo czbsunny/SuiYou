@@ -13,4 +13,6 @@ public class CreateAccountDTO {
     
     @NotBlank(message = "机构唯一标识不能为空")
     private String institutionIdentifier; // 机构唯一标识
+
+    private String accountName; // 账户名称
 }

@@ -9,6 +9,7 @@ import { get, post } from './apiService';
  * @param {string} assetData.subCategory - 资产子分类 (BANK_CARD/STOCK等)
  * @param {string} assetData.institution - 机构代码 (如"1234")
  * @param {string} assetData.institutionIdentifier - 机构账号末4位
+ * @param {string} [assetData.accountName] - 资产账户名称
  * @param {string} assetData.name - 资产名称
  * @param {string} [assetData.currency] - 币种，默认CNY
  * @param {number} assetData.balance - 初始余额(正数)
