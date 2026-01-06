@@ -65,9 +65,18 @@
       }
     },
     {
-      "path": "pages/assets/detail",
+      "path": "pages/assets/item",
       "style": {
         "navigationBarTitleText": "资产详情",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/assets/account",
+      "style": {
+        "navigationBarTitleText": "资产账户",
         "navigationBarBackgroundColor": "#2A806C",
         "navigationBarTextStyle": "white",
         "backgroundColor": "#F9F8F4"

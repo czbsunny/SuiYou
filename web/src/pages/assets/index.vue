@@ -173,7 +173,7 @@ const handleAddAsset = () => {
 
 const handleItemClick = (item) => {
   uni.navigateTo({
-    url: `/pages/assets/detail?id=${item.id}`
+    url: `/pages/assets/item?id=${item.id}`
   });
 };
 </script>
