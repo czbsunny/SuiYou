@@ -131,3 +131,19 @@ $color-wechat: #07C160;
 $bar-primary: $primary;
 $bar-orange: $orange-400;
 $bar-blue: $blue-400;
+
+// 核心语义色
+$color-income:   #10B981; // 收入、申购、存入 (Green)
+$color-expense:  #F97316; // 支出、消费 (Orange)
+$color-transfer: #8B5CF6; // 跨机构转账、调拨 (Purple)
+$color-profit:   #F59E0B; // 更新收益、分红 (Amber/Gold)
+$color-liquid:   #3B82F6; // 赎回、提现、校准 (Blue)
+$color-text-main:#1F2937; // 主文字
+$color-text-sub: #9CA3AF; // 副文字
+
+// 对应的背景色 (Opactiy 10% 左右)
+$bg-income:      #ECFDF5;
+$bg-expense:     #FFF7ED;
+$bg-transfer:    #F5F3FF;
+$bg-profit:      #FEF3C7;
+$bg-liquid:      #EFF6FF;
