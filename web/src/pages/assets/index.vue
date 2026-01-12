@@ -35,6 +35,7 @@
         v-model:expandedTypes="institutionExpands"
         :list="institutionGroupedList"
         :mode="displayMode"
+        @account-click="handleAccountClick"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
@@ -82,7 +83,7 @@ const handleToggleAll = () => {
   if (viewMode.value === 'category') {
     categoryExpands.value = shouldExpand ? categoryGroupedList.value.map(c => c.categoryCode) : [];
   } else {
-    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.instType) : [];
+    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.type) : [];
   }
 };
 
@@ -130,7 +131,7 @@ const institutionGroupedList = computed(() => {
     sectors[instType].totalBalance += Number(asset.totalBalance);
 
     // 2. 账户层 (L2)
-    const accKey = `${instCode}_${asset.institutionIdentifier || asset.accountName}`;
+    const accKey = asset.accountId;
     if (!sectors[instType].accountMap[accKey]) {
       sectors[instType].accountMap[accKey] = {
         id: accKey,
@@ -151,21 +152,6 @@ const institutionGroupedList = computed(() => {
     accounts: Object.values(s.accountMap)
   })).sort((a, b) => b.totalBalance - a.totalBalance);
 });
-
-
-const getSectorColor = (t) => ({ BANK:'#2A806C', PAYMENT:'#1677FF', SECURITY:'#334155' }[t] || '#9CA3AF');
-
-// 辅助函数：业态 Code 转中文
-const getSectorName = (type) => {
-  const names = {
-    'BANK': '银行机构',
-    'PAYMENT': '支付平台',
-    'SECURITY': '证券机构',
-    'INSURANCE': '保险机构',
-    'OTHER': '其他平台'
-  };
-  return names[type] || '其他';
-};
 
 // 加载数据
 const loadData = async () => {
@@ -194,6 +180,13 @@ const handleAddAsset = () => {
 const handleItemClick = (item) => {
   uni.navigateTo({
     url: `/pages/assets/item?id=${item.id}`
+  });
+};
+
+const handleAccountClick = (account) => {
+  console.log(account)
+  uni.navigateTo({
+    url: `/pages/assets/account?id=${account.id}`
   });
 };
 </script>

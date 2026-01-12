@@ -31,7 +31,7 @@
         <view class="details-inner">
           <!-- 第二层：具体账户循环 -->
           <view v-for="acc in sector.accounts" :key="acc.id" class="acc-section">
-            <view class="acc-item" @tap="$emit('item-click', acc.items[0])">
+            <view class="acc-item" @tap="$emit('account-click', acc)">
               <view class="item-logo-box">
                 <image :src="acc.logoUrl" class="item-logo" mode="aspectFit" />
               </view>

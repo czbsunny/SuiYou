@@ -20,6 +20,7 @@ public class AssetRespDTO {
     private String institution;
     private String institutionIdentifier;
     private String accountName;
+    private Long accountId;
 
     private String attributes;
     private BigDecimal totalBalance;
@@ -36,6 +37,7 @@ public class AssetRespDTO {
         dto.setInstitution(asset.getAccount().getInstitution());
         dto.setInstitutionIdentifier(asset.getAccount().getInstitutionIdentifier());
         dto.setAccountName(asset.getAccount().getAccountName());
+        dto.setAccountId(asset.getAccount().getId());
         dto.setAttributes(asset.getAttributes());
         dto.setAvailableBalance(asset.getAvailableBalance());
         dto.setCategory(asset.getCategory());
