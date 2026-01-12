@@ -32,7 +32,7 @@
       <!-- 视角 B：按账户/机构 -->
       <InstitutionListView 
         v-else
-        v-model:expandedCodes="institutionExpands"
+        v-model:expandedTypes="institutionExpands"
         :list="institutionGroupedList"
         :mode="displayMode"
         @item-click="handleItemClick"
@@ -49,6 +49,7 @@ import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
 import { getAssets } from '../../services/assetService.js';
 import { useConfigStore } from '@/stores/config.js'
+import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js'
 
 import AssetViewToggle from '@/components/assets/AssetViewToggle.vue';
 import CategoryListView from '@/components/assets/CategoryListView.vue';
@@ -81,7 +82,7 @@ const handleToggleAll = () => {
   if (viewMode.value === 'category') {
     categoryExpands.value = shouldExpand ? categoryGroupedList.value.map(c => c.categoryCode) : [];
   } else {
-    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.instCode) : [];
+    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.instType) : [];
   }
 };
 
@@ -105,47 +106,66 @@ const categoryGroupedList = computed(() => {
   });
 });
 
-// --- 数据聚合：视角 B (按机构平台) ---
+// --- 数据聚合：视角 B (按业态 -> 机构平台 -> 账户) ---
 const institutionGroupedList = computed(() => {
-  const groups = {};
+  const sectors = {};
   const instMap = configStore.institutionMap;
 
   allAssets.value.forEach(asset => {
     const instCode = asset.institution || 'OTHER';
-    // 1. 机构层级 (L1)
-    if (!groups[instCode]) {
-      const instInfo = instMap[instCode] || { instName: '其他', logoUrl: '/static/icons/default.png' };
-      groups[instCode] = { 
-        ...instInfo, 
-        instCode, 
-        total: 0, 
-        accountMap: {} // 用于二级聚合
-      };
-    }
-    groups[instCode].total += Number(asset.totalBalance);
+    const instInfo = instMap[instCode] || { instName: '其他', instType: 'OTHER' };
+    const instType = instInfo.instType || 'OTHER';
 
-    // 2. 账户层级 (L2) - 以账号标识符或名称作为 Key
-    // 注意：如果是微信/支付宝，可以用 accountName；如果是银行，建议用 institutionIdentifier
-    const accKey = asset.institutionIdentifier || asset.accountName || 'default';
-    
-    if (!groups[instCode].accountMap[accKey]) {
-      groups[instCode].accountMap[accKey] = {
-        name: accKey,
+    // 1. 业态层 (L1)
+    if (!sectors[instType]) {
+      sectors[instType] = {
+        type: instType,
+        name: ASSET_INSTITUTION_DISPLAY[instType].name,
+        color: ASSET_INSTITUTION_DISPLAY[instType].color,
+        iconUrl: ASSET_INSTITUTION_DISPLAY[instType].icon,
         totalBalance: 0,
-        items: [] // 存放具体的资产明细 (L3)
+        accountMap: {}
       };
     }
-    
-    groups[instCode].accountMap[accKey].totalBalance += Number(asset.totalBalance);
-    groups[instCode].accountMap[accKey].items.push(asset);
+    sectors[instType].totalBalance += Number(asset.totalBalance);
+
+    // 2. 账户层 (L2)
+    const accKey = `${instCode}_${asset.institutionIdentifier || asset.accountName}`;
+    if (!sectors[instType].accountMap[accKey]) {
+      sectors[instType].accountMap[accKey] = {
+        id: accKey,
+        name: instInfo.instName,
+        identifier: asset.institutionIdentifier || '',
+        subText: asset.accountName || '默认账户',
+        logoUrl: instInfo.logoUrl,
+        totalBalance: 0,
+        items: [] // L3 资产项
+      };
+    }
+    sectors[instType].accountMap[accKey].totalBalance += Number(asset.totalBalance);
+    sectors[instType].accountMap[accKey].items.push(asset);
   });
 
-  // 转换为数组结构供 Vue 渲染
-  return Object.values(groups).map(inst => ({
-    ...inst,
-    accounts: Object.values(inst.accountMap)
-  })).sort((a, b) => b.total - a.total);
+  return Object.values(sectors).map(s => ({
+    ...s,
+    accounts: Object.values(s.accountMap)
+  })).sort((a, b) => b.totalBalance - a.totalBalance);
 });
+
+
+const getSectorColor = (t) => ({ BANK:'#2A806C', PAYMENT:'#1677FF', SECURITY:'#334155' }[t] || '#9CA3AF');
+
+// 辅助函数：业态 Code 转中文
+const getSectorName = (type) => {
+  const names = {
+    'BANK': '银行机构',
+    'PAYMENT': '支付平台',
+    'SECURITY': '证券机构',
+    'INSURANCE': '保险机构',
+    'OTHER': '其他平台'
+  };
+  return names[type] || '其他';
+};
 
 // 加载数据
 const loadData = async () => {

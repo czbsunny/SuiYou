@@ -155,7 +155,13 @@ const getSubCatName = (catCode, subCode) => {
     display: flex; align-items: center; justify-content: center; 
     margin-right: 24rpx; flex-shrink: 0;
     box-shadow: inset 0 0 10rpx rgba(0,0,0,0.05);
-    .cat-icon { width: 72rpx; height: 72rpx; }
+    .cat-icon { 
+      width: 72rpx; 
+      height: 72rpx; 
+      filter: brightness(0) invert(1);
+      opacity: 1;
+      transform: scale(1.05);
+    }
   }
 
   .cat-info { 
