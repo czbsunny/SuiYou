@@ -5,6 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.suiyou.model.enums.TransactionType;
+
 @Entity
 @Table(name = "transaction")
 @Data
@@ -24,23 +26,33 @@ public class Transaction {
     private String visibleScope = "PRIVATE";
     
     // 核心交易要素
-    @Column(nullable = false)
-    private String type;
-    
-    @Column(nullable = false, columnDefinition = "decimal(19,4)")
-    private BigDecimal amount;
-    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TransactionType type;
+
     @Column(name = "trans_time", nullable = false)
     private LocalDateTime transTime;
     
     // 资金流向 - 核心复式记账逻辑
-    @Column(name = "source_account_id")
-    private Long sourceAccountId;
+    @Column(name = "source_asset_id")
+    private Long sourceAssetId;
     
-    @Column(name = "target_account_id")
-    private Long targetAccountId;
+    @Column(name = "target_asset_id")
+    private Long targetAssetId;
     
-    // 分类信息
+    @Column(nullable = false, columnDefinition = "decimal(19,4)")
+    private BigDecimal amount;
+
+    @Column(name = "target_amount", precision = 19, scale = 4)
+    private BigDecimal targetAmount;
+
+    @Column(precision = 19, scale = 4)
+    private BigDecimal fee;
+
+    /**
+     * 消费分类 ID
+     * 仅 EXPENSE/INCOME 有效，转账通常不需要此分类
+     */
     @Column(name = "category_id")
     private Long categoryId;
     
@@ -52,6 +64,12 @@ public class Transaction {
 
     @Column(name = "location", length = 255)
     private String location;
+
+    /**
+     * 状态: NORMAL(正常), DELETED(逻辑删除), PENDING(待确认/信用卡预授权)
+     */
+    @Column(nullable = false, length = 20)
+    private String status = "NORMAL";
     
     // 时间戳
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
