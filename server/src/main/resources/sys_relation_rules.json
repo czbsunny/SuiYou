@@ -15,7 +15,7 @@
     ],
 
     "SECURITY": [
-      "STOCK", "FUND", "PRIVATE_FUND"
+      "STOCK", "FUND", "PRIVATE_FUND", "PORTFOLIO"
     ],
     "FUND_PLATFORM": [
       "FUND", "PORTFOLIO"
