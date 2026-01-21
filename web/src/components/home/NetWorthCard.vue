@@ -3,7 +3,12 @@
     <view class="net-worth-card">
       <view class="card-bg-decoration"></view>
       <view class="card-content">
-        <view class="card-label">家庭净资产 (Net Worth)</view>
+        <view class="card-header">
+          <view class="card-label">家庭净资产 (Net Worth)</view>
+          <div class="privacy-toggle" @click="togglePrivacy">
+            <img :src="isPrivacyOn ? '/static/images/eye-closed.png' : '/static/images/eye.png'" alt="隐私切换" style="width: 24px; height: 24px;" />
+          </div>
+        </view>
         <view class="main-number">{{ displayAmount }}</view>
         
         <view class="trend-row">
@@ -19,7 +24,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+
+const emit = defineEmits(['update:isPrivacyOn']);
 
 const props = defineProps({
   isPrivacyOn: Boolean
@@ -28,27 +35,53 @@ const props = defineProps({
 // 使用 computed 自动处理隐私脱敏
 const displayAmount = computed(() => props.isPrivacyOn ? '****' : '¥ 2,850,200');
 const displayTrend = computed(() => props.isPrivacyOn ? '****' : '+¥12,400 (当月)');
+
+// 切换隐私模式
+const togglePrivacy = () => {
+  const newState = !props.isPrivacyOn;
+  emit('update:isPrivacyOn', newState);
+};
 </script>
 
 <style scoped>
-.hero-section { padding: 0 20px 20px 20px; }
+.hero-section { padding: 20px; }
 .net-worth-card {
-  background: linear-gradient(135deg, #1F2937 0%, #000000 100%);
+  background: linear-gradient(135deg, #2a806c 0%, #3a9d7e 100%);
   border-radius: 24px; padding: 24px; color: white; position: relative; overflow: hidden;
-  box-shadow: 0 15px 30px -10px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 25px -5px rgba(42, 128, 108, 0.4);
 }
 .card-bg-decoration {
   position: absolute; top: -50%; right: -20%; width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(42,128,108,0.5) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
   filter: blur(40px); pointer-events: none;
 }
 .card-content { position: relative; z-index: 2; }
-.card-label { font-size: 12px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.card-label { font-size: 16px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+.privacy-toggle {
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.privacy-toggle:hover {
+  background: rgba(255,255,255,0.3);
+}
 .main-number { font-size: 36px; font-weight: 700; margin: 8px 0 16px 0; font-family: monospace; letter-spacing: -1px; }
 .trend-row { display: flex; align-items: center; gap: 10px; }
 .trend-pill {
-  background: rgba(42,128,108,0.3); padding: 4px 10px; border-radius: 20px;
-  font-size: 12px; color: #4ADE80; font-weight: 600; display: flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px;
+  font-size: 12px; color: white; font-weight: 600; display: flex; align-items: center; gap: 4px;
 }
-.trend-desc { font-size: 11px; opacity: 0.5; }
+.trend-desc { font-size: 11px; opacity: 0.8; }
 </style>

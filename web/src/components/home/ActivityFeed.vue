@@ -35,7 +35,7 @@ const list = [
 .h2 { font-size: 16px; font-weight: 700; color: var(--text-main); }
 .activity-list { padding: 0 20px; margin-bottom: 30px; }
 .activity-item {
-  background: var(--card-white); padding: 16px; border-radius: 16px; margin-bottom: 10px;
+  background: #FFFFFF; padding: 16px; border-radius: 16px; margin-bottom: 10px;
   display: flex; align-items: center; justify-content: space-between;
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
