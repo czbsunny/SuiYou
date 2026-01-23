@@ -7,7 +7,6 @@ import com.suiyou.model.Family;
 import com.suiyou.model.dto.TransactionCreateReqDTO;
 import com.suiyou.model.dto.TransactionQueryReqDTO;
 
-import com.suiyou.model.enums.TransactionType;
 import com.suiyou.repository.TransactionRepository;
 import com.suiyou.repository.AssetRepository;
 import com.suiyou.service.FamilyService;
