@@ -1,43 +1,35 @@
 <template>
   <view class="page-container">
-    <!-- 1. 净值趋势 (传入所有资产计算后的净值) -->
+    <!-- 1. 顶部净值总览卡片 -->
     <NetWorthCard :assets="allAssets" />
 
     <!-- 2. 财务体检 -->
     <HealthGrid :assets="allAssets" />
 
-    <!-- 3. 资产概览 -->
-    <AssetViewToggle 
-      v-model:viewMode="viewMode" 
-      v-model:displayMode="displayMode"
-      :isAllExpanded="isAllExpanded"
-      @toggle-all="handleToggleAll"
-    />
+    <!-- 3. 视角切换开关 (只保留 category | institution 切换) -->
+    <AssetViewToggle v-model="viewMode" />
 
+    <!-- 加载状态 -->
     <view v-if="loading && !allAssets.length" class="loading-container">
       <uni-load-more status="loading" />
     </view>
 
+    <!-- 4. 核心内容区 -->
     <view class="content-view">
-      <!-- 视角 A：按类别 (折叠块) -->
+      <!-- 视角 A：按资产类别 (5个折叠大块) -->
       <CategoryListView 
         v-if="viewMode === 'category'"
-        v-model:expandedCodes="categoryExpands" 
         :list="categoryGroupedList"
-        :mode="displayMode"
         @item-click="handleItemClick"
         @add-click="handleAddAsset"
       />
 
-      <!-- 视角 B：按账户/机构 -->
+      <!-- 视角 B：按机构卡包 (一张张独立的账户卡片) -->
       <InstitutionListView 
         v-else
-        v-model:expandedTypes="institutionExpands"
-        :list="institutionGroupedList"
-        :mode="displayMode"
+        :list="accountFlatList"
         @account-click="handleAccountClick"
-        @item-click="handleItemClick"
-        @add-click="handleAddAsset"
+        @add-account-click="handleAddAccount"
       />
     </view>
   </view>
@@ -46,55 +38,34 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
+import { getAssets } from '../../services/assetService.js';
+import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
+
+// 引入组件
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
-import { getAssets } from '../../services/assetService.js';
-import { useConfigStore } from '@/stores/config.js'
-import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js'
-
 import AssetViewToggle from '@/components/assets/AssetViewToggle.vue';
 import CategoryListView from '@/components/assets/CategoryListView.vue';
 import InstitutionListView from '@/components/assets/InstitutionListView.vue';
 
 const configStore = useConfigStore();
 
-// === 状态变量 ===
-const allAssets = ref([]); // 存储后端返回的原始数组
+// === 核心状态 ===
+const allAssets = ref([]); // 所有的资产原子项
 const loading = ref(true);
 const viewMode = ref('category'); // 'category' | 'institution'
 
-const displayMode = ref('detailed'); // 'detailed' | 'simple'
-const categoryExpands = ref([]);
-const institutionExpands = ref([]); 
-
-// 2. 计算顶层按钮的状态：当前视图是否有展开项？
-const isAllExpanded = computed(() => {
-  if (viewMode.value === 'category') {
-    return categoryExpands.value.length > 0;
-  } else {
-    return institutionExpands.value.length > 0;
-  }
-});
-
-// 3. 一键操作逻辑：直接操作父组件的数组
-const handleToggleAll = () => {
-  const shouldExpand = !isAllExpanded.value;
-  
-  if (viewMode.value === 'category') {
-    categoryExpands.value = shouldExpand ? categoryGroupedList.value.map(c => c.categoryCode) : [];
-  } else {
-    institutionExpands.value = shouldExpand ? institutionGroupedList.value.map(i => i.type) : [];
-  }
-};
-
-// --- 数据聚合：视角 A (按 5 大类) ---
+// --- 逻辑 A：聚合为“5大类”数据结构 ---
 const categoryGroupedList = computed(() => {
   return configStore.topCategories.map(cat => {
+    // 找出属于该大类的资产项
     const items = allAssets.value
-      .filter(acc => acc.category === cat.categoryCode)
-      .map(acc => ({
-        ...acc,
-        instInfo: configStore.getInstitutionByCode(acc.institution)
+      .filter(asset => asset.category === cat.categoryCode)
+      .map(asset => ({
+        ...asset,
+        // 补充机构 Logo 信息给明细行使用
+        instInfo: configStore.getInstitutionByCode(asset.institution)
       }));
     
     const total = items.reduce((sum, i) => sum + (Number(i.totalBalance) || 0), 0);
@@ -107,61 +78,47 @@ const categoryGroupedList = computed(() => {
   });
 });
 
-// --- 数据聚合：视角 B (按业态 -> 机构平台 -> 账户) ---
-const institutionGroupedList = computed(() => {
-  const sectors = {};
+// --- 逻辑 B：聚合为“账户卡片”扁平列表 (Wallet Stream) ---
+const accountFlatList = computed(() => {
+  const accountMap = {};
   const instMap = configStore.institutionMap;
 
   allAssets.value.forEach(asset => {
-    const instCode = asset.institution || 'OTHER';
-    const instInfo = instMap[instCode] || { instName: '其他', instType: 'OTHER' };
-    const instType = instInfo.instType || 'OTHER';
-
-    // 1. 业态层 (L1)
-    if (!sectors[instType]) {
-      sectors[instType] = {
-        type: instType,
-        name: ASSET_INSTITUTION_DISPLAY[instType].name,
-        color: ASSET_INSTITUTION_DISPLAY[instType].color,
-        iconUrl: ASSET_INSTITUTION_DISPLAY[instType].icon,
-        totalBalance: 0,
-        accountMap: {}
-      };
-    }
-    sectors[instType].totalBalance += Number(asset.totalBalance);
-
-    // 2. 账户层 (L2)
-    const accKey = asset.accountId;
-    if (!sectors[instType].accountMap[accKey]) {
-      sectors[instType].accountMap[accKey] = {
-        id: accKey,
-        name: instInfo.instName,
+    const accId = asset.accountId;
+    if (!accountMap[accId]) {
+      const instInfo = instMap[asset.institution] || { instName: '其他', instType: 'OTHER' };
+      const instType = instInfo.instType || 'OTHER';
+      
+      accountMap[accId] = {
+        id: accId,
+        instName: instInfo.instName,
+        instCode: asset.institution,
+        accountName: asset.accountName || '默认账户',
         identifier: asset.institutionIdentifier || '',
-        subText: asset.accountName || '默认账户',
         logoUrl: instInfo.logoUrl,
+        // 颜色从业态配置中获取，作为卡片背景
+        bgColor: ASSET_INSTITUTION_DISPLAY[instType]?.color || '#4b5563',
         totalBalance: 0,
-        items: [] // L3 资产项
+        itemCount: 0,
+        subText: asset.visibleScope === 'PRIVATE' ? '私有账户' : '家庭共享'
       };
     }
-    sectors[instType].accountMap[accKey].totalBalance += Number(asset.totalBalance);
-    sectors[instType].accountMap[accKey].items.push(asset);
+    accountMap[accId].totalBalance += Number(asset.totalBalance);
+    accountMap[accId].itemCount += 1;
   });
 
-  return Object.values(sectors).map(s => ({
-    ...s,
-    accounts: Object.values(s.accountMap)
-  })).sort((a, b) => b.totalBalance - a.totalBalance);
+  // 返回拍平后的数组，并按金额排序
+  return Object.values(accountMap).sort((a, b) => b.totalBalance - a.totalBalance);
 });
 
-// 加载数据
+// --- 数据加载 ---
 const loadData = async () => {
   loading.value = true;
   try {
     const res = await getAssets();
-    // 此时 res 就是你刚才给我的那个包含 assets 数组的对象
     allAssets.value = res.assets || [];
   } catch (err) {
-    console.error('加载资产项失败:', err);
+    console.error('加载资产失败:', err);
   } finally {
     loading.value = false;
   }
@@ -171,48 +128,40 @@ onShow(() => {
   loadData();
 });
 
-const handleAddAsset = () => {
-  uni.navigateTo({
-    url: `/pages/assets/add`
-  });
+// --- 路由跳转 ---
+const handleAddAsset = (catCode = '') => {
+  uni.navigateTo({ url: `/pages/assets/add?category=${catCode}` });
+};
+
+const handleAddAccount = () => {
+  uni.navigateTo({ url: `/pages/assets/add-account` });
 };
 
 const handleItemClick = (item) => {
-  uni.navigateTo({
-    url: `/pages/assets/item?id=${item.id}`
-  });
+  uni.navigateTo({ url: `/pages/assets/item?id=${item.id}` });
 };
 
 const handleAccountClick = (account) => {
-  console.log(account)
-  uni.navigateTo({
-    url: `/pages/assets/account?id=${account.id}`
-  });
+  uni.navigateTo({ url: `/pages/assets/account-detail?id=${account.id}` });
 };
 </script>
 
 <style lang="scss">
 page {
-  background-color: #F9F8F4; // 统一使用你预览页的米色
+  background-color: #F9F8F4;
 }
+
 .page-container {
   min-height: 100vh;
   background-color: #F9F8F4;
-  padding-bottom: 40rpx;
+  padding-bottom: env(safe-area-inset-bottom); // 适配全面屏底部
 }
 
 .loading-container {
-  padding: 40rpx 0;
+  padding: 100rpx 0;
 }
 
-.global-add-btn {
-  width: 64rpx; height: 64rpx; background: #fff; border-radius: 20rpx;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
-  .plus-icon { width: 28rpx; height: 28rpx; opacity: 0.6; }
-  &:active { transform: scale(0.9); }
+.content-view {
+  padding: 0 32rpx 40rpx;
 }
-
-.content-view { padding: 0 32rpx; }
-
 </style>

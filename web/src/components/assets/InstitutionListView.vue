@@ -1,182 +1,216 @@
 <!-- components/assets/InstitutionListView.vue -->
 <template>
-  <view class="institution-view">
-    <view 
-      v-for="sector in list" 
-      :key="sector.type" 
-      class="sector-card" 
-      :class="{ 'is-expanded': isExpanded(sector.type) }"
-    >
-      <!-- 1. 第一层：业态头部 (复刻资产大类样式) -->
-      <view class="card-header" @tap="toggle(sector.type)">
-        <view class="icon-box" :style="{ backgroundColor: sector.color }">
-          <!-- 业态图标 -->
-          <image :src="sector.iconUrl" mode="aspectFit" class="sector-icon" />
+  <view class="wallet-container">
+    <!-- 头部操作区 -->
+    <view class="view-header">
+      <text class="view-title">我的账户</text>
+      <view class="action-group">
+        <view class="icon-btn" @tap="$emit('manage-click')">
+          <image src="/static/icons/sliders.png" mode="aspectFit" class="btn-img" />
         </view>
-        <view class="sector-info">
-          <text class="sector-name">{{ sector.name }}</text>
-          <text class="sector-count">{{ sector.accounts.length }}个账户</text>
-        </view>
-        <view class="sector-right">
-          <text class="sector-amount">¥ {{ formatAmount(sector.totalBalance) }}</text>
-          <view class="arrow-icon" :class="{ 'rotate': isExpanded(sector.type) }"></view>
+        <view class="icon-btn primary" @tap="$emit('add-account-click')">
+          <image src="/static/images/plus-gray.png" mode="aspectFit" class="btn-img primary-icon" />
         </view>
       </view>
+    </view>
 
-      <!-- 2. 展开区域 -->
+    <!-- 账户卡片流 -->
+    <view class="wallet-stream">
       <view 
-        class="details-container" 
-        :style="{ maxHeight: isExpanded(sector.type) ? '3000rpx' : '0' }"
+        v-for="acc in list" 
+        :key="acc.id" 
+        class="account-card"
+        :style="{ background: acc.bgColor || '#1F2937' }"
+        @tap="$emit('account-click', acc)"
       >
-        <view class="details-inner">
-          <!-- 第二层：具体账户循环 -->
-          <view v-for="acc in sector.accounts" :key="acc.id" class="acc-section">
-            <view class="acc-item" @tap="$emit('account-click', acc)">
-              <view class="item-logo-box">
-                <image :src="acc.logoUrl" class="item-logo" mode="aspectFit" />
-              </view>
-              <view class="item-info">
-                <view class="item-main-row">
-                  <text class="item-name">{{ acc.name }}</text>
-                  <text class="item-id" v-if="acc.identifier">({{ acc.identifier }})</text>
+        <view class="glass-texture"></view>
+        
+        <view class="card-content">
+          <!-- 第一部分：账户头部信息 -->
+          <view class="header-section">
+            <view class="wc-row-top">
+              <view class="brand-group">
+                <view class="logo-white-box">
+                  <image :src="acc.logoUrl || '/static/icons/default-bank.png'" mode="aspectFit" class="logo" />
                 </view>
-                <text class="item-sub-row">{{ acc.subText }}</text>
+                <view class="name-area">
+                  <text class="inst-name">{{ acc.instName }}</text>
+                  <text v-if="acc.accountName" class="acc-alias"> - {{ acc.accountName }}</text>
+                </view>
               </view>
-              <view class="item-right">
-                <text class="item-amt">¥ {{ formatAmount(acc.totalBalance) }}</text>
+              <!-- 添加资产快捷键 -->
+              <view class="add-asset-trigger" @tap.stop="$emit('add-asset-click', acc)">
+                <image src="/static/images/plus.png" mode="aspectFit" class="plus-mini-img" />
               </view>
             </view>
 
-            <!-- 第三层：账户下的资产明细 (仅明细模式展示) -->
-            <view class="l3-group" v-if="mode === 'detailed'">
-              <view 
-                v-for="asset in acc.items" 
-                :key="asset.id" 
-                class="asset-detail-row"
-                @tap.stop="$emit('item-click', asset)"
-              >
-                <view class="asset-line"></view>
-                <view class="asset-info">
-                  <text class="asset-name">{{ getSubCatName(asset.category, asset.subCategory) }}</text>
-                </view>
-                <view class="asset-right">
-                  <text class="asset-amt">{{ formatAmount(asset.totalBalance) }}</text>
-                  <uni-icons type="right" size="10" color="#D1D5DB" />
-                </view>
+            <!-- 第二行：识别码 (稍微远离第一行) -->
+            <view class="wc-row-id">
+              <text class="id-text">**** **** {{ acc.identifier || '0000' }}</text>
+            </view>
+          </view>
+
+          <!-- 第二部分：财务数据与页脚 (强制推到底部) -->
+          <view class="footer-section">
+            <!-- 第三行：金额与收益 -->
+            <view class="wc-row-balance">
+              <view class="balance-left">
+                <text class="symbol">¥</text>
+                <text class="num">{{ formatAmount(acc.totalBalance) }}</text>
               </view>
+              <view v-if="acc.yesterdayProfit" class="profit-right">
+                <text class="profit-label">昨日收益</text>
+                <text class="profit-val">+{{ formatAmount(acc.yesterdayProfit) }}</text>
+              </view>
+            </view>
+
+            <!-- 第四行：页脚状态 -->
+            <view class="wc-row-footer">
+              <text class="footer-info">{{ getFooterText(acc) }}</text>
+              <view class="item-tag">{{ acc.itemCount || 0 }} 项资产</view>
             </view>
           </view>
         </view>
       </view>
+
+      <!-- 空状态 -->
+      <view v-if="list.length === 0" class="empty-placeholder" @tap="$emit('add-account-click')">
+        <image src="/static/images/plus-gray.png" class="empty-plus" />
+        <text>点击关联你的第一个账户</text>
+      </view>
     </view>
+    
+    <view class="safe-bottom-pad"></view>
   </view>
 </template>
 
 <script setup>
-import { useConfigStore } from '@/stores/config.js';
-
 const props = defineProps({
-  list: Array,
-  mode: String,
-  expandedTypes: Array
+  list: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits(['update:expandedTypes', 'item-click']);
-const configStore = useConfigStore();
-
-const toggle = (type) => {
-  let newTypes = [...props.expandedTypes];
-  const idx = newTypes.indexOf(type);
-  if (idx > -1) newTypes.splice(idx, 1);
-  else newTypes.push(type);
-  emit('update:expandedTypes', newTypes);
-};
-
-const isExpanded = (type) => props.expandedTypes.includes(type);
-
+const emit = defineEmits(['account-click', 'add-asset-click', 'add-account-click', 'manage-click']);
 const formatAmount = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
-const getSubCatName = (cat, sub) => configStore.getSubCategoriesByCode(cat).find(s => s.categoryCode === sub)?.name || '明细资产';
+const getFooterText = (acc) => {
+  if (acc.accountType === 'CREDIT_CARD') return `还款日: 每月${acc.repaymentDate}号`;
+  return acc.subText || '账户状态正常';
+};
 </script>
 
 <style lang="scss" scoped>
-/* 🟢 复刻资产类别的卡片样式 */
-.sector-card {
-  background: #ffffff; border-radius: 40rpx; margin-bottom: 24rpx;
-  overflow: hidden; box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease;
-  &.is-expanded { box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.06); }
-}
+.wallet-container { padding: 0 8rpx; }
 
-.card-header {
-  padding: 36rpx 32rpx; display: flex; align-items: center;
-  .icon-box { 
-    width: 88rpx; height: 88rpx; border-radius: 24rpx; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; margin-right: 24rpx;
-    .sector-icon { 
-      width: 56rpx; 
-      height: 56rpx; 
-      filter: brightness(0) invert(1);
-      opacity: 1;
-      transform: scale(1.05);
-    }
-  }
-  .sector-info { 
-    flex: 1; display: flex; flex-direction: column;
-    .sector-name { font-size: 32rpx; font-weight: 800; color: #1F2937; }
-    .sector-count { font-size: 22rpx; color: #9CA3AF; margin-top: 4rpx; }
-  }
-  .sector-right {
-    display: flex; align-items: center; gap: 16rpx;
-    .sector-amount { font-size: 36rpx; font-weight: 800; font-family: 'DIN Alternate'; color: #111827; }
-    .arrow-icon { 
-      width: 12rpx; height: 12rpx; border-bottom: 4rpx solid #D1D5DB; border-right: 4rpx solid #D1D5DB; 
-      transform: rotate(45deg); transition: 0.3s; &.rotate { transform: rotate(-135deg); margin-top: 8rpx; } 
-    }
-  }
-}
-
-.details-container { background-color: #FAFBFC; overflow: hidden; transition: max-height 0.4s ease; }
-
-/* 🟢 L2 账户行样式 (复刻你图片中工商银行那行的质感) */
-.acc-section { border-bottom: 1rpx solid rgba(0, 0, 0, 0.02); }
-.acc-item {
-  padding: 28rpx 32rpx; display: flex; align-items: center;
-  &:active { background: #F3F4F6; }
-  .item-logo-box {
-    width: 64rpx; height: 64rpx; border-radius: 12rpx; background: #fff;
-    margin-right: 20rpx; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-    border: 1rpx solid #F3F4F6;
-    .item-logo { width: 44rpx; height: 44rpx; }
-  }
-  .item-info {
-    flex: 1; display: flex; flex-direction: column; min-width: 0;
-    .item-main-row {
-      display: flex; align-items: center; gap: 8rpx;
-      .item-name { font-size: 28rpx; font-weight: 700; color: #374151; }
-      .item-id { font-size: 24rpx; color: #9CA3AF; font-weight: 500; }
-    }
-    .item-sub-row { font-size: 22rpx; color: #9CA3AF; margin-top: 4rpx; }
-  }
-  .item-right {
-    .item-amt { font-size: 30rpx; font-weight: 700; font-family: 'DIN Alternate'; color: #1F2937; }
-  }
-}
-
-/* 🟢 L3 资产明细样式 (缩进设计) */
-.l3-group { padding-left: 116rpx; padding-bottom: 10rpx; }
-.asset-detail-row {
+/* 🟢 视图头部样式 */
+.view-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 16rpx 32rpx 16rpx 0; position: relative;
-  .asset-line { 
-    position: absolute; left: -32rpx; top: 0; bottom: 0; width: 2rpx; 
-    border-left: 2rpx dashed #E5E7EB; 
-  }
-  .asset-info {
-    .asset-name { font-size: 24rpx; color: #6B7280; font-weight: 500; }
-  }
-  .asset-right {
-    display: flex; align-items: center; gap: 8rpx;
-    .asset-amt { font-size: 24rpx; color: #6B7280; font-family: 'Monaco'; font-weight: 600; }
+  height: 100rpx; padding: 0 8rpx; margin-bottom: 10rpx;
+  .view-title { font-size: 36rpx; font-weight: 800; color: #1F2937; letter-spacing: 2rpx; }
+  .action-group {
+    display: flex; gap: 16rpx;
+    .icon-btn {
+      width: 64rpx; height: 64rpx; background: #fff; border-radius: 20rpx;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.04);
+      .btn-img { width: 32rpx; height: 32rpx; opacity: 0.6; }
+      &.primary .primary-icon { opacity: 0.8; filter: brightness(0.2); }
+      &:active { transform: scale(0.9); }
+    }
   }
 }
+
+/* 🟢 卡片核心样式 */
+.account-card {
+  width: 100%; height: 390rpx; /* 稍微增加高度到390rpx，给间距留出空间 */
+  border-radius: 52rpx; margin-bottom: 32rpx;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  &:active { transform: scale(0.98); }
+}
+
+.glass-texture {
+  position: absolute; top: -50%; right: -20%; width: 120%; height: 120%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 50%);
+  border-radius: 50%; pointer-events: none;
+}
+
+.card-content {
+  padding: 44rpx; height: 100%; display: flex; flex-direction: column;
+  justify-content: flex-start; /* 改为起点对齐，通过 auto 控制底部 */
+  color: #fff; position: relative; z-index: 2; box-sizing: border-box;
+}
+
+/* 第一部分：账户头 */
+.header-section { margin-bottom: auto; } /* 🟢 这行很关键，把下面的内容顶到底部 */
+
+.wc-row-top {
+  display: flex; justify-content: space-between; align-items: center;
+  .brand-group {
+    display: flex; align-items: center; gap: 20rpx; flex: 1; min-width: 0;
+    .logo-white-box {
+      width: 64rpx; height: 64rpx; background: #fff; border-radius: 18rpx;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      .logo { width: 44rpx; height: 44rpx; }
+    }
+    .name-area {
+      display: flex; flex-direction: row; align-items: center; flex: 1; min-width: 0;
+      .inst-name { font-size: 30rpx; font-weight: 800; line-height: 1.2; white-space: nowrap; flex-shrink: 0; }
+      .acc-alias { font-size: 30rpx; opacity: 0.7; font-weight: 500; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+  }
+  .add-asset-trigger {
+    width: 60rpx; height: 60rpx; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex; align-items: center; justify-content: center;
+    border: 1rpx solid rgba(255, 255, 255, 0.3);
+    .plus-mini-img { width: 28rpx; height: 28rpx; }
+    &:active { background: rgba(255, 255, 255, 0.4); transform: scale(0.9); }
+  }
+}
+
+.wc-row-id {
+  margin-top: 12rpx; /* 🟢 增加识别码离顶部的距离 */
+  .id-text {
+    font-size: 24rpx; font-family: 'Courier New', Courier, monospace;
+    opacity: 0.6; letter-spacing: 4rpx; font-weight: 600;
+  }
+}
+
+/* 第二部分：底部财务区 */
+.footer-section {
+  /* 此时会被 margin-bottom: auto 顶到卡片最底部 */
+  margin-top: 36rpx;
+}
+
+.wc-row-balance {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  .balance-left {
+    display: flex; align-items: baseline;
+    .symbol { font-size: 40rpx; font-weight: 700; margin-right: 12rpx; }
+    .num { font-size: 60rpx; font-weight: 800; font-family: 'DIN Alternate', sans-serif; letter-spacing: -1rpx; }
+  }
+  .profit-right {
+    text-align: right; margin-bottom: 12rpx;
+    .profit-label { font-size: 18rpx; opacity: 0.7; display: block; margin-bottom: 4rpx; font-weight: 600; }
+    .profit-val { font-size: 26rpx; font-weight: 700; color: #FFF7E6; }
+  }
+}
+
+.wc-row-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 22rpx; font-weight: 600; 
+  border-top: 1rpx solid rgba(255,255,255,0.15); /* 加个极细线区分 */
+  padding-top: 24rpx; /* 🟢 增加页脚内部顶部的间距 */
+  .footer-info { opacity: 0.8; }
+  .item-tag { background: rgba(0,0,0,0.1); padding: 6rpx 16rpx; border-radius: 10rpx; }
+}
+
+.empty-placeholder {
+  height: 240rpx; border: 3rpx dashed #D1D5DB; border-radius: 48rpx;
+  background: rgba(255, 255, 255, 0.4); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12rpx;
+  .empty-plus { width: 40rpx; height: 40rpx; opacity: 0.2; }
+  text { font-size: 26rpx; color: #9CA3AF; font-weight: 500; }
+}
+.safe-bottom-pad { height: 100rpx; }
 </style>

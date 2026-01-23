@@ -74,9 +74,18 @@
       }
     },
     {
-      "path": "pages/assets/account",
+      "path": "pages/assets/account-detail",
       "style": {
-        "navigationBarTitleText": "资产账户",
+        "navigationBarTitleText": "账户详情",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/assets/add-account",
+      "style": {
+        "navigationBarTitleText": "添加账户",
         "navigationBarBackgroundColor": "#2A806C",
         "navigationBarTextStyle": "white",
         "backgroundColor": "#F9F8F4"
