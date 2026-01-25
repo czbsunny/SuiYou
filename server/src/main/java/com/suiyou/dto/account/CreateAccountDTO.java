@@ -15,4 +15,8 @@ public class CreateAccountDTO {
     private String institutionIdentifier; // 机构唯一标识
 
     private String accountName; // 账户名称
+
+    private Boolean includeInNetWorth = true; // 是否包含在净值计算中
+    
+    private String themeColor; // 账户主题颜色
 }

@@ -49,9 +49,9 @@ const items = [
 }
 .item-top { display: flex; justify-content: space-between; margin-bottom: 8px; }
 .label-box { display: flex; align-items: center; gap: 6px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; }
-.label { font-size: 10px; color: #6b7280; font-weight: 500; }
-.badge { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.label { font-size: 12px; color: #6b7280; font-weight: 500; }
+.badge { font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
 
 /* 颜色工具类模拟 (SCSS) */
 .bg-green-500 { background-color: #22c55e; }
@@ -60,8 +60,8 @@ const items = [
 /* ... 其他颜色类似 ... */
 
 .item-val { display: flex; align-items: flex-end; gap: 4px; margin-bottom: 8px; }
-.val-num { font-size: 20px; font-weight: 700; color: #2c3e50; }
-.val-unit { font-size: 10px; color: #9ca3af; margin-bottom: 4px; }
+.val-num { font-size: 16px; font-weight: 700; color: #2c3e50; }
+.val-unit { font-size: 12px; color: #9ca3af; margin-bottom: 2px; }
 
 .progress-bg { width: 100%; height: 6px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 99px; }

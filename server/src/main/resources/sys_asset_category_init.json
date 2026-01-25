@@ -7,11 +7,12 @@
     "sortOrder": 10,
     "color": "#2A806C",
     "children": [
-      { "categoryCode": "DEBIT_CARD", "name": "银行储蓄卡", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期存款" },
-      { "categoryCode": "E_WALLET", "name": "网络钱包余额", "iconUrl": "/static/assets/categories/wallet.png", "sortOrder": 2, "description": "不产生收益的零钱 (微信零钱、支付宝余额)" },
-      { "categoryCode": "CASH_PLUS", "name": "活期理财",  "iconUrl": "/static/assets/categories/cash-plus.png", "sortOrder": 3,"description": "余额宝、零钱通、朝朝宝等可随时消费的生息资产" },
-      { "categoryCode": "CASH", "name": "现金", "iconUrl": "/static/assets/categories/money.png", "sortOrder": 4, "description": "手头持有的纸币、硬币" },
-      { "categoryCode": "CUSTOM_LIQUID", "name": "其他流动资产", "iconUrl": "/static/assets/categories/liquid-asset.png", "sortOrder": 99, "description": "其他流动资产" }
+      { "categoryCode": "DEBIT_CARD", "groupType": "PAYMENT", "name": "活期储蓄", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期存款" },
+      { "categoryCode": "E_WALLET", "groupType": "PAYMENT", "name": "网络钱包", "iconUrl": "/static/assets/categories/wallet.png", "sortOrder": 2, "description": "不产生收益的零钱 (微信零钱、支付宝余额)" },
+      { "categoryCode": "CASH_PLUS", "groupType": "RESERVE", "name": "活期理财",  "iconUrl": "/static/assets/categories/cash-plus.png", "sortOrder": 3,"description": "余额宝、零钱通、朝朝宝等可随时消费的生息资产" },
+      { "categoryCode": "CASH", "groupType": "PAYMENT", "name": "现金", "iconUrl": "/static/assets/categories/money.png", "sortOrder": 4, "description": "手头持有的纸币、硬币" },
+      { "categoryCode": "INVEST_CASH", "groupType": "RESERVE", "name": "活期理财",  "iconUrl": "/static/assets/categories/cash-plus.png", "sortOrder": 3,"description": "余额宝、零钱通、朝朝宝等可随时消费的生息资产" },
+      { "categoryCode": "CUSTOM_LIQUID", "groupType": "RESERVE", "name": "其他流动资产", "iconUrl": "/static/assets/categories/liquid-asset.png", "sortOrder": 99, "description": "其他流动资产" }
     ]
   },
   {
@@ -22,19 +23,20 @@
     "sortOrder": 20,
     "color": "#D97706",
     "children": [
-      { "categoryCode": "TIME_DEPOSIT", "name": "银行定存", "iconUrl": "/static/assets/categories/deposit.png", "sortOrder": 1, "description": "定期存款、大额存单、结构性存款" },
-      { "categoryCode": "FUND", "name": "公募基金", "iconUrl": "/static/assets/categories/fund.png", "sortOrder": 2, "description": "股票基、混合基、债基、货币基金、商品类基金等" },
-      { "categoryCode": "STOCK", "name": "股票", "iconUrl": "/static/assets/categories/stock.png", "sortOrder": 3, "description": "A股、港美股、北交所" },
-      { "categoryCode": "BANK_PRODUCT", "name": "银行理财", "iconUrl": "/static/assets/categories/bank-product.png", "sortOrder": 4, "description": "R1-R5级的银行理财子公司产品" },
-      { "categoryCode": "GOLD_ACCUMULATION", "name": "积存金", "iconUrl": "/static/assets/categories/accu-gold.png", "sortOrder": 5, "description": "银行积存金" },
-      { "categoryCode": "PHYSICAL_GOLD", "name": "实物黄金", "iconUrl": "/static/assets/categories/gold.png", "sortOrder": 6, "description": "实物金条、金饰等" },
-      { "categoryCode": "PORTFOLIO", "name": "投顾组合", "iconUrl": "/static/assets/categories/portfolio.png", "sortOrder": 7, "description": "金融平台的基金组合策略" },
-      { "categoryCode": "PRIVATE_FUND", "name": "私募证券基金", "iconUrl": "/static/assets/categories/private-fund.png", "sortOrder": 8, "description": "高净值理财、资管计划" },
-      { "categoryCode": "SAVING_INSURANCE", "name": "储蓄型保险", "iconUrl": "/static/assets/categories/insurance.png", "sortOrder": 9,"description": "年金险、增额终身寿、万能险" },
-      { "categoryCode": "CRYPTO", "name": "加密货币", "iconUrl": "/static/assets/categories/crypto.png", "sortOrder": 10, "description": "BTC, ETH, USDT等" },
-      { "categoryCode": "CUSTOM_INVEST", "name": "其他投资理财", "iconUrl": "/static/assets/categories/invest-asset.png", "sortOrder": 99, "description": "其他投资理财" }
+      { "categoryCode": "TIME_DEPOSIT", "groupType": "RESERVE", "name": "银行定存", "iconUrl": "/static/assets/categories/deposit.png", "sortOrder": 1, "description": "定期存款、大额存单、结构性存款" },
+      { "categoryCode": "FUND", "groupType": "RESERVE", "name": "公募基金", "iconUrl": "/static/assets/categories/fund.png", "sortOrder": 2, "description": "股票基、混合基、债基、货币基金、商品类基金等" },
+      { "categoryCode": "STOCK", "groupType": "RESERVE", "name": "股票", "iconUrl": "/static/assets/categories/stock.png", "sortOrder": 3, "description": "A股、港美股、北交所" },
+      { "categoryCode": "BANK_PRODUCT", "groupType": "RESERVE", "name": "银行理财", "iconUrl": "/static/assets/categories/bank-product.png", "sortOrder": 4, "description": "R1-R5级的银行理财子公司产品" },
+      { "categoryCode": "GOLD_ACCUMULATION", "groupType": "RESERVE", "name": "积存金", "iconUrl": "/static/assets/categories/accu-gold.png", "sortOrder": 5, "description": "银行积存金" },
+      { "categoryCode": "PHYSICAL_GOLD", "groupType": "RESERVE", "name": "实物黄金", "iconUrl": "/static/assets/categories/gold.png", "sortOrder": 6, "description": "实物金条、金饰等" },
+      { "categoryCode": "PORTFOLIO", "groupType": "RESERVE", "name": "投顾组合", "iconUrl": "/static/assets/categories/portfolio.png", "sortOrder": 7, "description": "金融平台的基金组合策略" },
+      { "categoryCode": "PRIVATE_FUND", "groupType": "RESERVE", "name": "私募证券基金", "iconUrl": "/static/assets/categories/private-fund.png", "sortOrder": 8, "description": "高净值理财、资管计划" },
+      { "categoryCode": "SAVING_INSURANCE", "groupType": "RESERVE", "name": "储蓄型保险", "iconUrl": "/static/assets/categories/insurance.png", "sortOrder": 9,"description": "年金险、增额终身寿、万能险" },
+      { "categoryCode": "CRYPTO", "groupType": "RESERVE", "name": "加密货币", "iconUrl": "/static/assets/categories/crypto.png", "sortOrder": 10, "description": "BTC, ETH, USDT等" },
+      { "categoryCode": "CUSTOM_INVEST", "groupType": "RESERVE", "name": "其他投资理财", "iconUrl": "/static/assets/categories/invest-asset.png", "sortOrder": 99, "description": "其他投资理财" }
     ]
   },
+
   {
     "categoryCode": "FIXED",
     "name": "固定资产",

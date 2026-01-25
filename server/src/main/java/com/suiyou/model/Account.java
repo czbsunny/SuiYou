@@ -1,9 +1,7 @@
 package com.suiyou.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Formula;
 import lombok.Data;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,7 +30,16 @@ public class Account {
     private String accountName;
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
+    private Boolean includeInNetWorth = true;
+
+    @Column(nullable = false, columnDefinition = "varchar(20) default '1F2937'")
+    private String themeColor = "1F2937";
+    
+    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
+    
+    @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean deleted = false;
     
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

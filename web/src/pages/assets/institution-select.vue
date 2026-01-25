@@ -1,13 +1,41 @@
 <template>
   <view class="container">
-    <!-- 1. 搜索栏 (保持不变) -->
-    <view class="header-section">
-      <view class="search-bar">
-        <input type="text" v-model="searchText" placeholder="搜索机构名称" class="search-input" />
+    <!-- 1. 顶部搜索与分类区域 -->
+    <view class="header-sticky">
+      <view class="search-section">
+        <view class="search-bar">
+          <uni-icons type="search" size="18" color="#999"></uni-icons>
+          <input type="text" v-model="searchText" placeholder="搜索机构名称" class="search-input" />
+          <uni-icons v-if="searchText" type="closeempty" size="18" color="#ccc" @tap="searchText = ''"></uni-icons>
+        </view>
+      </view>
+
+      <!-- 🟢 业态切换 Tab：横向滑动修正版 -->
+      <view class="tabs-section" v-if="!subCode && institutionTypes.length > 1">
+        <scroll-view 
+          scroll-x 
+          class="tabs-scroll" 
+          :show-scrollbar="false" 
+          :enhanced="true"
+        >
+          <!-- 核心：这个 view 必须是 inline-block 或 inline-flex -->
+          <view class="tabs-content">
+            <view 
+              v-for="type in institutionTypes" 
+              :key="type.code"
+              class="tab-item"
+              :class="{ 'active': activeType === type.code }"
+              @tap="handleTypeChange(type.code)"
+            >
+              <text class="tab-text">{{ type.name }}</text>
+              <view class="tab-line" v-if="activeType === type.code"></view>
+            </view>
+          </view>
+        </scroll-view>
       </view>
     </view>
     
-    <!-- 2. 主体列表区 (增加 @scroll 监听) -->
+    <!-- 2. 主体列表区 (代码保持不变) -->
     <scroll-view 
       class="list-scroll" 
       scroll-y 
@@ -15,7 +43,7 @@
       scroll-with-animation
       @scroll="onListScroll"
     >
-      <view v-if="searchText">
+      <view v-if="searchText" class="search-results">
         <view v-for="item in filteredList" :key="item.id" class="institution-item" @click="selectInstitution(item)">
           <view class="logo-wrapper">
             <image :src="item.logoUrl || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
@@ -26,7 +54,6 @@
       </view>
 
       <view v-else id="scroll-content">
-        <!-- 注意这里 ID 改为字母或 HOT -->
         <view 
           v-for="group in groupedInstitutions" 
           :key="group.indexLetter" 
@@ -41,11 +68,11 @@
             <text class="institution-name">{{ item.instName }}</text>
           </view>
         </view>
+        <view class="safe-bottom"></view>
       </view>
-      <view class="safe-bottom"></view>
     </scroll-view>
 
-    <!-- 3. 右侧索引条 (高亮逻辑改为 activeLetter) -->
+    <!-- 3. 右侧索引条 (代码保持不变) -->
     <view class="index-bar" v-if="!searchText">
       <view 
         v-for="letter in alphabet" 
@@ -61,27 +88,48 @@
 </template>
 
 <script setup>
+// ... JS 逻辑完全保持不变，重点在下方的 CSS ...
 import { ref, computed, nextTick } from 'vue';
 import { onLoad, onReady } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
+import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 
 const configStore = useConfigStore();
 const searchText = ref('');
 const scrollIntoId = ref('');
-const activeLetter = ref('热'); // 当前高亮的字母
+const activeLetter = ref('热');
 const subCode = ref('');
-const groupOffsets = ref([]); // 存储每个分组的距离顶部的距离
+const groupOffsets = ref([]);
+const activeType = ref('ALL');
 
 onLoad((options) => {
   if (options.subCode) subCode.value = options.subCode;
 });
 
-// 核心逻辑：ID 格式化（避开中文防止 Bug）
-const formatId = (letter) => {
-  return letter === '热' ? 'letter-HOT' : `letter-${letter}`;
+const institutionTypes = computed(() => {
+  const types = [...new Set(configStore.institutionData.map(i => i.instType))];
+  const mapped = types.map(t => ({
+    code: t,
+    name: ASSET_INSTITUTION_DISPLAY[t]?.name || '其他'
+  }));
+  return [{ code: 'ALL', name: '全部' }, ...mapped];
+});
+
+const rawInstitutions = computed(() => {
+  if (subCode.value) return configStore.getInstitutionsBySubCategoryCode(subCode.value);
+  if (activeType.value === 'ALL') return configStore.institutionData;
+  return configStore.institutionData.filter(i => i.instType === activeType.value);
+});
+
+const handleTypeChange = (code) => {
+  if (activeType.value === code) return;
+  activeType.value = code;
+  scrollIntoId.value = '';
+  activeLetter.value = '热';
+  nextTick(() => { setTimeout(() => calculateOffsets(), 300); });
 };
 
-const rawInstitutions = computed(() => configStore.getInstitutionsBySubCategoryCode(subCode.value));
+const formatId = (letter) => letter === '热' ? 'letter-HOT' : `letter-${letter}`;
 
 const groupedInstitutions = computed(() => {
   const groups = {};
@@ -102,13 +150,12 @@ const alphabet = computed(() => groupedInstitutions.value.map(g => g.indexLetter
 const filteredList = computed(() => {
   const kw = searchText.value.trim().toLowerCase();
   if (!kw) return [];
-  return rawInstitutions.value.filter(item => item.instName.toLowerCase().includes(kw));
+  return configStore.institutionData.filter(item => item.instName.toLowerCase().includes(kw));
 });
 
-// --- Bug 1 修复：点击跳转 ---
 const scrollToLetter = (letter) => {
   const targetId = formatId(letter);
-  scrollIntoId.value = ''; // 先清空，确保相同 ID 也能触发监听
+  scrollIntoId.value = ''; 
   nextTick(() => {
     scrollIntoId.value = targetId;
     activeLetter.value = letter;
@@ -116,31 +163,24 @@ const scrollToLetter = (letter) => {
   });
 };
 
-// --- Bug 2 修复：滚动联动 ---
-
-// 计算所有分组的坐标位置
 const calculateOffsets = () => {
   const query = uni.createSelectorQuery();
   query.selectAll('.group-block').boundingClientRect(rects => {
+    if(!rects.length) return;
+    const baseTop = rects[0].top;
     groupOffsets.value = rects.map((rect, index) => ({
-      top: rect.top, // 相对于页面的初始位置
+      top: rect.top,
+      offset: rect.top - baseTop,
       letter: alphabet.value[index]
     }));
   }).exec();
 };
 
-// 监听列表滚动
-let isClickScrolling = false; // 防止点击跳转触发的滚动干扰联动
 const onListScroll = (e) => {
-  const scrollTop = e.detail.scrollTop + 50; // 偏移 50px 容错
-  
-  // 查找当前滚动到了哪个字母区间
+  if (!groupOffsets.value.length) return;
+  const scrollTop = e.detail.scrollTop + 20; 
   for (let i = groupOffsets.value.length - 1; i >= 0; i--) {
-    // 这里需要相对于 scroll-view 容器的相对位移
-    // 在 uniapp 中，简单做法是比较 scrollTop 与我们预存的分组位置
-    // 假设第一个分组 top 为 0
-    const offset = groupOffsets.value[i].top - groupOffsets.value[0].top;
-    if (scrollTop >= offset) {
+    if (scrollTop >= groupOffsets.value[i].offset) {
       if (activeLetter.value !== groupOffsets.value[i].letter) {
         activeLetter.value = groupOffsets.value[i].letter;
       }
@@ -149,12 +189,7 @@ const onListScroll = (e) => {
   }
 };
 
-onReady(() => {
-  // 数据渲染后，延迟计算位置
-  setTimeout(() => {
-    calculateOffsets();
-  }, 500);
-});
+onReady(() => { setTimeout(() => calculateOffsets(), 800); });
 
 const selectInstitution = (institution) => {
   uni.$emit('institutionSelected', institution);
@@ -163,51 +198,159 @@ const selectInstitution = (institution) => {
 </script>
 
 <style lang="scss" scoped>
-/* 原有样式保持不变 */
 .container { display: flex; flex-direction: column; height: 100vh; background-color: #f7f7f7; }
-.header-section { padding: 20rpx 30rpx; background-color: #fff; }
-.search-bar { display: flex; align-items: center; background-color: #f5f5f5; padding: 0 24rpx; border-radius: 36rpx; height: 72rpx; .search-input { flex: 1; margin-left: 12rpx; font-size: 28rpx; color: #333; } }
-.list-scroll { flex: 1; overflow: hidden; }
-.group-title { padding: 12rpx 30rpx; font-size: 24rpx; font-weight: 600; color: #9ca3af; background-color: #f7f7f7; }
-.institution-item { display: flex; align-items: center; padding: 28rpx 30rpx; background-color: #fff; border-bottom: 1rpx solid #f2f2f2; &:active { background-color: #f9f9f9; } }
-.logo-wrapper { width: 64rpx; height: 64rpx; background-color: #f8f9fa; border-radius: 16rpx; display: flex; align-items: center; justify-content: center; margin-right: 24rpx; overflow: hidden; border: 1rpx solid rgba(0,0,0,0.03); }
-.institution-logo { width: 64rpx; height: 64rpx; }
-.institution-name { font-size: 30rpx; color: #1f2937; font-weight: 500; }
 
-.index-bar {
-  position: fixed;
-  right: 12rpx;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: rgba(255,255,255,0.85);
-  border-radius: 30rpx;
-  padding: 20rpx 0;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
-  z-index: 10;
-  
-  .index-item {
-    width: 44rpx;
-    height: 44rpx;
-    line-height: 44rpx;
-    text-align: center;
-    font-size: 20rpx;
-    color: #6b7280;
-    font-weight: 700;
-    margin: 2rpx 0;
-    border-radius: 50%;
-    transition: all 0.2s;
+.header-sticky {
+  background-color: #fff;
+  position: sticky; // 确保使用 sticky
+  top: 0;
+  z-index: 200;    /* 头部层级设为 200 */
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+}
+
+.search-section { padding: 24rpx 32rpx 16rpx; }
+.search-bar { 
+  display: flex; align-items: center; background-color: #f3f4f6; 
+  padding: 0 24rpx; border-radius: 40rpx; height: 84rpx; 
+  .search-input { flex: 1; margin-left: 16rpx; font-size: 28rpx; color: #1e293b; }
+}
+
+/* 🟢 彻底修复文字垂直问题的 CSS 方案 */
+
+.tabs-section {
+  width: 100%;
+  background-color: #fff;
+  border-bottom: 1rpx solid #f1f5f9;
+
+  .tabs-scroll { 
+    width: 100%; 
+    /* 核心 1：强制内部不换行 */
+    white-space: nowrap; 
+  }
+
+  .tabs-content { 
+    /* 核心 2：使用 flex 且不限制宽度 */
+    display: inline-flex; 
+    padding: 0 32rpx;
+    height: 96rpx;
+    align-items: center;
+  }
+
+  .tab-item {
+    /* 核心 3：行内块显示，并保持相对定位用于放置下划线 */
+    display: inline-block; 
+    padding: 0 18rpx;
+    position: relative;
+    height: 100%;
+    /* 垂直居中内容 */
+    line-height: 96rpx;
     
-    &.active-letter {
-      background-color: #2A806C;
-      color: #ffffff;
-      transform: scale(1.1);
+    .tab-text {
+      font-size: 28rpx;
+      color: #94a3b8;
+      font-weight: 600;
+      /* 核心 4：防止文字自身换行 */
+      white-space: nowrap; 
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    &.active {
+      .tab-text {
+        color: #2D7A68;
+        font-weight: 800;
+      }
+      .tab-line {
+        position: absolute;
+        bottom: 8rpx;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 32rpx;
+        height: 6rpx;
+        background-color: #2D7A68;
+        border-radius: 4rpx;
+      }
     }
   }
 }
 
-.empty-tip { padding: 120rpx 0; text-align: center; color: #9ca3af; font-size: 28rpx; }
-.safe-bottom { height: 120rpx; }
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+/* 其他列表样式... */
+.list-scroll { flex: 1; overflow: hidden; }
+
+.group-title {
+  /* 标题也增加右侧留白 */
+  padding: 16rpx 60rpx 16rpx 32rpx; 
+  font-size: 22rpx; 
+  font-weight: 800; 
+  color: #94a3b8; 
+  background-color: #f8fafc; 
+  text-transform: uppercase; 
+  letter-spacing: 2rpx; 
+}
+
+.institution-item {
+  /* 增加右侧 padding，防止文字被字母栏挡住 */
+  padding: 32rpx 60rpx 32rpx 32rpx; 
+  display: flex; 
+  align-items: center; 
+  background-color: #fff; 
+  border-bottom: 1rpx solid #f1f5f9; 
+  &:active { background-color: #f8fafc; } 
+}
+
+.logo-wrapper { width: 76rpx; height: 76rpx; background-color: #f8fafc; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; margin-right: 28rpx; overflow: hidden; border: 1rpx solid rgba(0,0,0,0.03); }
+.institution-logo { width: 52rpx; height: 52rpx; }
+.institution-name { font-size: 30rpx; color: #1e293b; font-weight: 600; }
+
+.index-bar {
+  position: fixed; 
+  right: 8rpx;    /* 稍微往右挪一点，贴近边缘 */
+  /* 计算顶部偏移：避开搜索框(110rpx) + Tab栏(96rpx) */
+  top: 58%;       
+  transform: translateY(-50%);
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
+  background-color: rgba(255,255,255,0.92); /* 提高不透明度，增加可辨识度 */
+  border-radius: 30rpx;
+  padding: 20rpx 0; 
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1); 
+  
+  /* 核心修复：确保层级最高，能压住吸顶头部和列表 */
+  z-index: 999; 
+  
+  /* 增加指针穿透保护（可选，确保底层列表能滚动，但字母能点中） */
+  pointer-events: auto; 
+
+  .index-item { 
+    width: 44rpx; 
+    height: 44rpx; 
+    line-height: 44rpx; 
+    text-align: center; 
+    font-size: 18rpx; 
+    color: #64748b; 
+    font-weight: 800; 
+    margin: 2rpx 0; 
+    border-radius: 50%; 
+    transition: all 0.2s;
+
+    &.active-letter { 
+      background-color: #2D7A68; 
+      color: #ffffff; 
+      transform: scale(1.15); /* 选中时稍微放大，更有质感 */
+    } 
+  }
+}
+
+.empty-tip { padding: 120rpx 0; text-align: center; color: #94a3b8; font-size: 26rpx; }
+.safe-bottom { height: 160rpx; }
 </style>

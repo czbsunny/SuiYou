@@ -41,7 +41,7 @@ defineEmits(['update:modelValue']);
 
 <style lang="scss" scoped>
 .view-tab-container {
-  padding: 12rpx 24rpx 16rpx; // 适当的上下边距，保持呼吸感
+  padding: 12rpx 18rpx 16rpx; // 适当的上下边距，保持呼吸感
 }
 
 .view-tab {
@@ -50,7 +50,7 @@ defineEmits(['update:modelValue']);
   padding: 6rpx;
   border-radius: 24rpx;
   position: relative;
-  height: 80rpx; // 稍微调低高度，显得更精致
+  height: 72rpx; // 稍微调低高度，显得更精致
   border: 1rpx solid rgba(0, 0, 0, 0.02);
 }
 
@@ -58,8 +58,8 @@ defineEmits(['update:modelValue']);
   flex: 1;
   text-align: center;
   line-height: 68rpx;
-  font-size: 24rpx;
-  font-weight: 700;
+  font-size: 28rpx;
+  font-weight: 800;
   color: #9CA3AF;
   z-index: 2; // 确保文字在滑块上方
   transition: color 0.3s ease;
@@ -74,7 +74,7 @@ defineEmits(['update:modelValue']);
   left: 6rpx;
   top: 6rpx;
   width: calc(50% - 6rpx);
-  height: 68rpx;
+  height: 72rpx;
   background: #FFFFFF;
   border-radius: 20rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);

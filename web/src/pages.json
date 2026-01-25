@@ -101,6 +101,15 @@
       }
     },
     {
+      "path": "pages/assets/manage-account",
+      "style": {
+        "navigationBarTitleText": "账户管理",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",

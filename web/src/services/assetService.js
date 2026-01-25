@@ -1,4 +1,4 @@
-// 账户相关API服务模块
+// 资产相关API服务模块
 import { get, post } from './apiService';
 
 /**
@@ -26,7 +26,7 @@ export const createAsset = async (assetData) => {
     } else if (response.statusCode === 400) {
       throw new Error(response.data?.message || '参数错误');
     } else {
-      throw new Error(response.data?.message || '创建资产账户失败');
+      throw new Error(response.data?.message || '创建资产项失败');
     }
   } catch (error) {
     console.error('创建资产项错误:', error);
