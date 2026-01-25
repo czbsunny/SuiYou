@@ -1,6 +1,7 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.model.Account;
 import com.suiyou.model.Family;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
 @Service
@@ -51,6 +53,11 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountName(createAccountDTO.getAccountName());
         account.setIncludeInNetWorth(createAccountDTO.getIncludeInNetWorth());
         account.setThemeColor(createAccountDTO.getThemeColor());
+        
+        // 获取用户活跃账户的最大排序值，新账户排序值为最大值+1
+        Integer maxSortOrder = accountRepository.findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(userId, 1);
+        int newSortOrder = maxSortOrder != null ? maxSortOrder + 1 : 0;
+        account.setSortOrder(newSortOrder);
         
         // 设置用户ID和家庭ID
         account.setOwnerId(userId);
@@ -155,7 +162,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public boolean updateAccountStatus(Long id, Integer status, Long userId) {  
+    public boolean updateAccountStatus(Long id, Integer status, Long userId) {
         // 验证状态值
         if (status != 0 && status != 1) {
             throw new IllegalArgumentException("无效的状态值，只能是 0 (归档) 或 1 (活跃)");
@@ -185,6 +192,11 @@ public class AccountServiceImpl implements AccountService {
         
         // 更新账户状态
         account.setStatus(status);
+        Integer sortOrder = 9999;
+        if (status == 1) {
+            sortOrder = accountRepository.findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(userId, status == 1 ? 0 : 1);
+        }
+        account.setSortOrder(sortOrder);
         accountRepository.save(account);
         
         return true;
@@ -212,6 +224,55 @@ public class AccountServiceImpl implements AccountService {
         // 软删除：标记为已删除
         account.setDeleted(true);
         accountRepository.save(account);
+        
+        return true;
+    }
+    
+    @Override
+    @Transactional
+    public boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId) {
+        // 获取所有账户ID列表
+        List<Long> allAccountIds = new ArrayList<>();
+        if (syncAccountDTO.getActiveAccountIds() != null) {
+            allAccountIds.addAll(syncAccountDTO.getActiveAccountIds());
+        }
+        if (syncAccountDTO.getArchivedAccountIds() != null) {
+            allAccountIds.addAll(syncAccountDTO.getArchivedAccountIds());
+        }
+        
+        // 验证所有账户是否属于当前用户
+        for (Long accountId : allAccountIds) {
+            Account account = accountRepository.findById(accountId).orElse(null);
+            if (account == null) {
+                throw new IllegalArgumentException("账户不存在: " + accountId);
+            }
+            if (!account.getOwnerId().equals(userId)) {
+                throw new IllegalArgumentException("无权操作该账户: " + accountId);
+            }
+            if (account.getDeleted()) {
+                throw new IllegalArgumentException("账户已被删除: " + accountId);
+            }
+        }
+        
+        // 更新活跃账户的排序值
+        if (syncAccountDTO.getActiveAccountIds() != null) {
+            for (int i = 0; i < syncAccountDTO.getActiveAccountIds().size(); i++) {
+                Long accountId = syncAccountDTO.getActiveAccountIds().get(i);
+                Account account = accountRepository.findById(accountId).orElse(null);
+                if (account != null) {
+                    account.setStatus(1);
+                    account.setSortOrder(i);
+                    accountRepository.save(account);
+                }
+            }
+        }
+        
+        // 更新归档账户的状态
+        if (syncAccountDTO.getArchivedAccountIds() != null) {
+            for (Long accountId : syncAccountDTO.getArchivedAccountIds()) {
+                updateAccountStatus(accountId, 0, userId);
+            }
+        }
         
         return true;
     }

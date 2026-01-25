@@ -32,11 +32,14 @@ public class Account {
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Boolean includeInNetWorth = true;
 
-    @Column(nullable = false, columnDefinition = "varchar(20) default '1F2937'")
-    private String themeColor = "1F2937";
+    @Column(nullable = false, columnDefinition = "varchar(20) default '#1F2937'")
+    private String themeColor = "#1F2937";
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
+
+    @Column(name = "sort_order", nullable = false, columnDefinition = "int default 9999")
+    private Integer sortOrder = 9999;
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
     private Boolean deleted = false;

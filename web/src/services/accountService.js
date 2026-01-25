@@ -73,7 +73,22 @@ export const deleteAccount = async (id) => {
 };
 
 /**
- * 5. 获取所有账户
+ * 5. 同步账户
+ * @param {String|Number} id 账户ID
+ * @param {Number} status 状态值 (1: 活跃, 0: 归档)
+ */
+export const batchUpdateAccounts = async (syncAccounts) => {
+  try {
+    const res = await api.put(`${ACCOUNT_API_BASE}/sync`, syncAccounts);
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+/**
+ * 6. 获取所有账户
  * @returns {Promise<Array>} 账户列表
  */
 export const getAccounts = async () => {
@@ -90,5 +105,6 @@ export default {
   updateAccount,
   updateAccountStatus,
   deleteAccount,
+  batchUpdateAccounts,
   getAccounts
 };

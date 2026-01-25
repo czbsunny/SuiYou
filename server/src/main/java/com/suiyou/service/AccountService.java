@@ -1,6 +1,7 @@
 package com.suiyou.service;
 
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 
 import com.suiyou.model.Account;
@@ -74,4 +75,12 @@ public interface AccountService {
      * @return 操作结果
      */
     boolean deleteAccount(Long id, Long userId);
+    
+    /**
+     * 同步账户排序和状态
+     * @param syncAccountDTO 同步账户DTO
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId);
 }

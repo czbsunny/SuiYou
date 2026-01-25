@@ -4,7 +4,7 @@
 		<view class="section">
 			<view class="section-header">
 				<text class="title">正在展示的账户</text>
-				<text class="desc">点击左侧或左滑删除，右侧手柄排序</text>
+				<text class="desc">点击左侧或左滑归档，右侧手柄排序</text>
 			</view>
 
 			<!-- 🟢 活跃账户拖拽与侧滑区 -->
@@ -21,8 +21,8 @@
 				>
 					<!-- 侧滑容器 -->
 					<view class="swipe-container" :class="{ 'parent-is-swiped': swipedId === acc.id }">
-						<!-- 底层：删除按钮 -->
-						<view class="action-layer-right" @tap="openManageModal(acc)">删除</view>
+						<!-- 底层：归档按钮 -->
+						<view class="action-layer-right" @tap="openManageModal(acc)">归档</view>
 						
 						<!-- 顶层：卡片内容 -->
 						<view 
@@ -105,16 +105,17 @@
 			<view class="center-dialog" @tap.stop>
 				<view class="close-x" @tap="showManageModal = false">×</view>
 				<view class="dialog-header">
-					<text class="dialog-title">管理账户</text>
+					<text class="dialog-title">确认归档</text>
 					<text class="dialog-desc">“{{ selectedAcc?.accountName }}”</text>
 					<view class="dialog-info">
-						<text>· 归档后账户将隐藏，可随时恢复</text>
-						<text>· 删除将永久移除账户及所有资产数据</text>
+						<text>· 归档后该账户及其余额将不在首页展示</text>
+						<text>· 账户数据会保留，您可以在下方“已归档”中找回</text>
+						<text>· 如需彻底删除账户，请前往“账户详情”页操作</text>
 					</view>
 				</view>
 				<view class="dialog-body-row">
-					<view class="row-btn primary" @tap="localUpdateStatus(selectedAcc.id, 0)">归档</view>
-					<view class="row-btn danger" @tap="localRemoveAccount">删除</view>
+					<!-- 此时只有一个主按钮，或者点击取消 -->
+					<view class="row-btn primary" @tap="localUpdateStatus(selectedAcc.id, 0)">确认归档</view>
 				</view>
 			</view>
 		</view>
@@ -142,6 +143,8 @@ const itemOrder = ref([]); // 活跃账户的排序ID数组
 // 侧滑手势相关
 const touchStartX = ref(0);
 
+const initialArchivedIds = ref([]); 
+
 // --- 逻辑计算 ---
 const activeAccounts = computed(() => {
 	const filtered = localAccounts.value.filter(a => a.status === 1);
@@ -157,13 +160,28 @@ const loadData = async () => {
 	const instMap = configStore.institutionMap;
 	try {
 		const res = await accountService.getAccounts();
-		localAccounts.value = res.accounts.map(acc => ({
+		
+		const processedAccounts = res.accounts.map(acc => ({
 			...acc,
 			instName: instMap[acc.institution]?.instName || '其他',
 			logoUrl: instMap[acc.institution]?.logoUrl || '/static/icons/default-bank.png'
-		}));
-		itemOrder.value = localAccounts.value.filter(a => a.status === 1).map(a => a.id);
-	} catch (e) {}
+		})).sort((a, b) => {
+            return a.sortOrder - b.sortOrder;
+        });
+		
+		localAccounts.value = processedAccounts;
+		
+		initialArchivedIds.value = processedAccounts
+			.filter(a => a.status === 0)
+			.map(a => a.id);
+
+		itemOrder.value = processedAccounts
+			.filter(a => a.status === 1)
+			.map(a => a.id);
+            
+	} catch (e) {
+		console.error("加载账户数据失败:", e);
+	}
 };
 
 onShow(() => loadData());
@@ -235,40 +253,54 @@ const openManageModal = (acc) => {
 	showManageModal.value = true;
 };
 
-const localUpdateStatus = (id, status) => {
-	const item = localAccounts.value.find(a => a.id === id);
-	if (item) {
-		item.status = status;
-		if (status === 0) itemOrder.value = itemOrder.value.filter(i => i !== id);
-		else itemOrder.value.push(id);
-	}
-	showManageModal.value = false;
-	swipedId.value = null;
-};
-
-const localRemoveAccount = () => {
-	const idx = localAccounts.value.findIndex(a => a.id === selectedAcc.value.id);
-	if (idx !== -1) {
-		localAccounts.value.splice(idx, 1);
-		itemOrder.value = itemOrder.value.filter(i => i !== selectedAcc.value.id);
-	}
-	showManageModal.value = false;
-	swipedId.value = null;
-};
-
 const submitAllChanges = async () => {
-	uni.showLoading({ title: '保存中', mask: true });
-	try {
-		const finalData = localAccounts.value.map(acc => ({
-			...acc,
-			sortOrder: itemOrder.value.indexOf(acc.id)
-		}));
-		await accountService.batchUpdateAccounts(finalData);
-		uni.hideLoading();
-		uni.showToast({ title: '保存成功' });
-		uni.$emit('refreshAccountList');
-		setTimeout(() => uni.navigateBack(), 1000);
-	} catch (e) { uni.hideLoading(); }
+    uni.showLoading({ title: '保存中', mask: true });
+    try {
+        const currentArchivedIds = localAccounts.value
+            .filter(a => a.status === 0)
+            .map(a => a.id);
+
+        const newlyArchivedIds = currentArchivedIds.filter(
+            id => !initialArchivedIds.value.includes(id)
+        );
+
+        const payload = {
+            activeAccountIds: [...itemOrder.value],
+            archivedAccountIds: newlyArchivedIds
+        };
+
+        console.log('提交载荷:', payload);
+
+        await accountService.batchUpdateAccounts(payload);
+        
+        uni.hideLoading();
+        uni.showToast({ title: '配置已生效' });
+        uni.$emit('refreshAccountList');
+        setTimeout(() => uni.navigateBack(), 1000);
+    } catch (e) {
+        uni.hideLoading();
+        uni.showToast({ title: '同步失败', icon: 'none' });
+    }
+};
+
+const localUpdateStatus = (id, status) => {
+    const targetIdx = localAccounts.value.findIndex(a => a.id === id);
+    if (targetIdx !== -1) {
+        localAccounts.value[targetIdx].status = status;
+        
+        if (status === 1) {
+            // 恢复：加入活跃排序列表末尾
+            if (!itemOrder.value.includes(id)) {
+                itemOrder.value.push(id);
+            }
+        } else {
+            // 归档：从活跃排序列表中剔除
+            itemOrder.value = itemOrder.value.filter(i => i !== id);
+        }
+    }
+    showManageModal.value = false;
+    swipedId.value = null;
+    uni.vibrateShort();
 };
 
 const formatAmount = (val) => Number(val).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
@@ -398,7 +430,6 @@ const formatAmount = (val) => Number(val).toLocaleString('zh-CN', { minimumFract
 		.row-btn {
 			flex: 1; height: 100rpx; border-radius: 28rpx; display: flex; align-items: center; justify-content: center; font-size: 30rpx; font-weight: 800;
 			&.primary { background: #F0F9F6; color: #2D7A68; }
-			&.danger { background: #FFF5F5; color: #FF3B30; }
 		}
 	}
 }

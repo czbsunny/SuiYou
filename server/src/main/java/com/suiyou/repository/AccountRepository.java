@@ -23,4 +23,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     // 根据机构代码和机构唯一标识查询账户（包括已删除的）
     Account findByInstitutionAndInstitutionIdentifier(String institution, String institutionIdentifier);
+
+    // 获取用户活跃账户的最大排序值
+    Integer findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(Long ownerId, Integer status);
 }

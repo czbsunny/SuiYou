@@ -1,6 +1,7 @@
 package com.suiyou.controller;
 
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.model.Account;
 import com.suiyou.service.AccountService;
@@ -163,6 +164,28 @@ public class AccountController {
             // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "账户删除失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+    
+    @PutMapping("/sync")
+    public ResponseEntity<?> syncAccounts(@RequestBody SyncAccountDTO syncAccountDTO) {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            
+            // 调用服务同步账户
+            accountService.syncAccounts(syncAccountDTO, userId);
+            
+            // 返回同步成功的响应
+            return ResponseEntity.ok(Map.of(
+                "message", "账户同步成功"
+            ));
+        } catch (Exception e) {
+            // 返回错误响应
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "error", "账户同步失败",
                 "message", e.getMessage()
             ));
         }
