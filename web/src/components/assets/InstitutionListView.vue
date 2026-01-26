@@ -76,11 +76,9 @@
       <!-- 空状态 -->
       <view v-if="list.length === 0" class="empty-placeholder" @tap="$emit('add-account-click')">
         <image src="/static/images/plus-gray.png" class="empty-plus" />
-        <text>点击关联你的第一个账户</text>
+        <text>点击创建一个账户</text>
       </view>
     </view>
-    
-    <view class="safe-bottom-pad"></view>
   </view>
 </template>
 
@@ -150,7 +148,7 @@ const getFooterText = (acc) => {
     .logo-white-box {
       width: 64rpx; height: 64rpx; background: #fff; border-radius: 18rpx;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      .logo { width: 44rpx; height: 44rpx; }
+      .logo { width: 64rpx; height: 64rpx; border-radius: 18rpx; }
     }
     .name-area {
       display: flex; flex-direction: row; align-items: center; flex: 1; min-width: 0;
@@ -212,5 +210,4 @@ const getFooterText = (acc) => {
   .empty-plus { width: 40rpx; height: 40rpx; opacity: 0.2; }
   text { font-size: 26rpx; color: #9CA3AF; font-weight: 500; }
 }
-.safe-bottom-pad { height: 100rpx; }
 </style>

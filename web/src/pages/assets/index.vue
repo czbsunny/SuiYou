@@ -21,9 +21,15 @@
         @add-asset-click="handleAddAssetWithAccount"
       />
     </view>
-    
-    <!-- 底部安全区占位 -->
-    <view class="safe-area-bottom"></view>
+
+    <!-- 5. 非账户资产区域 -->
+    <view class="content-view">
+      <NonAccountAssetList 
+        :non-account-assets="nonAccountAssets"
+        @add-non-account-click="handleAddNonAccountAsset"
+        @asset-click="handleNonAccountAssetClick"
+      />
+    </view>
   </view>
 </template>
 
@@ -39,6 +45,7 @@ import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
 import HealthGrid from '../../components/assets/HealthGrid.vue';
 import InstitutionListView from '../../components/assets/InstitutionListView.vue';
+import NonAccountAssetList from '../../components/assets/NonAccountAssetList.vue';
 
 const configStore = useConfigStore();
 
@@ -81,6 +88,21 @@ const accountFlatList = computed(() => {
     });
 });
 
+const nonAccountAssets = computed(() => {
+  // 筛选非账户资产（没有accountId的资产）
+  return allAssets.value
+    .filter(asset => !asset.accountId || asset.accountId === '')
+    .map(asset => {
+      return {
+        id: asset.id,
+        name: asset.assetName || '未命名资产',
+        category: asset.category || 'OTHER',
+        value: Number(asset.totalBalance) || 0,
+        description: asset.description || ''
+      };
+    });
+});
+
 const fetchAssets = async () => {
   try {
     const res = await getAssets();
@@ -113,10 +135,16 @@ onLoad(() => {
     fetchAccounts();
     fetchAssets();
   });
+  
+  // 监听非账户资产更新事件
+  uni.$on('refreshNonAccountAssets', () => {
+    fetchAssets();
+  });
 });
 
 onUnmounted(() => {
   uni.$off('refreshAccountList');
+  uni.$off('refreshNonAccountAssets');
 });
 
 onShow(() => {
@@ -125,7 +153,7 @@ onShow(() => {
 
 // --- 路由跳转逻辑 ---
 
-// 点击卡片右上角“小加号”，直接在该账户下新增资产
+// 点击卡片右上角"小加号"，直接在该账户下新增资产
 const handleAddAssetWithAccount = (account) => {
   uni.navigateTo({ 
     url: `/pages/assets/add?accountId=${account.id}&instCode=${account.instCode}` 
@@ -142,14 +170,19 @@ const handleAccountClick = (account) => {
   uni.navigateTo({ url: `/pages/assets/account-detail?id=${account.id}` });
 };
 
-// 查看具体某个资产原子的详情
-const handleItemClick = (item) => {
-  uni.navigateTo({ url: `/pages/assets/item-detail?id=${item.id}` });
-};
-
 // 进入账户管理（排序、归档、彻底删除）
 const handleManageAccount = () => {
   uni.navigateTo({ url: `/pages/assets/manage-account` });
+};
+
+// 添加非账户资产
+const handleAddNonAccountAsset = () => {
+  uni.navigateTo({ url: `/pages/assets/add-non-account` });
+};
+
+// 查看非账户资产详情
+const handleNonAccountAssetClick = (asset) => {
+  uni.navigateTo({ url: `/pages/assets/item-detail?id=${asset.id}` });
 };
 </script>
 
@@ -170,11 +203,6 @@ page {
 }
 
 .content-view {
-  /* 保持与之前一致的左右间距 */
   padding: 0 32rpx;
-}
-
-.safe-area-bottom {
-  height: env(safe-area-inset-bottom);
 }
 </style>

@@ -92,6 +92,15 @@
       }
     },
     {
+      "path": "pages/assets/add-non-account",
+      "style": {
+        "navigationBarTitleText": "添加资产",
+        "navigationBarBackgroundColor": "#2A806C",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/assets/institution-select",
       "style": {
         "navigationBarBackgroundColor": "#2A806C",
