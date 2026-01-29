@@ -54,7 +54,7 @@
     <scroll-view scroll-y class="form-scroll">
       <view class="form-group">
         <view class="form-item" @tap="goToSelectInstitution">
-          <text class="item-label">所属机构</text>
+          <text class="item-label">账户归属</text>
           <view class="item-value">
             <text :class="{ 'placeholder': !form.instName }">{{ form.instName || '点击选择' }}</text>
             <uni-icons type="right" size="14" color="#ccc"></uni-icons>
@@ -62,7 +62,7 @@
         </view>
 
         <view class="form-item">
-          <text class="item-label">账户别名</text>
+          <text class="item-label">账户名称</text>
           <input 
             v-model="form.accountName" 
             placeholder="如：工资卡 / 常用微信" 
@@ -118,7 +118,7 @@
 
     <!-- 5. 底部固定按钮 -->
     <view class="footer-action">
-      <button class="save-btn" @tap="handleSave">确认添加该账户</button>
+      <button class="save-btn" @tap="handleSave">立即创建</button>
     </view>
   </view>
 </template>
