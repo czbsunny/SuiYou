@@ -4,7 +4,7 @@
       <view class="card-bg-decoration"></view>
       <view class="card-content">
         <view class="card-header">
-          <view class="card-label">家庭净资产 (Net Worth)</view>
+          <view class="card-label">家庭净资产</view>
           <div class="privacy-toggle" @click="togglePrivacy">
             <img :src="isPrivacyOn ? '/static/images/eye-closed.png' : '/static/images/eye.png'" alt="隐私切换" style="width: 24px; height: 24px;" />
           </div>
