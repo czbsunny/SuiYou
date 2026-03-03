@@ -38,7 +38,7 @@
     <view class="action-grid">
       <view class="action-item btn-active" @tap="$emit('action', 'TRANSFER')">
         <view class="icon-box bg-transfer">
-          <img src="@/static/assets/actions/repeat.png" class="icon-img" alt="repeat">
+          <img src="@/static/assets/actions/transfer.png" class="icon-img" alt="transfer">
         </view>
         <text>转账调拨</text>
       </view>

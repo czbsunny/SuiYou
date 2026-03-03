@@ -304,7 +304,7 @@ $text-light: #d1d5db; /* gray-300 */
 
 .modify-page {
   min-height: 100vh;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -313,7 +313,7 @@ $text-light: #d1d5db; /* gray-300 */
 /* 1. 状态卡片 */
 .status-section {
   padding: 16px;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   z-index: 10;
 }
 

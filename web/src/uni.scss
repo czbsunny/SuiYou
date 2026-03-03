@@ -28,10 +28,6 @@ $gray-700: #374151; /* 强调文字 */
 $gray-800: #1f2937; /* 主要标题 */
 $gray-900: #111827; /* 纯黑替代 */
 
-/* 页面专用底色 (带一点冷色调，区别于 gray-50) */
-$page-bg-color: #F9F8F4; 
-$cream: #fdfbf7;
-
 /* 功能色 (Functional) */
 $red:    #ef4444;
 $red-50: #fef2f2;
@@ -70,23 +66,22 @@ $blue-selected-bg: rgba(74, 144, 226, 0.05);
 /* =================================== */
 
 /* 布局背景 */
-$bg-page:  $page-bg-color; /* 页面大背景 */
-$bg-white: $white;         /* 卡片背景 */
-$bg-cream: $cream;         /* 暖色背景 */
-$bg-subtle: $gray-50;      /* 输入框/列表项背景 (原 bg-hover, bg-gray-50) */
+$bg-page:  #FAF9F6; /* 页面大背景 */
+$bg-white: #FFFFFF;         /* 卡片背景 */
+$bg-subtle: #F3F4F1;      /* 输入框/列表项背景 (原 bg-hover, bg-gray-50) */
 $bg-subtle-hover: $gray-100; /* 悬停状态 */
-$bg-input:  $page-bg-color;
+$bg-input:  #F9F8F4;
 $bg-warning: $orange-50;
 $bg-progress: $green-200;
 
 /* 文字颜色 */
 $text-primary:     $primary;
-$text-main:        $gray-800; /* #1f2937 - 标题 */
-$text-sub:         $gray-600; /* #4b5563 - 正文 (原 text-sub 有冲突，取了深一点的) */
-$text-regular:     $gray-500; /* #6b7280 - 次要信息 (原 text-sub 的另一个版本) */
-$text-muted:       $gray-400; /* #9ca3af - 注释/图标 */
-$text-placeholder: $gray-300; /* #d1d5db - 占位符 (原 text-light) */
-$text-inverse:     $white;    /* 反白文字 */
+$text-main:        #322E2B;    /* 取代 $gray-800 - 用于总资产、账户名、大标题 */
+$text-sub:         #5c6b67;    /* 取代 $gray-600 - 用于二级标题、列表项标题 */
+$text-regular:     #7a8582;    /* 取代 $gray-500 - 用于正文描述、时间日期 */
+$text-muted:       #a3b0ad;    /* 取代 $gray-400 - 用于未选中图标、次要标注 */
+$text-placeholder: #ccd4d2;    /* 取代 $gray-300 - 用于输入框占位符 (Placeholder) */
+$text-inverse:     $white;
 $text-warning:     $orange-600; /* 特殊强调 */
 $text-error:       $red;
 
@@ -145,3 +140,46 @@ $bg-expense:     #FFF7ED;
 $bg-transfer:    #F5F3FF;
 $bg-profit:      #FEF3C7;
 $bg-liquid:      #EFF6FF;
+
+/* =================================== */
+/* 3. 布局规范 (Layout & Spacing)      */
+/* =================================== */
+
+/* 间距系统 (基于 8rpx 步进) */
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-base: 24rpx;  /* 对应你代码中的 $spacing-base */
+$spacing-md: 32rpx;    /* 对应你代码中的 $spacing-md */
+$spacing-lg: 48rpx;    /* 对应你代码中的 $spacing-lg */
+$spacing-xl: 64rpx;    /* 对应你代码中的 $spacing-xl */
+
+/* 圆角规范 */
+$radius-sm: 8rpx;
+$radius-base: 16rpx;   /* 用于按钮、小卡片 */
+$radius-lg: 32rpx;     /* 用于大卡片、弹窗 */
+$radius-full: 999rpx;  /* 胶囊形状 */
+
+// 阴影系统 - 核心灵魂
+// 采用深咖啡黑 ($text-main) 的色相，透明度仅 4%，营造温润的浮动感
+$shadow-card: 0 12rpx 32rpx rgba(50, 46, 43, 0.04); 
+
+// 按钮专用阴影 - 稍微深一点点，增加点击欲
+$shadow-button: 0 6rpx 16rpx rgba(42, 128, 108, 0.1);
+
+
+/* =================================== */
+/* 字体族规范                          */
+/* =================================== */
+
+// 金额数值专用：优先使用 DIN 字体（顶级金融App标配），无此字体则回退至 Inter 或系统等宽
+$font-family-money: "DIN Alternate", "DIN Condensed", "Inter", "-apple-system", sans-serif;
+
+// 基础正文字体族
+$font-family-base: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+
+/* 辅助 Mixin (可选，建议加上提高开发效率) */
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

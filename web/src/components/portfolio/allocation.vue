@@ -169,7 +169,7 @@ const handleModify = () => {
 
 .portfolio-detail-page {
   min-height: 100vh;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   display: flex;
   flex-direction: column;
   width: 100%;

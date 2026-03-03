@@ -57,7 +57,7 @@
       <!-- 充值提现对应 TRANSFER 逻辑 -->
       <view class="action-card btn-active" @tap="handleAction('TRANSFER')">
         <view class="icon-box bg-transfer">
-          <img src="@/static/assets/actions/repeat.png" class="icon-img" alt="repeat">
+          <img src="@/static/assets/actions/transfer.png" class="icon-img" alt="transfer">
         </view>
         <text class="action-text">充值提现</text>
       </view>

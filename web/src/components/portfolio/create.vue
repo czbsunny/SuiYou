@@ -240,7 +240,7 @@ const getPositionStyle = (index, total, radius, type) => {
 
 .create-page {
   min-height: 100vh;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   display: flex;
   flex-direction: column;
   padding-top: 16px; /* pt-4 */
@@ -425,7 +425,7 @@ const getPositionStyle = (index, total, radius, type) => {
 }
 
 .description-box {
-  background-color: $bg-cream;
+  background-color: $bg-page;
   padding: 16px; /* p-4 */
   border-radius: 12px; /* rounded-xl */
   margin-bottom: 24px; /* mb-6 */
@@ -445,7 +445,7 @@ const getPositionStyle = (index, total, radius, type) => {
 .name-input {
   width: 100%;
   padding: 16px; /* p-4 */
-  background-color: $bg-cream;
+  background-color: $bg-page;
   border-radius: 12px; /* rounded-xl */
   color: $text-main;
   height: 48px; /* h-12 */

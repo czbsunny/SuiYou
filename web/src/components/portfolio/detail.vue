@@ -257,7 +257,7 @@ const handleDCA = () => {
 
 .detail-page {
   min-height: 100vh;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -362,7 +362,7 @@ const handleDCA = () => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: $bg-cream;
+  background-color: $bg-page;
   display: flex;
   align-items: center;
   justify-content: center;

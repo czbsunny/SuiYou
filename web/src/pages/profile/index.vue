@@ -1,70 +1,42 @@
 <template>
-  <!-- Profile Page -->
-  <view class="profile-page">
+  <view class="profile-container">
     <view class="content-wrapper animate-fade-in">
-        <!-- 用户卡片 -->
-        <view 
-            @click="handleUserCardClick"
-            class="user-card"
-        >
-           <view class="avatar-box">
-               <text class="avatar-text">{{ user?.name?.[0] || '未' }}</text>
-           </view>
-           <view class="user-info">
-               <text class="user-name">{{ user?.name || '点击登录' }}</text>
-               <view class="user-phone-row">
-                   <image src="/static/images/user.png" class="icon-sm" />
-                   <text class="phone-text">{{ user?.phone || user?.phoneNumber || '登录同步资产数据' }}</text>
-               </view>
-           </view>
-           <view v-if="!user" class="arrow-box">
-                <image src="/static/images/chevron-right.png" class="icon-md" />
-           </view>
+      
+      <!-- 用户卡片 -->
+      <view 
+        class="user-card" 
+        hover-class="item-active"
+        @click="handleUserCardClick"
+      >
+        <view class="avatar-box">
+          <text class="avatar-text">{{ user?.username ? user.username[0].toUpperCase() : '👤' }}</text>
         </view>
-
-        <!-- AI 测评入口 -->
-        <view 
-            @click="goToAssessment"
-            class="assessment-card"
-        >
-            <view class="card-left">
-                <view class="icon-circle">
-                    <image src="/static/images/trending-up-blue.png" class="icon-md" />
-                </view>
-                <view class="card-text">
-                    <text class="card-title">理财知识测评</text>
-                    <text class="card-desc">基于 AI 生成测评</text>
-                </view>
-            </view>
-            <view class="arrow-box">
-                <image src="/static/images/chevron-right.png" class="icon-md" />
-            </view>
+        
+        <view class="user-info">
+          <view class="user-name">{{ user?.username || '点击登录' }}</view>
+          <view class="user-desc">{{ user?.email || user?.phone || '每一笔个人资产都值得被珍视' }}</view>
         </view>
-
-        <!-- 菜单列表 -->
-        <view class="menu-group">
-            <view v-for="(item, idx) in menuItems" :key="idx" class="menu-item">
-                <view class="menu-left">
-                    <view class="menu-icon-box">
-                        <image :src="item.icon" class="icon-md" />
-                    </view>
-                    <text class="menu-label">{{ item.label }}</text>
-                </view>
-                <view class="menu-right">
-                    <text v-if="item.badge && user" class="badge">{{ item.badge }}</text>
-                    <image src="/static/images/chevron-right.png" class="icon-sm opacity-50" />
-                </view>
-            </view>
+        
+        <view class="arrow-box">
+          <image src="/static/images/arrow-right.png" class="arrow-icon" />
         </view>
+      </view>
 
-        <!-- 退出按钮 -->
+      <!-- 功能列表占位（如果你后续想加，样式已预设） -->
+      <view class="menu-section" v-if="user">
+         <!-- 未来可以放家庭成员管理、目标管理等 -->
+      </view>
+
+      <!-- 退出按钮 -->
+      <view v-if="user" class="logout-section">
         <button 
-          v-if="user"
+          class="logout-btn" 
+          hover-class="btn-hover-grey"
           @click="handleLogout"
-          class="logout-btn"
         >
-            退出登录
+          退出当前账号
         </button>
+      </view>
     </view>
   </view>
 </template>
@@ -87,11 +59,15 @@ onShow(() => {
     }
 });
 
-const menuItems = [
-    { icon: "/static/images/message.png", label: "消息通知", badge: 2 },
-    { icon: "/static/images/settings-gray.png", label: "设置" },
-    { icon: "/static/images/info-gray.png", label: "关于我们" },
-];
+const handleUserCardClick = () => {
+    if (!user.value) {
+        goToLogin();
+    }
+};
+
+const goToLogin = () => {
+    uni.navigateTo({ url: '/pages/auth/login' });
+};
 
 const handleLogout = () => {
     uni.showModal({
@@ -107,92 +83,56 @@ const handleLogout = () => {
         }
     });
 };
-
-const handleUserCardClick = () => {
-    if (!user.value) {
-        goToLogin();
-    }
-};
-
-const goToLogin = () => {
-    uni.navigateTo({ url: '/pages/auth/login' });
-};
-
-const goToAssessment = () => {
-    uni.showToast({ title: '测评页面准备中，敬请期待', icon: 'none' });
-};
 </script>
 
 <style lang="scss" scoped>
-
-.profile-page {
+.profile-container {
   min-height: 100vh;
-  background-color: $bg-page;
-  padding-top: 24px; /* pt-6 */
-  /* padding-bottom: 32 + safe-area */
-  padding-bottom: calc(128px + env(safe-area-inset-bottom));
-  padding-left: 16px; /* px-4 */
-  padding-right: 16px;
+  background-color: $bg-page; // 应用 #FAF9F6
+  padding: 48rpx 32rpx;
   box-sizing: border-box;
 }
 
 .content-wrapper {
-  max-width: 448px; /* max-w-md */
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* space-y-4 */
+  gap: 32rpx;
 }
 
-/* 动画 */
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 通用图标大小 */
-.icon-sm { width: 12px; height: 12px; }
-.icon-md { width: 20px; height: 20px; }
-.opacity-50 { opacity: 0.5; }
-
-/* 用户卡片 */
+/* 用户卡片：通过纯白与米白的微妙差异建立层级 */
 .user-card {
-  background-color: $bg-white;
-  padding: 24px; /* p-6 */
-  border-radius: 24px; /* rounded-3xl */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* shadow-sm */
-  border: 1px solid $border-color;
   display: flex;
   flex-direction: row;
   align-items: center;
-  transition: transform 0.1s;
+  padding: 56rpx 40rpx;
+  background-color: $bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card; // 极淡的暖咖色阴影
+  border: 1rpx solid rgba(42, 128, 108, 0.03); // 极细的墨绿描边
+  transition: all 0.25s ease;
 
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.99);
+    background-color: #fcfcfc;
   }
 }
 
 .avatar-box {
-  width: 64px; /* w-16 */
-  height: 64px;
+  width: 128rpx;
+  height: 128rpx;
   border-radius: 50%;
-  background-color: rgba(42, 128, 108, 0.1); /* bg-primary/10 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid $bg-white;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  margin-right: 16px; /* space-x-4 */
+  background-color: #f1f4f2; // 极浅的绿灰，比主背景稍深
+  border: 4rpx solid $bg-white;
+  @include flex-center;
+  margin-right: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(42, 128, 108, 0.1);
 }
 
 .avatar-text {
-  font-size: 24px; /* text-2xl */
+  font-size: 56rpx;
   font-weight: bold;
-  color: $primary;
+  color: $primary; // 墨绿色
+  font-family: $font-family-money;
 }
 
 .user-info {
@@ -200,163 +140,58 @@ const goToAssessment = () => {
 }
 
 .user-name {
-  font-size: 20px; /* text-xl */
-  font-weight: bold;
-  color: $text-main;
-  display: block;
+  font-size: 40rpx;
+  font-weight: 600;
+  color: $text-main; // 深咖黑
+  margin-bottom: 12rpx;
 }
 
-.user-phone-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 2px; /* mt-0.5 */
-}
-
-.phone-text {
-  font-size: 14px; /* text-sm */
-  color: $text-muted;
-  margin-left: 4px; /* mr-1 */
+.user-desc {
+  font-size: 24rpx;
+  color: $text-sub;
+  letter-spacing: 0.5rpx;
 }
 
 .arrow-box {
-  color: $text-placeholder;
-}
-
-/* 测评卡片 */
-.assessment-card {
-  background-color: $bg-white;
-  padding: 24px; /* p-6 */
-  border-radius: 24px; /* rounded-3xl */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  border: 1px solid $border-color;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.1s;
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-.card-left {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.icon-circle {
-  width: 40px; /* w-10 */
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(42, 128, 108, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px; /* mr-4 */
-  color: $primary;
-}
-
-.card-title {
-  font-size: 16px; /* text-base */
-  font-weight: bold;
-  color: $text-main;
-  display: block;
-}
-
-.card-desc {
-  font-size: 12px; /* text-xs */
   color: $text-muted;
-  margin-top: 4px; /* mt-1 */
-  display: block;
-}
+  .arrow-icon {
+    width: 32rpx;
+    height: 32rpx;
 
-/* 菜单列表 */
-.menu-group {
-  background-color: $bg-white;
-  border-radius: 24px; /* rounded-3xl */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  border: 1px solid $border-color;
-  overflow: hidden;
-}
-
-.menu-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px; /* p-5 */
-  border-bottom: 1px solid $bg-subtle;
-  transition: background-color 0.2s;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:active {
-    background-color: $bg-subtle;
+    opacity: 0.3;
   }
 }
 
-.menu-left {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+/* 退出按钮：保持纯净 */
+.logout-section {
+  margin-top: 24rpx;
 }
 
-.menu-icon-box {
-  width: 32px; /* w-8 */
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: $text-muted; /* text-gray-400 */
-}
-
-.menu-label {
-  font-size: 14px; /* text-sm */
-  font-weight: 500;
-  color: $text-sub; /* text-gray-700 */
-  margin-left: 12px; /* ml-3 */
-}
-
-.menu-right {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.badge {
-  background-color: $red;
-  color: $text-inverse;
-  font-size: 10px; /* text-[10px] */
-  padding: 2px 6px; /* px-1.5 py-0.5 */
-  border-radius: 9999px;
-  font-weight: bold;
-  margin-right: 8px; /* mr-2 */
-}
-
-/* 退出按钮 */
 .logout-btn {
   width: 100%;
+  height: 100rpx;
+  @include flex-center;
   background-color: $bg-white;
-  color: $red;
-  font-weight: bold;
-  padding: 16px 0; /* py-4 */
-  border-radius: 24px; /* rounded-3xl */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  border: 1px solid $border-color;
-  transition: background-color 0.2s;
+  color: #d32f2f; // 使用稍微稳重的深红
+  font-weight: 500;
+  font-size: 30rpx;
+  border-radius: $radius-base;
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.01);
 
-  &:active {
-    background-color: $bg-gain-light;
-  }
-  
-  /* UniApp button reset */
-  &::after {
-    border: none;
-  }
+  &::after { border: none; }
+}
+
+.btn-hover-grey {
+  background-color: #f8f8f8 !important;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

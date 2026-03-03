@@ -23,7 +23,7 @@ onLaunch(async () => {
 page {
   width: 100%;
   height: 100%;
-  background-color: $cream;
+  background-color: $bg-page;
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }

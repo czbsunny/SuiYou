@@ -444,7 +444,7 @@ const getRankClass = (idx) => {
 <style lang="scss" scoped>
 /* 保持原有变量 */
 $primary: #2a806c;
-$bg-cream: #fdfbf7;
+$bg-page: #fdfbf7;
 $bg-white: #ffffff;
 $bg-subtle: #f9fafb;
 $bg-subtle-hover: #f3f4f6;
@@ -458,8 +458,8 @@ $color-loss: #43a047;
 $color-selected-bg: rgba(42, 128, 108, 0.08);
 
 /* 布局 */
-.report-page { height: 100vh; background-color: $bg-cream; display: flex; flex-direction: column; }
-.scroll-content { flex: 1; height: 0; background-color: $bg-cream; }
+.report-page { height: 100vh; background-color: $bg-page; display: flex; flex-direction: column; }
+.scroll-content { flex: 1; height: 0; background-color: $bg-page; }
 .footer-spacer { height: 40px; margin-bottom: env(safe-area-inset-bottom); }
 
 /* 卡片 */
