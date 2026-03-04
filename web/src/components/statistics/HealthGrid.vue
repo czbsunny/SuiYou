@@ -25,6 +25,7 @@
     </view>
   </view>
 </template>
+
 <script setup>
 const items = [
   { label: '结余率', status: '强', val: '45%', percent: '45%', color: 'green', colorClass: 'bg-green-500' },
@@ -33,8 +34,8 @@ const items = [
   { label: '钱生钱', status: '优', val: '60%', percent: '60%', color: 'purple', colorClass: 'bg-purple-500' },
 ]
 </script>
+
 <style lang="scss" scoped>
-/* 此处补充 CSS Grid 布局和卡片样式，参考原代码转译 */
 .health-section { margin-bottom: 20px; }
 .section-header { padding: 0 24px; display: flex; justify-content: space-between; margin-bottom: 10px; }
 .title { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; }
@@ -57,7 +58,15 @@ const items = [
 .bg-green-500 { background-color: #22c55e; }
 .bg-green-50 { background-color: #f0fdf4; }
 .text-green-600 { color: #16a34a; }
-/* ... 其他颜色类似 ... */
+.bg-yellow-500 { background-color: #eab308; }
+.bg-yellow-50 { background-color: #fefce8; }
+.text-yellow-600 { color: #ca8a04; }
+.bg-blue-500 { background-color: #3b82f6; }
+.bg-blue-50 { background-color: #eff6ff; }
+.text-blue-600 { color: #2563eb; }
+.bg-purple-500 { background-color: #a855f7; }
+.bg-purple-50 { background-color: #faf5ff; }
+.text-purple-600 { color: #9333ea; }
 
 .item-val { display: flex; align-items: flex-end; gap: 4px; margin-bottom: 8px; }
 .val-num { font-size: 16px; font-weight: 700; color: #2c3e50; }

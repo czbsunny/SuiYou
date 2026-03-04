@@ -177,9 +177,38 @@ $font-family-money: "DIN Alternate", "DIN Condensed", "Inter", "-apple-system", 
 // 基础正文字体族
 $font-family-base: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 
+
+/* =================================== */
+/* 5. 常用全局 Mixins                  */
+/* =================================== */
+
 /* 辅助 Mixin (可选，建议加上提高开发效率) */
 @mixin flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+
+/* 文字单行省略号 */
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 文字多行省略号 (默认2行) */
+@mixin text-ellipsis-rows($rows: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $rows;
+  overflow: hidden;
+}
+
+/* 强制等宽数字 (之前代码中提到过的，建议也一并加上) */
+@mixin tabular-nums {
+  font-variant-numeric: tabular-nums;
+  -moz-font-feature-settings: "tnum";
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";
 }

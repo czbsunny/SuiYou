@@ -5,7 +5,7 @@
       <view class="header-left">
         <view class="label-row">
           <text class="label-text">家庭净资产</text>
-          <view class="status-badge">稳健增长</view>
+          <view class="status-badge" :class="trendClass">{{ trendLabel }}</view>
         </view>
         <text class="amount-text">{{ amount }}</text>
       </view>
@@ -18,13 +18,8 @@
       </view>
     </view>
 
-    <!-- 2. 装饰性图表区 (SVG) -->
+    <!-- 2. 动态图表区 (SVG) -->
     <view class="chart-wrapper">
-      <!-- 
-        注意：在某些小程序平台(如支付宝/百度)可能不支持内联SVG。
-        如果遇到兼容性问题，建议将此 SVG 转为 Base64 背景图或使用 Canvas 绘制。
-        但在 H5 和 微信小程序 中通常表现良好。
-      -->
       <svg viewBox="0 0 300 100" class="svg-graph" preserveAspectRatio="none">
         <defs>
           <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -33,27 +28,23 @@
           </linearGradient>
         </defs>
         <!-- 填充区域 -->
-        <path d="M0,100 L0,80 Q50,90 100,60 T200,40 T300,10 L300,100 Z" fill="url(#chartGradient)" />
+        <path :d="fillPath" fill="url(#chartGradient)" />
         <!-- 线条 -->
-        <path d="M0,80 Q50,90 100,60 T200,40 T300,10" fill="none" stroke="#2a806c" stroke-width="2" stroke-linecap="round" />
+        <path :d="linePath" fill="none" stroke="#2a806c" stroke-width="2" stroke-linecap="round" />
         <!-- 当前点 -->
-        <circle cx="300" cy="10" r="4" fill="#2a806c" stroke="white" stroke-width="2" />
+        <circle :cx="lastPoint.x" :cy="lastPoint.y" r="4" fill="#2a806c" stroke="white" stroke-width="2" />
       </svg>
       
       <!-- X轴 时间轴 -->
       <view class="axis-labels">
-        <text>JAN</text>
-        <text>MAR</text>
-        <text>JUN</text>
-        <text>SEP</text>
-        <text>NOW</text>
+        <text v-for="(label, index) in axisLabels" :key="index">{{ label }}</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { computed, defineProps } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   amount: {
@@ -63,12 +54,124 @@ const props = defineProps({
   trend: {
     type: String,
     default: '+12.5%'
+  },
+  // 历史数据，格式：[{ date: '2024-01-15', value: 2500000 }, ...]
+  historyData: {
+    type: Array,
+    default: () => []
   }
 });
 
 // 判断涨跌颜色
 const isPositive = computed(() => {
   return props.trend.includes('+');
+});
+
+// 趋势标签
+const trendLabel = computed(() => {
+  if (!props.historyData || props.historyData.length < 2) return '暂无数据';
+  
+  const firstValue = props.historyData[0].value;
+  const lastValue = props.historyData[props.historyData.length - 1].value;
+  const change = ((lastValue - firstValue) / firstValue) * 100;
+  
+  if (change > 5) return '稳健增长';
+  if (change > 0) return '小幅增长';
+  if (change > -5) return '小幅下降';
+  return '明显下降';
+});
+
+// 趋势样式类
+const trendClass = computed(() => {
+  if (!props.historyData || props.historyData.length < 2) return '';
+  
+  const firstValue = props.historyData[0].value;
+  const lastValue = props.historyData[props.historyData.length - 1].value;
+  const change = ((lastValue - firstValue) / firstValue) * 100;
+  
+  if (change > 0) return 'trend-up';
+  return 'trend-down';
+});
+
+// 生成最近12个月的时间轴标签
+const axisLabels = computed(() => {
+  const labels = [];
+  const now = new Date();
+  
+  // 生成5个标签（每3个月一个）
+  for (let i = 4; i >= 0; i--) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i * 3, 1);
+    if (i === 0) {
+      labels.push('现在');
+    } else {
+      labels.push(`${date.getMonth() + 1}月`);
+    }
+  }
+  
+  return labels;
+});
+
+// 计算图表数据点
+const chartPoints = computed(() => {
+  if (!props.historyData || props.historyData.length === 0) {
+    // 默认数据（用于演示）
+    return [
+      { x: 0, y: 80 },
+      { x: 75, y: 60 },
+      { x: 150, y: 40 },
+      { x: 225, y: 30 },
+      { x: 300, y: 10 }
+    ];
+  }
+  
+  // 找出最大值和最小值
+  const values = props.historyData.map(item => item.value);
+  const maxValue = Math.max(...values);
+  const minValue = Math.min(...values);
+  const range = maxValue - minValue || 1;
+  
+  // 将数据映射到图表坐标 (300x100)
+  return props.historyData.map((item, index) => {
+    const x = (index / (props.historyData.length - 1)) * 300;
+    const normalizedValue = (item.value - minValue) / range;
+    const y = 100 - (normalizedValue * 80 + 10); // 留出上下边距
+    return { x, y };
+  });
+});
+
+// 生成线条路径
+const linePath = computed(() => {
+  if (chartPoints.value.length === 0) return '';
+  
+  const points = chartPoints.value;
+  let path = `M${points[0].x},${points[0].y}`;
+  
+  // 使用贝塞尔曲线平滑连接
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const cx = (prev.x + curr.x) / 2;
+    path += ` Q${cx},${prev.y} ${curr.x},${curr.y}`;
+  }
+  
+  return path;
+});
+
+// 生成填充区域路径
+const fillPath = computed(() => {
+  if (chartPoints.value.length === 0) return '';
+  
+  const line = linePath.value;
+  const lastPoint = chartPoints.value[chartPoints.value.length - 1];
+  const firstPoint = chartPoints.value[0];
+  
+  return `${line} L${lastPoint.x},100 L${firstPoint.x},100 Z`;
+});
+
+// 最后一个点（用于显示当前点）
+const lastPoint = computed(() => {
+  if (chartPoints.value.length === 0) return { x: 300, y: 10 };
+  return chartPoints.value[chartPoints.value.length - 1];
 });
 </script>
 
@@ -107,12 +210,22 @@ const isPositive = computed(() => {
 }
 
 .status-badge {
-  background-color: #f0fdf4; // bg-green-50
+  background-color: #f0fdf4;
   color: #2a806c;
   font-size: 20rpx;
   padding: 4rpx 10rpx;
   border-radius: 8rpx;
   font-weight: 700;
+  
+  &.trend-up {
+    background-color: #fef2f2;
+    color: #ef4444;
+  }
+  
+  &.trend-down {
+    background-color: #f0fdf4;
+    color: #22c55e;
+  }
 }
 
 .amount-text {
@@ -163,9 +276,11 @@ const isPositive = computed(() => {
 }
 
 .axis-labels text {
-  font-size: 16rpx; // text-[8px]
-  color: #d1d5db; // text-gray-300
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 18rpx;
+  color: #d1d5db;
+  font-weight: 500;
 }
 </style>
+
+
+

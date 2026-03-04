@@ -1,7 +1,6 @@
 <template>
   <view class="hero-section">
     <view class="net-worth-card">
-      <view class="card-bg-decoration"></view>
       <view class="card-content">
         <view class="card-header">
           <view class="card-label">家庭净资产</view>
@@ -46,14 +45,10 @@ const togglePrivacy = () => {
 <style scoped>
 .hero-section { padding: 20px; }
 .net-worth-card {
-  background: linear-gradient(135deg, #2a806c 0%, #3a9d7e 100%);
-  border-radius: 24px; padding: 24px; color: white; position: relative; overflow: hidden;
-  box-shadow: 0 10px 25px -5px rgba(42, 128, 108, 0.4);
-}
-.card-bg-decoration {
-  position: absolute; top: -50%; right: -20%; width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-  filter: blur(40px); pointer-events: none;
+  background: #ffffff;
+  border-radius: 24px; padding: 24px; color: #2C3E50; position: relative; overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 .card-content { position: relative; z-index: 2; }
 .card-header {
@@ -62,26 +57,26 @@ const togglePrivacy = () => {
   align-items: flex-start;
   margin-bottom: 8px;
 }
-.card-label { font-size: 16px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-label { font-size: 16px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 .privacy-toggle {
   cursor: pointer;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
+  background: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
 }
 .privacy-toggle:hover {
-  background: rgba(255,255,255,0.3);
+  background: #e5e7eb;
 }
-.main-number { font-size: 36px; font-weight: 700; margin: 8px 0 16px 0; font-family: monospace; letter-spacing: -1px; }
+.main-number { font-size: 36px; font-weight: 700; margin: 8px 0 16px 0; font-family: monospace; letter-spacing: -1px; color: #2C3E50; }
 .trend-row { display: flex; align-items: center; gap: 10px; }
 .trend-pill {
-  background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px;
-  font-size: 12px; color: white; font-weight: 600; display: flex; align-items: center; gap: 4px;
+  background: #f3f4f6; padding: 4px 10px; border-radius: 20px;
+  font-size: 12px; color: #6b7280; font-weight: 600; display: flex; align-items: center; gap: 4px;
 }
-.trend-desc { font-size: 11px; opacity: 0.8; }
+.trend-desc { font-size: 11px; color: #9ca3af; }
 </style>

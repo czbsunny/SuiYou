@@ -3,8 +3,8 @@
     {
       "path": "pages/home/index",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationStyle": "default",
         "navigationBarTitleText": "首页",
         "backgroundColor": "#F9F8F4"
@@ -13,8 +13,8 @@
     {
       "path": "pages/goals/index",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "目标",
         "backgroundColor": "#F9F8F4"
       }
@@ -23,16 +23,34 @@
       "path": "pages/goals/add",
       "style": {
         "navigationBarTitleText": "添加新目标",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "black",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/goals/guide",
+      "style": {
+        "navigationBarTitleText": "选择目标类型",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
+        "backgroundColor": "#F8F7F2"
+      }
+    },
+    {
+      "path": "pages/goals/detail",
+      "style": {
+        "navigationBarTitleText": "目标详情",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
+        "backgroundColor": "#F8F7F2"
       }
     },
     {
       "path": "pages/auth/login",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "登录",
         "backgroundColor": "#F9F8F4"
       }
@@ -40,8 +58,8 @@
     {
       "path": "pages/auth/register",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "注册",
         "backgroundColor": "#F9F8F4"
       }
@@ -49,8 +67,8 @@
     {
       "path": "pages/assets/index",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "资产",
         "backgroundColor": "#F9F8F4"
       }
@@ -58,8 +76,8 @@
     {
       "path": "pages/assets/add",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "添加资产账户",
         "backgroundColor": "#F9F8F4"
       }
@@ -68,8 +86,8 @@
       "path": "pages/assets/item",
       "style": {
         "navigationBarTitleText": "资产详情",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
       }
     },
@@ -77,8 +95,8 @@
       "path": "pages/assets/account-detail",
       "style": {
         "navigationBarTitleText": "账户详情",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
       }
     },
@@ -86,8 +104,8 @@
       "path": "pages/assets/add-account",
       "style": {
         "navigationBarTitleText": "添加账户",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
       }
     },
@@ -95,16 +113,16 @@
       "path": "pages/assets/add-non-account",
       "style": {
         "navigationBarTitleText": "添加资产",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
       }
     },
     {
       "path": "pages/assets/institution-select",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "选择机构",
         "backgroundColor": "#F9F8F4"
       }
@@ -113,24 +131,33 @@
       "path": "pages/assets/manage-account",
       "style": {
         "navigationBarTitleText": "账户管理",
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "backgroundColor": "#F9F8F4"
       }
     },
     {
       "path": "pages/profile/index",
       "style": {
-        "navigationBarBackgroundColor": "#2A806C",
-        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
         "navigationBarTitleText": "我的",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/report/index",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "#2A806C",
+        "navigationBarTitleText": "财务体检报告",
         "backgroundColor": "#F9F8F4"
       }
     }
   ],
   "globalStyle": {
-    "navigationBarBackgroundColor": "#2A806C",
-    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "#2A806C",
     "navigationBarTitleText": "岁有",
     "backgroundColor": "#F5F5F5"
   },
@@ -173,80 +200,80 @@
         {
           "path": "create",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "创建组合"
           }
         },
         {
           "path": "analysis",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "收益分析"
           }
         },
         {
           "path": "detail",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "组合详情"
           }
         },
         {
           "path": "allocation",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "资产配置"
           }
         },
         {
           "path": "modifyAllocation",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "修改资产配置"
           }
         },
         {
           "path": "diagnosis",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "组合诊断"
           }
         },
         {
           "path": "fundSearch",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "基金搜索"
           }
         },
         {
           "path": "optimize",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "优化对比"
           }
         },
         {
           "path": "dca",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "定投计划"
           }
         },
         {
           "path": "transactions",
           "style": {
-            "navigationBarBackgroundColor": "#2A806C",
-            "navigationBarTextStyle": "white",
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "#2A806C",
             "navigationBarTitleText": "交易记录"
           }
         }

@@ -97,6 +97,8 @@ const props = defineProps({
   templates: { type: Array, default: () => [] }
 });
 
+const emit = defineEmits(['select']);
+
 const currentStep = ref(1);
 const selectedCat = ref(null);
 
@@ -118,10 +120,7 @@ const handleBack = () => {
 };
 
 const handleFinalSelect = (tpl) => {
-  const params = [
-    `tpl=${tpl.code}`,
-  ].join('&');
-  uni.navigateTo({ url: `/pages/goals/add?${params}` });
+  emit('select', tpl);
 };
 
 const formatMoney = (val) => Number(val).toLocaleString();

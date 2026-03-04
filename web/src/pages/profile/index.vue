@@ -22,9 +22,20 @@
         </view>
       </view>
 
-      <!-- 功能列表占位（如果你后续想加，样式已预设） -->
+      <!-- 功能列表 -->
       <view class="menu-section" v-if="user">
-         <!-- 未来可以放家庭成员管理、目标管理等 -->
+        <view class="menu-item" hover-class="item-active" @click="handleReportClick">
+          <view class="menu-item-left">
+            <view class="menu-icon report-icon">
+              <text class="icon-text">📊</text>
+            </view>
+            <text class="menu-text">财务体检报告</text>
+          </view>
+          <view class="menu-item-right">
+            <text class="menu-desc">查看家庭财务健康状况</text>
+            <image src="/static/images/arrow-right.png" class="arrow-icon" />
+          </view>
+        </view>
       </view>
 
       <!-- 退出按钮 -->
@@ -69,6 +80,10 @@ const goToLogin = () => {
     uni.navigateTo({ url: '/pages/auth/login' });
 };
 
+const handleReportClick = () => {
+    uni.navigateTo({ url: '/pages/report/index' });
+};
+
 const handleLogout = () => {
     uni.showModal({
         title: '提示',
@@ -89,14 +104,14 @@ const handleLogout = () => {
 .profile-container {
   min-height: 100vh;
   background-color: $bg-page; // 应用 #FAF9F6
-  padding: 48rpx 32rpx;
+  padding: $spacing-md $spacing-base;
   box-sizing: border-box;
 }
 
 .content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 32rpx;
+  gap: $spacing-md;
 }
 
 /* 用户卡片：通过纯白与米白的微妙差异建立层级 */
@@ -162,11 +177,6 @@ const handleLogout = () => {
   }
 }
 
-/* 退出按钮：保持纯净 */
-.logout-section {
-  margin-top: 24rpx;
-}
-
 .logout-btn {
   width: 100%;
   height: 100rpx;
@@ -193,5 +203,73 @@ const handleLogout = () => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20rpx); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* 功能菜单 */
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 40rpx;
+  background-color: $bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  border: 1rpx solid rgba(42, 128, 108, 0.03);
+  transition: all 0.25s ease;
+
+  &:active {
+    transform: scale(0.99);
+    background-color: #fcfcfc;
+  }
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.menu-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  @include flex-center;
+}
+
+.report-icon {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+}
+
+.icon-text {
+  font-size: 40rpx;
+}
+
+.menu-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $text-main;
+}
+
+.menu-item-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.menu-desc {
+  font-size: 24rpx;
+  color: $text-sub;
+}
+
+.arrow-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.3;
 }
 </style>

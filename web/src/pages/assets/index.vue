@@ -3,15 +3,12 @@
     <!-- 1. 顶部净值总览卡片 (由 assets 计算结果驱动) -->
     <NetWorthCard :assets="allAssets" />
 
-    <!-- 2. 财务体检指标 (由后端接口计算结果驱动) -->
-    <HealthGrid :assets="allAssets" />
-
-    <!-- 3. 加载状态：仅在初次进入且无缓存数据时显示 -->
+    <!-- 2. 加载状态：仅在初次进入且无缓存数据时显示 -->
     <view v-if="loading && !allAccounts.length" class="loading-container">
       <uni-load-more status="loading" />
     </view>
 
-    <!-- 4. 核心内容区：唯一的机构/卡包视图 -->
+    <!-- 3. 核心内容区：唯一的机构/卡包视图 -->
     <view class="content-view">
       <InstitutionListView 
         :list="accountFlatList"
@@ -22,7 +19,7 @@
       />
     </view>
 
-    <!-- 5. 非账户资产区域 -->
+    <!-- 4. 非账户资产区域 -->
     <view class="content-view">
       <NonAccountAssetList 
         :non-account-assets="nonAccountAssets"
@@ -43,7 +40,6 @@ import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 
 // 引入核心组件
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
-import HealthGrid from '../../components/assets/HealthGrid.vue';
 import InstitutionListView from '../../components/assets/InstitutionListView.vue';
 import NonAccountAssetList from '../../components/assets/NonAccountAssetList.vue';
 
