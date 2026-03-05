@@ -67,10 +67,6 @@ defineEmits(['item-click', 'header-click', 'add-click']);
 </script>
 
 <style lang="scss" scoped>
-$bg-color: #F9F8F4;
-$text-main: #1f2937;
-$text-muted: #9ca3af;
-
 .list-section {
   padding: 0 32rpx 40rpx;
 }
@@ -83,9 +79,9 @@ $text-muted: #9ca3af;
 }
 
 .section-title {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: #4b5563;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $text-main;
 }
 
 .header-icon {
@@ -101,8 +97,8 @@ $text-muted: #9ca3af;
 
 /* 资产卡片样式 */
 .asset-card {
-  background: white;
-  border-radius: 40rpx;
+  background: $bg-white;
+  border-radius: 32rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
   display: flex;
@@ -113,7 +109,7 @@ $text-muted: #9ca3af;
 
   &:active {
     transform: scale(0.97);
-    background-color: #fafafa;
+    background-color: $bg-page;
   }
 }
 
@@ -121,8 +117,8 @@ $text-muted: #9ca3af;
 .add-asset-entry {
   margin-top: 32rpx;
   height: 120rpx;
-  border: 2rpx dashed #e5e7eb; // 使用虚线
-  border-radius: 40rpx;
+  border: 2rpx dashed $border-color;
+  border-radius: 32rpx;
   background-color: rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
@@ -131,7 +127,7 @@ $text-muted: #9ca3af;
 
   &:active {
     transform: scale(0.98);
-    background-color: #ffffff;
+    background-color: $bg-white;
     border-color: $text-muted;
   }
 
@@ -169,13 +165,11 @@ $text-muted: #9ca3af;
   width: 88rpx; 
   height: 88rpx;
   border-radius: 20rpx;
-  background-color: #f8f9fa;
+  background-color: $bg-page;
   display: flex; 
   align-items: center; 
   justify-content: center;
-
   overflow: hidden; 
-  
   border: 1rpx solid rgba(0, 0, 0, 0.05);
 
   .logo-img {
@@ -185,17 +179,17 @@ $text-muted: #9ca3af;
 }
 
 .card-center { flex: 1; }
-.asset-title { font-size: 30rpx; font-weight: 600; color: #111827; margin-bottom: 4rpx; }
+.asset-title { font-size: 30rpx; font-weight: 600; color: $text-main; margin-bottom: 4rpx; }
 .asset-sub { font-size: 24rpx; color: $text-muted; }
 .card-right { text-align: right; }
 .amount {
-  font-size: 34rpx; font-weight: 700; color: #111827;
+  font-size: 34rpx; font-weight: 700; color: $text-main;
   .currency { font-size: 22rpx; margin-right: 4rpx; }
 }
 .status-tag {
   font-size: 22rpx; font-weight: 600; margin-top: 4rpx;
-  &.up { color: #ef4444; }
-  &.down { color: #10b981; }
+  &.up { color: $danger; }
+  &.down { color: $success; }
   &.neutral { color: $text-muted; }
 }
 .safe-area-bottom { height: 60rpx; }

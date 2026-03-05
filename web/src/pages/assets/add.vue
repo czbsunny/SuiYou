@@ -239,12 +239,6 @@ const saveAsset = async () => {
 </script>
 
 <style lang="scss" scoped>
-/* 变量定义 */
-$primary-light: rgba(42, 128, 108, 0.08);
-
-$border-light: rgba(0, 0, 0, 0.04);
-$tag-inactive: #F5F7FA;  // 未选中标签背景
-
 .add-asset-page {
   height: 100vh;
   background-color: $bg-page;
@@ -258,97 +252,36 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 }
 
 .content-container {
-  padding: 16px; // 页面边距
+  padding: 24rpx 32rpx;
 }
 
 /* --- 卡片通用样式 --- */
 .section-card {
   background-color: $bg-white;
-  border-radius: 16px;
-  padding: 20px 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); // 轻柔阴影
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   
   .card-title {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 30rpx;
+    font-weight: 600;
     color: $text-main;
-    margin-bottom: 16px;
-    padding-left: 10px;
-    border-left: 3px solid $primary; // 金色装饰条
+    margin-bottom: 24rpx;
+    padding-left: 10rpx;
+    border-left: 3px solid $primary;
     line-height: 1;
   }
 }
 
-/* --- 第一大块：资产归类 --- */
-.type-scroll {
-  width: 100%;
-  white-space: nowrap;
-  margin-bottom: 4px;
-}
-
-.type-scroll-inner {
-  display: flex;
-  padding-bottom: 8px; 
-}
-
-.type-item {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: 20px;
-  position: relative;
-  
-  .icon-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    background-color: $tag-inactive; // 默认浅色背景
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    transition: all 0.3s;
-    
-    .type-icon {
-      width: 28px;
-      height: 28px;
-      opacity: 0.6;
-    }
-    
-    /* 选中状态的图标容器 */
-    &.active {
-      background-color: $primary; // 选中后使用主题色
-      
-      .type-icon {
-        opacity: 1;
-      }
-    }
-  }
-  
-  .type-text {
-    font-size: 12px;
-    color: $text-sub;
-    font-weight: 500;
-  }
-
-  /* 选中状态 */
-  &.active {
-    .type-text {
-      color: $primary;
-      font-weight: 700;
-    }
-  }
-}
-
 .divider {
-  height: 1px;
+  height: 1rpx;
   background-color: $border-light;
   margin: 12px 0 16px 0;
 }
 
 .inner-divider {
-  height: 1px;
+  height: 1rpx;
   background-color: $border-light;
   margin: 16px 0;
   border-top: 1px dashed rgba(0,0,0,0.05);
@@ -357,7 +290,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 
 .tags-container {
   .tags-label {
-    font-size: 12px;
+    font-size: 24rpx;
     color: $text-sub;
     margin-bottom: 10px;
   }
@@ -372,7 +305,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 .tag-item {
   padding: 6px 16px;
   border-radius: 8px;
-  background-color: $tag-inactive;
+  background-color: $bg-subtle;
   color: $text-sub;
   font-size: 13px;
   font-weight: 400;
@@ -403,7 +336,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
     width: 44rpx;
     height: 44rpx;
     background-color: #f8f9fa;
-    border-radius: 8px; // 圆形小头像风格
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -418,13 +351,13 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   }
 
   .inst-display-text {
-    font-size: 15px;
+    font-size: 30rpx;
     color: $text-main;
     margin-right: 4rpx;
     
     &.placeholder {
-      color: $text-placeholder;
-      font-size: 14px;
+      color: $text-muted;
+      font-size: 28rpx;
     }
   }
 }
@@ -433,7 +366,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   display: flex;
   align-items: center;
   padding: 16px 0;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1rpx solid $border-light;
 
   &.last-row {
     border-bottom: none;
@@ -447,7 +380,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 }
 
 .row-label {
-  font-size: 15px;
+  font-size: 30rpx;
   color: $text-main;
   width: 90px;
   flex-shrink: 0;
@@ -455,38 +388,38 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 }
 
 .currency-label {
-  font-size: 12px;
+  font-size: 24rpx;
   color: $primary;
   margin-left: 4px;
 }
 
 .row-input {
   flex: 1;
-  font-size: 15px;
+  font-size: 30rpx;
   color: $text-main;
   text-align: right;
   height: 24px;
   line-height: 24px;
   
   &.amount-input {
-    font-size: 20px; 
+    font-size: 40rpx; 
     font-weight: 600;
     color: $primary;
   }
 }
 
 .input-placeholder {
-  color: $text-placeholder;
-  font-size: 14px;
+  color: $text-muted;
+  font-size: 28rpx;
   font-weight: 400;
 }
 
 .row-textarea {
   width: 100%;
-  font-size: 14px;
+  font-size: 28rpx;
   color: $text-main;
   min-height: 80px;
-  background-color: $tag-inactive; // 浅灰底色区域
+  background-color: $bg-subtle;
   border-radius: 8px;
   padding: 12px;
   box-sizing: border-box;
@@ -494,7 +427,7 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
 
 .picker {
   flex: 1;
-  font-size: 15px;
+  font-size: 30rpx;
   color: $text-main;
   text-align: right;
 }
@@ -516,7 +449,6 @@ $tag-inactive: #F5F7FA;  // 未选中标签背景
   padding: 16px 24px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
   z-index: 100;
-  // 底部按钮背景渐变
   background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }
 

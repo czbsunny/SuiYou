@@ -222,17 +222,6 @@ const saveAsset = async () => {
 </script>
 
 <style lang="scss" scoped>
-/* 变量定义 */
-$primary: #2a806c;
-$primary-light: rgba(42, 128, 108, 0.08);
-$bg-page: #f5f7fa;
-$bg-white: #ffffff;
-$text-main: #1F2937;
-$text-sub: #6B7280;
-$text-placeholder: #9CA3AF;
-$border-light: rgba(0, 0, 0, 0.04);
-$tag-inactive: #F3F4F6;
-
 .add-non-account-page {
   height: 100vh;
   background-color: $bg-page;
@@ -246,24 +235,24 @@ $tag-inactive: #F3F4F6;
 }
 
 .content-container {
-  padding: 16px; // 页面边距
+  padding: 24rpx 32rpx;
 }
 
 /* --- 卡片通用样式 --- */
 .section-card {
   background-color: $bg-white;
-  border-radius: 16px;
-  padding: 20px 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); // 轻柔阴影
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   
   .card-title {
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 30rpx;
+    font-weight: 600;
     color: $text-main;
-    margin-bottom: 16px;
-    padding-left: 10px;
-    border-left: 3px solid $primary; // 金色装饰条
+    margin-bottom: 24rpx;
+    padding-left: 10rpx;
+    border-left: 3px solid $primary;
     line-height: 1;
   }
 }
@@ -281,7 +270,6 @@ $tag-inactive: #F3F4F6;
   padding: 16px 24px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
   z-index: 100;
-  // 底部按钮背景渐变
   background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }
 

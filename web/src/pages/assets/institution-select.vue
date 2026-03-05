@@ -308,7 +308,7 @@ const selectInstitution = (institution) => {
 }
 
 .logo-wrapper { width: 76rpx; height: 76rpx; background-color: #f8fafc; border-radius: 20rpx; display: flex; align-items: center; justify-content: center; margin-right: 28rpx; overflow: hidden; border: 1rpx solid rgba(0,0,0,0.03); }
-.institution-logo { width: 52rpx; height: 52rpx; }
+.institution-logo { width: 76rpx; height: 76rpx; }
 .institution-name { font-size: 30rpx; color: #1e293b; font-weight: 600; }
 
 .index-bar {

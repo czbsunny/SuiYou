@@ -112,7 +112,7 @@ const formatMoney = (val) => Number(val).toLocaleString('zh-CN');
 
 .section-title {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $text-main;
   letter-spacing: 1rpx;
 }

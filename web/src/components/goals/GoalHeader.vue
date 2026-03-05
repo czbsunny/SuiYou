@@ -141,7 +141,7 @@ const formatMoney = (val) => {
     display: block;
   }
   .val-remain {
-    font-size: 60rpx;
+    font-size: 48rpx;
     font-weight: 700;
     color: $text-main; // 回归深咖啡黑
     font-family: $font-family-money;

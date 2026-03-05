@@ -34,6 +34,31 @@
   </view>
 </template>
 
+<script setup>
+const handleAction = (action) => {
+  switch (action) {
+    case 'record':
+      // 记一笔 - 跳转到记账页面
+      uni.navigateTo({ url: '/pages/transactions/record' })
+      break
+    case 'transfer':
+      // 账户调拨 - 跳转到调拨页面
+      uni.navigateTo({ url: '/pages/assets/transfer' })
+      break
+    case 'reconcile':
+      // 资产对账 - 跳转到对账页面
+      uni.navigateTo({ url: '/pages/assets/reconcile' })
+      break
+    case 'review':
+      // 收支月报 - 跳转到月度复盘页面
+      uni.navigateTo({ url: '/pages/report/monthly' })
+      break
+    default:
+      console.log('未知操作:', action)
+  }
+}
+</script>
+
 <style lang="scss" scoped>
 .quick-actions-grid {
   margin: 0 $spacing-md; 
@@ -41,7 +66,7 @@
   grid-template-columns: repeat(4, 1fr); 
   gap: $spacing-base;
   background: $bg-white; 
-  padding: 32rpx 20rpx; 
+  padding: $spacing-md $spacing-sm; 
   border-radius: $radius-lg; 
   box-shadow: $shadow-card; 
   margin-bottom: $spacing-lg;
@@ -51,7 +76,7 @@
   display: flex; 
   flex-direction: column; 
   align-items: center; 
-  gap: 16rpx; 
+  gap: $spacing-sm; 
 }
 
 .ab-icon {

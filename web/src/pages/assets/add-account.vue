@@ -210,7 +210,7 @@ const handleSave = async () => {
     
     console.log('创建账户响应:', response);
     // 判断状态码是否为201（创建成功）
-    if (response && response.status === 201) {
+    if (response && response.statusCode === 201) {
       uni.showToast({ title: '账户创建成功', icon: 'success' });
     
       // 获取上一个页面实例，通知其刷新数据
@@ -243,26 +243,45 @@ const handleSave = async () => {
 
 <style lang="scss" scoped>
 .add-account-container {
-  min-height: 100vh; background-color: #F9F8F4; display: flex; flex-direction: column;
+  min-height: 100vh;
+  background-color: $bg-page;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 🟢 实时预览区样式优化 */
 .preview-hero {
-  padding: 28rpx 32rpx; background-color: #F9F8F4;
+  padding: 28rpx 32rpx;
+  background-color: $bg-page;
   
   .live-card {
-    width: 100%; height: 390rpx; border-radius: 52rpx; position: relative; overflow: hidden;
-    box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.12); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    height: 390rpx;
+    border-radius: 52rpx;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.12);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     
     .glass-texture {
-      position: absolute; top: -50%; right: -20%; width: 120%; height: 120%;
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 120%;
+      height: 120%;
       background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 50%);
-      border-radius: 50%; pointer-events: none;
+      border-radius: 50%;
+      pointer-events: none;
     }
     
     .card-inner {
-      padding: 44rpx; height: 100%; display: flex; flex-direction: column;
-      position: relative; z-index: 2; box-sizing: border-box;
+      padding: 44rpx;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+      box-sizing: border-box;
     }
   }
 }
@@ -270,17 +289,38 @@ const handleSave = async () => {
 .header-section { margin-bottom: auto; }
 
 .wc-row-top {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
   .brand-group {
-    display: flex; align-items: center; gap: 20rpx; flex: 1; min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+    flex: 1;
+    min-width: 0;
+    
     .logo-white-box {
-      width: 64rpx; height: 64rpx; background: #fff; border-radius: 18rpx;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 64rpx;
+      height: 64rpx;
+      background: #fff;
+      border-radius: 18rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
       .logo { width: 44rpx; height: 44rpx; }
       i { font-size: 32rpx; }
     }
+    
     .name-area {
-      display: flex; flex-direction: row; align-items: center; flex: 1; min-width: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+      
       .inst-name { font-size: 30rpx; font-weight: 800; line-height: 1.2; white-space: nowrap; flex-shrink: 0; }
       .acc-alias { font-size: 30rpx; opacity: 0.7; font-weight: 500; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     }
@@ -293,53 +333,83 @@ const handleSave = async () => {
 }
 
 .wc-row-balance {
-  display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24rpx;
+  
   .balance-left {
-    display: flex; align-items: baseline;
+    display: flex;
+    align-items: baseline;
     .symbol { font-size: 40rpx; font-weight: 700; margin-right: 12rpx; }
     .num { font-size: 72rpx; font-weight: 800; font-family: 'DIN Alternate', sans-serif; letter-spacing: -1rpx; }
   }
 }
 
 .wc-row-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 22rpx; font-weight: 600; border-top: 1rpx solid rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  border-top: 1rpx solid rgba(255,255,255,0.15);
   padding-top: 24rpx;
   .footer-info { opacity: 0.8; }
   .item-tag { background: rgba(0,0,0,0.1); padding: 6rpx 16rpx; border-radius: 10rpx; }
 }
 
 /* 表单与颜色选择器保持原样 */
-.form-group { background: #fff; margin: 0 32rpx 32rpx; border-radius: 32rpx; padding: 0 32rpx; }
-.form-item {
-  min-height: 110rpx; display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1rpx solid #F3F4F6;
-  &:last-child { border-bottom: none; }
-  .item-label { font-size: 28rpx; color: #1F2937; font-weight: 600; }
-  .item-label-group { display: flex; flex-direction: column; .item-desc { font-size: 22rpx; color: #9CA3AF; margin-top: 4rpx; } }
-  .item-input { flex: 1; text-align: right; font-size: 28rpx; color: #1F2937; margin-left: 40rpx; font-weight: 500; }
-  .item-value { display: flex; align-items: center; gap: 8rpx; font-size: 28rpx; color: #1F2937; font-weight: 500; }
-  .placeholder { color: #D1D5DB; font-weight: 400; }
+.form-group {
+  background: $bg-white;
+  margin: 0 32rpx 40rpx;
+  border-radius: 32rpx;
+  padding: 0 32rpx;
 }
+
+.form-item {
+  min-height: 110rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1rpx solid $border-color;
+  
+  &:last-child { border-bottom: none; }
+  
+  .item-label { font-size: 30rpx; color: $text-main; font-weight: 600; }
+  .item-label-group { display: flex; flex-direction: column; .item-desc { font-size: 22rpx; color: $text-muted; margin-top: 4rpx; } }
+  .item-input { flex: 1; text-align: right; font-size: 30rpx; color: $text-main; margin-left: 40rpx; font-weight: 500; }
+  .item-value { display: flex; align-items: center; gap: 8rpx; font-size: 30rpx; color: $text-main; font-weight: 500; }
+  .placeholder { color: $text-muted; font-weight: 400; }
+}
+
 .color-section {
   padding: 0 48rpx 40rpx;
-  .section-title { font-size: 28rpx; font-weight: 700; color: #9CA3AF; text-transform: uppercase; margin-bottom: 24rpx; letter-spacing: 2rpx; }
+  .section-title { font-size: 28rpx; font-weight: 700; color: $text-muted; text-transform: uppercase; margin-bottom: 24rpx; letter-spacing: 2rpx; }
   .color-grid { display: flex; flex-wrap: wrap; gap: 24rpx; }
   .color-dot-box {
     width: 80rpx; height: 80rpx; border-radius: 50%; padding: 0rpx;
     border: 4rpx solid transparent; transition: all 0.2s;
-    &.active { border-color: #2D7A68; transform: scale(1.1); }
+    &.active { border-color: $primary; transform: scale(1.1); }
     .color-dot { width: 100%; height: 100%; border-radius: 50%; }
   }
 }
+
 .footer-action {
   padding: 32rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
   .save-btn {
-    height: 110rpx; background: #2D7A68; color: #fff; border-radius: 30rpx;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32rpx; font-weight: 700; box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.1);
+    height: 110rpx;
+    background: $primary;
+    color: #fff;
+    border-radius: 30rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32rpx;
+    font-weight: 700;
+    box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.1);
     &:active { transform: scale(0.97); opacity: 0.9; }
   }
 }
+
 .bottom-spacer { height: 40rpx; }
 </style>

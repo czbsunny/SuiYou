@@ -5,6 +5,8 @@ import com.suiyou.model.Account;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -25,5 +27,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByInstitutionAndInstitutionIdentifier(String institution, String institutionIdentifier);
 
     // 获取用户活跃账户的最大排序值
-    Integer findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(Long ownerId, Integer status);
+    @Query("SELECT MAX(a.sortOrder) FROM Account a WHERE a.ownerId = :ownerId AND a.status = :status AND a.deleted = false")
+    Integer findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(@Param("ownerId") Long ownerId, @Param("status") Integer status);
 }

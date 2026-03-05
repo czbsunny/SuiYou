@@ -161,9 +161,8 @@ const confirmDelete = () => {
 <style lang="scss" scoped>
 .detail-container {
   min-height: 100vh;
-  background-color: #F9F8F4;
-  padding: 30rpx;
-  padding-bottom: 180rpx;
+  background-color: $bg-page;
+  padding: 24rpx 32rpx 80rpx;
 }
 
 /* 顶部英雄卡片 */
@@ -235,7 +234,7 @@ const confirmDelete = () => {
 
 /* 信息卡片组 */
 .info-group {
-  margin-bottom: 30rpx;
+  margin-bottom: 40rpx;
   .info-card {
     background: #fff;
     border-radius: 32rpx;
@@ -246,10 +245,10 @@ const confirmDelete = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .info-label { font-size: 28rpx; color: #6B7280; }
-    .info-value { font-size: 28rpx; color: #1F2937; font-weight: 500; }
+    .info-label { font-size: 28rpx; color: $text-muted; }
+    .info-value { font-size: 28rpx; color: $text-main; font-weight: 500; }
   }
-  .divider { height: 1rpx; background: #F3F4F6; }
+  .divider { height: 1rpx; background: $border-color; }
 }
 
 /* 底部按钮 */
@@ -275,7 +274,7 @@ const confirmDelete = () => {
     
     &:active { transform: scale(0.96); }
   }
-  .btn-edit { background: #1F2937; color: #fff; }
+  .btn-edit { background: $text-main; color: #fff; }
   .btn-delete { background: #fff; color: #FF3B30; border: 1rpx solid #FF3B30; }
 }
 </style>

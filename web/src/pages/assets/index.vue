@@ -25,6 +25,7 @@
         :non-account-assets="nonAccountAssets"
         @add-non-account-click="handleAddNonAccountAsset"
         @asset-click="handleNonAccountAssetClick"
+        @add-cash-asset-click="handleAddCashAsset"
       />
     </view>
   </view>
@@ -180,25 +181,26 @@ const handleAddNonAccountAsset = () => {
 const handleNonAccountAssetClick = (asset) => {
   uni.navigateTo({ url: `/pages/assets/item-detail?id=${asset.id}` });
 };
+
+// 添加现金资产
+const handleAddCashAsset = () => {
+  uni.navigateTo({ url: `/pages/assets/add-non-account?category=LIQUID&subCategory=CASH` });
+};
 </script>
 
-<style lang="scss">
-page {
-  background-color: #F9F8F4; // iOS 温暖白
-}
-
+<style lang="scss" scoped>
 .page-container {
   min-height: 100vh;
-  background-color: #F9F8F4;
-  /* 适配不同端的底部，留出呼吸空间 */
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  background-color: $bg-page;
+  padding-bottom: 80rpx;
 }
 
 .loading-container {
-  padding: 100rpx 0;
+  padding: 100rpx 32rpx;
 }
 
 .content-view {
   padding: 0 32rpx;
+  margin-bottom: 40rpx;
 }
 </style>

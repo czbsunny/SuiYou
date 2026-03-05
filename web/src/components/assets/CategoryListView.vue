@@ -152,7 +152,7 @@ const getSubCatName = (catCode, subCode) => {
 
 <style lang="scss" scoped>
 .category-view-container {
-  padding: 0 8rpx;
+  padding: 0 32rpx;
 }
 
 /* 🟢 视图标题样式 (与 InstitutionListView 保持高度一致) */
@@ -160,14 +160,14 @@ const getSubCatName = (catCode, subCode) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 100rpx;      /* 必须与上面一致 */
+  height: 100rpx;
   padding: 0 8rpx;
-  margin-bottom: 10rpx;
+  margin-bottom: 24rpx;
   
   .view-title {
-    font-size: 36rpx;
-    font-weight: 800;
-    color: #1F2937;
+    font-size: 30rpx;
+    font-weight: 600;
+    color: $text-main;
     letter-spacing: 2rpx;
     line-height: 1;
   }
@@ -181,7 +181,7 @@ const getSubCatName = (catCode, subCode) => {
 }
 
 .cat-card {
-  background: #ffffff; border-radius: 44rpx; margin-bottom: 24rpx;
+  background: $bg-white; border-radius: 32rpx; margin-bottom: 40rpx;
   overflow: hidden; box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.02);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1rpx solid rgba(255, 255, 255, 0.8);
@@ -201,28 +201,28 @@ const getSubCatName = (catCode, subCode) => {
     margin-right: 24rpx; flex-shrink: 0;
     .cat-icon { 
       width: 48rpx; height: 48rpx; 
-      filter: brightness(0) invert(1); // 这里的滤镜取决于你的图标素材是否需要反白
+      filter: brightness(0) invert(1);
     }
   }
 
   .cat-info { 
     flex: 1; 
-    .cat-name { font-size: 32rpx; font-weight: 800; color: #1F2937; display: block; } 
-    .cat-count { font-size: 22rpx; color: #9CA3AF; font-weight: 500; margin-top: 4rpx; } 
+    .cat-name { font-size: 30rpx; font-weight: 600; color: $text-main; display: block; } 
+    .cat-count { font-size: 22rpx; color: $text-muted; font-weight: 500; margin-top: 4rpx; } 
   }
 
   .cat-right { 
     display: flex; align-items: center; gap: 20rpx;
-    .cat-amount { font-size: 32rpx; font-weight: 800; font-family: 'DIN Alternate', sans-serif; color: #111827; } 
+    .cat-amount { font-size: 30rpx; font-weight: 700; font-family: 'DIN Alternate', sans-serif; color: $text-main; } 
     .arrow-icon { 
-      width: 12rpx; height: 12rpx; border-bottom: 4rpx solid #D1D5DB; border-right: 4rpx solid #D1D5DB; 
+      width: 12rpx; height: 12rpx; border-bottom: 4rpx solid $border-color; border-right: 4rpx solid $border-color; 
       transform: rotate(45deg); transition: 0.3s; 
       &.rotate { transform: rotate(-135deg); margin-top: 8rpx; } 
     } 
   }
 }
 
-.details-container { background-color: #F9FAFB; overflow: hidden; transition: max-height 0.5s ease; }
+.details-container { background-color: $bg-page; overflow: hidden; transition: max-height 0.5s ease; }
 
 .sub-section {
   padding-top: 10rpx;
@@ -234,20 +234,20 @@ const getSubCatName = (catCode, subCode) => {
     .sub-left {
       display: flex; align-items: center;
       .sub-indicator { width: 4rpx; height: 20rpx; border-radius: 4rpx; margin-right: 12rpx; }
-      .sub-title { font-size: 22rpx; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 1rpx; }
+      .sub-title { font-size: 22rpx; font-weight: 700; color: $text-muted; text-transform: uppercase; letter-spacing: 1rpx; }
     }
-    .sub-total { font-size: 22rpx; color: #9CA3AF; font-weight: 700; font-family: 'DIN Alternate'; }
+    .sub-total { font-size: 22rpx; color: $text-muted; font-weight: 700; font-family: 'DIN Alternate'; }
   }
 }
 
 .detail-item {
   padding: 24rpx 32rpx; display: flex; align-items: center;
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.02);
-  &:active { background-color: #F3F4F6; }
+  &:active { background-color: $bg-page; }
 
   .item-logo-box {
     width: 64rpx; height: 64rpx; border-radius: 16rpx;
-    background: #fff; margin-right: 20rpx; flex-shrink: 0;
+    background: $bg-white; margin-right: 20rpx; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.02);
     .item-logo { width: 44rpx; height: 44rpx; }
@@ -256,26 +256,26 @@ const getSubCatName = (catCode, subCode) => {
   .item-info {
     flex: 1;
     .item-main-row { 
-      font-size: 28rpx; font-weight: 700; color: #374151; display: block; 
-      .item-id-tag { font-size: 24rpx; color: #9CA3AF; margin-left: 8rpx; font-weight: 400; }
+      font-size: 28rpx; font-weight: 600; color: $text-main; display: block; 
+      .item-id-tag { font-size: 24rpx; color: $text-muted; margin-left: 8rpx; font-weight: 400; }
     }
-    .item-sub-row { font-size: 22rpx; color: #9CA3AF; margin-top: 4rpx; display: block;}
+    .item-sub-row { font-size: 22rpx; color: $text-muted; margin-top: 4rpx; display: block;}
   }
 
   .item-right {
-    .item-amt { font-size: 28rpx; font-weight: 700; font-family: 'DIN Alternate'; color: #1F2937; }
+    .item-amt { font-size: 28rpx; font-weight: 700; font-family: 'DIN Alternate'; color: $text-main; }
   }
 }
 
 .add-guide-row {
   padding: 32rpx 40rpx;
   .add-guide-inner {
-    height: 84rpx; border: 2rpx dashed #E5E7EB; border-radius: 24rpx;
+    height: 84rpx; border: 2rpx dashed $border-color; border-radius: 24rpx;
     display: flex; align-items: center; justify-content: center; gap: 12rpx;
     background: rgba(255,255,255,0.5);
     .plus-mini { width: 24rpx; height: 24rpx; opacity: 0.4; }
-    text { font-size: 24rpx; color: #9CA3AF; font-weight: 600; }
-    &:active { background: #fff; border-color: #2D7A68; text { color: #2D7A68; } }
+    text { font-size: 24rpx; color: $text-muted; font-weight: 600; }
+    &:active { background: $bg-white; border-color: $primary; text { color: $primary; } }
   }
 }
 

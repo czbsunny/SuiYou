@@ -26,13 +26,21 @@
             <stop offset="0%" style="stop-color:#2a806c;stop-opacity:0.2" />
             <stop offset="100%" style="stop-color:#2a806c;stop-opacity:0" />
           </linearGradient>
+          <!-- 虚线样式 -->
+          <pattern id="dashPattern" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M 0 4 L 8 4" stroke="#ccc" stroke-width="1" />
+          </pattern>
         </defs>
+        <!-- 0 轴线 -->
+        <line x1="0" y1="50" x2="300" y2="50" stroke="url(#dashPattern)" stroke-width="1" />
         <!-- 填充区域 -->
         <path :d="fillPath" fill="url(#chartGradient)" />
         <!-- 线条 -->
-        <path :d="linePath" fill="none" stroke="#2a806c" stroke-width="2" stroke-linecap="round" />
+        <path :d="linePath" fill="none" :stroke="lineColor" stroke-width="2" stroke-linecap="round" />
+        <!-- 虚线部分（当数据不足12个月时） -->
+        <path v-if="hasPartialData" :d="dashPath" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,4" />
         <!-- 当前点 -->
-        <circle :cx="lastPoint.x" :cy="lastPoint.y" r="4" fill="#2a806c" stroke="white" stroke-width="2" />
+        <circle v-if="chartPoints.length > 0" :cx="lastPoint.x" :cy="lastPoint.y" r="4" fill="#2a806c" stroke="white" stroke-width="2" />
       </svg>
       
       <!-- X轴 时间轴 -->
@@ -111,32 +119,49 @@ const axisLabels = computed(() => {
   return labels;
 });
 
+// 计算是否有部分数据（不足12个月）
+const hasPartialData = computed(() => {
+  return props.historyData && props.historyData.length > 0 && props.historyData.length < 12;
+});
+
 // 计算图表数据点
 const chartPoints = computed(() => {
   if (!props.historyData || props.historyData.length === 0) {
-    // 默认数据（用于演示）
-    return [
-      { x: 0, y: 80 },
-      { x: 75, y: 60 },
-      { x: 150, y: 40 },
-      { x: 225, y: 30 },
-      { x: 300, y: 10 }
-    ];
+    return [];
   }
   
-  // 找出最大值和最小值
+  // 计算时间范围
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1); // 12个月前
+  
+  // 找出最大值和最小值，包含0
   const values = props.historyData.map(item => item.value);
-  const maxValue = Math.max(...values);
-  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values, 0);
+  const minValue = Math.min(...values, 0);
   const range = maxValue - minValue || 1;
   
   // 将数据映射到图表坐标 (300x100)
   return props.historyData.map((item, index) => {
-    const x = (index / (props.historyData.length - 1)) * 300;
+    // 计算该数据点在12个月时间轴上的位置
+    const itemDate = new Date(item.date);
+    const totalMonths = 12;
+    const monthsSinceStart = (itemDate.getFullYear() - startDate.getFullYear()) * 12 + (itemDate.getMonth() - startDate.getMonth());
+    const x = (monthsSinceStart / (totalMonths - 1)) * 300;
+    
+    // 计算Y坐标，将0放在中间
     const normalizedValue = (item.value - minValue) / range;
     const y = 100 - (normalizedValue * 80 + 10); // 留出上下边距
     return { x, y };
   });
+});
+
+// 线条颜色
+const lineColor = computed(() => {
+  if (!props.historyData || props.historyData.length < 2) return '#2a806c';
+  
+  const firstValue = props.historyData[0].value;
+  const lastValue = props.historyData[props.historyData.length - 1].value;
+  return lastValue >= firstValue ? '#2a806c' : '#ff4d4f';
 });
 
 // 生成线条路径
@@ -157,6 +182,14 @@ const linePath = computed(() => {
   return path;
 });
 
+// 生成虚线路径（当数据不足12个月时）
+const dashPath = computed(() => {
+  if (!hasPartialData.value || chartPoints.value.length === 0) return '';
+  
+  const firstPoint = chartPoints.value[0];
+  return `M0,50 Q${firstPoint.x / 2},50 ${firstPoint.x},${firstPoint.y}`;
+});
+
 // 生成填充区域路径
 const fillPath = computed(() => {
   if (chartPoints.value.length === 0) return '';
@@ -170,16 +203,16 @@ const fillPath = computed(() => {
 
 // 最后一个点（用于显示当前点）
 const lastPoint = computed(() => {
-  if (chartPoints.value.length === 0) return { x: 300, y: 10 };
+  if (chartPoints.value.length === 0) return { x: 300, y: 50 };
   return chartPoints.value[chartPoints.value.length - 1];
 });
 </script>
 
 <style lang="scss" scoped>
 .card-container {
-  margin: 24rpx; // 对应 mx-4
+  margin: 0 32rpx 40rpx; // 页面边距 32rpx，卡片间距 40rpx
   padding: 32rpx; // 对应 p-5
-  background-color: #ffffff;
+  background-color: $bg-white;
   border-radius: 32rpx; // 对应 rounded-3xl
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -192,7 +225,7 @@ const lastPoint = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 20rpx;
+  margin-bottom: 24rpx; // 增加间距
   position: relative;
   z-index: 10;
 }
@@ -206,25 +239,25 @@ const lastPoint = computed(() => {
 
 .label-text {
   font-size: 24rpx;
-  color: #9ca3af; // text-gray-400
+  color: $text-muted;
 }
 
 .status-badge {
-  background-color: #f0fdf4;
-  color: #2a806c;
+  background-color: rgba($green, 0.1);
+  color: $green;
   font-size: 20rpx;
   padding: 4rpx 10rpx;
   border-radius: 8rpx;
   font-weight: 700;
   
   &.trend-up {
-    background-color: #fef2f2;
-    color: #ef4444;
+    background-color: rgba($red, 0.1);
+    color: $red;
   }
   
   &.trend-down {
-    background-color: #f0fdf4;
-    color: #22c55e;
+    background-color: rgba($green, 0.1);
+    color: $green;
   }
 }
 
@@ -233,7 +266,7 @@ const lastPoint = computed(() => {
   font-weight: 700;
   font-family: monospace, sans-serif; // font-mono
   letter-spacing: -1px;
-  color: #2C3E50;
+  color: $text-main;
   line-height: 1;
 }
 
@@ -246,12 +279,12 @@ const lastPoint = computed(() => {
   font-size: 28rpx;
   font-weight: 700;
 }
-.trend-up { color: #ef4444; } // text-red-500
-.trend-down { color: #22c55e; } // text-green-500
+.trend-up { color: $red; }
+.trend-down { color: $green; }
 
 .trend-period {
   font-size: 20rpx;
-  color: #9ca3af;
+  color: $text-muted;
   margin-top: 4rpx;
   display: block;
 }
@@ -260,12 +293,14 @@ const lastPoint = computed(() => {
 .chart-wrapper {
   position: relative;
   width: 100%;
-  height: 160rpx; // 对应 h-24 (24 * 4 = 96px ≈ 192rpx，这里微调为160)
+  height: 160rpx; // 对应 h-24
+  display: flex;
+  flex-direction: column;
 }
 
 .svg-graph {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 24rpx); // 留出时间轴空间
   overflow: visible;
 }
 
@@ -273,14 +308,12 @@ const lastPoint = computed(() => {
   display: flex;
   justify-content: space-between;
   margin-top: 8rpx;
+  height: 24rpx; // 固定时间轴高度
 }
 
 .axis-labels text {
   font-size: 18rpx;
-  color: #d1d5db;
+  color: $text-muted;
   font-weight: 500;
 }
 </style>
-
-
-
