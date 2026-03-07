@@ -10,22 +10,11 @@
 
     <!-- 3. 核心内容区：唯一的机构/卡包视图 -->
     <view class="content-view">
-      <InstitutionListView 
+      <AccountListView 
         :list="accountFlatList"
         @manage-click="handleManageAccount"
         @account-click="handleAccountClick"
         @add-account-click="handleAddAccount"
-        @add-asset-click="handleAddAssetWithAccount"
-      />
-    </view>
-
-    <!-- 4. 非账户资产区域 -->
-    <view class="content-view">
-      <NonAccountAssetList 
-        :non-account-assets="nonAccountAssets"
-        @add-non-account-click="handleAddNonAccountAsset"
-        @asset-click="handleNonAccountAssetClick"
-        @add-cash-asset-click="handleAddCashAsset"
       />
     </view>
   </view>
@@ -41,8 +30,8 @@ import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 
 // 引入核心组件
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
-import InstitutionListView from '../../components/assets/InstitutionListView.vue';
-import NonAccountAssetList from '../../components/assets/NonAccountAssetList.vue';
+import AccountListView from '../../components/assets/AccountListView.vue';
+
 
 const configStore = useConfigStore();
 
@@ -85,20 +74,7 @@ const accountFlatList = computed(() => {
     });
 });
 
-const nonAccountAssets = computed(() => {
-  // 筛选非账户资产（没有accountId的资产）
-  return allAssets.value
-    .filter(asset => !asset.accountId || asset.accountId === '')
-    .map(asset => {
-      return {
-        id: asset.id,
-        name: asset.assetName || '未命名资产',
-        category: asset.category || 'OTHER',
-        value: Number(asset.totalBalance) || 0,
-        description: asset.description || ''
-      };
-    });
-});
+
 
 const fetchAssets = async () => {
   try {
@@ -133,22 +109,17 @@ onLoad(() => {
     fetchAssets();
   });
   
-  // 监听非账户资产更新事件
-  uni.$on('refreshNonAccountAssets', () => {
-    fetchAssets();
-  });
+  
 });
 
 onUnmounted(() => {
   uni.$off('refreshAccountList');
-  uni.$off('refreshNonAccountAssets');
+
 });
 
 onShow(() => {
   loadData();
 });
-
-// --- 路由跳转逻辑 ---
 
 // 点击卡片右上角"小加号"，直接在该账户下新增资产
 const handleAddAssetWithAccount = (account) => {
@@ -172,20 +143,6 @@ const handleManageAccount = () => {
   uni.navigateTo({ url: `/pages/assets/manage-account` });
 };
 
-// 添加非账户资产
-const handleAddNonAccountAsset = () => {
-  uni.navigateTo({ url: `/pages/assets/add-non-account` });
-};
-
-// 查看非账户资产详情
-const handleNonAccountAssetClick = (asset) => {
-  uni.navigateTo({ url: `/pages/assets/item-detail?id=${asset.id}` });
-};
-
-// 添加现金资产
-const handleAddCashAsset = () => {
-  uni.navigateTo({ url: `/pages/assets/add-non-account?category=LIQUID&subCategory=CASH` });
-};
 </script>
 
 <style lang="scss" scoped>

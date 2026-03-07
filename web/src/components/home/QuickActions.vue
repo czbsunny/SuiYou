@@ -69,7 +69,6 @@ const handleAction = (action) => {
   padding: $spacing-md $spacing-sm; 
   border-radius: $radius-lg; 
   box-shadow: $shadow-card; 
-  margin-bottom: $spacing-lg;
 }
 
 .action-btn { 

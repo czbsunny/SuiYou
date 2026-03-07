@@ -4,7 +4,7 @@
     <!-- 1. 顶部标题区 (保持与机构视图一致) -->
     <view class="view-header">
       <text class="view-title">我的资产</text>
-      <!-- 🟢 占位对齐组：保持结构与 InstitutionListView 一致 -->
+      <!-- 🟢 占位对齐组：保持结构与 AccountListView 一致 -->
       <view class="action-group-placeholder">
         <!-- 保持空的，或者只显示一个简单的全局加号 -->
         <view class="icon-btn-ghost"></view>
@@ -155,7 +155,7 @@ const getSubCatName = (catCode, subCode) => {
   padding: 0 32rpx;
 }
 
-/* 🟢 视图标题样式 (与 InstitutionListView 保持高度一致) */
+/* 🟢 视图标题样式 (与 AccountListView 保持高度一致) */
 .view-header {
   display: flex;
   justify-content: space-between;

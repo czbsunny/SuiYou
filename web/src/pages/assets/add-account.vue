@@ -112,8 +112,6 @@
           <switch :checked="form.includeInNetWorth" color="#2D7A68" @change="onSwitchChange" />
         </view>
       </view>
-
-      <view class="bottom-spacer"></view>
     </scroll-view>
 
     <!-- 5. 底部固定按钮 -->
@@ -395,7 +393,7 @@ const handleSave = async () => {
 }
 
 .footer-action {
-  padding: 32rpx 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  padding: 32rpx 48rpx;
   .save-btn {
     height: 110rpx;
     background: $primary;
@@ -410,6 +408,4 @@ const handleSave = async () => {
     &:active { transform: scale(0.97); opacity: 0.9; }
   }
 }
-
-.bottom-spacer { height: 40rpx; }
 </style>

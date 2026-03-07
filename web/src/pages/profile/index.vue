@@ -29,10 +29,10 @@
             <view class="menu-icon report-icon">
               <text class="icon-text">📊</text>
             </view>
-            <text class="menu-text">财务体检报告</text>
+            <text class="menu-text">资产概览</text>
           </view>
           <view class="menu-item-right">
-            <text class="menu-desc">查看家庭财务健康状况</text>
+            <text class="menu-desc">查看资产详情</text>
             <image src="/static/images/arrow-right.png" class="arrow-icon" />
           </view>
         </view>
