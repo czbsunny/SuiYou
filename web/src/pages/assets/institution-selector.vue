@@ -46,7 +46,7 @@
       <view v-if="searchText" class="search-results">
         <view v-for="item in filteredList" :key="item.id" class="institution-item" @click="selectInstitution(item)">
           <view class="logo-wrapper">
-            <image :src="item.logoUrl || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
+            <image :src="formatImageUrl(item.logoUrl) || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
           </view>
           <text class="institution-name">{{ item.instName }}</text>
         </view>
@@ -63,7 +63,7 @@
           <view class="group-title">{{ group.indexLetter === '热' ? '热门机构' : group.indexLetter }}</view>
           <view v-for="item in group.data" :key="item.id" class="institution-item" @click="selectInstitution(item)">
             <view class="logo-wrapper">
-              <image :src="item.logoUrl || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
+              <image :src="formatImageUrl(item.logoUrl) || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
             </view>
             <text class="institution-name">{{ item.instName }}</text>
           </view>
@@ -99,11 +99,28 @@ const searchText = ref('');
 const scrollIntoId = ref('');
 const activeLetter = ref('热');
 const subCode = ref('');
+const categoryCode = ref('');
+const categoryName = ref('');
+const subCategoryName = ref('');
+const color = ref('');
 const groupOffsets = ref([]);
 const activeType = ref('ALL');
 
+// 格式化图片路径，确保路径正确
+const formatImageUrl = (url) => {
+  if (!url) return '';
+  // 移除路径开头的斜杠（如果有）
+  let formattedUrl = url.startsWith('/') ? url.substring(1) : url;
+  // 确保路径以 / 开头
+  return '/' + formattedUrl;
+};
+
 onLoad((options) => {
   if (options.subCode) subCode.value = options.subCode;
+  if (options.categoryCode) categoryCode.value = options.categoryCode;
+  if (options.categoryName) categoryName.value = options.categoryName;
+  if (options.subCategoryName) subCategoryName.value = options.subCategoryName;
+  if (options.color) color.value = options.color;
 });
 
 const institutionTypes = computed(() => {
@@ -192,8 +209,19 @@ const onListScroll = (e) => {
 onReady(() => { setTimeout(() => calculateOffsets(), 800); });
 
 const selectInstitution = (institution) => {
-  uni.$emit('institutionSelected', institution);
-  uni.navigateBack();
+  const params = {
+    categoryCode: categoryCode.value,
+    subCategoryCode: subCode.value,
+    instCode: institution.instCode
+  };
+  
+  const queryString = Object.entries(params)
+    .map(([key, value]) => `${key}=${encodeURIComponent(value || '')}`)
+    .join('&');
+  
+  uni.navigateTo({
+    url: `/pages/assets/add-account?${queryString}`
+  });
 };
 </script>
 

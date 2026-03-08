@@ -124,7 +124,10 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
 import { createAccount } from '@/services/accountService.js';
+
+const configStore = useConfigStore();
 
 const form = ref({
   instCode: '',
@@ -152,7 +155,21 @@ const contrastTextColor = computed(() => {
   return brightness > 185 ? '#1C1C1E' : '#FFFFFF';
 });
 
-onLoad(() => {
+onLoad((options) => {
+  if (options.instCode) {
+    form.value.instCode = options.instCode;
+    // 从本地缓存获取机构信息
+    const institution = configStore.institutionData.find(inst => inst.instCode === options.instCode);
+    if (institution) {
+      form.value.instName = institution.instName;
+      form.value.logoUrl = institution.logoUrl;
+      if (institution.themeColor) {
+        form.value.bgColor = institution.themeColor;
+        uni.vibrateShort();
+      }
+    }
+  }
+  
   uni.$on('institutionSelected', (inst) => {
     form.value.instCode = inst.instCode;
     form.value.instName = inst.instName;
@@ -169,7 +186,7 @@ onUnmounted(() => {
 });
 
 const goToSelectInstitution = () => {
-  uni.navigateTo({ url: '/pages/assets/institution-select' });
+  uni.navigateTo({ url: '/pages/assets/institution-selector' });
 };
 
 const onSwitchChange = (e) => {
@@ -308,7 +325,7 @@ const handleSave = async () => {
       justify-content: center;
       flex-shrink: 0;
       
-      .logo { width: 44rpx; height: 44rpx; }
+      .logo { width: 64rpx; height: 64rpx; border-radius: 18rpx;}
       i { font-size: 32rpx; }
     }
     

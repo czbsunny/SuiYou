@@ -119,7 +119,16 @@
       }
     },
     {
-      "path": "pages/assets/institution-select",
+      "path": "pages/assets/category-selector",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "选择类型",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/assets/institution-selector",
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black",

@@ -121,16 +121,9 @@ onShow(() => {
   loadData();
 });
 
-// 点击卡片右上角"小加号"，直接在该账户下新增资产
-const handleAddAssetWithAccount = (account) => {
-  uni.navigateTo({ 
-    url: `/pages/assets/add?accountId=${account.id}&instCode=${account.instCode}` 
-  });
-};
-
-// 创建新的账户容器（卡片）
+// 创建新的资产项
 const handleAddAccount = () => {
-  uni.navigateTo({ url: `/pages/assets/add-account` });
+  uni.navigateTo({ url: `/pages/assets/category-selector?mode=create` });
 };
 
 // 查看卡片内资产明细（账户详情）

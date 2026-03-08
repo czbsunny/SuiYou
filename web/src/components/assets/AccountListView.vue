@@ -165,7 +165,7 @@ const hexToRgba = (hex, opacity) => {
   border-radius: 18rpx;
   @include flex-center;
   flex-shrink: 0;
-  .logo-img { width: 72rpx; height: 72rpx; }
+  .logo-img { width: 72rpx; height: 72rpx; border-radius: 18rpx;}
 }
 
 .info-content {
