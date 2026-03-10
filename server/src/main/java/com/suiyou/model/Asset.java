@@ -48,6 +48,9 @@ public class Asset {
     @Column(nullable = false, columnDefinition = "bit(1) default 1")
     private Boolean includeInNetWorth = true;
     
+    @Column(name = "valuation_mode", nullable = false, columnDefinition = "varchar(20) default 'MANUAL'")
+    private String valuationMode = "MANUAL"; // MANUAL, CALCULATED
+    
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
 
