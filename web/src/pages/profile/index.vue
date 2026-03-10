@@ -1,215 +1,189 @@
 <template>
   <view class="profile-container">
-    <view class="content-wrapper animate-fade-in">
-      
-      <!-- 用户卡片 -->
-      <view 
-        class="user-card" 
-        hover-class="item-active"
-        @click="handleUserCardClick"
-      >
-        <view class="avatar-box">
-          <text class="avatar-text">{{ user?.username ? user.username[0].toUpperCase() : '👤' }}</text>
+    <!-- 用户信息卡片 -->
+    <view class="user-card" hover-class="hover-opacity" @click="handleAvatarClick">
+      <view class="user-avatar">
+        <!-- 如果没有头像，显示首字母，背景使用品牌色 -->
+        <text class="avatar-text">{{ userInfo.username ? Array.from(userInfo.username)[0].toUpperCase() : '' }}</text>
+        <text v-if="!userInfo.username" class="avatar-icon">👤</text>
+      </view>
+      <view class="user-info">
+        <view class="user-name">{{ userInfo.username || '点击登录' }}</view>
+      </view>
+      <view class="feature-arrow">
+        <image src="/static/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image> 
+      </view>
+    </view>
+    
+    <!-- 功能列表 (保留SuiYou功能) -->
+    <view class="menu-section" v-if="apiService.isLoggedIn()">
+      <view class="menu-item" hover-class="item-active" @click="handleReportClick">
+        <view class="menu-item-left">
+          <view class="menu-icon report-icon">
+            <text class="icon-text">📊</text>
+          </view>
+          <text class="menu-text">资产概览</text>
         </view>
-        
-        <view class="user-info">
-          <view class="user-name">{{ user?.username || '点击登录' }}</view>
-          <view class="user-desc">{{ user?.email || user?.phone || '每一笔个人资产都值得被珍视' }}</view>
-        </view>
-        
-        <view class="arrow-box">
+        <view class="menu-item-right">
+          <text class="menu-desc">查看资产详情</text>
           <image src="/static/images/arrow-right.png" class="arrow-icon" />
         </view>
       </view>
+    </view>
 
-      <!-- 功能列表 -->
-      <view class="menu-section" v-if="user">
-        <view class="menu-item" hover-class="item-active" @click="handleReportClick">
-          <view class="menu-item-left">
-            <view class="menu-icon report-icon">
-              <text class="icon-text">📊</text>
-            </view>
-            <text class="menu-text">资产概览</text>
-          </view>
-          <view class="menu-item-right">
-            <text class="menu-desc">查看资产详情</text>
-            <image src="/static/images/arrow-right.png" class="arrow-icon" />
-          </view>
-        </view>
-      </view>
-
-      <!-- 退出按钮 -->
-      <view v-if="user" class="logout-section">
-        <button 
-          class="logout-btn" 
-          hover-class="btn-hover-grey"
-          @click="handleLogout"
-        >
-          退出当前账号
-        </button>
+    <!-- 退出登录功能 -->
+    <view v-if="apiService.isLoggedIn()" class="logout-box">
+      <view class="logout-btn" @click="handleLogout" hover-class="hover-grey">
+        退出当前账号
       </view>
     </view>
   </view>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
-import { clearToken } from '../../services/apiService';
+<script>
+import apiService from '../../services/apiService.js';
 
-const user = ref(null);
-
-onShow(() => {
-    const uStr = uni.getStorageSync('userInfo');
-    if (uStr) {
-        try {
-            user.value = JSON.parse(uStr);
-        } catch (e) { console.error(e); }
-    } else {
-        user.value = null;
+export default {
+  data() {
+    return {
+      userInfo: {},
+      apiService: apiService
     }
-});
-
-const handleUserCardClick = () => {
-    if (!user.value) {
-        goToLogin();
-    }
-};
-
-const goToLogin = () => {
-    uni.navigateTo({ url: '/pages/auth/login' });
-};
-
-const handleReportClick = () => {
-    uni.navigateTo({ url: '/pages/report/index' });
-};
-
-const handleLogout = () => {
-    uni.showModal({
+  },
+  onShow() {
+    this.updateUserInfo();
+  },
+  methods: {
+    updateUserInfo() {
+      this.userInfo = uni.getStorageSync('userInfo') || {};
+    },
+    handleAvatarClick() {
+      if (!apiService.isLoggedIn()) {
+        uni.navigateTo({ url: '/pages/auth/login' });
+      } else {
+        uni.navigateTo({ url: '/pages/profile/edit' });
+      }
+    },
+    handleReportClick() {
+      uni.navigateTo({ url: '/pages/report/index' });
+    },
+    handleLogout() {
+      uni.showModal({
         title: '提示',
         content: '确定要退出登录吗？',
+        cancelText: '取消',
+        confirmText: '确定退出',
+        confirmColor: '#FF8F1F', // 使用品牌色
         success: (res) => {
-            if (res.confirm) {
-                user.value = null;
-                uni.removeStorageSync('userInfo');
-                clearToken();
-                uni.showToast({ title: '已退出', icon: 'none' });
-            }
+          if (res.confirm) {
+            uni.removeStorageSync('userInfo');
+            apiService.clearToken();
+            uni.reLaunch({ url: '/pages/home/index' }); // 改回 home/index
+          }
         }
-    });
-};
+      });
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .profile-container {
-  min-height: 100vh;
-  background-color: $bg-page; // 应用 #FAF9F6
   padding: $spacing-md $spacing-base;
-  box-sizing: border-box;
+  min-height: 100vh;
+  background-color: $bg-page;
 }
 
-.content-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-md;
-}
-
-/* 用户卡片：通过纯白与米白的微妙差异建立层级 */
 .user-card {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  padding: 56rpx 40rpx;
+  padding: 40rpx $spacing-md;
   background-color: $bg-white;
   border-radius: $radius-lg;
-  box-shadow: $shadow-card; // 极淡的暖咖色阴影
-  border: 1rpx solid rgba(42, 128, 108, 0.03); // 极细的墨绿描边
-  transition: all 0.25s ease;
-
-  &:active {
-    transform: scale(0.99);
-    background-color: #fcfcfc;
-  }
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.avatar-box {
+.user-avatar {
   width: 128rpx;
   height: 128rpx;
   border-radius: 50%;
-  background-color: #f1f4f2; // 极浅的绿灰，比主背景稍深
-  border: 4rpx solid $bg-white;
-  @include flex-center;
-  margin-right: 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(42, 128, 108, 0.1);
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+  box-shadow: 0 4rpx 12rpx rgba($primary, 0.3);
 }
 
 .avatar-text {
   font-size: 56rpx;
-  font-weight: bold;
-  color: $primary; // 墨绿色
+  color: $text-inverse;
+  font-weight: $fw-semibold;
   font-family: $font-family-money;
-}
-
-.user-info {
-  flex: 1;
 }
 
 .user-name {
   font-size: 40rpx;
-  font-weight: 600;
-  color: $text-main; // 深咖黑
-  margin-bottom: 12rpx;
+  font-weight: $fw-semibold;
+  color: $text-main;
+  margin-bottom: 8rpx;
 }
 
-.user-desc {
-  font-size: 24rpx;
-  color: $text-sub;
+.user-email {
+  font-size: 26rpx;
+  color: $text-placeholder;
   letter-spacing: 0.5rpx;
 }
 
-.arrow-box {
-  color: $text-muted;
-  .arrow-icon {
-    width: 32rpx;
-    height: 32rpx;
+.feature-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: auto;
+  padding-right: 10rpx;
+}
 
-    opacity: 0.3;
-  }
+.arrow-icon {
+  width: 32rpx;
+  height: 32rpx;
+  opacity: 0.3;
+}
+
+.logout-box {
+  margin-top: 60rpx;
+  padding: 0 $spacing-sm;
 }
 
 .logout-btn {
-  width: 100%;
   height: 100rpx;
   @include flex-center;
   background-color: $bg-white;
-  color: #d32f2f; // 使用稍微稳重的深红
-  font-weight: 500;
-  font-size: 30rpx;
+  color: $color-gain;
   border-radius: $radius-base;
-  border: 1rpx solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.01);
-
-  &::after { border: none; }
+  font-size: 30rpx;
+  font-weight: $fw-medium;
+  box-shadow: $shadow-card;
+  transition: all 0.2s ease;
 }
 
-.btn-hover-grey {
-  background-color: #f8f8f8 !important;
+.hover-opacity {
+  opacity: 0.9;
+  transform: scale(0.99);
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+.hover-grey {
+  background-color: $bg-subtle-hover !important;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 功能菜单 */
+/* 功能菜单 (来自 SuiYou) */
 .menu-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 24rpx;
 }
 
 .menu-item {
@@ -265,11 +239,5 @@ const handleLogout = () => {
 .menu-desc {
   font-size: 24rpx;
   color: $text-sub;
-}
-
-.arrow-icon {
-  width: 32rpx;
-  height: 32rpx;
-  opacity: 0.3;
 }
 </style>

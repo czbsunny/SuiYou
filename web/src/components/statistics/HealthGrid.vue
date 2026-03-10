@@ -9,17 +9,17 @@
        <view class="grid-item" v-for="(item, i) in items" :key="i">
           <view class="item-top">
             <view class="label-box">
-              <view class="dot" :class="item.colorClass"></view>
+              <view class="dot" :style="{ backgroundColor: item.color }"></view>
               <text class="label">{{ item.label }}</text>
             </view>
-            <view class="badge" :class="`bg-${item.color}-50 text-${item.color}-600`">{{ item.status }}</view>
+            <view class="badge" :style="{ backgroundColor: getBgColor(item.color), color: item.color }">{{ item.status }}</view>
           </view>
           <view class="item-val">
              <text class="val-num">{{ item.val }}</text>
              <text v-if="item.unit" class="val-unit">{{ item.unit }}</text>
           </view>
           <view class="progress-bg">
-             <view class="progress-fill" :class="`bg-${item.color}-500`" :style="{width: item.percent}"></view>
+             <view class="progress-fill" :style="{ width: item.percent, backgroundColor: item.color }"></view>
           </view>
        </view>
     </view>
@@ -27,11 +27,29 @@
 </template>
 
 <script setup>
+import { ASSET_CATEGORY_DISPLAY, ASSET_CATEGORY } from '../../configs/assets.js';
+
+// 获取各分类颜色配置
+const liquidColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LIQUID].color;
+const investColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.INVEST].color;
+const loanColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color;
+
+// 辅助函数：生成带透明度的背景色
+const getBgColor = (hexColor) => {
+  // 简单的hex转rgba，透明度0.1
+  let c = hexColor.substring(1).split('');
+  if(c.length === 3){
+      c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+  }
+  c = '0x' + c.join('');
+  return 'rgba(' + [(c>>16)&255, (c>>8)&255, c&255].join(',') + ',0.1)';
+}
+
 const items = [
-  { label: '结余率', status: '强', val: '45%', percent: '45%', color: 'green', colorClass: 'bg-green-500' },
-  { label: '安全垫', status: '足', val: '6.5', unit: '个月', percent: '65%', color: 'yellow', colorClass: 'bg-yellow-500' },
-  { label: '负债率', status: '良', val: '32%', percent: '32%', color: 'blue', colorClass: 'bg-blue-500' },
-  { label: '钱生钱', status: '优', val: '60%', percent: '60%', color: 'purple', colorClass: 'bg-purple-500' },
+  { label: '结余率', status: '强', val: '45%', percent: '45%', color: '#22c55e' }, // 保持原有绿色
+  { label: '安全垫', status: '足', val: '6.5', unit: '个月', percent: '65%', color: liquidColor }, // 流动资产颜色
+  { label: '负债率', status: '良', val: '32%', percent: '32%', color: loanColor }, // 负债颜色
+  { label: '钱生钱', status: '优', val: '60%', percent: '60%', color: investColor }, // 投资资产颜色
 ]
 </script>
 
@@ -53,20 +71,6 @@ const items = [
 .dot { width: 10px; height: 10px; border-radius: 50%; }
 .label { font-size: 12px; color: #6b7280; font-weight: 500; }
 .badge { font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
-
-/* 颜色工具类模拟 (SCSS) */
-.bg-green-500 { background-color: #22c55e; }
-.bg-green-50 { background-color: #f0fdf4; }
-.text-green-600 { color: #16a34a; }
-.bg-yellow-500 { background-color: #eab308; }
-.bg-yellow-50 { background-color: #fefce8; }
-.text-yellow-600 { color: #ca8a04; }
-.bg-blue-500 { background-color: #3b82f6; }
-.bg-blue-50 { background-color: #eff6ff; }
-.text-blue-600 { color: #2563eb; }
-.bg-purple-500 { background-color: #a855f7; }
-.bg-purple-50 { background-color: #faf5ff; }
-.text-purple-600 { color: #9333ea; }
 
 .item-val { display: flex; align-items: flex-end; gap: 4px; margin-bottom: 8px; }
 .val-num { font-size: 16px; font-weight: 700; color: #2c3e50; }

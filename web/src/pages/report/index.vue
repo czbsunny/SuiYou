@@ -1,21 +1,10 @@
 <template>
   <view class="report-container">
-    <!-- 页面标题 -->
-    <view class="page-header">
-      <text class="page-title">家庭财务体检报告</text>
-      <text class="page-subtitle">更新于今日</text>
-    </view>
-
     <!-- 财务体检指标 -->
     <HealthGrid />
 
     <!-- 资产结构分析 -->
-    <view class="structure-section">
-      <view class="section-header">
-        <text class="section-title">资产结构分析</text>
-      </view>
-      <AssetStructure :isPrivacyOn="isPrivacyOn" />
-    </view>
+    <AssetStructure :isPrivacyOn="isPrivacyOn" />
 
     <!-- 底部提示 -->
     <view class="footer-tip">
@@ -36,43 +25,13 @@ const isPrivacyOn = ref(false);
 .report-container {
   min-height: 100vh;
   background-color: #FAF9F6;
-  padding: 20px;
   box-sizing: border-box;
-}
-
-/* 页面标题 */
-.page-header {
-  padding: 20px 0;
-  text-align: center;
-}
-
-.page-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #2C3E50;
-  display: block;
-  margin-bottom: 8px;
+  padding-top: 20px;
 }
 
 .page-subtitle {
   font-size: 14px;
   color: #9ca3af;
-}
-
-/* 通用区块样式 */
-.structure-section {
-  margin-bottom: 24px;
-}
-
-.section-header {
-  padding: 0 8px;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #2C3E50;
 }
 
 /* 底部提示 */

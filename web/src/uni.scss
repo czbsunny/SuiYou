@@ -212,3 +212,13 @@ $font-family-base: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-se
   -webkit-font-feature-settings: "tnum";
   font-feature-settings: "tnum";
 }
+
+/* 交互状态映射 */
+$btn-disabled-bg: $gray-100;
+$btn-disabled-text: $gray-300;
+
+/* 字重映射 */
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 700;
