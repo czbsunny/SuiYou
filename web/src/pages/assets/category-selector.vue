@@ -167,14 +167,15 @@ onMounted(() => {
   .block-icon-box {
     width: 56rpx;
     height: 56rpx;
-    border-radius: 14rpx;
+    border-radius: 8rpx;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .block-icon {
-      width: 32rpx;
-      height: 32rpx;
+      width: 56rpx;
+      height: 56rpx;
+      border-radius: 8rpx;
     }
   }
 
@@ -210,7 +211,7 @@ onMounted(() => {
   .sub-icon {
     width: 56rpx;
     height: 56rpx;
-    border-radius: 14rpx;
+    border-radius: 8rpx;
   }
 
   .sub-icon-placeholder {

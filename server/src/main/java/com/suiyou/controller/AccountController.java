@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,10 +40,7 @@ public class AccountController {
             Account createdAccount = accountService.createAccount(createAccountDTO, userId);
             
             // 返回创建成功的响应
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "id", createdAccount.getId(),
-                "message", "资产添加成功"
-            ));
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
         } catch (Exception e) {
             // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
@@ -53,13 +51,18 @@ public class AccountController {
     }
     
     @GetMapping
-    public ResponseEntity<?> getAccounts() {
+    public ResponseEntity<?> getAccounts(@RequestParam(required = false) String institution) {
         try {
             // 从Security上下文中获取用户ID
             Long userId = getCurrentUserId();
             
             // 调用服务获取当前用户的所有账户
-            List<Account> accounts = accountService.getAccountsByUserId(userId);
+            List<Account> accounts;
+            if (institution != null && !institution.isEmpty()) {
+                accounts = accountService.getAccountsByUserIdAndInstitution(userId, institution);
+            } else {
+                accounts = accountService.getAccountsByUserId(userId);
+            }
             
             // 返回成功响应
             return ResponseEntity.ok(Map.of(

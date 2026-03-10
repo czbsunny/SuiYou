@@ -3,7 +3,7 @@
     "categoryCode": "LIQUID",
     "name": "流动资产",
     "groupType": "ASSET",
-    "iconUrl": "/static/assets/liquid-gray.png",
+    "iconUrl": "/static/assets/liquid.png",
     "sortOrder": 10,
     "color": "#2A806C",
     "children": [
@@ -19,7 +19,7 @@
     "categoryCode": "INVEST",
     "name": "投资理财",
     "groupType": "ASSET",
-    "iconUrl": "/static/assets/invest-gray.png",
+    "iconUrl": "/static/assets/invest.png",
     "sortOrder": 20,
     "color": "#D97706",
     "children": [
@@ -41,7 +41,7 @@
     "categoryCode": "FIXED",
     "name": "固定资产",
     "groupType": "ASSET",
-    "iconUrl": "/static/assets/fixed-gray.png",
+    "iconUrl": "/static/assets/fixed.png",
     "sortOrder": 30,
     "color": "#4F46E5",
     "children": [
@@ -57,7 +57,7 @@
     "categoryCode": "OTHER_ASSET",
     "name": "其他资产",
     "groupType": "ASSET",
-    "iconUrl": "/static/assets/receipt-gray.png",
+    "iconUrl": "/static/assets/receipt.png",
     "sortOrder": 40, 
     "color": "#0891B2", 
     "children": [
@@ -74,7 +74,7 @@
     "categoryCode": "LOAN",
     "name": "负债管理",
     "groupType": "LIABILITY",
-    "iconUrl": "/static/assets/debt-gray.png",
+    "iconUrl": "/static/assets/debt.png",
     "sortOrder": 50,
     "color": "#374151",
     "children": [

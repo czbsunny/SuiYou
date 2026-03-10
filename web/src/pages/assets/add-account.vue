@@ -52,6 +52,33 @@
 
     <!-- 2. 配置表单区 (保持原样) -->
     <scroll-view scroll-y class="form-scroll">
+      
+      <!-- 0. 已有账户选择 -->
+      <view v-if="existingAccounts.length > 0" class="existing-accounts-section">
+        <view class="section-title">选择已有账户</view>
+        <scroll-view scroll-x class="accounts-scroll" show-scrollbar="false">
+          <view class="accounts-row">
+            <view 
+              v-for="acc in existingAccounts" 
+              :key="acc.id" 
+              class="account-chip"
+              :class="{ 'active': selectedAccountId === acc.id }"
+              @tap="selectExistingAccount(acc)"
+              :style="{ '--chip-color': acc.themeColor || '#1F2937' }"
+            >
+              <view class="chip-dot"></view>
+              <view class="chip-info">
+                <text class="chip-name">{{ acc.accountName }}</text>
+                <text class="chip-id">**** {{ acc.institutionIdentifier }}</text>
+              </view>
+              <view v-if="selectedAccountId === acc.id" class="chip-check">
+                <uni-icons type="checkmarkempty" size="12" color="#fff"></uni-icons>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+
       <view class="form-group">
         <view class="form-item" @tap="goToSelectInstitution">
           <text class="item-label">账户归属</text>
@@ -122,10 +149,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
-import { createAccount } from '@/services/accountService.js';
+import { createAccount, getAccounts } from '@/services/accountService.js';
 
 const configStore = useConfigStore();
 
@@ -136,8 +163,12 @@ const form = ref({
   accountName: '',
   identifier: '',
   bgColor: '#1F2937', 
-  includeInNetWorth: true
+  includeInNetWorth: true,
+  categoryCode: ''
 });
+
+const existingAccounts = ref([]);
+const selectedAccountId = ref(null);
 
 const presetColors = [
   '#1F2937', '#2D7A68', '#E72D2D', '#003B8F', '#1677FF', 
@@ -155,7 +186,21 @@ const contrastTextColor = computed(() => {
   return brightness > 185 ? '#1C1C1E' : '#FFFFFF';
 });
 
+const fetchExistingAccounts = async () => {
+  if (!form.value.instCode) return;
+  try {
+    const accounts = await getAccounts({ institution: form.value.instCode });
+    existingAccounts.value = Array.isArray(accounts) ? accounts : (accounts.accounts || []);
+  } catch (e) {
+    console.error('Fetch accounts failed', e);
+  }
+};
+
 onLoad((options) => {
+  if (options.categoryCode) {
+    form.value.categoryCode = options.categoryCode;
+  }
+
   if (options.instCode) {
     form.value.instCode = options.instCode;
     // 从本地缓存获取机构信息
@@ -165,9 +210,9 @@ onLoad((options) => {
       form.value.logoUrl = institution.logoUrl;
       if (institution.themeColor) {
         form.value.bgColor = institution.themeColor;
-        uni.vibrateShort();
       }
     }
+    fetchExistingAccounts();
   }
   
   uni.$on('institutionSelected', (inst) => {
@@ -176,9 +221,33 @@ onLoad((options) => {
     form.value.logoUrl = inst.logoUrl;
     if (inst.themeColor) {
       form.value.bgColor = inst.themeColor;
-      uni.vibrateShort();
     }
+    // 重置选择
+    selectedAccountId.value = null;
+    form.value.identifier = '';
+    form.value.accountName = '';
+    
+    fetchExistingAccounts();
   });
+});
+
+const selectExistingAccount = (account) => {
+  selectedAccountId.value = account.id;
+  form.value.identifier = account.institutionIdentifier;
+  form.value.accountName = account.accountName;
+  form.value.bgColor = account.themeColor || form.value.bgColor;
+  form.value.includeInNetWorth = account.includeInNetWorth;
+  uni.vibrateShort();
+};
+
+// 监听标识码变化，如果用户修改了标识码，则视为新建
+watch(() => form.value.identifier, (newVal) => {
+  if (selectedAccountId.value) {
+    const account = existingAccounts.value.find(a => a.id === selectedAccountId.value);
+    if (account && account.institutionIdentifier !== newVal) {
+      selectedAccountId.value = null;
+    }
+  }
 });
 
 onUnmounted(() => {
@@ -198,6 +267,32 @@ const handleSave = async () => {
     uni.showToast({ title: '请选择机构', icon: 'none' });
     return;
   }
+  
+  // 如果选择了现有账户，直接返回成功
+  if (selectedAccountId.value) {
+     uni.showToast({ title: '已选择账户', icon: 'success' });
+     setTimeout(() => {
+        const pages = getCurrentPages();
+        if (pages.length > 1) {
+          const prevPage = pages[pages.length - 2];
+          if (prevPage && typeof prevPage.onAccountSelected === 'function') {
+             prevPage.onAccountSelected({
+                 id: selectedAccountId.value,
+                 institution: form.value.instCode,
+                 institutionIdentifier: form.value.identifier,
+                 accountName: form.value.accountName,
+                 categoryCode: form.value.categoryCode
+             });
+           } else if (prevPage && typeof prevPage.refreshData === 'function') {
+             // 兼容旧逻辑
+             prevPage.refreshData();
+          }
+        }
+        uni.navigateBack();
+      }, 1000);
+      return;
+  }
+
   if (!form.value.accountName) {
     uni.showToast({ title: '请输入账户别名', icon: 'none' });
     return;
@@ -234,12 +329,19 @@ const handleSave = async () => {
         if (pages.length > 1) {
           const prevPage = pages[pages.length - 2];
           // 通知上一个页面刷新数据
-          if (prevPage && typeof prevPage.refreshData === 'function') {
+          if (prevPage && typeof prevPage.onAccountSelected === 'function') {
+             // 合并 categoryCode
+             const accountData = {
+               ...response.data,
+               categoryCode: form.value.categoryCode
+             };
+             prevPage.onAccountSelected(accountData); 
+          } else if (prevPage && typeof prevPage.refreshData === 'function') {
             prevPage.refreshData();
           }
         }
         uni.navigateBack();
-      }, 3000);
+      }, 1500);
     } else {
       // 状态码不是201，创建失败
       const errorMessage = response?.data?.message || response?.message || '未知错误';
@@ -423,6 +525,89 @@ const handleSave = async () => {
     font-weight: 700;
     box-shadow: 0 20rpx 40rpx rgba(0,0,0,0.1);
     &:active { transform: scale(0.97); opacity: 0.9; }
+  }
+}
+
+.existing-accounts-section {
+  padding: 0 32rpx 32rpx;
+  
+  .section-title {
+    font-size: 28rpx;
+    font-weight: 700;
+    color: $text-muted;
+    text-transform: uppercase;
+    margin-bottom: 24rpx;
+    letter-spacing: 2rpx;
+  }
+  
+  .accounts-scroll {
+    white-space: nowrap;
+    width: 100%;
+    
+    .accounts-row {
+      display: flex;
+      gap: 20rpx;
+      padding-bottom: 8rpx;
+      padding-right: 32rpx;
+    }
+    
+    .account-chip {
+      background: #fff;
+      border: 2rpx solid $border-color;
+      border-radius: 20rpx;
+      padding: 20rpx 24rpx;
+      display: flex;
+      align-items: center;
+      gap: 16rpx;
+      min-width: 240rpx;
+      position: relative;
+      transition: all 0.2s;
+      
+      &.active {
+        border-color: var(--chip-color);
+        box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.08);
+        transform: translateY(-2rpx);
+        
+        .chip-check {
+          position: absolute;
+          top: -10rpx;
+          right: -10rpx;
+          width: 36rpx;
+          height: 36rpx;
+          background: var(--chip-color);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 4rpx solid #fff;
+        }
+      }
+      
+      .chip-dot {
+        width: 16rpx;
+        height: 16rpx;
+        border-radius: 50%;
+        background: var(--chip-color);
+      }
+      
+      .chip-info {
+        display: flex;
+        flex-direction: column;
+        
+        .chip-name {
+          font-size: 26rpx;
+          font-weight: 600;
+          color: $text-main;
+          line-height: 1.2;
+        }
+        
+        .chip-id {
+          font-size: 22rpx;
+          color: $text-muted;
+          margin-top: 4rpx;
+        }
+      }
+    }
   }
 }
 </style>

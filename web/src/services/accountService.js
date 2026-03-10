@@ -89,12 +89,14 @@ export const batchUpdateAccounts = async (syncAccounts) => {
 
 /**
  * 6. 获取所有账户
+ * @param {Object} params - 查询参数，如 { institution: 'alipay' }
  * @returns {Promise<Array>} 账户列表
  */
-export const getAccounts = async () => {
+export const getAccounts = async (params = {}) => {
   try {
-    const res = await api.get(ACCOUNT_API_BASE);
-    return res.data;
+    const res = await api.get(ACCOUNT_API_BASE, params);
+    // 兼容后端返回格式 { accounts: [], count: 0 } 或直接 []
+    return res.data.accounts || res.data;
   } catch (error) {
     throw error;
   }

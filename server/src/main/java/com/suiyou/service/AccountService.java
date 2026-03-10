@@ -35,6 +35,14 @@ public interface AccountService {
      * @return 资产账户列表
      */
     List<Account> getAccountsByUserId(Long userId);
+    
+    /**
+     * 获取当前用户指定机构的所有资产账户
+     * @param userId 用户ID
+     * @param institution 机构代码
+     * @return 资产账户列表
+     */
+    List<Account> getAccountsByUserIdAndInstitution(Long userId, String institution);
 
     /**
      * 根据机构和机构标识获取账户

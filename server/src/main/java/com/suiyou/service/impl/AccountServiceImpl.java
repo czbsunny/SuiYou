@@ -104,6 +104,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public List<Account> getAccountsByUserIdAndInstitution(Long userId, String institution) {
+        return accountRepository.findByOwnerIdAndInstitutionAndDeletedFalse(userId, institution);
+    }
+
+    @Override
     public Account getAccountByInstitutionAndIdentifier(String institution, String institutionIdentifier) {
         return accountRepository.findByInstitutionAndInstitutionIdentifierAndDeletedFalse(institution, institutionIdentifier);
     }
