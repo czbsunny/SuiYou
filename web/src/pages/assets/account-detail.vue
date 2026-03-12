@@ -136,7 +136,7 @@ const handleAccountAction = (type) => {
 
 const handleSettings = () => {
   uni.navigateTo({
-    url: `/pages/assets/add-account?id=${accountId.value}&mode=edit`
+    url: `/pages/assets/detail?id=${accountId.value}&mode=edit`
   });
 };
 </script>
