@@ -3,7 +3,7 @@ package com.suiyou.controller;
 import com.suiyou.dto.account.AccountReorderDTO;
 import jakarta.validation.Valid;
 import com.suiyou.dto.account.UpdateAccountDTO;
-import com.suiyou.model.Account;
+import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class AccountController {
             Long userId = getCurrentUserId();
             
             // 调用服务获取当前用户的所有账户
-            List<Account> accounts;
+            List<AccountRespDTO> accounts;
             if (institution != null && !institution.isEmpty()) {
                 accounts = accountService.getAccountsByUserIdAndInstitution(userId, institution);
             } else {
@@ -79,7 +79,7 @@ public class AccountController {
             Long userId = getCurrentUserId();
             
             // 调用服务修改账户
-            Account updatedAccount = accountService.updateAccount(updateAccountDTO, userId);
+            AccountRespDTO updatedAccount = accountService.updateAccount(updateAccountDTO, userId);
             
             // 返回修改成功的响应
             return ResponseEntity.ok(Map.of(

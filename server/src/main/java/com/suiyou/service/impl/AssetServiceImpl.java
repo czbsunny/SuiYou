@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Objects;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -33,13 +32,14 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public AssetRespDTO createAsset(CreateAssetDTO assetDTO, Long userId) {
-        Account account = accountService.getAccountByInstitutionAndIdentifier(assetDTO.getAccountDTO().getInstitution(), assetDTO.getAccountDTO().getInstitutionIdentifier());
+        Account account = accountService.getAccountByInstitutionAndIdentifier(userId, assetDTO.getAccountDTO().getInstitution(), assetDTO.getAccountDTO().getInstitutionIdentifier());
         if (account == null) {
             account = accountService.createAccount(assetDTO.getAccountDTO(), userId);
             if (account == null) {
                 throw new IllegalArgumentException("创建资产账户失败");
             }
         }
+        // 创建Account实体用于关联
         Asset asset = new Asset();
         asset.setAccount(account);
         asset.setOwnerId(userId);

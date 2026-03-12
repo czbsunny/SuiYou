@@ -2,29 +2,8 @@
 import api from './apiService';
 
 const ACCOUNT_API_BASE = '/api/accounts';
-
 /**
- * 1. 创建账户
- * @param {Object} data - 包含机构代码、标识码、名称、是否计入净值
- */
-export const createAccount = async (data) => {
-  const payload = {
-    institution: data.instCode,              // 对应 DTO 的 institution
-    institutionIdentifier: data.identifier,  // 对应 DTO 的 institutionIdentifier
-    accountName: data.accountName,           // 对应 DTO 的 accountName
-    includeInNetWorth: data.includeInNetWorth, // 对应 DTO 的 includeInNetWorth
-    themeColor: data.themeColor, // 对应 DTO 的 themeColor
-  };
-
-  try {
-    return await api.post(ACCOUNT_API_BASE, payload);
-  } catch (error) {
-    throw error;
-  }
-};
-
-/**
- * 2. 修改账户信息
+ * 1. 修改账户信息
  * @param {Object} data - 更新的字段
  */
 export const updateAccount = async (data) => {
@@ -46,7 +25,7 @@ export const updateAccount = async (data) => {
 };
 
 /**
- * 3. 更新账户状态
+ * 2. 更新账户状态
  * @param {String|Number} id 账户ID
  * @param {Number} status 状态值 (1: 活跃, 0: 归档)
  */
@@ -60,7 +39,7 @@ export const updateAccountStatus = async (id, status) => {
 };
 
 /**
- * 4. 删除账户
+ * 3. 删除账户
  * @param {String|Number} id 
  */
 export const deleteAccount = async (id) => {
@@ -73,7 +52,7 @@ export const deleteAccount = async (id) => {
 };
 
 /**
- * 5. 同步账户
+ * 4. 同步账户
  * @param {String|Number} id 账户ID
  * @param {Number} status 状态值 (1: 活跃, 0: 归档)
  */
@@ -88,7 +67,7 @@ export const batchUpdateAccounts = async (syncAccounts) => {
 
 
 /**
- * 6. 获取所有账户
+ * 5. 获取所有账户
  * @param {Object} params - 查询参数，如 { institution: 'alipay' }
  * @returns {Promise<Array>} 账户列表
  */
@@ -103,7 +82,6 @@ export const getAccounts = async (params = {}) => {
 };
 
 export default {
-  createAccount,
   updateAccount,
   updateAccountStatus,
   deleteAccount,

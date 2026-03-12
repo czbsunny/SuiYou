@@ -96,7 +96,7 @@ const selectCategory = (item, parentCategory = null) => {
   if (needSelectInstitution(item.categoryCode)) {
     // 需要选择机构，跳转到机构选择页面
     uni.navigateTo({
-      url: `/pages/assets/institution-selector?subCode=${item.categoryCode}&categoryCode=${parent.categoryCode}&categoryName=${encodeURIComponent(parent.name)}&subCategoryName=${encodeURIComponent(item.name)}&color=${parent.color}`
+      url: `/pages/assets/institution-selector?subCategoryCode=${item.categoryCode}&categoryCode=${parent.categoryCode}`
     });
   } else {
     // 不需要选择机构，直接跳转到添加账户页面
@@ -119,8 +119,9 @@ const navigateToAddAccount = (institution = null) => {
     .map(([key, value]) => `${key}=${encodeURIComponent(value || '')}`)
     .join('&');
   
+  console.log('跳转参数:', queryString);
   uni.redirectTo({
-    url: `/pages/assets/add-account?${queryString}`
+    url: `/pages/assets/add?${queryString}`
   });
 };
 

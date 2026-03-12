@@ -78,7 +78,7 @@
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "添加资产账户",
+        "navigationBarTitleText": "添加资产",
         "backgroundColor": "#F9F8F4"
       }
     },
@@ -95,24 +95,6 @@
       "path": "pages/assets/account-detail",
       "style": {
         "navigationBarTitleText": "账户详情",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
-      "path": "pages/assets/add-account",
-      "style": {
-        "navigationBarTitleText": "添加账户",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
-      "path": "pages/assets/add-non-account",
-      "style": {
-        "navigationBarTitleText": "添加资产",
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black",
         "backgroundColor": "#F9F8F4"

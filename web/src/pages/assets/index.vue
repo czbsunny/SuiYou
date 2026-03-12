@@ -14,7 +14,7 @@
         :list="accountFlatList"
         @manage-click="handleManageAccount"
         @account-click="handleAccountClick"
-        @add-account-click="handleAddAccount"
+        @add-asset-click="handleAddAsset"
       />
     </view>
   </view>
@@ -24,7 +24,6 @@
 import { ref, computed, onUnmounted } from 'vue';
 import { onShow, onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
-import { getAssets } from '../../services/assetService.js';
 import { getAccounts } from '../../services/accountService.js';
 import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 
@@ -35,12 +34,16 @@ import AccountListView from '../../components/assets/AccountListView.vue';
 
 const configStore = useConfigStore();
 
-// === 核心状态 ===
-const allAssets = ref([]);   // 逻辑资产原子项 (如：某卡下的余额、某理财)
-const allAccounts = ref([]); // 物理账户容器 (如：工行卡、支付宝账号)
+const allAssets = ref([]);
+const allAccounts = ref([]);
 const loading = ref(true);
+const dataLoaded = ref(false);
 
 const accountFlatList = computed(() => {
+  if (!dataLoaded.value) {
+    return [];
+  }
+
   const instMap = configStore.institutionMap;
 
   return allAccounts.value
@@ -48,7 +51,7 @@ const accountFlatList = computed(() => {
     .map(acc => {
       const instConfig = instMap[acc.institution] || {};
       const instType = instConfig.instType || 'OTHER';
-      const subItems = allAssets.value.filter(asset => String(asset.accountId) === String(acc.id));
+      const subItems = acc.assets || [];
 
       return {
         id: acc.id,
@@ -60,7 +63,6 @@ const accountFlatList = computed(() => {
         identifier: acc.institutionIdentifier,
         logoUrl: instConfig.logoUrl || '/static/icons/default-bank.png',
         
-        // 视觉与金额逻辑
         bgColor: acc.themeColor || ASSET_INSTITUTION_DISPLAY[instType]?.color || '#4b5563',
         totalBalance: acc.totalBalance || subItems.reduce((sum, i) => sum + (Number(i.totalBalance) || 0), 0), 
         itemCount: subItems.length,
@@ -74,42 +76,37 @@ const accountFlatList = computed(() => {
     });
 });
 
-
-
-const fetchAssets = async () => {
-  try {
-    const res = await getAssets();
-    allAssets.value = res.assets || [];
-  } catch (err) {
-    console.error('加载资产项失败:', err);
-  }
-};
-
 const fetchAccounts = async () => {
   try {
     const res = await getAccounts();
     allAccounts.value = res.accounts || [];
+    
+    const assets = [];
+    allAccounts.value.forEach(acc => {
+      if (acc.assets && acc.assets.length > 0) {
+        assets.push(...acc.assets);
+      }
+    });
+    allAssets.value = assets;
+    
+    dataLoaded.value = true;
   } catch (err) {
     console.error('加载账户失败:', err);
+    dataLoaded.value = true;
   }
 };
 
 const loadData = async () => {
   loading.value = true;
-  // 并行请求，减少白屏时间
-  await Promise.all([fetchAssets(), fetchAccounts()]);
+  await fetchAccounts();
   loading.value = false;
 };
 
 // --- 生命周期与全局监听 ---
 onLoad(() => {
-  // 监听跨页面刷新事件（如添加账户后返回）
   uni.$on('refreshAccountList', () => {
     fetchAccounts();
-    fetchAssets();
   });
-  
-  
 });
 
 onUnmounted(() => {
@@ -122,7 +119,7 @@ onShow(() => {
 });
 
 // 创建新的资产项
-const handleAddAccount = () => {
+const handleAddAsset = () => {
   uni.navigateTo({ url: `/pages/assets/category-selector?mode=create` });
 };
 

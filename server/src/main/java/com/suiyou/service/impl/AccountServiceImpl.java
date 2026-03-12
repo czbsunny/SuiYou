@@ -1,11 +1,14 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
-
+import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.model.Account;
+import com.suiyou.model.Asset;
 import com.suiyou.model.Family;
 import com.suiyou.repository.AccountRepository;
+import com.suiyou.repository.AssetRepository;
 import com.suiyou.service.FamilyService;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -22,16 +26,20 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
+    private AssetRepository assetRepository;
+
+    @Autowired
     private FamilyService familyService;
     
     /**
      * 检查机构和机构标识符是否已被未删除的账户使用
+     * @param userId 用户ID
      * @param institution 机构
      * @param institutionIdentifier 机构标识符
      * @throws IllegalArgumentException 如果已存在相同机构和标识符的未删除账户
      */
-    private void checkAccountUniqueness(String institution, String institutionIdentifier) {
-        Account existingAccount = accountRepository.findByInstitutionAndInstitutionIdentifierAndDeletedFalse(institution, institutionIdentifier);
+    private void checkAccountUniqueness(Long userId, String institution, String institutionIdentifier) {
+        Account existingAccount = accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(userId, institution, institutionIdentifier);
         if (existingAccount != null) {
             throw new IllegalArgumentException("该机构标识已存在账户");
         }
@@ -41,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public Account createAccount(CreateAccountDTO createAccountDTO, Long userId) {
         // 检查账户唯一性
-        checkAccountUniqueness(createAccountDTO.getInstitution(), createAccountDTO.getInstitutionIdentifier());
+        checkAccountUniqueness(userId, createAccountDTO.getInstitution(), createAccountDTO.getInstitutionIdentifier());
         
         // 创建Account实体
         Account account = new Account();
@@ -70,36 +78,55 @@ public class AccountServiceImpl implements AccountService {
         // 保存账户
         return accountRepository.save(account);
     }
-    
+
     @Override
-    public List<Account> getAccountsByUserId(Long userId) {
-        // 查询所有未删除的账户（包括活跃和归档状态的）
-        return accountRepository.findByOwnerIdAndDeletedFalse(userId);
+    public Account getAccountByInstitutionAndIdentifier(Long userId, String institution, String institutionIdentifier) {
+        return accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(userId, institution, institutionIdentifier);
     }
 
     @Override
-    public List<Account> getAccountsByUserIdAndInstitution(Long userId, String institution) {
-        return accountRepository.findByOwnerIdAndInstitutionAndDeletedFalse(userId, institution);
+    public List<AccountRespDTO> getAccountsByUserId(Long userId) {
+        List<Account> accounts = accountRepository.findByOwnerIdAndDeletedFalse(userId);
+        return accounts.stream()
+                .map(account -> {
+                    AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    dto.setAssets(assets.stream()
+                            .map(AssetRespDTO::fromEntity)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Account getAccountByInstitutionAndIdentifier(String institution, String institutionIdentifier) {
-        return accountRepository.findByInstitutionAndInstitutionIdentifierAndDeletedFalse(institution, institutionIdentifier);
+    public List<AccountRespDTO> getAccountsByUserIdAndInstitution(Long userId, String institution) {
+        List<Account> accounts = accountRepository.findByOwnerIdAndInstitutionAndDeletedFalse(userId, institution);
+        return accounts.stream()
+                .map(account -> {
+                    AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    dto.setAssets(assets.stream()
+                            .map(AssetRespDTO::fromEntity)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Account getAccountById(Long id) {
+    public AccountRespDTO getAccountById(Long id) {
         Account account = accountRepository.findById(id).orElse(null);
         // 如果账户存在且已删除，则返回null
         if (account != null && account.getDeleted()) {
             return null;
         }
-        return account;
+        return account != null ? AccountRespDTO.fromEntity(account) : null;
     }
 
     @Override
     @Transactional
-    public Account updateAccount(UpdateAccountDTO updateAccountDTO, Long userId) {
+    public AccountRespDTO updateAccount(UpdateAccountDTO updateAccountDTO, Long userId) {
         // 根据ID获取账户
         Account account = accountRepository.findById(updateAccountDTO.getAccountId()).orElse(null);
         if (account == null) {
@@ -122,7 +149,7 @@ public class AccountServiceImpl implements AccountService {
         }
         if (updateAccountDTO.getInstitutionIdentifier() != null) {
             // 检查新的机构识别码是否已被其他账户使用
-            Account existingAccount = accountRepository.findByInstitutionAndInstitutionIdentifier(account.getInstitution(), updateAccountDTO.getInstitutionIdentifier());
+            Account existingAccount = accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifier(userId, account.getInstitution(), updateAccountDTO.getInstitutionIdentifier());
             if (existingAccount != null && !existingAccount.getId().equals(updateAccountDTO.getAccountId())) {
                 throw new IllegalArgumentException("该机构识别码已被其他账户使用");
             }
@@ -136,7 +163,8 @@ public class AccountServiceImpl implements AccountService {
         }
         
         // 保存并返回更新后的账户
-        return accountRepository.save(account);
+        Account updatedAccount = accountRepository.save(account);
+        return AccountRespDTO.fromEntity(updatedAccount);
     }
 
     @Override
