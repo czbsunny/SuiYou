@@ -45,7 +45,7 @@ const accountFlatList = computed(() => {
   }
 
   const instMap = configStore.institutionMap;
-
+  console.log('[DEBUG] accountFlatList 计算 - instMap:', allAccounts.value);
   return allAccounts.value
     .filter(acc => acc.status === 1)
     .map(acc => {

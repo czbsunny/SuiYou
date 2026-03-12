@@ -91,10 +91,12 @@ const loadAvailableAccounts = async () => {
   if (!instCode.value) return;
   
   try {
-    const accounts = await getAccounts({ institution: instCode.value });
-    availableAccounts.value = accounts.filter(acc => {
-      acc.assets.forEach(asset => { acc.assetTypes.push(asset.subCategory);});
-      console.log(acc.assetTypes, subCategoryCode.value);
+    const res = await getAccounts({ institution: instCode.value });
+    availableAccounts.value = res.accounts.filter(acc => {
+      acc.assetTypes = [];
+      if (acc.assets && acc.assets.length > 0) {
+        acc.assets.forEach(asset => { acc.assetTypes.push(asset.subCategory);});
+      }
       return !acc.assetTypes || !acc.assetTypes.includes(subCategoryCode.value);
     });
   } catch (error) {

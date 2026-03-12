@@ -74,8 +74,11 @@ export const batchUpdateAccounts = async (syncAccounts) => {
 export const getAccounts = async (params = {}) => {
   try {
     const res = await api.get(ACCOUNT_API_BASE, params);
-    // 兼容后端返回格式 { accounts: [], count: 0 } 或直接 []
-    return res.data.accounts || res.data;
+    if (res.statusCode !== 200) {
+      throw new Error(`获取账户失败，状态码: ${res.statusCode}`);
+    }
+
+    return res.data;
   } catch (error) {
     throw error;
   }
