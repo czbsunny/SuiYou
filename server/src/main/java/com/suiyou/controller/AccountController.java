@@ -1,11 +1,10 @@
 package com.suiyou.controller;
 
-import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
+import com.suiyou.dto.account.AccountReorderDTO;
+import jakarta.validation.Valid;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.model.Account;
 import com.suiyou.service.AccountService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,26 +28,6 @@ import java.util.Map;
 public class AccountController {
     @Autowired
     private AccountService accountService;
-
-    @PostMapping
-    public ResponseEntity<?> createAccount(@Valid @RequestBody CreateAccountDTO createAccountDTO) {
-        try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务创建账户
-            Account createdAccount = accountService.createAccount(createAccountDTO, userId);
-            
-            // 返回创建成功的响应
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
-        } catch (Exception e) {
-            // 返回错误响应
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "error", "资产添加失败",
-                "message", e.getMessage()
-            ));
-        }
-    }
     
     @GetMapping
     public ResponseEntity<?> getAccounts(@RequestParam(required = false) String institution) {
@@ -172,24 +151,20 @@ public class AccountController {
         }
     }
     
-    @PutMapping("/sync")
-    public ResponseEntity<?> syncAccounts(@RequestBody SyncAccountDTO syncAccountDTO) {
+    @PostMapping("/reorder")
+    public ResponseEntity<?> reorderAccounts(@Valid @RequestBody AccountReorderDTO reorderDTO) {
+        Long userId = getCurrentUserId();
+        
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务同步账户
-            accountService.syncAccounts(syncAccountDTO, userId);
-            
-            // 返回同步成功的响应
+            accountService.reorderAccounts(userId, reorderDTO.getAccountIds());
             return ResponseEntity.ok(Map.of(
-                "message", "账户同步成功"
+                "success", true,
+                "message", "账户排序成功"
             ));
         } catch (Exception e) {
-            // 返回错误响应
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "error", "账户同步失败",
-                "message", e.getMessage()
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "账户排序失败：" + e.getMessage()
             ));
         }
     }

@@ -1,8 +1,8 @@
 package com.suiyou.service;
 
 import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
+
 
 import com.suiyou.model.Account;
 
@@ -18,16 +18,7 @@ public interface AccountService {
      * @param userId 用户ID
      * @return 创建的账户
      */
-    Account createAccount(CreateAccountDTO createAccountDTO, Long userId);
-    
-    /**
-     * 根据机构和机构标识创建账户
-     * @param institution 机构
-     * @param institutionIdentifier 机构标识
-     * @param userId 用户ID
-     * @return 创建的账户
-     */
-    Account createAccount(String institution, String institutionIdentifier, Long userId);
+    Account createAccount(CreateAccountDTO accountDTO, Long userId);
     
     /**
      * 获取当前用户的所有资产账户
@@ -85,10 +76,9 @@ public interface AccountService {
     boolean deleteAccount(Long id, Long userId);
     
     /**
-     * 同步账户排序和状态
-     * @param syncAccountDTO 同步账户DTO
+     * 排序账户
      * @param userId 用户ID
-     * @return 操作结果
+     * @param accountIds 账户ID列表
      */
-    boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId);
+    void reorderAccounts(Long userId, List<Long> accountIds);
 }

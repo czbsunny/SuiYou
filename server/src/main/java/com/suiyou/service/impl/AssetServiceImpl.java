@@ -33,9 +33,9 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public AssetRespDTO createAsset(CreateAssetDTO assetDTO, Long userId) {
-        Account account = accountService.getAccountByInstitutionAndIdentifier(assetDTO.getInstitution(), assetDTO.getInstitutionIdentifier());
+        Account account = accountService.getAccountByInstitutionAndIdentifier(assetDTO.getAccountDTO().getInstitution(), assetDTO.getAccountDTO().getInstitutionIdentifier());
         if (account == null) {
-            account = accountService.createAccount(assetDTO.getInstitution(), assetDTO.getInstitutionIdentifier(), userId);
+            account = accountService.createAccount(assetDTO.getAccountDTO(), userId);
             if (account == null) {
                 throw new IllegalArgumentException("创建资产账户失败");
             }
@@ -91,16 +91,6 @@ public class AssetServiceImpl implements AssetService {
                 System.err.println("Failed to serialize attributes: " + e.getMessage());
             }
         }
-
-        // 更新资产账户ID
-        Account account = accountService.getAccountById(assetDTO.getAccountId());
-        if (Objects.isNull(account)) {
-            account = accountService.createAccount(assetDTO.getInstitution(), assetDTO.getInstitutionIdentifier(), userId);
-            if (Objects.isNull(account)) {
-                throw new IllegalArgumentException("创建资产账户失败");
-            }
-        }
-        asset.setAccount(account);
 
         return AssetRespDTO.fromEntity(assetRepository.save(asset));
     }

@@ -1,8 +1,8 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
+
 import com.suiyou.model.Account;
 import com.suiyou.model.Family;
 import com.suiyou.repository.AccountRepository;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Objects;
 
 @Service
@@ -67,31 +66,6 @@ public class AccountServiceImpl implements AccountService {
             throw new IllegalArgumentException("用户未关联任何家庭");
         }
         account.setFamilyId(family.getId());
-        
-        // 保存账户
-        return accountRepository.save(account);
-    }
-    
-    @Override
-    @Transactional
-    public Account createAccount(String institution, String institutionIdentifier, Long userId) {
-        // 检查账户唯一性
-        checkAccountUniqueness(institution, institutionIdentifier);
-        
-        // 创建新账户
-        Account account = new Account();
-        account.setInstitution(institution);
-        account.setInstitutionIdentifier(institutionIdentifier);
-        account.setAccountName(institutionIdentifier);
-        account.setOwnerId(userId);
-
-        // 这里需要从用户服务获取当前家庭ID
-        Family family = familyService.getFirstActiveFamilyByUserId(userId);
-        if (Objects.isNull(family)) {
-            throw new IllegalArgumentException("用户未关联任何家庭");
-        }
-        account.setFamilyId(family.getId());
-        account.setStatus(1); // 设置为活跃状态
         
         // 保存账户
         return accountRepository.save(account);
@@ -235,19 +209,13 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     @Transactional
-    public boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId) {
-        // 获取所有账户ID列表
-        List<Long> allAccountIds = new ArrayList<>();
-        if (syncAccountDTO.getActiveAccountIds() != null) {
-            allAccountIds.addAll(syncAccountDTO.getActiveAccountIds());
-        }
-        if (syncAccountDTO.getArchivedAccountIds() != null) {
-            allAccountIds.addAll(syncAccountDTO.getArchivedAccountIds());
-        }
-        
-        // 验证所有账户是否属于当前用户
-        for (Long accountId : allAccountIds) {
+    public void reorderAccounts(Long userId, List<Long> accountIds) {
+        // 遍历账户ID列表，更新排序值
+        for (int i = 0; i < accountIds.size(); i++) {
+            Long accountId = accountIds.get(i);
+            // 查找账户并验证所属权和状态
             Account account = accountRepository.findById(accountId).orElse(null);
+            
             if (account == null) {
                 throw new IllegalArgumentException("账户不存在: " + accountId);
             }
@@ -257,28 +225,10 @@ public class AccountServiceImpl implements AccountService {
             if (account.getDeleted()) {
                 throw new IllegalArgumentException("账户已被删除: " + accountId);
             }
+            
+            // 更新排序值
+            account.setSortOrder(i);
+            accountRepository.save(account);
         }
-        
-        // 更新活跃账户的排序值
-        if (syncAccountDTO.getActiveAccountIds() != null) {
-            for (int i = 0; i < syncAccountDTO.getActiveAccountIds().size(); i++) {
-                Long accountId = syncAccountDTO.getActiveAccountIds().get(i);
-                Account account = accountRepository.findById(accountId).orElse(null);
-                if (account != null) {
-                    account.setStatus(1);
-                    account.setSortOrder(i);
-                    accountRepository.save(account);
-                }
-            }
-        }
-        
-        // 更新归档账户的状态
-        if (syncAccountDTO.getArchivedAccountIds() != null) {
-            for (Long accountId : syncAccountDTO.getArchivedAccountIds()) {
-                updateAccountStatus(accountId, 0, userId);
-            }
-        }
-        
-        return true;
     }
 }
