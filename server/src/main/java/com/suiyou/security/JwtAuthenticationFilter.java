@@ -97,6 +97,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return requestPath.equals("/api/auth/register") || 
                requestPath.equals("/api/auth/login") || 
                requestPath.equals("/api/auth/wechat-login") ||
+               requestPath.equals("/api/config/manifest") ||
+               requestPath.equals("/api/config/fetch") ||
                requestPath.equals("/api/health");
     }
 

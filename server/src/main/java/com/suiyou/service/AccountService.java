@@ -74,11 +74,12 @@ public interface AccountService {
      * @return 操作结果
      */
     boolean deleteAccount(Long id, Long userId);
-    
+
     /**
-     * 排序账户
+     * 批量更新账户（排序+归档+恢复）
      * @param userId 用户ID
-     * @param accountIds 账户ID列表
+     * @param activeAccountIds 活跃账户ID列表（按排序顺序）
+     * @param archivedAccountIds 需要归档的账户ID列表
      */
-    void reorderAccounts(Long userId, List<Long> accountIds);
+    void batchUpdateAccounts(Long userId, List<Long> activeAccountIds, List<Long> archivedAccountIds);
 }

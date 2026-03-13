@@ -52,13 +52,15 @@ export const deleteAccount = async (id) => {
 };
 
 /**
- * 4. 同步账户
- * @param {String|Number} id 账户ID
- * @param {Number} status 状态值 (1: 活跃, 0: 归档)
+ * 4. 批量更新账户（排序+归档+恢复）
+ * @param {Object} payload - 批量更新载荷
+ * @param {Array<Number>} payload.activeAccountIds - 活跃账户ID列表（按排序顺序）
+ * @param {Array<Number>} payload.archivedAccountIds - 需要归档的账户ID列表
+ * @returns {Promise<Object>} 更新结果
  */
-export const batchUpdateAccounts = async (syncAccounts) => {
+export const batchUpdateAccounts = async (payload) => {
   try {
-    const res = await api.put(`${ACCOUNT_API_BASE}/sync`, syncAccounts);
+    const res = await api.put(`${ACCOUNT_API_BASE}/sync`, payload);
     return res.data;
   } catch (error) {
     throw error;

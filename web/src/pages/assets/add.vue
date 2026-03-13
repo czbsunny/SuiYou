@@ -181,7 +181,7 @@ const saveAsset = async () => {
     uni.showToast({ title: '添加成功', icon: 'success' });
     
     setTimeout(() => {
-      uni.navigateTo({ url: '/pages/assets/index' });
+      uni.switchTab({ url: '/pages/assets/index' });
     }, 1500);
   } catch (error) {
     uni.hideLoading();

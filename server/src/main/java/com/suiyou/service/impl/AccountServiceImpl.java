@@ -237,26 +237,53 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     @Transactional
-    public void reorderAccounts(Long userId, List<Long> accountIds) {
-        // 遍历账户ID列表，更新排序值
-        for (int i = 0; i < accountIds.size(); i++) {
-            Long accountId = accountIds.get(i);
-            // 查找账户并验证所属权和状态
-            Account account = accountRepository.findById(accountId).orElse(null);
-            
-            if (account == null) {
-                throw new IllegalArgumentException("账户不存在: " + accountId);
+    public void batchUpdateAccounts(Long userId, List<Long> activeAccountIds, List<Long> archivedAccountIds) {
+        // 1. 处理归档操作
+        if (archivedAccountIds != null && !archivedAccountIds.isEmpty()) {
+            for (Long accountId : archivedAccountIds) {
+                Account account = accountRepository.findById(accountId).orElse(null);
+                if (account == null) {
+                    throw new IllegalArgumentException("账户不存在: " + accountId);
+                }
+                if (!account.getOwnerId().equals(userId)) {
+                    throw new IllegalArgumentException("无权操作该账户: " + accountId);
+                }
+                if (account.getDeleted()) {
+                    throw new IllegalArgumentException("账户已被删除: " + accountId);
+                }
+                
+                // 设置为归档状态
+                account.setStatus(0);
+                account.setSortOrder(9999);
+                accountRepository.save(account);
             }
-            if (!account.getOwnerId().equals(userId)) {
-                throw new IllegalArgumentException("无权操作该账户: " + accountId);
+        }
+        
+        // 2. 处理活跃账户排序和恢复操作
+        if (activeAccountIds != null && !activeAccountIds.isEmpty()) {
+            for (int i = 0; i < activeAccountIds.size(); i++) {
+                Long accountId = activeAccountIds.get(i);
+                Account account = accountRepository.findById(accountId).orElse(null);
+                
+                if (account == null) {
+                    throw new IllegalArgumentException("账户不存在: " + accountId);
+                }
+                if (!account.getOwnerId().equals(userId)) {
+                    throw new IllegalArgumentException("无权操作该账户: " + accountId);
+                }
+                if (account.getDeleted()) {
+                    throw new IllegalArgumentException("账户已被删除: " + accountId);
+                }
+                
+                // 如果账户当前是归档状态，恢复为活跃状态
+                if (account.getStatus() == 0) {
+                    account.setStatus(1);
+                }
+                
+                // 更新排序值
+                account.setSortOrder(i);
+                accountRepository.save(account);
             }
-            if (account.getDeleted()) {
-                throw new IllegalArgumentException("账户已被删除: " + accountId);
-            }
-            
-            // 更新排序值
-            account.setSortOrder(i);
-            accountRepository.save(account);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.suiyou.controller;
 
 import com.suiyou.dto.account.AccountReorderDTO;
+import com.suiyou.dto.account.BatchUpdateAccountsDTO;
 import jakarta.validation.Valid;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.dto.account.AccountRespDTO;
@@ -151,20 +152,20 @@ public class AccountController {
         }
     }
     
-    @PostMapping("/reorder")
-    public ResponseEntity<?> reorderAccounts(@Valid @RequestBody AccountReorderDTO reorderDTO) {
+    @PutMapping("/sync")
+    public ResponseEntity<?> batchUpdateAccounts(@Valid @RequestBody BatchUpdateAccountsDTO batchUpdateDTO) {
         Long userId = getCurrentUserId();
         
         try {
-            accountService.reorderAccounts(userId, reorderDTO.getAccountIds());
+            accountService.batchUpdateAccounts(userId, batchUpdateDTO.getActiveAccountIds(), batchUpdateDTO.getArchivedAccountIds());
             return ResponseEntity.ok(Map.of(
                 "success", true,
-                "message", "账户排序成功"
+                "message", "账户配置已生效"
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                 "success", false,
-                "message", "账户排序失败：" + e.getMessage()
+                "message", "账户配置失败：" + e.getMessage()
             ));
         }
     }

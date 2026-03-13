@@ -100,6 +100,12 @@ onShow(fetchGoalListData);
 const onAddClick = () => uni.navigateTo({ url: '/pages/goals/guide' });
 const onSortClick = () => {}; 
 const onItemClick = (item) => uni.navigateTo({ url: `/pages/goals/detail?id=${item.id}` });
+
+const handleGoalSelect = (template) => {
+  uni.navigateTo({
+    url: `/pages/goals/add?tpl=${template.code}`
+  });
+};
 </script>
 
 <style lang="scss" scoped>
