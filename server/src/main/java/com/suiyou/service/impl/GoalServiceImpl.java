@@ -1,6 +1,7 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.goal.CreateGoalDTO;
+import com.suiyou.dto.goal.GoalRespDTO;
 import com.suiyou.model.Goal;
 import com.suiyou.model.User;
 import com.suiyou.repository.GoalRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GoalServiceImpl implements GoalService {
@@ -25,19 +27,34 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Goal> getUserGoals(Long userId) {
-        // 验证用户是否存在
-        if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("用户不存在");
+    public List<GoalRespDTO> getUserGoals(Long userId) {
+        // 获取用户创建的所有目标并转换为DTO
+        List<Goal> goals = goalRepository.findByCreatorId(userId);
+        return goals.stream()
+                .map(GoalRespDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GoalRespDTO getGoalById(Long id, Long userId) {
+        // 获取目标
+        Goal goal = goalRepository.findById(id).orElse(null);
+        if (goal == null) {
+            throw new RuntimeException("目标不存在");
         }
 
-        // 获取用户创建的所有目标
-        return goalRepository.findByCreatorId(userId);
+        // 验证目标是否属于当前用户
+        if (!goal.getCreatorId().equals(userId)) {
+            throw new RuntimeException("无权访问该目标");
+        }
+
+        return GoalRespDTO.fromEntity(goal);
     }
 
     @Override
     @Transactional
-    public Goal createGoal(CreateGoalDTO goalDTO, Long userId) {
+    public GoalRespDTO createGoal(CreateGoalDTO goalDTO, Long userId) {
         // 验证目标金额必须大于0
         if (goalDTO.getTargetAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("目标金额必须大于0");
@@ -74,6 +91,26 @@ public class GoalServiceImpl implements GoalService {
         goal.setCreatedAt(LocalDateTime.now());
         goal.setUpdatedAt(LocalDateTime.now());
 
-        return goalRepository.save(goal);
+        // 保存目标到数据库
+        goal = goalRepository.save(goal);
+        return GoalRespDTO.fromEntity(goal);
+    }
+
+    @Override
+    @Transactional
+    public void deleteGoal(Long id, Long userId) {
+        // 获取目标
+        Goal goal = goalRepository.findById(id).orElse(null);
+        if (goal == null) {
+            throw new RuntimeException("目标不存在");
+        }
+
+        // 验证目标是否属于当前用户
+        if (!goal.getCreatorId().equals(userId)) {
+            throw new RuntimeException("无权删除该目标");
+        }
+
+        // 删除目标
+        goalRepository.delete(goal);
     }
 }
