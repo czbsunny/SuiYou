@@ -175,7 +175,9 @@ const formatAmount = (val) => Number(Math.abs(val) || 0).toLocaleString('zh-CN',
 
 // 事件处理
 const handleSettings = () => {
-  console.log('Settings clicked');
+  uni.navigateTo({
+    url: `/pages/assets/detail?id=${accountId.value}&mode=edit`
+  });
 };
 
 const handleAction = (action) => {
@@ -183,7 +185,9 @@ const handleAction = (action) => {
 };
 
 const handleAssetClick = (asset) => {
-  console.log('Asset clicked:', asset);
+  uni.navigateTo({
+    url: `/pages/assets/item?id=${asset.id}`
+  });
 };
 </script>
 

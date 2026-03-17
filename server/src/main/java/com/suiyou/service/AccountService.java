@@ -1,7 +1,7 @@
 package com.suiyou.service;
 
+import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 
 import com.suiyou.model.Account;
@@ -18,23 +18,22 @@ public interface AccountService {
      * @param userId 用户ID
      * @return 创建的账户
      */
-    Account createAccount(CreateAccountDTO createAccountDTO, Long userId);
+    Account createAccount(CreateAccountDTO accountDTO, Long userId);
     
     /**
-     * 根据机构和机构标识创建账户
+     * 根据机构和机构标识获取账户
      * @param institution 机构
      * @param institutionIdentifier 机构标识
-     * @param userId 用户ID
-     * @return 创建的账户
+     * @return 资产账户
      */
-    Account createAccount(String institution, String institutionIdentifier, Long userId);
-    
+    Account getAccountByInstitutionAndIdentifier(Long userId, String institution, String institutionIdentifier);
+
     /**
      * 获取当前用户的所有资产账户
      * @param userId 用户ID
      * @return 资产账户列表
      */
-    List<Account> getAccountsByUserId(Long userId);
+    List<AccountRespDTO> getAccountsByUserId(Long userId);
     
     /**
      * 获取当前用户指定机构的所有资产账户
@@ -42,22 +41,14 @@ public interface AccountService {
      * @param institution 机构代码
      * @return 资产账户列表
      */
-    List<Account> getAccountsByUserIdAndInstitution(Long userId, String institution);
-
-    /**
-     * 根据机构和机构标识获取账户
-     * @param institution 机构
-     * @param institutionIdentifier 机构标识
-     * @return 资产账户
-     */
-    Account getAccountByInstitutionAndIdentifier(String institution, String institutionIdentifier);
+    List<AccountRespDTO> getAccountsByUserIdAndInstitution(Long userId, String institution);
 
     /**
      * 根据ID获取账户
      * @param id 账户ID
      * @return 资产账户
      */
-    Account getAccountById(Long id);
+    AccountRespDTO getAccountById(Long id);
 
     /**
      * 修改账户信息
@@ -65,7 +56,7 @@ public interface AccountService {
      * @param userId 用户ID
      * @return 修改后的账户
      */
-    Account updateAccount(UpdateAccountDTO updateAccountDTO, Long userId);
+    AccountRespDTO updateAccount(UpdateAccountDTO updateAccountDTO, Long userId);
 
     /**
      * 更新账户状态
@@ -83,12 +74,12 @@ public interface AccountService {
      * @return 操作结果
      */
     boolean deleteAccount(Long id, Long userId);
-    
+
     /**
-     * 同步账户排序和状态
-     * @param syncAccountDTO 同步账户DTO
+     * 批量更新账户（排序+归档+恢复）
      * @param userId 用户ID
-     * @return 操作结果
+     * @param activeAccountIds 活跃账户ID列表（按排序顺序）
+     * @param archivedAccountIds 需要归档的账户ID列表
      */
-    boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId);
+    void batchUpdateAccounts(Long userId, List<Long> activeAccountIds, List<Long> archivedAccountIds);
 }

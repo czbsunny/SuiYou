@@ -2,29 +2,8 @@
 import api from './apiService';
 
 const ACCOUNT_API_BASE = '/api/accounts';
-
 /**
- * 1. 创建账户
- * @param {Object} data - 包含机构代码、标识码、名称、是否计入净值
- */
-export const createAccount = async (data) => {
-  const payload = {
-    institution: data.instCode,              // 对应 DTO 的 institution
-    institutionIdentifier: data.identifier,  // 对应 DTO 的 institutionIdentifier
-    accountName: data.accountName,           // 对应 DTO 的 accountName
-    includeInNetWorth: data.includeInNetWorth, // 对应 DTO 的 includeInNetWorth
-    themeColor: data.themeColor, // 对应 DTO 的 themeColor
-  };
-
-  try {
-    return await api.post(ACCOUNT_API_BASE, payload);
-  } catch (error) {
-    throw error;
-  }
-};
-
-/**
- * 2. 修改账户信息
+ * 1. 修改账户信息
  * @param {Object} data - 更新的字段
  */
 export const updateAccount = async (data) => {
@@ -46,7 +25,7 @@ export const updateAccount = async (data) => {
 };
 
 /**
- * 3. 更新账户状态
+ * 2. 更新账户状态
  * @param {String|Number} id 账户ID
  * @param {Number} status 状态值 (1: 活跃, 0: 归档)
  */
@@ -60,7 +39,7 @@ export const updateAccountStatus = async (id, status) => {
 };
 
 /**
- * 4. 删除账户
+ * 3. 删除账户
  * @param {String|Number} id 
  */
 export const deleteAccount = async (id) => {
@@ -73,13 +52,15 @@ export const deleteAccount = async (id) => {
 };
 
 /**
- * 5. 同步账户
- * @param {String|Number} id 账户ID
- * @param {Number} status 状态值 (1: 活跃, 0: 归档)
+ * 4. 批量更新账户（排序+归档+恢复）
+ * @param {Object} payload - 批量更新载荷
+ * @param {Array<Number>} payload.activeAccountIds - 活跃账户ID列表（按排序顺序）
+ * @param {Array<Number>} payload.archivedAccountIds - 需要归档的账户ID列表
+ * @returns {Promise<Object>} 更新结果
  */
-export const batchUpdateAccounts = async (syncAccounts) => {
+export const batchUpdateAccounts = async (payload) => {
   try {
-    const res = await api.put(`${ACCOUNT_API_BASE}/sync`, syncAccounts);
+    const res = await api.put(`${ACCOUNT_API_BASE}/sync`, payload);
     return res.data;
   } catch (error) {
     throw error;
@@ -88,22 +69,24 @@ export const batchUpdateAccounts = async (syncAccounts) => {
 
 
 /**
- * 6. 获取所有账户
+ * 5. 获取所有账户
  * @param {Object} params - 查询参数，如 { institution: 'alipay' }
  * @returns {Promise<Array>} 账户列表
  */
 export const getAccounts = async (params = {}) => {
   try {
     const res = await api.get(ACCOUNT_API_BASE, params);
-    // 兼容后端返回格式 { accounts: [], count: 0 } 或直接 []
-    return res.data.accounts || res.data;
+    if (res.statusCode !== 200) {
+      throw new Error(`获取账户失败，状态码: ${res.statusCode}`);
+    }
+
+    return res.data;
   } catch (error) {
     throw error;
   }
 };
 
 export default {
-  createAccount,
   updateAccount,
   updateAccountStatus,
   deleteAccount,

@@ -1,11 +1,14 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
+import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.model.Account;
+import com.suiyou.model.Asset;
 import com.suiyou.model.Family;
 import com.suiyou.repository.AccountRepository;
+import com.suiyou.repository.AssetRepository;
 import com.suiyou.service.FamilyService;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -23,16 +26,20 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
+    private AssetRepository assetRepository;
+
+    @Autowired
     private FamilyService familyService;
     
     /**
      * 检查机构和机构标识符是否已被未删除的账户使用
+     * @param userId 用户ID
      * @param institution 机构
      * @param institutionIdentifier 机构标识符
      * @throws IllegalArgumentException 如果已存在相同机构和标识符的未删除账户
      */
-    private void checkAccountUniqueness(String institution, String institutionIdentifier) {
-        Account existingAccount = accountRepository.findByInstitutionAndInstitutionIdentifierAndDeletedFalse(institution, institutionIdentifier);
+    private void checkAccountUniqueness(Long userId, String institution, String institutionIdentifier) {
+        Account existingAccount = accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(userId, institution, institutionIdentifier);
         if (existingAccount != null) {
             throw new IllegalArgumentException("该机构标识已存在账户");
         }
@@ -42,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public Account createAccount(CreateAccountDTO createAccountDTO, Long userId) {
         // 检查账户唯一性
-        checkAccountUniqueness(createAccountDTO.getInstitution(), createAccountDTO.getInstitutionIdentifier());
+        checkAccountUniqueness(userId, createAccountDTO.getInstitution(), createAccountDTO.getInstitutionIdentifier());
         
         // 创建Account实体
         Account account = new Account();
@@ -71,61 +78,55 @@ public class AccountServiceImpl implements AccountService {
         // 保存账户
         return accountRepository.save(account);
     }
-    
-    @Override
-    @Transactional
-    public Account createAccount(String institution, String institutionIdentifier, Long userId) {
-        // 检查账户唯一性
-        checkAccountUniqueness(institution, institutionIdentifier);
-        
-        // 创建新账户
-        Account account = new Account();
-        account.setInstitution(institution);
-        account.setInstitutionIdentifier(institutionIdentifier);
-        account.setAccountName(institutionIdentifier);
-        account.setOwnerId(userId);
 
-        // 这里需要从用户服务获取当前家庭ID
-        Family family = familyService.getFirstActiveFamilyByUserId(userId);
-        if (Objects.isNull(family)) {
-            throw new IllegalArgumentException("用户未关联任何家庭");
-        }
-        account.setFamilyId(family.getId());
-        account.setStatus(1); // 设置为活跃状态
-        
-        // 保存账户
-        return accountRepository.save(account);
-    }
-    
     @Override
-    public List<Account> getAccountsByUserId(Long userId) {
-        // 查询所有未删除的账户（包括活跃和归档状态的）
-        return accountRepository.findByOwnerIdAndDeletedFalse(userId);
+    public Account getAccountByInstitutionAndIdentifier(Long userId, String institution, String institutionIdentifier) {
+        return accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(userId, institution, institutionIdentifier);
     }
 
     @Override
-    public List<Account> getAccountsByUserIdAndInstitution(Long userId, String institution) {
-        return accountRepository.findByOwnerIdAndInstitutionAndDeletedFalse(userId, institution);
+    public List<AccountRespDTO> getAccountsByUserId(Long userId) {
+        List<Account> accounts = accountRepository.findByOwnerIdAndDeletedFalse(userId);
+        return accounts.stream()
+                .map(account -> {
+                    AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    dto.setAssets(assets.stream()
+                            .map(AssetRespDTO::fromEntity)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Account getAccountByInstitutionAndIdentifier(String institution, String institutionIdentifier) {
-        return accountRepository.findByInstitutionAndInstitutionIdentifierAndDeletedFalse(institution, institutionIdentifier);
+    public List<AccountRespDTO> getAccountsByUserIdAndInstitution(Long userId, String institution) {
+        List<Account> accounts = accountRepository.findByOwnerIdAndInstitutionAndDeletedFalse(userId, institution);
+        return accounts.stream()
+                .map(account -> {
+                    AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    dto.setAssets(assets.stream()
+                            .map(AssetRespDTO::fromEntity)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Account getAccountById(Long id) {
+    public AccountRespDTO getAccountById(Long id) {
         Account account = accountRepository.findById(id).orElse(null);
         // 如果账户存在且已删除，则返回null
         if (account != null && account.getDeleted()) {
             return null;
         }
-        return account;
+        return account != null ? AccountRespDTO.fromEntity(account) : null;
     }
 
     @Override
     @Transactional
-    public Account updateAccount(UpdateAccountDTO updateAccountDTO, Long userId) {
+    public AccountRespDTO updateAccount(UpdateAccountDTO updateAccountDTO, Long userId) {
         // 根据ID获取账户
         Account account = accountRepository.findById(updateAccountDTO.getAccountId()).orElse(null);
         if (account == null) {
@@ -148,7 +149,7 @@ public class AccountServiceImpl implements AccountService {
         }
         if (updateAccountDTO.getInstitutionIdentifier() != null) {
             // 检查新的机构识别码是否已被其他账户使用
-            Account existingAccount = accountRepository.findByInstitutionAndInstitutionIdentifier(account.getInstitution(), updateAccountDTO.getInstitutionIdentifier());
+            Account existingAccount = accountRepository.findByOwnerIdAndInstitutionAndInstitutionIdentifier(userId, account.getInstitution(), updateAccountDTO.getInstitutionIdentifier());
             if (existingAccount != null && !existingAccount.getId().equals(updateAccountDTO.getAccountId())) {
                 throw new IllegalArgumentException("该机构识别码已被其他账户使用");
             }
@@ -162,7 +163,8 @@ public class AccountServiceImpl implements AccountService {
         }
         
         // 保存并返回更新后的账户
-        return accountRepository.save(account);
+        Account updatedAccount = accountRepository.save(account);
+        return AccountRespDTO.fromEntity(updatedAccount);
     }
 
     @Override
@@ -235,50 +237,53 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     @Transactional
-    public boolean syncAccounts(SyncAccountDTO syncAccountDTO, Long userId) {
-        // 获取所有账户ID列表
-        List<Long> allAccountIds = new ArrayList<>();
-        if (syncAccountDTO.getActiveAccountIds() != null) {
-            allAccountIds.addAll(syncAccountDTO.getActiveAccountIds());
-        }
-        if (syncAccountDTO.getArchivedAccountIds() != null) {
-            allAccountIds.addAll(syncAccountDTO.getArchivedAccountIds());
-        }
-        
-        // 验证所有账户是否属于当前用户
-        for (Long accountId : allAccountIds) {
-            Account account = accountRepository.findById(accountId).orElse(null);
-            if (account == null) {
-                throw new IllegalArgumentException("账户不存在: " + accountId);
-            }
-            if (!account.getOwnerId().equals(userId)) {
-                throw new IllegalArgumentException("无权操作该账户: " + accountId);
-            }
-            if (account.getDeleted()) {
-                throw new IllegalArgumentException("账户已被删除: " + accountId);
-            }
-        }
-        
-        // 更新活跃账户的排序值
-        if (syncAccountDTO.getActiveAccountIds() != null) {
-            for (int i = 0; i < syncAccountDTO.getActiveAccountIds().size(); i++) {
-                Long accountId = syncAccountDTO.getActiveAccountIds().get(i);
+    public void batchUpdateAccounts(Long userId, List<Long> activeAccountIds, List<Long> archivedAccountIds) {
+        // 1. 处理归档操作
+        if (archivedAccountIds != null && !archivedAccountIds.isEmpty()) {
+            for (Long accountId : archivedAccountIds) {
                 Account account = accountRepository.findById(accountId).orElse(null);
-                if (account != null) {
-                    account.setStatus(1);
-                    account.setSortOrder(i);
-                    accountRepository.save(account);
+                if (account == null) {
+                    throw new IllegalArgumentException("账户不存在: " + accountId);
                 }
+                if (!account.getOwnerId().equals(userId)) {
+                    throw new IllegalArgumentException("无权操作该账户: " + accountId);
+                }
+                if (account.getDeleted()) {
+                    throw new IllegalArgumentException("账户已被删除: " + accountId);
+                }
+                
+                // 设置为归档状态
+                account.setStatus(0);
+                account.setSortOrder(9999);
+                accountRepository.save(account);
             }
         }
         
-        // 更新归档账户的状态
-        if (syncAccountDTO.getArchivedAccountIds() != null) {
-            for (Long accountId : syncAccountDTO.getArchivedAccountIds()) {
-                updateAccountStatus(accountId, 0, userId);
+        // 2. 处理活跃账户排序和恢复操作
+        if (activeAccountIds != null && !activeAccountIds.isEmpty()) {
+            for (int i = 0; i < activeAccountIds.size(); i++) {
+                Long accountId = activeAccountIds.get(i);
+                Account account = accountRepository.findById(accountId).orElse(null);
+                
+                if (account == null) {
+                    throw new IllegalArgumentException("账户不存在: " + accountId);
+                }
+                if (!account.getOwnerId().equals(userId)) {
+                    throw new IllegalArgumentException("无权操作该账户: " + accountId);
+                }
+                if (account.getDeleted()) {
+                    throw new IllegalArgumentException("账户已被删除: " + accountId);
+                }
+                
+                // 如果账户当前是归档状态，恢复为活跃状态
+                if (account.getStatus() == 0) {
+                    account.setStatus(1);
+                }
+                
+                // 更新排序值
+                account.setSortOrder(i);
+                accountRepository.save(account);
             }
         }
-        
-        return true;
     }
 }

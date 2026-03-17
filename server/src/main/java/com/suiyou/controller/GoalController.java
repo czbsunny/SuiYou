@@ -1,7 +1,7 @@
 package com.suiyou.controller;
 
 import com.suiyou.dto.goal.CreateGoalDTO;
-import com.suiyou.model.Goal;
+import com.suiyou.dto.goal.GoalRespDTO;
 import com.suiyou.service.GoalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,28 @@ public class GoalController {
         try {
             // 从Security上下文中获取用户ID
             Long userId = getCurrentUserId();
-            List<Goal> goals = goalService.getUserGoals(userId);
+            List<GoalRespDTO> goals = goalService.getUserGoals(userId);
             return ResponseEntity.ok(Map.of(
                 "goals", goals,
                 "count", goals.size()
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "获取目标失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
+    // 获取单个目标详情
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getGoalById(@PathVariable Long id) {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            GoalRespDTO goal = goalService.getGoalById(id, userId);
+            return ResponseEntity.ok(Map.of(
+                "goal", goal
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -46,15 +64,31 @@ public class GoalController {
         try {
             Long userId = getCurrentUserId();
             
-            Goal goal = goalService.createGoal(goalDTO, userId);
+            GoalRespDTO goalRespDTO  = goalService.createGoal(goalDTO, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "id", goal.getId(),
                 "message", "目标创建成功",
-                "goal", goal
+                "goal", goalRespDTO
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "目标创建失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
+    // 删除目标
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteGoal(@PathVariable Long id) {
+        try {
+            Long userId = getCurrentUserId();
+            goalService.deleteGoal(id, userId);
+            return ResponseEntity.ok(Map.of(
+                "message", "目标删除成功"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "目标删除失败",
                 "message", e.getMessage()
             ));
         }

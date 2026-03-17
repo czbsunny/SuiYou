@@ -11,7 +11,7 @@
       </view>
 
       <!-- 🟢 业态切换 Tab：横向滑动修正版 -->
-      <view class="tabs-section" v-if="!subCode && institutionTypes.length > 1">
+      <view class="tabs-section" v-if="!subCategoryCode && institutionTypes.length > 1">
         <scroll-view 
           scroll-x 
           class="tabs-scroll" 
@@ -98,11 +98,8 @@ const configStore = useConfigStore();
 const searchText = ref('');
 const scrollIntoId = ref('');
 const activeLetter = ref('热');
-const subCode = ref('');
+const subCategoryCode = ref('');
 const categoryCode = ref('');
-const categoryName = ref('');
-const subCategoryName = ref('');
-const color = ref('');
 const groupOffsets = ref([]);
 const activeType = ref('ALL');
 
@@ -116,11 +113,8 @@ const formatImageUrl = (url) => {
 };
 
 onLoad((options) => {
-  if (options.subCode) subCode.value = options.subCode;
+  if (options.subCategoryCode) subCategoryCode.value = options.subCategoryCode;
   if (options.categoryCode) categoryCode.value = options.categoryCode;
-  if (options.categoryName) categoryName.value = options.categoryName;
-  if (options.subCategoryName) subCategoryName.value = options.subCategoryName;
-  if (options.color) color.value = options.color;
 });
 
 const institutionTypes = computed(() => {
@@ -133,7 +127,7 @@ const institutionTypes = computed(() => {
 });
 
 const rawInstitutions = computed(() => {
-  if (subCode.value) return configStore.getInstitutionsBySubCategoryCode(subCode.value);
+  if (subCategoryCode.value) return configStore.getInstitutionsBySubCategoryCode(subCategoryCode.value);
   if (activeType.value === 'ALL') return configStore.institutionData;
   return configStore.institutionData.filter(i => i.instType === activeType.value);
 });
@@ -211,7 +205,7 @@ onReady(() => { setTimeout(() => calculateOffsets(), 800); });
 const selectInstitution = (institution) => {
   const params = {
     categoryCode: categoryCode.value,
-    subCategoryCode: subCode.value,
+    subCategoryCode: subCategoryCode.value,
     instCode: institution.instCode
   };
   
@@ -220,7 +214,7 @@ const selectInstitution = (institution) => {
     .join('&');
   
   uni.navigateTo({
-    url: `/pages/assets/add-account?${queryString}`
+    url: `/pages/assets/add?${queryString}`
   });
 };
 </script>

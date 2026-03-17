@@ -1,11 +1,10 @@
 package com.suiyou.controller;
 
-import com.suiyou.dto.account.CreateAccountDTO;
-import com.suiyou.dto.account.SyncAccountDTO;
-import com.suiyou.dto.account.UpdateAccountDTO;
-import com.suiyou.model.Account;
-import com.suiyou.service.AccountService;
+import com.suiyou.dto.account.BatchUpdateAccountsDTO;
 import jakarta.validation.Valid;
+import com.suiyou.dto.account.UpdateAccountDTO;
+import com.suiyou.dto.account.AccountRespDTO;
+import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,26 +27,6 @@ import java.util.Map;
 public class AccountController {
     @Autowired
     private AccountService accountService;
-
-    @PostMapping
-    public ResponseEntity<?> createAccount(@Valid @RequestBody CreateAccountDTO createAccountDTO) {
-        try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务创建账户
-            Account createdAccount = accountService.createAccount(createAccountDTO, userId);
-            
-            // 返回创建成功的响应
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
-        } catch (Exception e) {
-            // 返回错误响应
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "error", "资产添加失败",
-                "message", e.getMessage()
-            ));
-        }
-    }
     
     @GetMapping
     public ResponseEntity<?> getAccounts(@RequestParam(required = false) String institution) {
@@ -57,7 +35,7 @@ public class AccountController {
             Long userId = getCurrentUserId();
             
             // 调用服务获取当前用户的所有账户
-            List<Account> accounts;
+            List<AccountRespDTO> accounts;
             if (institution != null && !institution.isEmpty()) {
                 accounts = accountService.getAccountsByUserIdAndInstitution(userId, institution);
             } else {
@@ -100,7 +78,7 @@ public class AccountController {
             Long userId = getCurrentUserId();
             
             // 调用服务修改账户
-            Account updatedAccount = accountService.updateAccount(updateAccountDTO, userId);
+            AccountRespDTO updatedAccount = accountService.updateAccount(updateAccountDTO, userId);
             
             // 返回修改成功的响应
             return ResponseEntity.ok(Map.of(
@@ -173,23 +151,19 @@ public class AccountController {
     }
     
     @PutMapping("/sync")
-    public ResponseEntity<?> syncAccounts(@RequestBody SyncAccountDTO syncAccountDTO) {
+    public ResponseEntity<?> batchUpdateAccounts(@Valid @RequestBody BatchUpdateAccountsDTO batchUpdateDTO) {
+        Long userId = getCurrentUserId();
+        
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务同步账户
-            accountService.syncAccounts(syncAccountDTO, userId);
-            
-            // 返回同步成功的响应
+            accountService.batchUpdateAccounts(userId, batchUpdateDTO.getActiveAccountIds(), batchUpdateDTO.getArchivedAccountIds());
             return ResponseEntity.ok(Map.of(
-                "message", "账户同步成功"
+                "success", true,
+                "message", "账户配置已生效"
             ));
         } catch (Exception e) {
-            // 返回错误响应
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "error", "账户同步失败",
-                "message", e.getMessage()
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", "账户配置失败：" + e.getMessage()
             ));
         }
     }

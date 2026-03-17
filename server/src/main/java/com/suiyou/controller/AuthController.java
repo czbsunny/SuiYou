@@ -77,4 +77,26 @@ public class AuthController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    // 修改用户信息（需要认证）
+    @PutMapping("/me")
+    public ResponseEntity<?> updateUserInfo(@RequestAttribute("userId") Long userId, @Valid @RequestBody UpdateUserInfoDTO updateUserInfoDTO) {
+        return userService.getUserById(userId)
+                .map(user -> {
+                    // 更新用户昵称
+                    user.setUsername(updateUserInfoDTO.getUsername());
+                    // 保存更新
+                    User updatedUser = userService.updateUser(user);
+                    // 构建响应
+                    LoginResponseDTO.UserInfoDTO userInfo = new LoginResponseDTO.UserInfoDTO();
+                    userInfo.setId(updatedUser.getId());
+                    userInfo.setPhoneNumber(updatedUser.getPhoneNumber());
+                    userInfo.setUsername(updatedUser.getUsername());
+                    userInfo.setAvatar(updatedUser.getAvatar());
+                    userInfo.setGender(updatedUser.getGender());
+                    userInfo.setWechatNickname(updatedUser.getWechatNickname());
+                    return ResponseEntity.ok(userInfo);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

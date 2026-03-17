@@ -3,38 +3,36 @@
     <scroll-view scroll-y class="content-scroll">
       <view class="content-container">
         
-        <!-- 1. 分类选择 -->
-        <CategorySelector 
-          v-model="selectedAssetCategory"
-          v-model:subValue="selectedSubcategory"
-          :categories="assetCategories"
-          :subcategories="currentSubcategories"
+        <!-- 1. 顶部上下文：展示已选分类和机构，允许返回重选 -->
+        <AssetContextCard 
+          :category-name="categoryName"
+          :institution="institution"
+          @reselect="goBackToReselect"
         />
 
-        <!-- 2. 机构选择与标识码 -->
-        <InstitutionPicker 
-          v-if="selectedSubcategory && availableInstitutions.length > 0"
-          :selected="selectedInstitution"
-          v-model:identifier="assetForm.identifier"
-          @click="openInstitutionSelect"
+        <!-- 2. 账户容器信息 (处理标识码和复用逻辑) -->
+        <AccountFormCard 
+          v-model:identifier="form.identifier"
+          v-model:accountName="form.accountName"
+          :inst-code="instCode"
+          :category-code="subCategoryCode"
+          :available-accounts="availableAccounts"
         />
 
-        <!-- 3. 基础信息组件 -->
-        <AssetBasicForm 
-          v-model:name="assetForm.accountName"
-          v-model:amount="assetForm.amount"
-          :placeholder="accountNamePlaceholder"
-          :currency="assetForm.currency"
-          v-model:includeInNetWorth="assetForm.includeInNetWorth"
+        <!-- 3. 资产基础信息 -->
+        <AssetFormCard 
+          v-model:assetName="form.assetName"
+          v-model:amount="form.amount"
+          v-model:currency="form.currency"
+          v-model:includeInNetWorth="form.includeInNetWorth"
+          :default-asset-name="defaultAssetName"
         />
 
-        <!-- 4. 补充信息 -->
-        <DynamicFieldGroup 
-          v-model="assetForm"
-          :fields="currentFields"
-        />
-
-        <view class="bottom-spacer"></view>
+        <!-- 4. 动态表单 -->
+        <!-- <DynamicFormCard
+          v-model:dynamicFields="form.dynamicFields"
+          :category-code="subCategoryCode"
+        /> -->
       </view>
     </scroll-view>
     
@@ -45,194 +43,148 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
-import { ASSET_CATEGORY_DISPLAY } from '@/configs/assets';
 import { createAsset } from '@/services/assetService.js';
+import { getAccounts } from '@/services/accountService.js';
 
-// 导入子组件
-import CategorySelector from '@/components/assets/add/CategorySelector.vue';
-import InstitutionPicker from '@/components/assets/add/InstitutionPicker.vue';
-import AssetBasicForm from '@/components/assets/add/AssetBasicForm.vue';
-import DynamicFieldGroup from '@/components/assets/add/DynamicFieldGroup.vue';
+// 引入拆分后的子组件
+import AssetContextCard from '@/components/assets/add/AssetContextCard.vue';
+import AccountFormCard from '@/components/assets/add/AccountFormCard.vue';
+import AssetFormCard from '@/components/assets/add/AssetFormCard.vue';
+import DynamicFormCard from '@/components/assets/add/DynamicFormCard.vue';
 
 const configStore = useConfigStore();
 
-// ---------------- 数据定义区 ----------------
+// --- 路由参数接收 ---
+const categoryCode = ref('');
+const subCategoryCode = ref('');
+const instCode = ref('');
 
-// 1. 大类定义 - 从配置文件读取
-const assetCategories = ref(Object.keys(ASSET_CATEGORY_DISPLAY).map(key => ({
-  code: key,
-  name: ASSET_CATEGORY_DISPLAY[key].name,
-  icon: ASSET_CATEGORY_DISPLAY[key].icon,
-  iconGray: ASSET_CATEGORY_DISPLAY[key].iconGray,
-  color: ASSET_CATEGORY_DISPLAY[key].color
-})));
+// --- 可选账户列表 ---
+const availableAccounts = ref([]);
 
-// 4. 动态表单字段配置
-const subcategoryFields = ref({
-  cash_account: [
-    { key: 'accountNumber', label: '账号', type: 'text' },
-    { key: 'remark', label: '备注', type: 'textarea' }
-  ],
-  fixed_deposit: [
-    { key: 'startDate', label: '起息日', type: 'text', placeholder: 'YYYY-MM-DD' },
-    { key: 'endDate', label: '到期日', type: 'text', placeholder: 'YYYY-MM-DD' },
-    { key: 'interestRate', label: '年利率 %', type: 'digit' },
-    { key: 'remark', label: '备注', type: 'textarea' }
-  ],
-  stock: [
-    { key: 'stockCode', label: '股票代码', type: 'text' },
-    { key: 'quantity', label: '持有数量', type: 'digit' },
-    { key: 'purchasePrice', label: '持仓成本', type: 'digit' },
-    { key: 'remark', label: '备注', type: 'textarea' }
-  ],
-  house: [
-    { key: 'address', label: '地址', type: 'text' },
-    { key: 'area', label: '面积(㎡)', type: 'digit' },
-    { key: 'purchaseDate', label: '购买日期', type: 'text' },
-    { key: 'purchasePrice', label: '原价', type: 'digit' },
-    { key: 'remark', label: '备注', type: 'textarea' }
-  ],
-  credit_card: [
-    { key: 'creditLimit', label: '总额度', type: 'digit' },
-    { key: 'billDate', label: '账单日', type: 'number', placeholder: '每月几号' },
-    { key: 'repaymentDate', label: '还款日', type: 'number', placeholder: '每月几号' },
-    { key: 'remark', label: '备注', type: 'textarea' }
-  ],
-});
-
-// 5. 表单响应式数据
-// 默认选中第一个资产类别
-const selectedAssetCategory = ref(assetCategories.value[0]?.code || 'LIQUID');
-const selectedSubcategory = ref('');
-const selectedInstitution = ref(null);
-const assetForm = ref({
-  institution: '',
-  accountName: '',
-  amount: '',
+// --- 表单统一状态 ---
+const form = ref({
+  identifier: '',     // 账户标识码 (尾号/账号)
+  accountName: '',    // 账户名称 (容器名)
+  assetName: '',      // 资产名称
+  amount: '',         // 余额
   currency: 'CNY',
-  includeInNetWorth: true,
-  identifier: '',
-  remark: '',
-  startDate: '',
-  endDate: '',
-  interestRate: '',
-  stockCode: '',
-  quantity: '',
-  purchasePrice: '',
-  address: '',
-  area: '',
-  creditLimit: '',
-  billDate: '',
-  repaymentDate: ''
+  includeInNetWorth: true
 });
 
-// ---------------- 逻辑处理区 ----------------
-
-// 生命周期
+// --- 生命周期 ---
 onLoad((options) => {
-  if (options.type) {
-    // 检查传入的 type 是否存在于 assetCategories 中
-    const isValidType = assetCategories.value.some(type => type.code === options.type);
-    if (isValidType) {
-      selectedAssetCategory.value = options.type;
-    }
-  }
-  // 默认选中当前大类下的第一个子类
-  const firstSub = currentSubcategories.value[0];
-  if (firstSub) {
-    selectedSubcategory.value = firstSub.categoryCode;
-  }
+  // 从路由接收上两步选择的结果
+  categoryCode.value = options.categoryCode || '';
+  subCategoryCode.value = options.subCategoryCode || '';
+  instCode.value = options.instCode || '';
   
-  // 监听机构选择事件
-  uni.$on('institutionSelected', (institution) => {
-    selectedInstitution.value = institution;
-    assetForm.value.institution = institution.instCode;
-    console.log('selectedInstitution', selectedInstitution.value);
-  });
+  // 加载该机构下的可选账户
+  loadAvailableAccounts();
 });
 
-// 页面卸载时移除事件监听
-onUnmounted(() => {
-  uni.$off('institutionSelected');
-});
-
-// 计算属性：当前显示的大类下的子类列表
-const currentSubcategories = computed(() => {
-  return configStore.getSubCategoriesByCode(selectedAssetCategory.value);
-});
-
-// 计算属性：当前子类可用的机构
-const availableInstitutions = computed(() => {
-  if (!selectedSubcategory.value) return [];
-  console.log('selectedSubcategory.value', selectedSubcategory.value);
-  return configStore.getInstitutionsBySubCategoryCode(selectedSubcategory.value);
-});
-
-// 计算属性：当前子类需要填写的动态字段
-const currentFields = computed(() => {
-  if (!selectedSubcategory.value) return [];
-  // 如果该子类没有配置特有字段，默认只显示备注
-  return subcategoryFields.value[selectedSubcategory.value] || [{ key: 'remark', label: '备注', type: 'textarea' }];
-});
-
-// 计算属性：智能生成输入框占位符
-const accountNamePlaceholder = computed(() => {
-  if (!selectedSubcategory.value) return '请输入名称';
-  const subName = currentSubcategories.value.find(s => s.categoryCode === selectedSubcategory.value)?.name;
-  const instName = availableInstitutions.value.find(i => i.id === assetForm.value.institution)?.name;
+// 加载可选账户列表
+const loadAvailableAccounts = async () => {
+  if (!instCode.value) return;
   
-  if (instName) return `${instName}${subName}`;
-  return `${subName}`;
-});
-
-// 打开机构选择页面
-const openInstitutionSelect = () => {
-  uni.navigateTo({
-    url: `/pages/assets/institution-select?subCode=${selectedSubcategory.value}`
-  });
+  try {
+    const res = await getAccounts({ institution: instCode.value });
+    availableAccounts.value = res.accounts.filter(acc => {
+      acc.assetTypes = [];
+      if (acc.assets && acc.assets.length > 0) {
+        acc.assets.forEach(asset => { acc.assetTypes.push(asset.subCategory);});
+      }
+      return !acc.assetTypes || !acc.assetTypes.includes(subCategoryCode.value);
+    });
+  } catch (error) {
+    console.error('加载可选账户失败:', error);
+    availableAccounts.value = [];
+  }
 };
 
-// 方法：保存
+// --- 计算属性 ---
+// 获取机构对象以展示 Logo
+const institution = computed(() => {
+  return configStore.getInstitutionByCode(instCode.value) || {};
+});
+
+// 获取分类名称用于展示
+const categoryName = computed(() => {
+  console.log('路由参数:', categoryCode.value, subCategoryCode.value);
+  const subCategories = configStore.getSubCategoriesByCode(categoryCode.value);
+  const sub = subCategories.find(item => item.categoryCode === subCategoryCode.value);
+  return sub ? sub.name : '';
+});
+
+// 智能生成默认资产名 (例如: 活期余额、信用卡欠款)
+const defaultAssetName = computed(() => {
+  return categoryName.value || '默认资产';
+});
+
+// --- 交互逻辑 ---
+const goBackToReselect = () => {
+  // 返回上一页 (机构选择页)
+  uni.navigateBack();
+};
+
 const saveAsset = async () => {
-  if (!assetForm.value.accountName) {
-    // 智能填入默认名
-    assetForm.value.accountName = accountNamePlaceholder.value;
+  if (!form.value.amount) {
+    uni.showToast({ title: '请输入资产金额', icon: 'none' });
+    return;
   }
   
-  if (!assetForm.value.amount) {
-    uni.showToast({ title: '请输入金额', icon: 'none' });
+  if (!form.value.identifier) {
+    uni.showToast({ title: '请输入账户标识码', icon: 'none' });
+    return;
+  }
+  
+  const amount = parseFloat(form.value.amount);
+  if (isNaN(amount) || amount <= 0) {
+    uni.showToast({ title: '请输入有效的资产金额', icon: 'none' });
     return;
   }
 
-  if (assetForm.value.institution && !assetForm.value.identifier) {
-    uni.showToast({ title: '请输入机构账号末4位', icon: 'none' });
+  const category = configStore.assetCategories.find(c => c.categoryCode === categoryCode.value);
+  const subCategories = configStore.getSubCategoriesByCode(categoryCode.value);
+  const subCategory = subCategories.find(s => s.categoryCode === subCategoryCode.value);
+
+  if (!category || !subCategory) {
+    uni.showToast({ title: '分类信息异常', icon: 'none' });
     return;
   }
 
   const payload = {
-    groupType: selectedAssetCategory.value === 'debt' ? 'LIABILITY' : 'ASSET',
-    category: selectedAssetCategory.value,
-    subCategory: selectedSubcategory.value,
-    institution: assetForm.value.institution,
-    institutionIdentifier: assetForm.value.identifier,
-    name: assetForm.value.accountName,
-    currency: assetForm.value.currency,
-    includeInNetWorth: assetForm.value.includeInNetWorth,
-    balance: parseFloat(assetForm.value.amount),
+    name: form.value.assetName || defaultAssetName.value,
+    groupType: category.groupType || 'ASSET',
+    category: categoryCode.value,
+    subCategory: subCategoryCode.value,
+    balance: parseFloat(form.value.amount),
+    currency: form.value.currency,
+    includeInNetWorth: form.value.includeInNetWorth,
+    accountDTO: {
+      institution: instCode.value,
+      institutionIdentifier: form.value.identifier,
+      accountName: form.value.accountName,
+      themeColor: institution.value.themeColor
+    }
   };
 
   console.log('提交的数据:', payload);
 
   try {
+    uni.showLoading({ title: '保存中...' });
     await createAsset(payload);
+    uni.hideLoading();
     uni.showToast({ title: '添加成功', icon: 'success' });
+    
     setTimeout(() => {
-      uni.navigateBack();
+      uni.switchTab({ url: '/pages/assets/index' });
     }, 1500);
   } catch (error) {
+    uni.hideLoading();
     uni.showToast({ title: error.message || '添加失败', icon: 'none' });
   }
 };
@@ -245,200 +197,12 @@ const saveAsset = async () => {
   display: flex;
   flex-direction: column;
 }
-
 .content-scroll {
   flex: 1;
   height: 0;
 }
-
 .content-container {
   padding: 24rpx 32rpx;
-}
-
-/* --- 卡片通用样式 --- */
-.section-card {
-  background-color: $bg-white;
-  border-radius: 32rpx;
-  padding: 32rpx;
-  margin-bottom: 40rpx;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-  
-  .card-title {
-    font-size: 30rpx;
-    font-weight: 600;
-    color: $text-main;
-    margin-bottom: 24rpx;
-    padding-left: 10rpx;
-    border-left: 3px solid $primary;
-    line-height: 1;
-  }
-}
-
-.divider {
-  height: 1rpx;
-  background-color: $border-light;
-  margin: 12px 0 16px 0;
-}
-
-.inner-divider {
-  height: 1rpx;
-  background-color: $border-light;
-  margin: 16px 0;
-  border-top: 1px dashed rgba(0,0,0,0.05);
-  background-color: transparent;
-}
-
-.tags-container {
-  .tags-label {
-    font-size: 24rpx;
-    color: $text-sub;
-    margin-bottom: 10px;
-  }
-}
-
-.tags-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.tag-item {
-  padding: 6px 16px;
-  border-radius: 8px;
-  background-color: $bg-subtle;
-  color: $text-sub;
-  font-size: 13px;
-  font-weight: 400;
-  transition: all 0.2s;
-  
-  &.active {
-    background-color: $primary;
-    color: $bg-white;
-    font-weight: 600;
-    box-shadow: 0 4px 8px rgba($primary, 0.25);
-  }
-}
-
-.picker-trigger {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.selected-inst-box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  
-  .mini-logo-wrapper {
-    width: 44rpx;
-    height: 44rpx;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12rpx;
-    overflow: hidden;
-    border: 1rpx solid rgba(0,0,0,0.03);
-  }
-
-  .mini-logo {
-    width: 100%;
-    height: 100%;
-  }
-
-  .inst-display-text {
-    font-size: 30rpx;
-    color: $text-main;
-    margin-right: 4rpx;
-    
-    &.placeholder {
-      color: $text-muted;
-      font-size: 28rpx;
-    }
-  }
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1rpx solid $border-light;
-
-  &.last-row {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
-  
-  &.column-layout {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.row-label {
-  font-size: 30rpx;
-  color: $text-main;
-  width: 90px;
-  flex-shrink: 0;
-  font-weight: 500;
-}
-
-.currency-label {
-  font-size: 24rpx;
-  color: $primary;
-  margin-left: 4px;
-}
-
-.row-input {
-  flex: 1;
-  font-size: 30rpx;
-  color: $text-main;
-  text-align: right;
-  height: 24px;
-  line-height: 24px;
-  
-  &.amount-input {
-    font-size: 40rpx; 
-    font-weight: 600;
-    color: $primary;
-  }
-}
-
-.input-placeholder {
-  color: $text-muted;
-  font-size: 28rpx;
-  font-weight: 400;
-}
-
-.row-textarea {
-  width: 100%;
-  font-size: 28rpx;
-  color: $text-main;
-  min-height: 80px;
-  background-color: $bg-subtle;
-  border-radius: 8px;
-  padding: 12px;
-  box-sizing: border-box;
-}
-
-.picker {
-  flex: 1;
-  font-size: 30rpx;
-  color: $text-main;
-  text-align: right;
-}
-
-.mb-8 {
-  margin-bottom: 8px;
-}
-
-/* --- 底部按钮 --- */
-.bottom-spacer {
-  height: 120px;
 }
 
 .fixed-bottom {
@@ -451,7 +215,6 @@ const saveAsset = async () => {
   z-index: 100;
   background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }
-
 .save-btn {
   background-color: $primary;
   height: 50px;
@@ -463,11 +226,5 @@ const saveAsset = async () => {
   font-size: 16px;
   font-weight: 600;
   box-shadow: 0 8px 24px rgba($primary, 0.3);
-  letter-spacing: 2px;
-}
-
-.save-btn-hover {
-  transform: scale(0.99);
-  opacity: 0.95;
 }
 </style>

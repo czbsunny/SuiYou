@@ -3,7 +3,6 @@ package com.suiyou.service;
 import com.suiyou.dto.auth.LoginResponseDTO;
 import com.suiyou.model.User;
 import com.suiyou.repository.UserRepository;
-import com.suiyou.service.FamilyService;
 import com.suiyou.security.JwtTokenProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;

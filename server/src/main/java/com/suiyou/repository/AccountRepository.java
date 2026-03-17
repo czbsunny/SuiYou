@@ -17,6 +17,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // 根据机构代码和机构唯一标识查询账户（未删除的）
     Account findByInstitutionAndInstitutionIdentifierAndDeletedFalse(String institution, String institutionIdentifier);
 
+    // 根据用户ID、机构代码和机构唯一标识查询账户（未删除的）
+    Account findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(Long ownerId, String institution, String institutionIdentifier);
+
     // 根据用户ID和状态查询账户（包括已删除的）
     List<Account> findByOwnerIdAndStatus(Long ownerId, Integer status);
 
@@ -25,6 +28,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     // 根据机构代码和机构唯一标识查询账户（包括已删除的）
     Account findByInstitutionAndInstitutionIdentifier(String institution, String institutionIdentifier);
+
+    // 根据用户ID、机构代码和机构唯一标识查询账户（包括已删除的）
+    Account findByOwnerIdAndInstitutionAndInstitutionIdentifier(Long ownerId, String institution, String institutionIdentifier);
     
     // 根据用户ID和机构查询账户（未删除的）
     List<Account> findByOwnerIdAndInstitutionAndDeletedFalse(Long ownerId, String institution);

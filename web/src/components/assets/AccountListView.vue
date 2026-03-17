@@ -7,7 +7,7 @@
         <view class="icon-btn" @tap="$emit('manage-click')" hover-class="btn-hover">
           <image src="/static/icons/sliders.png" mode="aspectFit" class="btn-img" />
         </view>
-        <view class="icon-btn primary-tint" @tap="$emit('add-account-click')" hover-class="btn-hover">
+        <view class="icon-btn primary-tint" @tap="$emit('add-asset-click')" hover-class="btn-hover">
           <image src="/static/images/plus-gray.png" mode="aspectFit" class="icon-img" />
         </view>
       </view>
@@ -51,9 +51,9 @@
       </view>
 
       <!-- 3. 空状态 -->
-      <view v-if="list.length === 0" class="empty-action" @tap="$emit('add-account-click')" hover-class="action-active">
+      <view v-if="list.length === 0" class="empty-action" @tap="$emit('add-asset-click')" hover-class="action-active">
         <text class="plus">+</text>
-        <text>添加第一个账户</text>
+        <text>添加第一个资产</text>
       </view>
     </view>
   </view>
@@ -64,7 +64,9 @@ const props = defineProps({
   list: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits(['account-click', 'add-account-click', 'manage-click']);
+console.log('[DEBUG AccountListView] list prop:', props.list);
+
+const emit = defineEmits(['account-click', 'add-asset-click', 'manage-click']);
 
 // 金额格式化逻辑
 const formatAccountBalance = (val) => {

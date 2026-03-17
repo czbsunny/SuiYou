@@ -5,10 +5,6 @@
       <!-- 第一步：大标题 -->
       <view class="step1-header" v-if="currentStep === 1">
         <view class="headline">开启你的生活目标</view>
-        <view class="sub-slogan">
-          <text>明确每一阶段的财务规划</text>
-          <text>让财富积累更有意义</text>
-        </view>
       </view>
       
       <!-- 第二步：展示已选中的分类块 -->
@@ -142,7 +138,6 @@ const formatMoney = (val) => Number(val).toLocaleString();
 .step1-header {
   text-align: center;
   .headline { font-size: 56rpx; font-weight: 800; color: #1F2937; margin-bottom: 24rpx; }
-  .sub-slogan { font-size: 28rpx; color: #9CA3AF; line-height: 1.6; text { display: block; } }
 }
 
 /* 核心：第二步选中的卡片样式 */
