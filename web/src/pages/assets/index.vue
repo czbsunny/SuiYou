@@ -128,7 +128,23 @@ const handleAddAccount = () => {
 
 // 查看卡片内资产明细（账户详情）
 const handleAccountClick = (account) => {
-  uni.navigateTo({ url: `/pages/assets/account-detail?id=${account.id}` });
+  const instConfig = configStore.institutionMap[account.instCode] || {};
+  const instType = instConfig.instType || 'OTHER';
+  
+  let pagePath = '';
+  switch (instType) {
+    case 'BANK':
+      pagePath = `/pages/assets/accounts/BankAccountPage?id=${account.id}`;
+      break;
+    case 'WALLET':
+      pagePath = `/pages/assets/accounts/WalletAccountPage?id=${account.id}`;
+      break;
+    default:
+      pagePath = `/pages/assets/account-detail?id=${account.id}`;
+      break;
+  }
+  
+  uni.navigateTo({ url: pagePath });
 };
 
 // 进入账户管理（排序、归档、彻底删除）

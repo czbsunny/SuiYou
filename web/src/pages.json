@@ -92,15 +92,6 @@
       }
     },
     {
-      "path": "pages/assets/account-detail",
-      "style": {
-        "navigationBarTitleText": "账户详情",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
       "path": "pages/assets/add-account",
       "style": {
         "navigationBarTitleText": "添加账户",
@@ -293,6 +284,79 @@
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
             "navigationBarTitleText": "交易记录"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/assets/accounts",
+      "pages": [
+        {
+          "path": "bank",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "银行账户",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "wallet",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "钱包账户",
+            "backgroundColor": "#F9F8F4"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/assets/items",
+      "pages": [
+        {
+          "path": "CashItemPage",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "现金资产",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "CashPlusItemPage",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "理财资产",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "DebitCardItemPage",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "银行卡资产",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "DefaultLiquidItemPage",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "流动资产",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "WalletItemPage",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "钱包资产",
+            "backgroundColor": "#F9F8F4"
           }
         }
       ]

@@ -1,5 +1,5 @@
 <template>
-  <view class="account-template-bank">
+  <view class="account-page-bank">
     <!-- 1. 核心账户卡片 (Premium 尊享版皮肤) -->
     <view class="skin-bank-premium">
       <view class="hero-gloss"></view>
@@ -14,7 +14,7 @@
               <text class="acc-desc">金葵花客户 | {{ account.institutionIdentifier }}</text>
             </view>
           </view>
-          <view class="settings-btn" @tap="$emit('settings')">
+          <view class="settings-btn" @tap="handleSettings">
             <image src="@/static/assets/actions/settings.png" class="icon-img" alt="settings"></image>
           </view>
         </view>
@@ -36,13 +36,13 @@
 
     <!-- 2. 操作区 (2x1 宽展布局) -->
     <view class="action-grid">
-      <view class="action-item btn-active" @tap="$emit('action', 'TRANSFER')">
+      <view class="action-item btn-active" @tap="handleAction('TRANSFER')">
         <view class="icon-box bg-transfer">
           <img src="@/static/assets/actions/transfer.png" class="icon-img" alt="transfer">
         </view>
         <text>转账调拨</text>
       </view>
-      <view class="action-item btn-active" @tap="$emit('action', 'CALIBRATE')">
+      <view class="action-item btn-active" @tap="handleAction('CALIBRATE')">
         <view class="icon-box bg-scale">
           <img src="@/static/assets/actions/scale.png" class="icon-img" alt="scale">
         </view>
@@ -67,7 +67,7 @@
           v-for="asset in group.items" 
           :key="asset.id" 
           class="asset-row btn-active"
-          @tap="$emit('asset-click', asset)"
+          @tap="handleAssetClick(asset)"
         >
           <view class="row-left">
             <view class="indicator" :style="{ backgroundColor: asset.color || group.defaultColor }"></view>
@@ -83,15 +83,59 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useConfigStore } from '@/stores/config.js';
+import { useRoute } from 'vue-router';
 
-const props = defineProps({
-  account: Object,
-  assets: Array // 该账户下的所有资产
+const route = useRoute();
+const accountId = route.params.id;
+
+const account = ref({});
+const assets = ref([]);
+const configStore = useConfigStore();
+
+onMounted(() => {
+  // 这里应该从API获取账户信息和资产信息
+  // 暂时使用模拟数据
+  fetchAccountData();
+  fetchAssetsData();
 });
 
-const configStore = useConfigStore();
+const fetchAccountData = () => {
+  // 模拟API调用
+  account.value = {
+    id: accountId,
+    institution: 'ICBC',
+    institutionIdentifier: '6222021234567890123'
+  };
+};
+
+const fetchAssetsData = () => {
+  // 模拟API调用
+  assets.value = [
+    {
+      id: '1',
+      name: '活期账户',
+      totalBalance: 10000.00,
+      groupType: 'LIQUID',
+      color: '#2A806C'
+    },
+    {
+      id: '2',
+      name: '定期存款',
+      totalBalance: 50000.00,
+      groupType: 'INVEST',
+      color: '#D97706'
+    },
+    {
+      id: '3',
+      name: '信用卡',
+      totalBalance: 5000.00,
+      groupType: 'DEBT',
+      color: '#F87171'
+    }
+  ];
+};
 
 // --- 核心逻辑：资产分组 ---
 const assetGroups = computed(() => {
@@ -101,7 +145,7 @@ const assetGroups = computed(() => {
     { type: 'DEBT', title: '账户负债', items: [], total: 0, defaultColor: '#F87171', isLiability: true }
   ];
 
-  props.assets.forEach(asset => {
+  assets.value.forEach(asset => {
     // 逻辑：根据 Asset.groupType 分组
     const group = groups.find(g => g.type === asset.groupType) || groups[0];
     group.items.push(asset);
@@ -125,13 +169,26 @@ const totalLiabilities = computed(() => {
 
 const netWorth = computed(() => totalAssets.value - totalLiabilities.value);
 
-const instInfo = computed(() => configStore.institutionMap[props.account.institution] || {});
+const instInfo = computed(() => configStore.institutionMap[account.value.institution] || {});
 
 const formatAmount = (val) => Number(Math.abs(val) || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+
+// 事件处理
+const handleSettings = () => {
+  console.log('Settings clicked');
+};
+
+const handleAction = (action) => {
+  console.log('Action clicked:', action);
+};
+
+const handleAssetClick = (asset) => {
+  console.log('Asset clicked:', asset);
+};
 </script>
 
 <style lang="scss" scoped>
-.account-template-bank {
+.account-page-bank {
   padding: 24rpx 32rpx;
 }
 
