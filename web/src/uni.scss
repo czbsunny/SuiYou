@@ -6,10 +6,13 @@
 /* =================================== */
 /* 1. 基础色板 (Palette)               */
 /* =================================== */
-
 /* 主色调 */
 $primary: #2a806c;
+$primary-pressed: #44b99e;
+$primary-hover: #5cc4a9;
+$primary-subtle: #e6f9f4;
 $primary-dark: #469e88;
+
 /* 主色透明度变体 */
 $primary-alpha-10: rgba(42, 128, 108, 0.1);
 $primary-alpha-30: rgb(68, 185, 158);
@@ -103,6 +106,9 @@ $text-loss: $green;      /* 跌 */
 $text-loss-light: $green-200; /* 跌 */
 $bg-gain-light: $red-light;
 $bg-loss-light: $green-light;
+
+$color-up-subtle: $red-50;
+$color-down-subtle: $green-50;
 
 /* 功能状态 错误/成功/警告 */
 $color-error:   $red;

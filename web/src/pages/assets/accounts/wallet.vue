@@ -13,13 +13,13 @@
       <view class="wallet-actions">
         <view class="action-item btn-active" @tap="handleAction('RECHARGE')">
           <view class="icon-box bg-recharge">
-            <img src="@/static/assets/actions/recharge.png" class="icon-img" alt="recharge">
+            <img src="@/static/assets/actions/import.png" class="icon-img" alt="recharge">
           </view>
           <text>充值</text>
         </view>
         <view class="action-item btn-active" @tap="handleAction('WITHDRAW')">
           <view class="icon-box bg-withdraw">
-            <img src="@/static/assets/actions/withdraw.png" class="icon-img" alt="withdraw">
+            <img src="@/static/assets/actions/export.png" class="icon-img" alt="withdraw">
           </view>
           <text>提现</text>
         </view>

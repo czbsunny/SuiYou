@@ -185,9 +185,7 @@ const handleAction = (action) => {
 };
 
 const handleAssetClick = (asset) => {
-  uni.navigateTo({
-    url: `/pages/assets/item?id=${asset.id}`
-  });
+
 };
 </script>
 

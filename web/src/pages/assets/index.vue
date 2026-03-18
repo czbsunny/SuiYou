@@ -127,7 +127,8 @@ const handleAddAsset = () => {
 const handleAccountClick = (account) => {
   const instConfig = configStore.institutionMap[account.instCode] || {};
   const instType = instConfig.instType || 'OTHER';
-  
+  const instCode = instConfig.instCode || 'OTHER';
+  console.log('[DEBUG] handleAccountClick - instType:', instType, instCode);
   let pagePath = '';
   switch (instType) {
     case 'BANK':
@@ -135,6 +136,19 @@ const handleAccountClick = (account) => {
       break;
     case 'WALLET':
       pagePath = `/pages/assets/accounts/WalletAccountPage?id=${account.id}`;
+      break;
+    case 'PAYMENT':
+      switch (instCode) {
+        case 'ALIPAY':
+          pagePath = `/pages/assets/accounts/alipay?id=${account.id}`;
+          break;
+        case 'WECHAT':
+          pagePath = `/pages/assets/accounts/wechat?id=${account.id}`;
+          break;
+        default:
+          pagePath = `/pages/assets/accounts/PaymentAccountPage?id=${account.id}`;
+          break;
+      }
       break;
     default:
       pagePath = `/pages/assets/account-detail?id=${account.id}`;

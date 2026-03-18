@@ -5,7 +5,7 @@
         <view class="card-header">
           <view class="card-label">家庭净资产</view>
           <div class="privacy-toggle" @click="togglePrivacy">
-            <img :src="isPrivacyOn ? '/static/images/eye-closed.png' : '/static/images/eye.png'" alt="隐私切换" style="width: 24px; height: 24px;" />
+            <img :src="isPrivacyOn ? '/static/images/eye-close.png' : '/static/images/eye.png'" alt="隐私切换" style="width: 24px; height: 24px;" />
           </div>
         </view>
         <view class="main-number">{{ displayAmount }}</view>

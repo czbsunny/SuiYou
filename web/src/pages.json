@@ -83,33 +83,6 @@
       }
     },
     {
-      "path": "pages/assets/item",
-      "style": {
-        "navigationBarTitleText": "资产详情",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
-      "path": "pages/assets/add-account",
-      "style": {
-        "navigationBarTitleText": "添加账户",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
-      "path": "pages/assets/add-non-account",
-      "style": {
-        "navigationBarTitleText": "添加资产",
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
       "path": "pages/assets/category-selector",
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",
@@ -308,6 +281,24 @@
             "navigationBarTitleText": "钱包账户",
             "backgroundColor": "#F9F8F4"
           }
+        },
+        {
+          "path": "alipay",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "支付宝账户",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "wechat",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "微信账户",
+            "backgroundColor": "#F9F8F4"
+          }
         }
       ]
     },
@@ -315,34 +306,43 @@
       "root": "pages/assets/items",
       "pages": [
         {
-          "path": "CashItemPage",
+          "path": "cash",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
-            "navigationBarTitleText": "现金资产",
+            "navigationBarTitleText": "现金",
             "backgroundColor": "#F9F8F4"
           }
         },
         {
-          "path": "CashPlusItemPage",
+          "path": "cashPlus",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
-            "navigationBarTitleText": "理财资产",
+            "navigationBarTitleText": "活期+",
             "backgroundColor": "#F9F8F4"
           }
         },
         {
-          "path": "DebitCardItemPage",
+          "path": "fund",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
-            "navigationBarTitleText": "银行卡资产",
+            "navigationBarTitleText": "基金",
             "backgroundColor": "#F9F8F4"
           }
         },
         {
-          "path": "DefaultLiquidItemPage",
+          "path": "debitCard",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "银行卡",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "defaultLiquid",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
@@ -351,11 +351,43 @@
           }
         },
         {
-          "path": "WalletItemPage",
+          "path": "wallet",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",
             "navigationBarTextStyle": "black",
-            "navigationBarTitleText": "钱包资产",
+            "navigationBarTitleText": "钱包",
+            "backgroundColor": "#F9F8F4"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/assets/fund",
+      "pages": [
+        {
+          "path": "add",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "添加基金",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "edit",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "编辑基金",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
+          "path": "search",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "基金查询",
             "backgroundColor": "#F9F8F4"
           }
         }
