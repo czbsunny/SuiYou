@@ -2,57 +2,53 @@
   <view class="account-detail-page">
     <!-- 1. 顶部资产总览卡片 -->
     <view class="summary-section animate-fade-in">
-      <view class="summary-card">
-        <view class="brand-info">
-          <view class="wechat-logo">
-            <text class="iconfont"></text> <!-- 建议换成微信图标 -->
-          </view>
-          <text class="account-name">微信支付</text>
-        </view>
-        
+      <view class="summary-card card-warm">       
         <view class="balance-content">
-          <text class="label">合计资产 (元)</text>
+          <text class="label">总资产 (元)</text>
           <text class="amount num-font">{{ formatMoney(totalBalance) }}</text>
         </view>
-        
-        <!-- 装饰性元素：增加温润感 -->
-        <view class="card-bg-decoration"></view>
       </view>
     </view>
 
-    <!-- 2. 快捷操作区：圆圈式简洁入口 -->
+    <!-- 2. 快捷操作区：矩形圆角入口 -->
     <view class="action-bar">
       <view class="action-item" hover-class="hover-opacity" @tap="handleAction('record')">
-        <view class="icon-circle bg-income"><text class="iconfont"></text></view>
+        <view class="icon-box-filled bg-income-light">
+          <image src="/static/images/edit.png" class="action-icon"></image>
+        </view>
         <text class="action-label">记一笔</text>
       </view>
       <view class="action-item" hover-class="hover-opacity" @tap="handleAction('transfer')">
-        <view class="icon-circle bg-transfer"><text class="iconfont">⇄</text></view>
-        <text class="action-label">转入/出</text>
+        <view class="icon-box-filled bg-transfer-light">
+          <image src="/static/images/transfer.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">转账</text>
       </view>
       <view class="action-item" hover-class="hover-opacity" @tap="handleAction('adjust')">
-        <view class="icon-circle bg-subtle"><text class="iconfont">✓</text></view>
+        <view class="icon-box-filled bg-subtle-light">
+          <image src="/static/images/check.png" class="action-icon"></image>
+        </view>
         <text class="action-label">校准</text>
       </view>
     </view>
 
-    <!-- 3. 资产项构成列表 -->
+    <!-- 3. 资产列表 -->
     <view class="items-section">
       <view class="section-header">
-        <text class="title">资产构成</text>
-        <text class="count-tag">{{ items.length }}项</text>
+        <text class="title">资产列表</text>
       </view>
 
       <view class="item-list">
         <view 
           v-for="(item, index) in items" 
           :key="index" 
-          class="asset-item-card" 
+          class="asset-item-card card-warm" 
           hover-class="item-active"
           @tap="navToItemDetail(item)"
         >
           <view class="item-left">
-            <view class="item-icon-box">
+            <!-- 资产项图标：完整矩形框 -->
+            <view class="item-icon-rect">
               <text class="item-emoji">{{ item.emoji }}</text>
             </view>
             <view class="item-info">
@@ -64,18 +60,17 @@
           <view class="item-right">
             <view class="amount-box">
               <text class="item-amount num-font">{{ formatMoney(item.value) }}</text>
-              <text v-if="item.profit" class="item-profit num-font" :class="item.profit >= 0 ? 'up' : 'down'">
+              <text v-if="item.profit" class="item-profit num-font" :class="item.profit >= 0 ? 'text-up' : 'text-down'">
                 {{ item.profit >= 0 ? '+' : '' }}{{ item.profit }}
               </text>
             </view>
-            <text class="iconfont arrow"></text>
+            <image src="/static/images/arrow-right.png" class="arrow-icon"></image>
           </view>
         </view>
       </view>
     </view>
 
-    <!-- 底部垫片 -->
-    <view class="safe-bottom"></view>
+    <view class="safe-area-bottom" style="height: 40rpx;"></view>
   </view>
 </template>
 
@@ -124,54 +119,29 @@ const navToItemDetail = (item) => {
 <style lang="scss" scoped>
 .account-detail-page {
   min-height: 100vh;
-  background-color: $bg-page; // #FAF9F6
+  background-color: $bg-page; // 米白色背景
 }
 
-/* 1. 顶部总览卡片：沉浸式墨绿 */
+/* 1. 顶部总览：不再使用渐变 */
 .summary-section {
-  padding: 40rpx 32rpx 80rpx;
-  background: linear-gradient(180deg, $primary 0%, $bg-page 100%);
+  padding: $spacing-md $spacing-md 0;
 }
 
 .summary-card {
-  background-color: $bg-white;
-  border-radius: $radius-lg;
+  /* card-warm 已带白底、圆角、阴影 */
   padding: 48rpx 40rpx;
-  box-shadow: $shadow-card;
-  position: relative;
-  overflow: hidden;
-
-  .brand-info {
-    display: flex;
-    align-items: center;
-    gap: 16rpx;
-    margin-bottom: 40rpx;
-    
-    .wechat-logo {
-      width: 44rpx; height: 44rpx;
-      background-color: #07c160; // 微信绿仅在此处点缀
-      border-radius: 10rpx;
-      @include flex-center;
-      color: $white;
-      .iconfont { font-size: 24rpx; }
-    }
-    .account-name { font-size: 28rpx; font-weight: 600; color: $text-main; }
-  }
 
   .balance-content {
-    .label { font-size: 24rpx; color: $text-sub; display: block; margin-bottom: 12rpx; }
-    .amount { font-size: 64rpx; font-weight: 800; color: $primary; letter-spacing: -1rpx; }
+    .label { font-size: 24rpx; color: $text-muted; display: block; margin-bottom: 8rpx; }
+    .amount { font-size: 64rpx; font-weight: $fw-bold; color: $primary; }
   }
 }
 
-/* 2. 操作栏：极简圆圈 */
+/* 2. 操作栏：矩形填充风格 */
 .action-bar {
   display: flex;
   justify-content: space-around;
-  padding: 0 40rpx;
-  margin-top: -40rpx; // 产生卡片悬浮效果
-  position: relative;
-  z-index: 10;
+  padding: $spacing-lg $spacing-md;
 
   .action-item {
     display: flex;
@@ -179,91 +149,88 @@ const navToItemDetail = (item) => {
     align-items: center;
     gap: 16rpx;
     
-    .action-label { font-size: 24rpx; color: $text-sub; font-weight: 500; }
+    .action-label { font-size: 24rpx; color: $text-regular; font-weight: $fw-medium; }
   }
 }
 
-.icon-circle {
-  width: 96rpx; height: 96rpx;
-  border-radius: 50%;
+.icon-box-filled {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-base; // 矩形圆角
   @include flex-center;
-  background-color: $bg-white;
   box-shadow: $shadow-card;
-  .iconfont { font-size: 40rpx; }
   
-  &.bg-income { color: $color-income; }
-  &.bg-transfer { color: $color-transfer; }
-  &.bg-subtle { color: $text-sub; }
+  .action-icon { width: 48rpx; height: 48rpx; }
+  
+  // 对应的语义化背景（10%透明度）
+  &.bg-income-light { background-color: $bg-income; color: $color-income; }
+  &.bg-transfer-light { background-color: $bg-transfer; color: $color-transfer; }
+  &.bg-subtle-light { background-color: $bg-subtle; color: $text-sub; }
 }
 
-/* 3. 构成列表：白卡片流 */
+/* 3. 资产列表 */
 .items-section {
-  padding: 60rpx 32rpx;
+  padding: 0 $spacing-md;
   
   .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24rpx;
-    padding: 0 8rpx;
-    
-    .title { font-size: 30rpx; font-weight: 600; color: $text-main; }
-    .count-tag { font-size: 22rpx; color: $text-muted; }
+    margin-bottom: $spacing-base;
+    .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
   }
 }
 
 .asset-item-card {
-  background-color: $bg-white;
-  border-radius: $radius-base;
-  padding: 30rpx;
+  /* 使用 card-warm 保持一致 */
+  padding: 24rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.01);
-  border: 1rpx solid rgba(0,0,0,0.02);
-  transition: all 0.2s;
+  margin-bottom: $spacing-base;
+  // 覆盖 card-warm 的默认 margin
+  margin-left: 0;
+  margin-right: 0;
 
   .item-left {
     display: flex;
     align-items: center;
     gap: 24rpx;
     
-    .item-icon-box {
-      width: 80rpx; height: 80rpx;
+    .item-icon-rect {
+      width: 88rpx; 
+      height: 88rpx;
       background-color: $bg-page;
-      border-radius: 20rpx;
+      border-radius: $radius-base; // 矩形圆角
       @include flex-center;
-      .item-emoji { font-size: 40rpx; }
+      .item-emoji { font-size: 44rpx; }
     }
-    .item-name { font-size: 28rpx; font-weight: 600; color: $text-main; display: block; }
+    .item-name { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; display: block; }
     .item-desc { font-size: 22rpx; color: $text-muted; margin-top: 4rpx; display: block; }
   }
 
   .item-right {
     display: flex;
     align-items: center;
-    gap: 16rpx;
+    gap: 12rpx;
     
     .amount-box {
       text-align: right;
-      .item-amount { font-size: 30rpx; font-weight: 700; color: $text-main; display: block; }
-      .item-profit {
-        font-size: 20rpx; font-weight: 600;
-        &.up { color: $color-gain; }
-        &.down { color: $color-loss; }
-      }
+      .item-amount { font-size: 30rpx; font-weight: $fw-bold; color: $text-main; display: block; }
+      .item-profit { font-size: 20rpx; font-weight: $fw-semibold; margin-top: 4rpx; display: block; }
     }
-    .arrow { color: $text-placeholder; font-size: 24rpx; }
+    .arrow-icon { width: 24rpx; height: 24rpx; opacity: 0.3; }
   }
 }
 
 .item-active {
-  background-color: #fcfcfc;
-  transform: scale(0.99);
+  background-color: $bg-subtle;
+  transform: scale(0.98);
 }
 
-.hover-opacity { opacity: 0.7; }
-.animate-fade-in { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10rpx); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
