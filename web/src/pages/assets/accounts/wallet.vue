@@ -1,252 +1,210 @@
 <template>
-  <view class="account-page-wallet">
-    <view class="wallet-header">
-      <text class="page-title">钱包账户</text>
-    </view>
-    
-    <view class="wallet-content">
-      <view class="wallet-balance">
-        <text class="balance-label">账户余额</text>
-        <text class="balance-amount money">¥{{ formatAmount(balance) }}</text>
-      </view>
-      
-      <view class="wallet-actions">
-        <view class="action-item btn-active" @tap="handleAction('RECHARGE')">
-          <view class="icon-box bg-recharge">
-            <img src="@/static/assets/actions/import.png" class="icon-img" alt="recharge">
+  <view class="cash-account-container">
+    <!-- 1. 顶部资产看板 -->
+    <view class="summary-section animate-fade-in">
+      <view class="asset-card card-warm">
+        <view class="brand-info">
+          <view class="cash-logo-box">
+            <image src="/static/images/cash-icon.png" mode="aspectFit" class="brand-icon"></image>
           </view>
-          <text>充值</text>
-        </view>
-        <view class="action-item btn-active" @tap="handleAction('WITHDRAW')">
-          <view class="icon-box bg-withdraw">
-            <img src="@/static/assets/actions/export.png" class="icon-img" alt="withdraw">
-          </view>
-          <text>提现</text>
-        </view>
-        <view class="action-item btn-active" @tap="handleAction('TRANSFER')">
-          <view class="icon-box bg-transfer">
-            <img src="@/static/assets/actions/transfer.png" class="icon-img" alt="transfer">
-          </view>
-          <text>转账</text>
-        </view>
-      </view>
-      
-      <view class="wallet-history">
-        <view class="history-header">
-          <text class="history-title">交易记录</text>
-          <text class="history-more">查看更多</text>
+          <text class="account-name">家庭现金汇总</text>
         </view>
         
-        <view class="history-list">
-          <view v-for="record in transactionHistory" :key="record.id" class="history-item">
-            <view class="item-left">
-              <view class="record-icon" :style="{ backgroundColor: record.color }"></view>
-              <view class="record-info">
-                <text class="record-title">{{ record.title }}</text>
-                <text class="record-time">{{ record.time }}</text>
-              </view>
-            </view>
-            <text class="record-amount" :class="{ 'income': record.type === 'income' }">
-              {{ record.type === 'income' ? '+' : '-' }}¥{{ formatAmount(record.amount) }}
-            </text>
+        <view class="balance-content">
+          <view class="label-row" @click="isAssetHidden = !isAssetHidden">
+            <text class="label">当前可用现金 (元)</text>
+            <image :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" class="eye-icon"></image>
+          </view>
+          <text class="amount num-font" :class="{ 'is-masked': isAssetHidden }">
+            {{ isAssetHidden ? '******' : formatMoney(totalCash) }}
+          </text>
+          <view class="last-update">
+            <text>上次对账：{{ lastAuditDate }}</text>
           </view>
         </view>
       </view>
     </view>
+
+    <!-- 2. 快捷操作 -->
+    <view class="action-bar">
+      <view class="action-item" @click="handleAction('out')">
+        <view class="icon-box bg-expense-box">
+          <image src="/static/images/expense.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">支出记账</text>
+      </view>
+      <view class="action-item" @click="handleAction('in')">
+        <view class="icon-box bg-income-box">
+          <image src="/static/images/income.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">存入/取现</text>
+      </view>
+      <view class="action-item" @click="handleAction('adjust')">
+        <view class="icon-box bg-subtle-box">
+          <image src="/static/images/audit.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">盘点对账</text>
+      </view>
+    </view>
+
+    <!-- 3. 现金分布列表 -->
+    <view class="items-section">
+      <view class="section-header">
+        <text class="title">现金存放点</text>
+      </view>
+
+      <view class="item-list">
+        <view 
+          v-for="(item, index) in items" 
+          :key="index" 
+          class="cash-item-card card-warm"
+          hover-class="item-active"
+        >
+          <view class="item-left">
+            <view class="item-icon-rect">
+              <text class="item-emoji">{{ item.emoji }}</text>
+            </view>
+            <view class="item-info">
+              <view class="name-row">
+                <text class="item-name">{{ item.name }}</text>
+                <text class="owner-tag">{{ item.owner }}</text>
+              </view>
+              <text class="item-desc">最后变动：{{ item.lastChange }}</text>
+            </view>
+          </view>
+          
+          <view class="item-right">
+            <view class="amount-box">
+              <text class="item-amount num-font">{{ isAssetHidden ? '****' : formatMoney(item.value) }}</text>
+              <text class="item-status" v-if="item.isUrgent">需补充</text>
+            </view>
+            <image src="/static/images/arrow-right.png" class="arrow-icon"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="safe-area-bottom" style="height: 40rpx;"></view>
   </view>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, computed } from 'vue';
 
-const route = useRoute();
-const accountId = route.params.id;
+const isAssetHidden = ref(false);
+const lastAuditDate = ref('2024-10-20');
 
-const balance = ref(0);
-const transactionHistory = ref([]);
+// 模拟现金资产数据
+const items = ref([
+  { name: '我的钱包', owner: '本人', value: 856.50, emoji: '👛', lastChange: '昨天 18:20', isUrgent: false },
+  { name: '夫人钱包', owner: '妻子', value: 1200.00, emoji: '👜', lastChange: '10-18', isUrgent: false },
+  { name: '家庭保险箱', owner: '公共', value: 5000.00, emoji: '🔐', lastChange: '09-12', isUrgent: false },
+  { name: '应急备用金', owner: '书房', value: 200.00, emoji: '✉️', lastChange: '10-01', isUrgent: true },
+  { name: '孩子存钱罐', owner: '儿子', value: 352.40, emoji: '🐷', lastChange: '10-15', isUrgent: false }
+]);
 
-onMounted(() => {
-  // 这里应该从API获取账户信息和交易记录
-  // 暂时使用模拟数据
-  fetchAccountData();
-  fetchTransactionHistory();
+const totalCash = computed(() => {
+  return items.value.reduce((acc, item) => acc + item.value, 0);
 });
 
-const fetchAccountData = () => {
-  // 模拟API调用
-  balance.value = 8888.88;
+const formatMoney = (val) => {
+  return val.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
 };
 
-const fetchTransactionHistory = () => {
-  // 模拟API调用
-  transactionHistory.value = [
-    {
-      id: '1',
-      title: '充值',
-      amount: 1000.00,
-      type: 'income',
-      time: '2026-03-17 10:00',
-      color: '#22c55e'
-    },
-    {
-      id: '2',
-      title: '购物',
-      amount: 200.00,
-      type: 'expense',
-      time: '2026-03-16 15:30',
-      color: '#ef4444'
-    },
-    {
-      id: '3',
-      title: '转账',
-      amount: 500.00,
-      type: 'expense',
-      time: '2026-03-15 09:00',
-      color: '#3b82f6'
-    }
-  ];
-};
-
-const formatAmount = (val) => Number(Math.abs(val) || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
-
-const handleAction = (action) => {
-  console.log('Action clicked:', action);
+const handleAction = (type) => {
+  uni.showToast({ title: '记录功能跳转', icon: 'none' });
 };
 </script>
 
 <style lang="scss" scoped>
-.account-page-wallet {
-  padding: 24rpx 32rpx;
+.cash-account-container {
+  min-height: 100vh;
+  background-color: $bg-page;
 }
 
-.wallet-header {
-  margin-bottom: 40rpx;
-  .page-title {
-    font-size: 36rpx;
-    font-weight: 800;
-    color: #1F2937;
+/* 1. 总览卡片 */
+.summary-section { padding: $spacing-md $spacing-md 0; }
+
+.asset-card {
+  padding: 48rpx 40rpx;
+  
+  .brand-info {
+    display: flex; align-items: center; gap: 20rpx; margin-bottom: 32rpx;
+    .cash-logo-box {
+      width: 52rpx; height: 52rpx; background-color: $primary; border-radius: $radius-sm;
+      @include flex-center;
+      .brand-icon { width: 34rpx; height: 34rpx; filter: brightness(100); }
+    }
+    .account-name { font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; }
+  }
+
+  .balance-content {
+    .label-row {
+      display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx;
+      .label { font-size: 24rpx; color: $text-muted; }
+      .eye-icon { width: 30rpx; height: 30rpx; opacity: 0.3; }
+    }
+    .amount { 
+      font-size: 64rpx; font-weight: $fw-bold; color: $text-main; 
+      &.is-masked { color: $text-placeholder; letter-spacing: 4rpx; }
+    }
+    .last-update { font-size: 22rpx; color: $text-placeholder; margin-top: 16rpx; }
   }
 }
 
-.wallet-balance {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border-radius: 40rpx;
-  padding: 48rpx;
-  margin-bottom: 40rpx;
-  color: #fff;
-  .balance-label {
-    font-size: 24rpx;
-    opacity: 0.8;
-    margin-bottom: 16rpx;
-    display: block;
-  }
-  .balance-amount {
-    font-size: 64rpx;
-    font-weight: 800;
-  }
-}
-
-.wallet-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24rpx;
-  margin-bottom: 48rpx;
+/* 2. 操作栏 */
+.action-bar {
+  display: flex; justify-content: space-around; padding: $spacing-lg $spacing-md;
   .action-item {
-    background: #fff;
-    border-radius: 36rpx;
-    padding: 32rpx 24rpx;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16rpx;
-    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
-    .icon-box {
-      width: 80rpx;
-      height: 80rpx;
-      border-radius: 24rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      &.bg-recharge { background: #d1fae5; }
-      &.bg-withdraw { background: #fee2e2; }
-      &.bg-transfer { background: #dbeafe; }
-      .icon-img {
-        max-width: 60%;
-        max-height: 60%;
-        object-fit: contain;
-      }
-    }
-    text {
-      font-size: 24rpx;
-      font-weight: 700;
-      color: #374151;
-    }
+    display: flex; flex-direction: column; align-items: center; gap: 16rpx;
+    .action-label { font-size: 24rpx; color: $text-regular; font-weight: $fw-medium; }
   }
 }
 
-.wallet-history {
-  .history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24rpx;
-    .history-title {
-      font-size: 28rpx;
-      font-weight: 800;
-      color: #374151;
+.icon-box {
+  width: 100rpx; height: 100rpx; border-radius: $radius-base;
+  @include flex-center; box-shadow: $shadow-card;
+  .action-icon { width: 48rpx; height: 48rpx; }
+  &.bg-expense-box { background-color: $bg-expense; }
+  &.bg-income-box { background-color: $bg-income; }
+  &.bg-subtle-box { background-color: $bg-subtle; }
+}
+
+/* 3. 现金列表 */
+.items-section {
+  padding: 0 $spacing-md;
+  .section-header { margin-bottom: $spacing-base; .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; } }
+}
+
+.cash-item-card {
+  padding: 24rpx; display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-base;
+
+  .item-left {
+    display: flex; align-items: center; gap: 24rpx;
+    .item-icon-rect {
+      width: 88rpx; height: 88rpx; background-color: $bg-page; border-radius: $radius-base;
+      @include flex-center; .item-emoji { font-size: 44rpx; }
     }
-    .history-more {
-      font-size: 22rpx;
-      color: #6b7280;
+    .item-info {
+      .name-row { display: flex; align-items: center; gap: 12rpx; margin-bottom: 6rpx; }
+      .item-name { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; }
+      .owner-tag { font-size: 18rpx; color: $text-muted; background: $gray-100; padding: 2rpx 8rpx; border-radius: 4rpx; }
+      .item-desc { font-size: 22rpx; color: $text-muted; }
     }
   }
-  .history-list {
-    .history-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 32rpx 0;
-      border-bottom: 1rpx solid #F8FAFC;
-      .item-left {
-        display: flex;
-        align-items: center;
-        gap: 20rpx;
-        .record-icon {
-          width: 64rpx;
-          height: 64rpx;
-          border-radius: 16rpx;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .record-info {
-          .record-title {
-            font-size: 28rpx;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 8rpx;
-            display: block;
-          }
-          .record-time {
-            font-size: 20rpx;
-            color: #9CA3AF;
-          }
-        }
-      }
-      .record-amount {
-        font-size: 28rpx;
-        font-weight: 800;
-        color: #ef4444;
-        &.income {
-          color: #22c55e;
-        }
-      }
+
+  .item-right {
+    display: flex; align-items: center; gap: 12rpx;
+    .amount-box {
+      text-align: right;
+      .item-amount { font-size: 30rpx; font-weight: $fw-bold; color: $text-main; }
+      .item-status { font-size: 18rpx; color: $red; margin-top: 4rpx; display: block; font-weight: $fw-semibold; }
     }
+    .arrow-icon { width: 24rpx; height: 24rpx; opacity: 0.2; }
   }
 }
 
-/* 特殊样式 */
-.money { font-family: 'JetBrains Mono', 'DIN Alternate', monospace; }
-.btn-active:active { opacity: 0.7; transform: scale(0.98); }
+.item-active { background-color: $bg-subtle; transform: scale(0.98); }
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10rpx); } to { opacity: 1; transform: translateY(0); } }
 </style>

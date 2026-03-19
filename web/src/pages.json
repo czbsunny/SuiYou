@@ -299,6 +299,15 @@
             "navigationBarTitleText": "微信账户",
             "backgroundColor": "#F9F8F4"
           }
+        },
+        {
+          "path": "security",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "证券账户",
+            "backgroundColor": "#F9F8F4"
+          }
         }
       ]
     },

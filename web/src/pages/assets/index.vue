@@ -132,10 +132,7 @@ const handleAccountClick = (account) => {
   let pagePath = '';
   switch (instType) {
     case 'BANK':
-      pagePath = `/pages/assets/accounts/BankAccountPage?id=${account.id}`;
-      break;
-    case 'WALLET':
-      pagePath = `/pages/assets/accounts/WalletAccountPage?id=${account.id}`;
+      pagePath = `/pages/assets/accounts/bank?id=${account.id}`;
       break;
     case 'PAYMENT':
       switch (instCode) {
@@ -145,10 +142,10 @@ const handleAccountClick = (account) => {
         case 'WECHAT':
           pagePath = `/pages/assets/accounts/wechat?id=${account.id}`;
           break;
-        default:
-          pagePath = `/pages/assets/accounts/PaymentAccountPage?id=${account.id}`;
-          break;
       }
+      break;
+    case 'SECURITY':
+      pagePath = `/pages/assets/accounts/security?id=${account.id}`;
       break;
     default:
       pagePath = `/pages/assets/account-detail?id=${account.id}`;

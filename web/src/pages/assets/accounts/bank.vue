@@ -1,298 +1,226 @@
 <template>
-  <view class="account-page-bank">
-    <!-- 1. 核心账户卡片 (Premium 尊享版皮肤) -->
-    <view class="skin-bank-premium">
-      <view class="hero-gloss"></view>
-      <view class="card-content">
-        <view class="card-header">
-          <view class="inst-info">
-            <view class="logo-box">
-              <image :src="instInfo.logoUrl" mode="aspectFit" class="logo" />
-            </view>
-            <view class="name-area">
-              <text class="inst-name">{{ instInfo.instName }}</text>
-              <text class="acc-desc">金葵花客户 | {{ account.institutionIdentifier }}</text>
-            </view>
+  <view class="account-detail-page">
+    <!-- 1. 顶部总览 -->
+    <view class="summary-section animate-fade-in">
+      <view class="summary-card card-warm">
+        <view class="brand-info">
+          <view class="brand-logo-box">
+            <image src="/static/images/bank-logo.png" mode="aspectFit" class="brand-icon"></image>
           </view>
-          <view class="settings-btn" @tap="handleSettings">
-            <image src="@/static/assets/actions/settings.png" class="icon-img" alt="settings"></image>
-          </view>
+          <text class="account-name">招商银行</text>
         </view>
         
-        <view class="balance-area">
-          <text class="label">该行净资产 (CNY)</text>
-          <view class="amount">
-            <text class="symbol">¥</text>
-            <text class="num money">{{ formatAmount(netWorth) }}</text>
+        <view class="balance-content">
+          <view class="label-row" @tap="toggleVisibility">
+            <text class="label">净资产 (元)</text>
+            <view class="icon-eye-wrapper">
+              <image :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" class="eye-icon"></image>
+            </view>
           </view>
-        </view>
-        
-        <view class="card-footer">
-          <text class="footer-stat">总资产 ¥{{ formatAmount(totalAssets) }}</text>
-          <text class="footer-stat">总负债 ¥{{ formatAmount(totalLiabilities) }}</text>
-        </view>
-      </view>
-    </view>
-
-    <!-- 2. 操作区 (2x1 宽展布局) -->
-    <view class="action-grid">
-      <view class="action-item btn-active" @tap="handleAction('TRANSFER')">
-        <view class="icon-box bg-transfer">
-          <img src="@/static/assets/actions/transfer.png" class="icon-img" alt="transfer">
-        </view>
-        <text>转账调拨</text>
-      </view>
-      <view class="action-item btn-active" @tap="handleAction('CALIBRATE')">
-        <view class="icon-box bg-scale">
-          <img src="@/static/assets/actions/scale.png" class="icon-img" alt="scale">
-        </view>
-        <text>账户对账</text>
-      </view>
-    </view>
-
-    <!-- 3. 资产负债列表 (分组展示) -->
-    <view class="asset-groups">
-      <!-- 动态渲染每个分组 -->
-      <view v-for="group in assetGroups" :key="group.type" class="group-card">
-        <!-- 分组头部小计 -->
-        <view class="group-header">
-          <text class="group-title">{{ group.title }}</text>
-          <text class="group-sum money" :class="{ 'liability': group.isLiability }">
-            {{ group.isLiability ? '-' : '' }}¥{{ formatAmount(group.total) }}
+          <!-- 净资产计算：总资产 - 总负债 -->
+          <text class="amount num-font" :class="{ 'is-masked': isAssetHidden }">
+            {{ isAssetHidden ? '******' : formatMoney(netAsset) }}
           </text>
         </view>
+      </view>
+    </view>
 
-        <!-- 分组内的资产项 -->
+    <!-- 2. 快捷操作区 -->
+    <view class="action-bar">
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('record')">
+        <view class="icon-box bg-income-box"><image src="/static/images/edit.png" class="action-icon"></image></view>
+        <text class="action-label">记账</text>
+      </view>
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('transfer')">
+        <view class="icon-box bg-transfer-box"><image src="/static/images/transfer.png" class="action-icon"></image></view>
+        <text class="action-label">转账</text>
+      </view>
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('adjust')">
+        <view class="icon-box bg-subtle-box"><image src="/static/images/check.png" class="action-icon"></image></view>
+        <text class="action-label">校准</text>
+      </view>
+    </view>
+
+    <!-- 3. 资产/负债列表 -->
+    <view class="items-section">
+      <view class="section-header">
+        <text class="title">资产列表</text>
+      </view>
+
+      <view class="item-list">
         <view 
-          v-for="asset in group.items" 
-          :key="asset.id" 
-          class="asset-row btn-active"
-          @tap="handleAssetClick(asset)"
+          v-for="(item, index) in items" 
+          :key="index" 
+          class="asset-item-card card-warm" 
+          hover-class="item-active"
+          @tap="navToItemDetail(item)"
         >
-          <view class="row-left">
-            <view class="indicator" :style="{ backgroundColor: asset.color || group.defaultColor }"></view>
-            <text class="asset-name">{{ asset.name }}</text>
+          <view class="item-left">
+            <view class="item-icon-rect">
+              <text class="item-emoji">{{ getEmoji(item.type) }}</text>
+            </view>
+            <view class="item-info">
+              <text class="item-name">{{ item.name }}</text>
+              <text class="item-desc">{{ item.desc }}</text>
+            </view>
           </view>
-          <text class="asset-val money" :class="{ 'liability': group.isLiability }">
-            {{ formatAmount(asset.totalBalance) }}
-          </text>
+          
+          <view class="item-right">
+            <view class="amount-box">
+              <text class="item-amount num-font" :class="{'text-debt': isDebt(item.type)}">
+                {{ isAssetHidden ? '****' : (isDebt(item.type) ? '-' : '') + formatMoney(item.value) }}
+              </text>
+              <text v-if="item.profit" class="item-profit num-font" :class="item.profit >= 0 ? 'text-up' : 'text-down'">
+                {{ item.profit >= 0 ? '+' : '' }}{{ item.profit }}
+              </text>
+            </view>
+            <image src="/static/images/arrow-right.png" class="arrow-icon"></image>
+          </view>
         </view>
       </view>
     </view>
+
+    <view class="safe-area-bottom" style="height: 40rpx;"></view>
   </view>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { useConfigStore } from '@/stores/config.js';
-import { useRoute } from 'vue-router';
+import { ref, computed } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 
-const route = useRoute();
-const accountId = route.params.id;
+const isAssetHidden = ref(false);
 
-const account = ref({});
-const assets = ref([]);
-const configStore = useConfigStore();
+// 模拟后端返回的数据结构
+const items = ref([
+  { type: 'CASH', name: '活期存款', desc: '尾号 8899', value: 28500.42 },
+  { type: 'CASH_PLUS', name: '朝朝宝', desc: '活期+ | 7日年化2.1%', value: 50000.00, profit: 3.25 },
+  { type: 'FIXED', name: '定期存款', desc: '2025-06-12 到期', value: 100000.00 },
+  { type: 'WEALTH', name: '理财产品', desc: '招银稳健系列', value: 35000.00, profit: -120.50 },
+  { type: 'CREDIT', name: '信用卡', desc: '本期应还 15,200.00', value: 15200.00 },
+  { type: 'LOAN', name: '个人贷款', desc: '剩余本金 240,000.00', value: 240000.00 }
+]);
 
-onMounted(() => {
-  // 这里应该从API获取账户信息和资产信息
-  // 暂时使用模拟数据
-  fetchAccountData();
-  fetchAssetsData();
+// 计算净资产
+const netAsset = computed(() => {
+  return items.value.reduce((acc, item) => {
+    return isDebt(item.type) ? acc - item.value : acc + item.value;
+  }, 0);
 });
 
-const fetchAccountData = () => {
-  // 模拟API调用
-  account.value = {
-    id: accountId,
-    institution: 'ICBC',
-    institutionIdentifier: '6222021234567890123'
+// 类型判断辅助
+const isDebt = (type) => ['CREDIT', 'LOAN'].includes(type);
+
+const getEmoji = (type) => {
+  const map = {
+    'CASH': '🏦',
+    'CASH_PLUS': '⚡',
+    'FIXED': '🔒',
+    'WEALTH': '📈',
+    'CREDIT': '💳',
+    'LOAN': '📝'
   };
+  return map[type] || '💰';
 };
 
-const fetchAssetsData = () => {
-  // 模拟API调用
-  assets.value = [
-    {
-      id: '1',
-      name: '活期账户',
-      totalBalance: 10000.00,
-      groupType: 'LIQUID',
-      color: '#2A806C'
-    },
-    {
-      id: '2',
-      name: '定期存款',
-      totalBalance: 50000.00,
-      groupType: 'INVEST',
-      color: '#D97706'
-    },
-    {
-      id: '3',
-      name: '信用卡',
-      totalBalance: 5000.00,
-      groupType: 'DEBT',
-      color: '#F87171'
-    }
-  ];
+const formatMoney = (val) => {
+  return Math.abs(val).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
 };
 
-// --- 核心逻辑：资产分组 ---
-const assetGroups = computed(() => {
-  const groups = [
-    { type: 'LIQUID', title: '流动资产', items: [], total: 0, defaultColor: '#2A806C', isLiability: false },
-    { type: 'INVEST', title: '定期与理财', items: [], total: 0, defaultColor: '#D97706', isLiability: false },
-    { type: 'DEBT', title: '账户负债', items: [], total: 0, defaultColor: '#F87171', isLiability: true }
-  ];
-
-  assets.value.forEach(asset => {
-    // 逻辑：根据 Asset.groupType 分组
-    const group = groups.find(g => g.type === asset.groupType) || groups[0];
-    group.items.push(asset);
-    group.total += Number(asset.totalBalance);
-  });
-
-  return groups.filter(g => g.items.length > 0);
-});
-
-// --- 数据计算 ---
-const totalAssets = computed(() => {
-  return assetGroups.value
-    .filter(g => !g.isLiability)
-    .reduce((sum, g) => sum + g.total, 0);
-});
-
-const totalLiabilities = computed(() => {
-  const debtGroup = assetGroups.value.find(g => g.isLiability);
-  return debtGroup ? debtGroup.total : 0;
-});
-
-const netWorth = computed(() => totalAssets.value - totalLiabilities.value);
-
-const instInfo = computed(() => configStore.institutionMap[account.value.institution] || {});
-
-const formatAmount = (val) => Number(Math.abs(val) || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
-
-// 事件处理
-const handleSettings = () => {
-  uni.navigateTo({
-    url: `/pages/assets/detail?id=${accountId.value}&mode=edit`
-  });
+const toggleVisibility = () => {
+  isAssetHidden.value = !isAssetHidden.value;
+  uni.vibrateShort();
 };
 
-const handleAction = (action) => {
-  console.log('Action clicked:', action);
-};
-
-const handleAssetClick = (asset) => {
-
+const handleAction = (type) => {
+  uni.showToast({ title: '跳转中...', icon: 'none' });
 };
 </script>
 
 <style lang="scss" scoped>
-.account-page-bank {
-  padding: 24rpx 32rpx;
+/* 保持与项目全局一致的暖白视觉体系 */
+.account-detail-page {
+  min-height: 100vh;
+  background-color: $bg-page;
 }
 
-/* 1. Card Skin */
-.skin-bank-premium {
-  height: 440rpx; border-radius: 54rpx; position: relative; overflow: hidden;
-  background: linear-gradient(135deg, #1a1a1a 0%, #374151 100%);
-  box-shadow: 0 30rpx 60rpx rgba(0,0,0,0.25); margin-bottom: 40rpx;
-  
-  .hero-gloss {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0) 100%);
+.summary-section { padding: $spacing-md $spacing-md 0; }
+.summary-card { padding: 48rpx 40rpx; }
+
+.brand-info {
+  display: flex; align-items: center; gap: 20rpx; margin-bottom: 32rpx;
+  .brand-logo-box {
+    width: 52rpx; height: 52rpx; background-color: $primary; border-radius: $radius-sm;
+    @include flex-center;
+    .brand-icon { width: 34rpx; height: 34rpx; filter: brightness(100); }
   }
-  
-  .card-content {
-    position: relative; z-index: 1; padding: 54rpx; height: 100%;
-    display: flex; flex-direction: column; justify-content: space-between; color: #fff;
-  }
+  .account-name { font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; }
 }
 
-.card-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  .inst-info {
-    display: flex; align-items: center; gap: 24rpx;
-    .logo-box { 
-      width: 72rpx; height: 72rpx; border-radius: 20rpx; background: rgba(255,255,255,0.1); 
-      backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
-      .logo { width: 48rpx; height: 48rpx; }
-    }
-    .inst-name { font-size: 34rpx; font-weight: 800; }
-    .acc-desc { font-size: 20rpx; opacity: 0.5; margin-top: 4rpx; display: block; }
+.balance-content {
+  .label-row {
+    display: flex; align-items: center; gap: 12rpx; margin-bottom: 12rpx;
+    .label { font-size: 24rpx; color: $text-muted; }
+    .eye-icon { width: 30rpx; height: 30rpx; opacity: 0.3; }
   }
-
-  .settings-btn { 
-    width: 64rpx; height: 64rpx; display: flex; align-items: center; justify-content: center; 
-    .icon-img {
-      width: 40rpx;
-      height: 40rpx;
-      object-fit: contain;
-    }
+  .amount { 
+    font-size: 64rpx; font-weight: $fw-bold; color: $text-main; 
+    &.is-masked { color: $text-placeholder; letter-spacing: 4rpx; }
   }
 }
 
-.balance-area {
-  .label { font-size: 22rpx; opacity: 0.5; letter-spacing: 2rpx; margin-bottom: 12rpx; display: block; text-transform: uppercase; }
-  .amount {
-    display: flex; align-items: baseline; gap: 12rpx;
-    .symbol { font-size: 44rpx; font-weight: 600; opacity: 0.6; }
-    .num { font-size: 72rpx; font-weight: 800; }
-  }
-}
-
-.card-footer {
-  display: flex; justify-content: space-between; border-top: 1rpx solid rgba(255,255,255,0.08); padding-top: 32rpx;
-  .footer-stat { font-size: 20rpx; opacity: 0.5; font-weight: 600; }
-}
-
-/* 2. Action Grid */
-.action-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24rpx; margin-bottom: 48rpx;
+.action-bar {
+  display: flex; justify-content: space-around; padding: $spacing-lg $spacing-md;
   .action-item {
-    background: #fff; border-radius: 36rpx; padding: 32rpx; display: flex; align-items: center; gap: 24rpx;
-    box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
-    .icon-box {
-      width: 72rpx; height: 72rpx; border-radius: 20rpx; display: flex; align-items: center; justify-content: center;
-      &.bg-scale { background: #eff6ff; }
-      &.bg-transfer { background: #f5f3ff; }
-      .icon-img {
-        max-width: 60%;
-        max-height: 60%;
-        object-fit: contain;
-      }
+    display: flex; flex-direction: column; align-items: center; gap: 16rpx;
+    .action-label { font-size: 24rpx; color: $text-regular; font-weight: $fw-medium; }
+  }
+}
+
+.icon-box {
+  width: 100rpx; height: 100rpx; border-radius: $radius-base;
+  @include flex-center; box-shadow: $shadow-card;
+  .action-icon { width: 48rpx; height: 48rpx; }
+  &.bg-income-box { background-color: $bg-income; color: $color-income; }
+  &.bg-transfer-box { background-color: $bg-transfer; color: $color-transfer; }
+  &.bg-subtle-box { background-color: $bg-subtle; color: $text-sub; }
+}
+
+.items-section {
+  padding: 0 $spacing-md;
+  .section-header {
+    margin-bottom: $spacing-base;
+    .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
+  }
+}
+
+.asset-item-card {
+  padding: 24rpx; display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-base;
+  
+  .item-left {
+    display: flex; align-items: center; gap: 24rpx;
+    .item-icon-rect {
+      width: 88rpx; height: 88rpx; background-color: $bg-page; border-radius: $radius-base;
+      @include flex-center; .item-emoji { font-size: 44rpx; }
     }
-    text { font-size: 28rpx; font-weight: 800; color: #374151; }
+    .item-name { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; }
+    .item-desc { font-size: 22rpx; color: $text-muted; margin-top: 4rpx; }
+  }
+
+  .item-right {
+    display: flex; align-items: center; gap: 12rpx;
+    .amount-box {
+      text-align: right;
+      .item-amount { 
+        font-size: 30rpx; font-weight: $fw-bold; color: $text-main; 
+        &.text-debt { color: $text-sub; } // 负债项颜色稍浅
+      }
+      .item-profit { font-size: 20rpx; font-weight: $fw-semibold; margin-top: 4rpx; display: block; }
+    }
+    .arrow-icon { width: 24rpx; height: 24rpx; opacity: 0.2; }
   }
 }
 
-/* 3. Grouped Assets */
-.group-card {
-  background: #fff; border-radius: 40rpx; padding: 12rpx 0; margin-bottom: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.02);
-}
-
-.group-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 24rpx 40rpx; border-bottom: 1rpx solid #F8FAFC;
-  .group-title { font-size: 24rpx; font-weight: 800; color: #9CA3AF; text-transform: uppercase; letter-spacing: 2rpx; }
-  .group-sum { font-size: 22rpx; font-weight: 700; color: #4B5563; }
-}
-
-.asset-row {
-  padding: 32rpx 40rpx; display: flex; justify-content: space-between; align-items: center;
-  .row-left {
-    display: flex; align-items: center; gap: 20rpx;
-    .indicator { width: 8rpx; height: 32rpx; border-radius: 4rpx; }
-    .asset-name { font-size: 28rpx; font-weight: 700; color: #374151; }
-  }
-  .asset-val { font-size: 28rpx; font-weight: 800; color: #1F2937; }
-}
-
-/* 特殊样式 */
-.money { font-family: 'JetBrains Mono', 'DIN Alternate', monospace; }
-.liability { color: #F87171 !important; }
-.btn-active:active { opacity: 0.7; transform: scale(0.98); }
+.item-active { background-color: $bg-subtle; transform: scale(0.98); }
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10rpx); } to { opacity: 1; transform: translateY(0); } }
 </style>
