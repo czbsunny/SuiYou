@@ -59,23 +59,12 @@ import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
 
-
-
 // 当前选中的分类（用于需要选择机构的情况）
 const selectedCategory = ref(null);
 const selectedSubCategory = ref(null);
 
 // 资产分类数据
 const assetCategories = computed(() => configStore.assetCategories);
-
-
-
-// 检查细分类是否需要选择机构（通过 relations 判断）
-const needSelectInstitution = (subCategoryCode) => {
-  console.log('subCategoryCode:', subCategoryCode);
-  const institutions = configStore.getInstitutionsBySubCategoryCode(subCategoryCode);
-  return institutions && institutions.length > 0;
-};
 
 // 处理分类选择
 const selectCategory = (item, parentCategory = null) => {
@@ -92,35 +81,44 @@ const selectCategory = (item, parentCategory = null) => {
   selectedCategory.value = parent;
   selectedSubCategory.value = item;
   
-  // 判断是否需要选择机构
-  if (needSelectInstitution(item.categoryCode)) {
-    // 需要选择机构，跳转到机构选择页面
-    uni.navigateTo({
-      url: `/pages/assets/institution-selector?subCategoryCode=${item.categoryCode}&categoryCode=${parent.categoryCode}`
-    });
+  // 获取该细分类下的机构列表
+  const institutions = configStore.getInstitutionsBySubCategoryCode(item.categoryCode);
+  
+  // 根据机构数量决定跳转逻辑
+  if (institutions && institutions.length > 0) {
+    if (institutions.length === 1) {
+      // 只有一个机构，直接选择并跳转到添加账户页面
+      navigateToAddAccount(institutions[0]);
+    } else {
+      // 有多个机构，跳转到机构选择页面
+      uni.navigateTo({
+        url: `/pages/assets/institution-selector?subCategoryCode=${item.categoryCode}&categoryCode=${parent.categoryCode}`
+      });
+    }
   } else {
-    // 不需要选择机构，直接跳转到添加账户页面
-    navigateToAddAccount();
+    // 没有机构，弹窗提示暂不支持的资产类型
+    uni.showToast({
+      title: '暂不支持该资产类型',
+      icon: 'none',
+      duration: 2000
+    });
   }
 };
 
 // 跳转到添加账户页面
-const navigateToAddAccount = (institution = null) => {
+const navigateToAddAccount = (institution) => {
   const params = {
     categoryCode: selectedCategory.value?.categoryCode,
-    subCategoryCode: selectedSubCategory.value?.categoryCode
+    subCategoryCode: selectedSubCategory.value?.categoryCode,
+    instCode: institution.instCode
   };
-  
-  if (institution) {
-    params.instCode = institution.instCode;
-  }
   
   const queryString = Object.entries(params)
     .map(([key, value]) => `${key}=${encodeURIComponent(value || '')}`)
     .join('&');
   
   console.log('跳转参数:', queryString);
-  uni.redirectTo({
+  uni.navigateTo({
     url: `/pages/assets/add?${queryString}`
   });
 };

@@ -70,7 +70,7 @@ const form = ref({
   identifier: '',     // 账户标识码 (尾号/账号)
   accountName: '',    // 账户名称 (容器名)
   assetName: '',      // 资产名称
-  amount: '',         // 余额
+  amount: '0.00',         // 余额
   currency: 'CNY',
   includeInNetWorth: true
 });
@@ -142,7 +142,7 @@ const saveAsset = async () => {
   }
   
   const amount = parseFloat(form.value.amount);
-  if (isNaN(amount) || amount <= 0) {
+  if (isNaN(amount) || amount < 0) {
     uni.showToast({ title: '请输入有效的资产金额', icon: 'none' });
     return;
   }
