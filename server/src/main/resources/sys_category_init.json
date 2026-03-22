@@ -1,0 +1,161 @@
+[
+  {
+    "categoryCode": "CATERING",
+    "name": "食品餐饮",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/catering.png",
+    "sortOrder": 10,
+    "children": [
+      { "categoryCode": "BREAKFAST", "name": "早餐", "iconUrl": "/static/transfers/breakfast.png", "sortOrder": 1, "description": "早餐" },
+      { "categoryCode": "LUNCH", "name": "午餐", "iconUrl": "/static/transfers/lunch.png", "sortOrder": 2, "description": "中餐" },
+      { "categoryCode": "DINNER", "name": "晚餐", "iconUrl": "/static/transfers/dinner.png", "sortOrder": 3, "description": "晚餐" },
+      { "categoryCode": "NIGHT_SNACK", "name": "宵夜", "iconUrl": "/static/transfers/nightsnack.png", "sortOrder": 4, "description": "宵夜" },
+      { "categoryCode": "WINE", "name": "酒水", "iconUrl": "/static/transfers/wine.png", "sortOrder": 5, "description": "酒水" },
+      { "categoryCode": "DRINK", "name": "奶茶", "iconUrl": "/static/transfers/drink‌.png", "sortOrder": 6, "description": "奶茶" },
+      { "categoryCode": "SNACK", "name": "零食", "iconUrl": "/static/transfers/snack.png", "sortOrder": 7, "description": "零食" },
+      { "categoryCode": "FRUIT", "name": "水果", "iconUrl": "/static/transfers/fruit.png", "sortOrder": 8, "description": "水果" },
+      { "categoryCode": "MILK", "name": "牛奶", "iconUrl": "/static/transfers/milk.png", "sortOrder": 9, "description": "牛奶" }
+    ]
+  },
+  {
+    "categoryCode": "SHOPPING",
+    "name": "购物消费",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/shopping.png",
+    "sortOrder": 20,
+    "children": [
+      { "categoryCode": "MAKEUP", "name": "个护美妆", "iconUrl": "/static/transfers/makeup‌.png", "sortOrder": 1, "description": "个护美妆" },
+      { "categoryCode": "HOUSEHOLD", "name": "日常家居", "iconUrl": "/static/transfers/household.png", "sortOrder": 2, "description": "日常家居" },
+      { "categoryCode": "MOBILE", "name": "手机数码", "iconUrl": "/static/transfers/mobile.png", "sortOrder": 3, "description": "手机数码" },
+      { "categoryCode": "TOPUP", "name": "充值订阅", "iconUrl": "/static/transfers/topup.png", "sortOrder": 4, "description": "充值订阅" },
+      { "categoryCode": "APPLIANCES", "name": "家用电器", "iconUrl": "/static/transfers/appliances.png", "sortOrder": 5, "description": "家用电器" },
+      { "categoryCode": "BABY", "name": "母婴玩具", "iconUrl": "/static/transfers/baby.png", "sortOrder": 6, "description": "母婴玩具" },
+      { "categoryCode": "CLOTHES", "name": "服饰", "iconUrl": "/static/transfers/clothes‌.png", "sortOrder": 7, "description": "衣服裤袜" },
+      { "categoryCode": "PET", "name": "宠物用品", "iconUrl": "/static/transfers/pet.png", "sortOrder": 8, "description": "宠物用品" },
+      { "categoryCode": "DECORATION", "name": "装修装饰", "iconUrl": "/static/transfers/decoration.png", "sortOrder": 9,"description": "装修装饰" }
+    ]
+  },
+
+  {
+    "categoryCode": "transportation",
+    "name": "出行交通",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/assets/transportation.png",
+    "sortOrder": 30,
+    "children": [
+      { "categoryCode": "TAXI", "name": "打车", "iconUrl": "/static/transfers/taxi.png", "sortOrder": 1, "description": "打车" },
+      { "categoryCode": "BUS", "name": "公共交通", "iconUrl": "/static/transfers/bus.png", "sortOrder": 2, "description": "公交地铁" },
+      { "categoryCode": "TRAIN", "name": "火车高铁", "iconUrl": "/static/transfers/train.png", "sortOrder": 3, "description": "火车高铁" },
+      { "categoryCode": "AIRPLANE", "name": "飞机", "iconUrl": "/static/transfers/airplane.png", "sortOrder": 4, "description": "飞机" },
+      { "categoryCode": "OIL", "name": "加油充电", "iconUrl": "/static/transfers/oil.png", "sortOrder": 5, "description": "加油充电" },
+      { "categoryCode": "PARKING", "name": "停车费", "iconUrl": "/static/transfers/parking.png", "sortOrder": 6, "description": "停车费" },
+      { "categoryCode": "MAINTENANCE", "name": "保养修车", "iconUrl": "/static/transfers/maintenance.png", "sortOrder": 7, "description": "保养修车" },
+      { "categoryCode": "INSURANCE", "name": "车险", "iconUrl": "/static/transfers/insurance.png", "sortOrder": 8, "description": "车险" }
+    ]
+  },
+  {
+    "categoryCode": "RECREATION",
+    "name": "休闲娱乐",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/recreation.png",
+    "sortOrder": 40, 
+    "children": [
+      { "categoryCode": "TRAVEL", "name": "旅游度假", "iconUrl": "/static/transfers/travel.png", "sortOrder": 1, "description": "旅游" },
+      { "categoryCode": "FILM", "name": "电影唱歌", "iconUrl": "/static/transfers/film.png", "sortOrder": 2, "description": "电影" },
+      { "categoryCode": "PENSION_ACCOUNT", "name": "足浴按摩", "iconUrl": "/static/transfers/massage.png", "sortOrder": 3, "description": "基本养老保险个人账户累计储存额" },
+      { "categoryCode": "CONCERT", "name": "演出表演", "iconUrl": "/static/transfers/concert.png", "sortOrder": 4, "description": "演出表演" },
+      { "categoryCode": "HAIRDRESSING", "name": "理发造型", "iconUrl": "/static/transfers/hairdressing.png", "sortOrder": 5, "description": "理发造型" }
+    ]
+  },
+  {
+    "categoryCode": "DOMESTICITY",
+    "name": "居家生活",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/domesticity.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "HYDRO_POWER", "name": "水电", "iconUrl": "/static/transfers/hydropower.png", "sortOrder": 1, "description": "水电" },
+      { "categoryCode": "GAS", "name": "燃气", "iconUrl": "/static/transfers/gas.png", "sortOrder": 2, "description": "燃气" },
+      { "categoryCode": "CREDIT_CARD", "name": "房租", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "房租" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "物业费", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "物业费" },
+      { "categoryCode": "CONSUMER_LOAN", "name": "房贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "房贷" },
+      { "categoryCode": "PAYABLE", "name": "家政清洁", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "家政清洁" }
+    ]
+  },
+  {
+    "categoryCode": "LOAN",
+    "name": "人情往来",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/debt.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
+      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
+      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+    ]
+  },
+  {
+    "categoryCode": "LOAN",
+    "name": "健康医疗",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/debt.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MORTGAGE", "name": "医疗", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "categoryCode": "CAR_LOAN", "name": "医药", "iconUrl": "/static/transfers/medicine.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "categoryCode": "CREDIT_CARD", "name": "保健品", "iconUrl": "/static/transfers/supplement.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" } 
+    ]
+  },
+  {
+    "categoryCode": "LOAN",
+    "name": "文化教育",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/debt.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MORTGAGE", "name": "学费", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "categoryCode": "CAR_LOAN", "name": "文具资料", "iconUrl": "/static/transfers/stationery.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
+      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
+      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+    ]
+  },
+  {
+    "categoryCode": "LOAN",
+    "name": "职业报酬",
+    "groupType": "INCOME",
+    "iconUrl": "/static/transfers/debt.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
+      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
+      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+    ]
+  },
+  {
+    "categoryCode": "LOAN",
+    "name": "其他收入",
+    "groupType": "INCOME",
+    "iconUrl": "/static/transfers/debt.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
+      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
+      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
+      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
+      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+    ]
+  }
+]
