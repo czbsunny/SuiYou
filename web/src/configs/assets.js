@@ -35,31 +35,26 @@ export const ASSET_CATEGORY_DISPLAY = {
   [ASSET_CATEGORY.LIQUID]: {
     name: '流动资产',
     icon: '/static/assets/liquid.png',
-    iconGray: '/static/assets/liquid-gray.png',
     color: '#2A806C'
   },
   [ASSET_CATEGORY.INVEST]: {
     name: '投资理财',
     icon: '/static/assets/invest.png',
-    iconGray: '/static/assets/invest-gray.png',
     color: '#D97706'
   },
   [ASSET_CATEGORY.FIXED]: {
     name: '固定资产',
     icon: '/static/assets/fixed.png',
-    iconGray: '/static/assets/fixed-gray.png',
     color: '#4F46E5'
   },
   [ASSET_CATEGORY.OTHER]: {
     name: '其他资产',
     icon: '/static/assets/receipt.png',
-    iconGray: '/static/assets/receipt-gray.png',
     color: '#0891B2'
   },
   [ASSET_CATEGORY.LOAN]: {
     name: '负债贷款',
     icon: '/static/assets/debt.png',
-    iconGray: '/static/assets/debt-gray.png',
     color: '#374151'
   }
 };

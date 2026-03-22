@@ -2,11 +2,11 @@
   "defaultRules": {
     "BANK": [
       "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", 
-      "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "MEDICAL_INSURANCE", "PENSION_ACCOUNT", "BUSINESS_LOAN"
+      "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "MEDICAL_INSURANCE", "PENSION_ACCOUNT"
     ],
 
     "INTERNET_BANK": [
-      "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", "CONSUMER_LOAN", "BUSINESS_LOAN"
+      "DEBIT_CARD", "TIME_DEPOSIT", "BANK_PRODUCT", "CONSUMER_LOAN"
     ],
 
     "FOREIGN_BANK": [
@@ -22,9 +22,6 @@
     ],
     "INSURANCE": [
       "SAVING_INSURANCE"
-    ],
-    "PAYMENT": [
-      "E_WALLET"
     ]
   },
   "categoryRules": {
@@ -45,24 +42,19 @@
     ],
     "INTERNET_CREDIT": [
       "ALIPAY", "WECHAT", "JDFINANCE", "DOUYIN", "MEITUAN", "360SHUKE", "DUXIAOMAN"
+    ],
+    "WALLET": [
+      "DOUYIN", "MEITUAN"
     ]
   },
   "specialCases": [
     { 
       "instCode": "ALIPAY", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
+      "categories": ["BALANCE", "YUEBAO", "XIAOHEBAO", "FUND", "GOLD_ACCUMULATION"] 
     },
     { 
       "instCode": "WECHAT", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
-    },
-    { 
-      "instCode": "JDFINANCE", 
-      "categories": ["E_WALLET", "CASH_PLUS", "FUND", "GOLD_ACCUMULATION"] 
-    },
-    { 
-      "instCode": "DOUYIN", 
-      "categories": ["E_WALLET"] 
+      "categories": ["CHANGE", "MINIFUND", "FUND", "GOLD_ACCUMULATION"] 
     },
     { 
       "instCode": "MEITUAN", 

@@ -7,11 +7,16 @@
     "sortOrder": 10,
     "color": "#2A806C",
     "children": [
-      { "categoryCode": "DEBIT_CARD", "groupType": "PAYMENT", "name": "活期", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期存款" },
-      { "categoryCode": "E_WALLET", "groupType": "PAYMENT", "name": "网络钱包", "iconUrl": "/static/assets/categories/wallet.png", "sortOrder": 2, "description": "不产生收益的零钱 (微信零钱、支付宝余额)" },
-      { "categoryCode": "CASH_PLUS", "groupType": "RESERVE", "name": "活期理财",  "iconUrl": "/static/assets/categories/cash-plus.png", "sortOrder": 3,"description": "余额宝、零钱通、朝朝宝等可随时消费的生息资产" },
-      { "categoryCode": "CASH", "groupType": "PAYMENT", "name": "现金", "iconUrl": "/static/assets/categories/money.png", "sortOrder": 4, "description": "手头持有的纸币、硬币" },
-      { "categoryCode": "CUSTOM_LIQUID", "groupType": "RESERVE", "name": "其他流动资产", "iconUrl": "/static/assets/categories/liquid-asset.png", "sortOrder": 99, "description": "其他流动资产" }
+      { "categoryCode": "DEBIT_CARD", "name": "活期", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期储蓄" },
+      { "categoryCode": "CHANGE", "name": "零钱", "iconUrl": "/static/assets/categories/change.png", "sortOrder": 2, "description": "不产生收益的零钱" },
+      { "categoryCode": "MINIFUND", "name": "零钱通", "iconUrl": "/static/assets/categories/minifund.png", "sortOrder": 3, "description": "微信零钱通" },
+      { "categoryCode": "BALANCE", "name": "余额", "iconUrl": "/static/assets/categories/balance.png", "sortOrder": 4, "description": "不产生收益的余额" },
+      { "categoryCode": "YUEBAO", "name": "余额宝", "iconUrl": "/static/assets/categories/yuebao.png", "sortOrder": 5, "description": "支付宝余额宝" },
+      { "categoryCode": "XIAOHEBAO", "name": "小荷包", "iconUrl": "/static/assets/categories/xiaohebao.png", "sortOrder": 6, "description": "小荷包" },
+      { "categoryCode": "WALLET", "name": "钱包", "iconUrl": "/static/assets/categories/wallet.png", "sortOrder": 7, "description": "网络钱包" },
+      { "categoryCode": "CASH_PLUS", "name": "活期理财",  "iconUrl": "/static/assets/categories/cash-plus.png", "sortOrder": 8,"description": "银行活期理财类似朝朝宝等可随时消费的生息资产" },
+      { "categoryCode": "CASH", "name": "现金", "iconUrl": "/static/assets/categories/money.png", "sortOrder": 9, "description": "手头持有的纸币、硬币" },
+      { "categoryCode": "CUSTOM_LIQUID", "name": "其他流动资产", "iconUrl": "/static/assets/categories/liquid-asset.png", "sortOrder": 99, "description": "其他流动资产" }
     ]
   },
   {
@@ -22,17 +27,17 @@
     "sortOrder": 20,
     "color": "#D97706",
     "children": [
-      { "categoryCode": "TIME_DEPOSIT", "groupType": "RESERVE", "name": "定存存款", "iconUrl": "/static/assets/categories/deposit.png", "sortOrder": 1, "description": "定期存款、大额存单、结构性存款" },
-      { "categoryCode": "FUND", "groupType": "RESERVE", "name": "基金", "iconUrl": "/static/assets/categories/fund.png", "sortOrder": 2, "description": "股票基、混合基、债基、货币基金、商品类基金等" },
-      { "categoryCode": "STOCK", "groupType": "RESERVE", "name": "股票", "iconUrl": "/static/assets/categories/stock.png", "sortOrder": 3, "description": "A股、港美股、北交所" },
-      { "categoryCode": "BANK_PRODUCT", "groupType": "RESERVE", "name": "银行理财", "iconUrl": "/static/assets/categories/bank-product.png", "sortOrder": 4, "description": "R1-R5级的银行理财子公司产品" },
-      { "categoryCode": "GOLD_ACCUMULATION", "groupType": "RESERVE", "name": "积存金", "iconUrl": "/static/assets/categories/accu-gold.png", "sortOrder": 5, "description": "银行积存金" },
-      { "categoryCode": "PHYSICAL_GOLD", "groupType": "RESERVE", "name": "实物黄金", "iconUrl": "/static/assets/categories/gold.png", "sortOrder": 6, "description": "实物金条、金饰等" },
-      { "categoryCode": "PORTFOLIO", "groupType": "RESERVE", "name": "投顾组合", "iconUrl": "/static/assets/categories/portfolio.png", "sortOrder": 7, "description": "金融平台的基金组合策略" },
-      { "categoryCode": "PRIVATE_FUND", "groupType": "RESERVE", "name": "私募基金", "iconUrl": "/static/assets/categories/private-fund.png", "sortOrder": 8, "description": "高净值理财、资管计划" },
-      { "categoryCode": "SAVING_INSURANCE", "groupType": "RESERVE", "name": "储蓄型保险", "iconUrl": "/static/assets/categories/insurance.png", "sortOrder": 9,"description": "年金险、增额终身寿、万能险" },
-      { "categoryCode": "CRYPTO", "groupType": "RESERVE", "name": "加密货币", "iconUrl": "/static/assets/categories/crypto.png", "sortOrder": 10, "description": "BTC, ETH, USDT等" },
-      { "categoryCode": "CUSTOM_INVEST", "groupType": "RESERVE", "name": "其他投资理财", "iconUrl": "/static/assets/categories/invest-asset.png", "sortOrder": 99, "description": "其他投资理财" }
+      { "categoryCode": "TIME_DEPOSIT", "name": "定存存款", "iconUrl": "/static/assets/categories/deposit.png", "sortOrder": 1, "description": "定期存款、大额存单、结构性存款" },
+      { "categoryCode": "FUND", "name": "基金", "iconUrl": "/static/assets/categories/fund.png", "sortOrder": 2, "description": "股票基、混合基、债基、货币基金、商品类基金等" },
+      { "categoryCode": "STOCK", "name": "股票", "iconUrl": "/static/assets/categories/stock.png", "sortOrder": 3, "description": "A股、港美股、北交所" },
+      { "categoryCode": "BANK_PRODUCT", "name": "银行理财", "iconUrl": "/static/assets/categories/bank-product.png", "sortOrder": 4, "description": "R1-R5级的银行理财子公司产品" },
+      { "categoryCode": "GOLD_ACCUMULATION", "name": "积存金", "iconUrl": "/static/assets/categories/accu-gold.png", "sortOrder": 5, "description": "银行积存金" },
+      { "categoryCode": "PHYSICAL_GOLD", "name": "实物黄金", "iconUrl": "/static/assets/categories/gold.png", "sortOrder": 6, "description": "实物金条、金饰等" },
+      { "categoryCode": "PORTFOLIO", "name": "投顾组合", "iconUrl": "/static/assets/categories/portfolio.png", "sortOrder": 7, "description": "金融平台的基金组合策略" },
+      { "categoryCode": "PRIVATE_FUND", "name": "私募基金", "iconUrl": "/static/assets/categories/private-fund.png", "sortOrder": 8, "description": "高净值理财、资管计划" },
+      { "categoryCode": "SAVING_INSURANCE", "name": "储蓄型保险", "iconUrl": "/static/assets/categories/insurance.png", "sortOrder": 9,"description": "年金险、增额终身寿、万能险" },
+      { "categoryCode": "CRYPTO", "name": "加密货币", "iconUrl": "/static/assets/categories/crypto.png", "sortOrder": 10, "description": "BTC, ETH, USDT等" },
+      { "categoryCode": "CUSTOM_INVEST", "name": "其他投资理财", "iconUrl": "/static/assets/categories/invest-asset.png", "sortOrder": 99, "description": "其他投资理财" }
     ]
   },
 
@@ -44,11 +49,9 @@
     "sortOrder": 30,
     "color": "#4F46E5",
     "children": [
-      { "categoryCode": "REAL_ESTATE", "name": "房产/不动产", "iconUrl": "/static/assets/categories/real-estate.png", "sortOrder": 1, "description": "住宅、商铺、公寓、自用车位" },
+      { "categoryCode": "REAL_ESTATE", "name": "房产", "iconUrl": "/static/assets/categories/real-estate.png", "sortOrder": 1, "description": "住宅、商铺、公寓、自用车位" },
       { "categoryCode": "VEHICLE", "name": "车辆", "iconUrl": "/static/assets/categories/vehicle.png", "sortOrder": 2, "description": "私家车、摩托车、新能源车" },
       { "categoryCode": "JEWELRY", "name": "名表/珠宝/奢品", "iconUrl": "/static/assets/categories/jewelry.png", "sortOrder": 3, "description": "钻戒、名表、名牌包、翡翠玉石" },
-      { "categoryCode": "COLLECTIBLES", "name": "文玩/收藏", "iconUrl": "/static/assets/categories/collectibles.png", "sortOrder": 4, "description": "古董、字画、陈年茅台、潮玩手办、集邮" },
-      { "categoryCode": "EQUIPMENT", "name": "昂贵设备", "iconUrl": "/static/assets/categories/equipment.png", "sortOrder": 5, "description": "摄影器材、高端电脑、乐器" },
       { "categoryCode": "CUSTOM_FIXED", "name": "其他固定资产", "iconUrl": "/static/assets/categories/fixed-asset.png", "sortOrder": 99, "description": "其他固定资产" }
     ]
   },
@@ -64,8 +67,7 @@
       { "categoryCode": "MEDICAL_INSURANCE", "name": "医保个人账户", "iconUrl": "/static/assets/categories/medical-insurance.png", "sortOrder": 2, "description": "社保卡/医保电子凭证里的可用余额" },
       { "categoryCode": "PENSION_ACCOUNT", "name": "社保养老账户", "iconUrl": "/static/assets/categories/pension-account.png", "sortOrder": 3, "description": "基本养老保险个人账户累计储存额" },
       { "categoryCode": "PRIVATE_PENSION", "name": "个人养老金", "iconUrl": "/static/assets/categories/private-pension.png", "sortOrder": 4, "description": "个人养老金资金账户" },
-      { "categoryCode": "CORP_ANNUITY", "name": "企业/职业年金", "iconUrl": "/static/assets/categories/corp-annuity.png", "sortOrder": 5, "description": "公司缴纳的补充养老金" },
-      { "categoryCode": "RECEIVABLE", "name": "借出款/应收", "iconUrl": "/static/assets/categories/receivable.png", "sortOrder": 6, "description": "借给朋友、公司的款项" },
+      { "categoryCode": "RECEIVABLE", "name": "借出款/应收", "iconUrl": "/static/assets/categories/receivable.png", "sortOrder": 5, "description": "借给朋友、公司的款项" },
       { "categoryCode": "OTHER_CUSTOM_ASSET", "name": "自定义资产", "iconUrl": "/static/assets/categories/other-asset.png", "sortOrder": 99, "description": "自定义资产" }
     ]
   },
@@ -80,10 +82,9 @@
       { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/assets/categories/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
       { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/assets/categories/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
       { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/assets/categories/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "互联网信贷/消费", "iconUrl": "/static/assets/categories/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
+      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/assets/categories/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
       { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/assets/categories/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
-      { "categoryCode": "BUSINESS_LOAN", "name": "经营贷", "iconUrl": "/static/assets/categories/business-loan.png", "sortOrder": 6, "description": "个体户或企业主经营周转贷款" },
-      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/assets/categories/payable.png", "sortOrder": 7, "description": "欠朋友、家人的私人借款" },
+      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/assets/categories/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
       { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/assets/categories/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
     ]
   }
