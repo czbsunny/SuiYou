@@ -7,7 +7,7 @@
     "sortOrder": 10,
     "color": "#2A806C",
     "children": [
-      { "categoryCode": "DEBIT_CARD", "name": "活期", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期储蓄" },
+      { "categoryCode": "DEBIT_CARD", "name": "储蓄卡", "iconUrl": "/static/assets/categories/debit-card.png", "sortOrder": 1, "description": "活期储蓄" },
       { "categoryCode": "CHANGE", "name": "零钱", "iconUrl": "/static/assets/categories/change.png", "sortOrder": 2, "description": "不产生收益的零钱" },
       { "categoryCode": "MINIFUND", "name": "零钱通", "iconUrl": "/static/assets/categories/minifund.png", "sortOrder": 3, "description": "微信零钱通" },
       { "categoryCode": "BALANCE", "name": "余额", "iconUrl": "/static/assets/categories/balance.png", "sortOrder": 4, "description": "不产生收益的余额" },

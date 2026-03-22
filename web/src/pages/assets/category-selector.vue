@@ -14,7 +14,7 @@
         >
           <!-- 大类标题 -->
           <view class="block-header">
-            <view class="block-icon-box" :style="{ backgroundColor: category.color + '20' }">
+            <view class="block-icon-box">
               <image :src="category.iconUrl" mode="aspectFit" class="block-icon" />
             </view>
             <text class="block-name">{{ category.name }}</text>
