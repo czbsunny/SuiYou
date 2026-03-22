@@ -56,6 +56,32 @@ public class AccountController {
         }
     }
     
+    @GetMapping("/{accountId}")
+    public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            
+            AccountRespDTO accountRespDTO = accountService.getAccountById(accountId);
+            if (accountRespDTO.getOwnerId() != userId) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                    "error", "您没有权限访问此资产账户"
+                ));
+            }
+            
+            // 返回成功响应
+            return ResponseEntity.ok(Map.of(
+                "account", accountRespDTO
+            ));
+        } catch (Exception e) {
+            // 返回错误响应
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "获取资产账户失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
     /**
      * 获取当前登录用户的ID
      */

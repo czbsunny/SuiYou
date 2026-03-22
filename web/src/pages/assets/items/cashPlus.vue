@@ -73,6 +73,13 @@ const yesterdayProfit = ref(1.23);
 const productName = ref('中银活期宝A');
 
 onLoad((options) => {
+  if (options.data) {
+    const item = JSON.parse(decodeURIComponent(options.data));
+    console.log('解析出的资产:', item);
+    if (item) {
+      totalAmount.value = item.availableBalance || 0;
+    }
+  }
   if (options.name) uni.setNavigationBarTitle({ title: options.name });
 });
 

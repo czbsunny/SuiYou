@@ -121,7 +121,12 @@ public class AccountServiceImpl implements AccountService {
         if (account != null && account.getDeleted()) {
             return null;
         }
-        return account != null ? AccountRespDTO.fromEntity(account) : null;
+        AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+        List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+        dto.setAssets(assets.stream()
+                .map(AssetRespDTO::fromEntity)
+                .collect(Collectors.toList()));
+        return dto;
     }
 
     @Override

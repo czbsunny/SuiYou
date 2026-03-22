@@ -2,7 +2,7 @@
   <view class="asset-detail-page">
     <!-- 1. 核心资产区 (直接在背景上，去容器) -->
     <view class="asset-hero animate-fade-in">
-      <text class="inst-name">我的零钱</text>
+      <text class="inst-name">金额</text>
       <view class="balance-box">
         <text class="currency">¥</text>
         <text class="balance-val num-font">{{ formatMoney(balance) }}</text>
@@ -56,6 +56,15 @@ const logs = ref([
 ]);
 
 onLoad((options) => {
+  if (options.data) {
+    const item = JSON.parse(decodeURIComponent(options.data));
+    console.log('解析出的资产:', item);
+  }
+
+  if (item) {
+    balance.value = item.availableBalance || 0;
+  }
+
   if (options.name) uni.setNavigationBarTitle({ title: options.name });
 });
 

@@ -1,9 +1,7 @@
 package com.suiyou.dto.asset;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

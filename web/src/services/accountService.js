@@ -86,10 +86,30 @@ export const getAccounts = async (params = {}) => {
   }
 };
 
+
+/**
+ * 6. 获取指定账户详情
+ * @param {Number} accountId - 账户ID
+ * @returns {Promise<Object>} 账户详情
+ */
+export const getAccountById = async (accountId) => {
+  try {
+    const res = await api.get(`${ACCOUNT_API_BASE}/${accountId}`);
+    if (res.statusCode !== 200) {
+      throw new Error(`获取账户失败，状态码: ${res.statusCode}`);
+    }
+
+    return res.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default {
   updateAccount,
   updateAccountStatus,
   deleteAccount,
   batchUpdateAccounts,
-  getAccounts
+  getAccounts,
+  getAccountById
 };
