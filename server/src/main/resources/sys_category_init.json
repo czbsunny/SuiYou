@@ -137,5 +137,19 @@
       { "categoryCode": "BYWORK", "name": "副业", "iconUrl": "/static/transfers/bywork.png", "sortOrder": 4, "description": "副业" },
       { "categoryCode": "SIDEHUSTLE", "name": "兼职", "iconUrl": "/static/transfers/sidehustle.png", "sortOrder": 4, "description": "兼职" }
     ]
+  },
+  {
+    "categoryCode": "OTHER_INCOME",
+    "name": "其他收入",
+    "groupType": "INCOME",
+    "iconUrl": "/static/transfers/otherincome.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "R_RENT", "name": "租金", "iconUrl": "/static/transfers/rent.png", "sortOrder": 1, "description": "租金" },
+      { "categoryCode": "R_RED_ENVELOPE", "name": "红包", "iconUrl": "/static/transfers/redenvelope.png", "sortOrder": 1, "description": "红包" },
+      { "categoryCode": "R_MONETARY_GIFT", "name": "礼金", "iconUrl": "/static/transfers/monetarygift.png", "sortOrder": 4, "description": "礼金" },
+      { "categoryCode": "R_MEDIA_INCOME", "name": "自媒体", "iconUrl": "/static/transfers/media.png", "sortOrder": 2, "description": "自媒体" },
+      { "categoryCode": "R_ROYALTY", "name": "版权费", "iconUrl": "/static/transfers/royalty.png", "sortOrder": 3, "description": "版权费" }
+    ]
   }
 ]

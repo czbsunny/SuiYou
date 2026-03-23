@@ -30,6 +30,9 @@ public class SysCategory {
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;
     
+    @Column(name = "group_type", nullable = false, length = 20)
+    private String groupType;
+
     @Column(name = "is_system", columnDefinition = "tinyint(1) default 1")
     private Boolean isSystem = true;
     
