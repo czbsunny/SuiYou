@@ -29,7 +29,7 @@
       <view class="ab-icon icon-profit">
         <image src="/static/assets/actions/chart-trending.png" class="iconfont" />
       </view>
-      <text class="action-label">收支月报</text>
+      <text class="action-label">资产月报</text>
     </view>
   </view>
 </template>
@@ -39,19 +39,19 @@ const handleAction = (action) => {
   switch (action) {
     case 'record':
       // 记一笔 - 跳转到记账页面
-      uni.navigateTo({ url: '/pages/transactions/record' })
+      uni.navigateTo({ url: '/pages/home/record' })
       break
     case 'transfer':
       // 账户调拨 - 跳转到调拨页面
-      uni.navigateTo({ url: '/pages/assets/transfer' })
+      uni.navigateTo({ url: '/pages/home/transfer' })
       break
     case 'reconcile':
       // 资产对账 - 跳转到对账页面
-      uni.navigateTo({ url: '/pages/assets/reconcile' })
+      uni.navigateTo({ url: '/pages/home/reconcile' })
       break
     case 'review':
       // 收支月报 - 跳转到月度复盘页面
-      uni.navigateTo({ url: '/pages/report/monthly' })
+      uni.navigateTo({ url: '/pages/home/monthview' })
       break
     default:
       console.log('未知操作:', action)

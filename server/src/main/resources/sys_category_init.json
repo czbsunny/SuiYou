@@ -50,7 +50,8 @@
       { "categoryCode": "OIL", "name": "加油充电", "iconUrl": "/static/transfers/oil.png", "sortOrder": 5, "description": "加油充电" },
       { "categoryCode": "PARKING", "name": "停车费", "iconUrl": "/static/transfers/parking.png", "sortOrder": 6, "description": "停车费" },
       { "categoryCode": "MAINTENANCE", "name": "保养修车", "iconUrl": "/static/transfers/maintenance.png", "sortOrder": 7, "description": "保养修车" },
-      { "categoryCode": "INSURANCE", "name": "车险", "iconUrl": "/static/transfers/insurance.png", "sortOrder": 8, "description": "车险" }
+      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car_loan.png", "sortOrder": 8, "description": "车贷" },
+      { "categoryCode": "INSURANCE", "name": "车险", "iconUrl": "/static/transfers/insurance.png", "sortOrder": 9, "description": "车险" }
     ]
   },
   {
@@ -62,7 +63,7 @@
     "children": [
       { "categoryCode": "TRAVEL", "name": "旅游度假", "iconUrl": "/static/transfers/travel.png", "sortOrder": 1, "description": "旅游" },
       { "categoryCode": "FILM", "name": "电影唱歌", "iconUrl": "/static/transfers/film.png", "sortOrder": 2, "description": "电影" },
-      { "categoryCode": "PENSION_ACCOUNT", "name": "足浴按摩", "iconUrl": "/static/transfers/massage.png", "sortOrder": 3, "description": "基本养老保险个人账户累计储存额" },
+      { "categoryCode": "PENSION_ACCOUNT", "name": "足浴按摩", "iconUrl": "/static/transfers/massage.png", "sortOrder": 3, "description": "足浴按摩" },
       { "categoryCode": "CONCERT", "name": "演出表演", "iconUrl": "/static/transfers/concert.png", "sortOrder": 4, "description": "演出表演" },
       { "categoryCode": "HAIRDRESSING", "name": "理发造型", "iconUrl": "/static/transfers/hairdressing.png", "sortOrder": 5, "description": "理发造型" }
     ]
@@ -76,26 +77,25 @@
     "children": [
       { "categoryCode": "HYDRO_POWER", "name": "水电", "iconUrl": "/static/transfers/hydropower.png", "sortOrder": 1, "description": "水电" },
       { "categoryCode": "GAS", "name": "燃气", "iconUrl": "/static/transfers/gas.png", "sortOrder": 2, "description": "燃气" },
-      { "categoryCode": "CREDIT_CARD", "name": "房租", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "房租" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "物业费", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "物业费" },
-      { "categoryCode": "CONSUMER_LOAN", "name": "房贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "房贷" },
-      { "categoryCode": "PAYABLE", "name": "家政清洁", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "家政清洁" }
+      { "categoryCode": "RENT", "name": "房租", "iconUrl": "/static/transfers/rent.png", "sortOrder": 3, "description": "房租" },
+      { "categoryCode": "PROPERTY", "name": "物业费", "iconUrl": "/static/transfers/property.png", "sortOrder": 4, "description": "物业费" },
+      { "categoryCode": "HOUSE_LOAN", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 5, "description": "房贷" },
+      { "categoryCode": "HOUSEKEEPING", "name": "家政清洁", "iconUrl": "/static/transfers/housekeeping.png", "sortOrder": 6, "description": "家政清洁" }
     ]
   },
   {
-    "categoryCode": "LOAN",
+    "categoryCode": "SOCIALIZE",
     "name": "人情往来",
     "groupType": "EXPENSE",
-    "iconUrl": "/static/transfers/debt.png",
+    "iconUrl": "/static/transfers/socialize.png",
     "sortOrder": 50,
     "children": [
-      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
-      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
-      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
-      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
-      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
-      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+      { "categoryCode": "GIFT", "name": "礼物", "iconUrl": "/static/transfers/gift.png", "sortOrder": 1, "description": "礼物" },
+      { "categoryCode": "MONETARY_GIFT", "name": "礼金", "iconUrl": "/static/transfers/monetarygift.png", "sortOrder": 3, "description": "礼金" },
+      { "categoryCode": "COURIER", "name": "过节送礼", "iconUrl": "/static/transfers/courier.png", "sortOrder": 99, "description": "过节送礼" },
+      { "categoryCode": "RETIREMENT", "name": "孝敬长辈", "iconUrl": "/static/transfers/retirement.png", "sortOrder": 5, "description": "孝敬长辈" },
+      { "categoryCode": "RED_ENVELOPE", "name": "红包", "iconUrl": "/static/transfers/redenvelope.png", "sortOrder": 2, "description": "红包" },
+      { "categoryCode": "TRANSFER", "name": "转账", "iconUrl": "/static/transfers/transfer.png", "sortOrder": 4, "description": "转账" }
     ]
   },
   {
@@ -105,57 +105,51 @@
     "iconUrl": "/static/transfers/debt.png",
     "sortOrder": 50,
     "children": [
-      { "categoryCode": "MORTGAGE", "name": "医疗", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
-      { "categoryCode": "CAR_LOAN", "name": "医药", "iconUrl": "/static/transfers/medicine.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
-      { "categoryCode": "CREDIT_CARD", "name": "保健品", "iconUrl": "/static/transfers/supplement.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" } 
+      { "categoryCode": "MEDICAL", "name": "医疗", "iconUrl": "/static/transfers/medical.png", "sortOrder": 1, "description": "医疗" },
+      { "categoryCode": "MEDICINE", "name": "医药", "iconUrl": "/static/transfers/medicine.png", "sortOrder": 2, "description": "医药" },
+      { "categoryCode": "SUPPLEMENT", "name": "保健品", "iconUrl": "/static/transfers/supplement.png", "sortOrder": 3, "description": "保健品" },
+      { "categoryCode": "CHECKUP", "name": "体检", "iconUrl": "/static/transfers/checkup.png", "sortOrder": 4, "description": "体检" }
     ]
   },
   {
-    "categoryCode": "LOAN",
-    "name": "文化教育",
+    "categoryCode": "EDUCATION",
+    "name": "教育",
     "groupType": "EXPENSE",
-    "iconUrl": "/static/transfers/debt.png",
+    "iconUrl": "/static/transfers/education.png",
     "sortOrder": 50,
     "children": [
-      { "categoryCode": "MORTGAGE", "name": "学费", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
-      { "categoryCode": "CAR_LOAN", "name": "文具资料", "iconUrl": "/static/transfers/stationery.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
-      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
-      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
-      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
-      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+      { "categoryCode": "TUITION", "name": "学费", "iconUrl": "/static/transfers/tuition.png", "sortOrder": 1, "description": "学费" },
+      { "categoryCode": "STATIONERY", "name": "文具资料", "iconUrl": "/static/transfers/stationery.png", "sortOrder": 2, "description": "文具资料" },
+      { "categoryCode": "TRAINING", "name": "培训费", "iconUrl": "/static/transfers/training.png", "sortOrder": 3, "description": "培训费" },
+      { "categoryCode": "EXAMINATION", "name": "考证费", "iconUrl": "/static/transfers/examination.png", "sortOrder": 4, "description": "考证费" }
     ]
   },
   {
-    "categoryCode": "LOAN",
+    "categoryCode": "JOB_INCOME",
     "name": "职业报酬",
     "groupType": "INCOME",
-    "iconUrl": "/static/transfers/debt.png",
+    "iconUrl": "/static/transfers/job.png",
     "sortOrder": 50,
     "children": [
-      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
-      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
-      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
-      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
-      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
-      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+      { "categoryCode": "SALARY", "name": "工资", "iconUrl": "/static/transfers/salary.png", "sortOrder": 1, "description": "工资" },
+      { "categoryCode": "BONUS", "name": "奖金", "iconUrl": "/static/transfers/bonus.png", "sortOrder": 2, "description": "奖金" },
+      { "categoryCode": "OVERTIME", "name": "加班费", "iconUrl": "/static/transfers/overtime.png", "sortOrder": 3, "description": "加班费" },
+      { "categoryCode": "BYWORK", "name": "副业", "iconUrl": "/static/transfers/bywork.png", "sortOrder": 4, "description": "副业" },
+      { "categoryCode": "SIDEHUSTLE", "name": "兼职", "iconUrl": "/static/transfers/sidehustle.png", "sortOrder": 4, "description": "兼职" }
     ]
   },
   {
-    "categoryCode": "LOAN",
+    "categoryCode": "OTHER_INCOME",
     "name": "其他收入",
     "groupType": "INCOME",
-    "iconUrl": "/static/transfers/debt.png",
+    "iconUrl": "/static/transfers/otherincome.png",
     "sortOrder": 50,
     "children": [
-      { "categoryCode": "MORTGAGE", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 1, "description": "住房按揭贷款、公积金贷款" },
-      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car-loan.png", "sortOrder": 2, "description": "汽车金融公司或银行的车贷" },
-      { "categoryCode": "CREDIT_CARD", "name": "信用卡", "iconUrl": "/static/transfers/credit-card.png", "sortOrder": 3, "description": "银行发行的贷记卡 (免息期工具)" },
-      { "categoryCode": "INTERNET_CREDIT", "name": "互金贷", "iconUrl": "/static/transfers/mobile-pay-loan.png", "sortOrder": 4, "description": "花呗、白条 (消费); 借呗、微粒贷 (现金贷)" },
-      { "categoryCode": "CONSUMER_LOAN", "name": "银行消费贷", "iconUrl": "/static/transfers/consumer-loan.png", "sortOrder": 5, "description": "装修贷、税费贷、纯信用消费贷 (闪电贷等)" },
-      { "categoryCode": "PAYABLE", "name": "应付款/欠款", "iconUrl": "/static/transfers/payable.png", "sortOrder": 6, "description": "欠朋友、家人的私人借款" },
-      { "categoryCode": "CUSTOM_LOAN", "name": "其他贷款", "iconUrl": "/static/transfers/other-loan.png", "sortOrder": 99, "description": "其他贷款" }
+      { "categoryCode": "R_RENT", "name": "租金", "iconUrl": "/static/transfers/rent.png", "sortOrder": 1, "description": "租金" },
+      { "categoryCode": "R_RED_ENVELOPE", "name": "红包", "iconUrl": "/static/transfers/redenvelope.png", "sortOrder": 1, "description": "红包" },
+      { "categoryCode": "R_MONETARY_GIFT", "name": "礼金", "iconUrl": "/static/transfers/monetarygift.png", "sortOrder": 4, "description": "礼金" },
+      { "categoryCode": "R_MEDIA_INCOME", "name": "自媒体", "iconUrl": "/static/transfers/media.png", "sortOrder": 2, "description": "自媒体" },
+      { "categoryCode": "R_ROYALTY", "name": "版权费", "iconUrl": "/static/transfers/royalty.png", "sortOrder": 3, "description": "版权费" }
     ]
   }
 ]

@@ -11,6 +11,42 @@
       }
     },
     {
+      "path": "pages/home/record",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "收支记录",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/home/transfer",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "转账",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/home/reconcile",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "资产对账",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
+      "path": "pages/home/monthview",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "资产月报",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/goals/index",
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",

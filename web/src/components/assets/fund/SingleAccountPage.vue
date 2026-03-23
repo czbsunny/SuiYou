@@ -200,7 +200,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.single-account-section { padding: 0 10rpx; }
+.single-account-section { padding: 0 10rpx; min-height: 100vh; }
 .account-assets-section { padding: 24rpx 16rpx; }
 .account-assets-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
 .section-title { font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; }
