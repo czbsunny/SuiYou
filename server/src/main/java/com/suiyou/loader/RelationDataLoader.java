@@ -1,11 +1,7 @@
 package com.suiyou.loader;
 
-import com.suiyou.model.SysCategoryInstitutionRelation;
-import com.suiyou.model.SysInstitution;
 import com.suiyou.dto.account.RelationRuleConfigDTO;
 
-import com.suiyou.repository.SysCategoryInstitutionRelationRepository;
-import com.suiyou.repository.SysInstitutionRepository;
 import com.suiyou.service.SysAssetConfigService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.DigestUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Order(3)

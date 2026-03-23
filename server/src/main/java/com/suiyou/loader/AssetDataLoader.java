@@ -43,7 +43,7 @@ public class AssetDataLoader extends AbstractConfigLoader {
         );
 
         // 2. 初始化资产分类
-        sysAssetCategoryService.initCategories(dtos);
+        sysAssetCategoryService.initAssetCategories(dtos);
         
         // 3. 更新配置版本
         updateConfigVersion("asset_category", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(dtos)));

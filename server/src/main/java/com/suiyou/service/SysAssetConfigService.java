@@ -26,12 +26,12 @@ public interface SysAssetConfigService {
     public List<CategoryInstitutionRelationRespDTO> getCategoryInstitutionRelations();
 
     /**
-     * 供 DataLoader 使用的方法 (之前提到的)
+     * 初始化资产分类
      */
     public void initCategories(List<CategoryInitDTO> dtos);
 
     /**
-     * 供 DataLoader 使用的方法 (之前提到的)
+     * 初始化资产机构
      */
     public void initInstitutions(List<InstitutionInitDTO> dtos);
 
@@ -39,4 +39,9 @@ public interface SysAssetConfigService {
      * 初始化资产分类与机构的关联关系
      */
     public void initCategoryInstitutionRelations(RelationRuleConfigDTO config);
+
+    /**
+     * 初始化收支分类
+     */
+    public void initAssetCategories(List<CategoryInitDTO> dtos);
 }

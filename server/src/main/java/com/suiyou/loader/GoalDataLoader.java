@@ -1,11 +1,8 @@
 package com.suiyou.loader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.suiyou.model.SysGoalCategory;
-import com.suiyou.model.SysGoalTemplate;
 import com.suiyou.service.SysGoalConfigService;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

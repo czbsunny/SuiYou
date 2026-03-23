@@ -10,10 +10,12 @@ import com.suiyou.dto.account.CategoryInstitutionRelationRespDTO;
 import com.suiyou.repository.SysAssetCategoryRepository;
 import com.suiyou.repository.SysInstitutionRepository;
 import com.suiyou.repository.SysCategoryInstitutionRelationRepository;
+import com.suiyou.repository.SysCategoryRepository;
 
 import com.suiyou.model.SysAssetCategory;
 import com.suiyou.model.SysCategoryInstitutionRelation;
 import com.suiyou.model.SysInstitution;
+import com.suiyou.model.SysCategory;
 
 import com.suiyou.service.SysAssetConfigService;
 
@@ -50,6 +52,9 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
 
     @Autowired
     private SysCategoryInstitutionRelationRepository categoryInstitutionRelationRepository;
+
+    @Autowired
+    private SysCategoryRepository categoryRepository;
 
     @Override
     public List<AssetCategoryRespDTO> getCategoryTree() {
@@ -170,7 +175,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
      * 供 DataLoader 使用的方法 (之前提到的)
      */
     @Override
-    public void initCategories(List<CategoryInitDTO> dtos) {
+    public void initAssetCategories(List<CategoryInitDTO> dtos) {
          // 收集所有需要存在的分类code
         List<String> expectedCodes = new ArrayList<>();
         List<SysAssetCategory> entitiesToSave = new ArrayList<>();
@@ -181,7 +186,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             expectedCodes.add(parent.getCategoryCode());
             
             // 转换并保存一级分类
-            SysAssetCategory parentEntity = processCategory(parent, null);
+            SysAssetCategory parentEntity = processAssetCategory(parent, null);
             entitiesToSave.add(parentEntity);
 
             // 处理二级分类
@@ -194,7 +199,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                     expectedCodes.add(child.getCategoryCode());
                     
                     // 转换并保存二级分类
-                    SysAssetCategory childEntity = processCategory(child, parent.getCategoryCode());
+                    SysAssetCategory childEntity = processAssetCategory(child, parent.getCategoryCode());
                     entitiesToSave.add(childEntity);
                 }
             }
@@ -333,9 +338,9 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
 
 
     /**
-     * 处理单个分类：如果存在则更新，不存在则创建
+     * 处理单个资产分类：如果存在则更新，不存在则创建
      */
-    private SysAssetCategory processCategory(CategoryInitDTO dto, String parentCode) {
+    private SysAssetCategory processAssetCategory(CategoryInitDTO dto, String parentCode) {
         // 根据分类code查询现有分类
         SysAssetCategory existingEntity = assetCategoryRepository.findByCategoryCode(dto.getCategoryCode());
         
@@ -440,6 +445,87 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             log.warn("拼音转换失败: {}, 错误: {}", chineseStr, e.getMessage());
             // 如果拼音转换失败，返回第一个字符
             return chineseStr.substring(0, 1).toUpperCase();
+        }
+    }
+
+    @Override
+    public void initCategories(List<CategoryInitDTO> dtos) {
+         // 收集所有需要存在的分类code
+        List<String> expectedCodes = new ArrayList<>();
+        List<SysCategory> entitiesToSave = new ArrayList<>();
+
+        // 处理一级分类和二级分类
+        for (CategoryInitDTO parent : dtos) {
+            // 添加一级分类code
+            expectedCodes.add(parent.getCategoryCode());
+            
+            // 转换并保存一级分类
+            SysCategory parentEntity = processCategory(parent, null);
+            entitiesToSave.add(parentEntity);
+
+            // 处理二级分类
+            if (parent.getChildren() != null) {
+                for (CategoryInitDTO child : parent.getChildren()) {
+                    if (child.getGroupType() == null) {
+                        child.setGroupType(parent.getGroupType());
+                    }
+                    // 添加二级分类code
+                    expectedCodes.add(child.getCategoryCode());
+                    
+                    // 转换并保存二级分类
+                    SysCategory childEntity = processCategory(child, parent.getCategoryCode());
+                    entitiesToSave.add(childEntity);
+                }
+            }
+        }
+
+        // 保存所有更新或新增的分类
+        categoryRepository.saveAll(entitiesToSave);
+
+        // 注意：如果有用户自定义分类关联到这些系统分类，可能需要额外处理
+        List<SysCategory> existingSystemCategories = categoryRepository.findAllByIsSystem(true);
+        List<String> existingCodes = existingSystemCategories.stream()
+            .map(SysCategory::getCategoryCode)
+            .toList();
+        
+        List<String> codesToDelete = existingCodes.stream()
+            .filter(code -> !expectedCodes.contains(code))
+            .toList();
+        
+        if (!codesToDelete.isEmpty()) {
+            categoryRepository.deleteByCategoryCodeIn(codesToDelete);
+            log.info("删除了 {} 个不存在于JSON文件中的系统分类。", codesToDelete.size());
+        }
+
+        log.info("资产分类同步完成，共处理 {} 条记录。", entitiesToSave.size());
+    }
+
+    /**
+     * 处理单个分类：如果存在则更新，不存在则创建
+     */
+    private SysCategory processCategory(CategoryInitDTO dto, String parentCode) {
+        // 根据分类code查询现有分类
+        SysCategory existingEntity = categoryRepository.findByCategoryCode(dto.getCategoryCode());
+        
+        if (existingEntity != null) {
+            // 更新现有分类的属性
+            existingEntity.setName(dto.getName());
+            existingEntity.setIconUrl(dto.getIconUrl());
+            existingEntity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
+            existingEntity.setParentCode(parentCode);
+            existingEntity.setDescription(dto.getDescription());
+            existingEntity.setIsSystem(true);
+            return existingEntity;
+        } else {
+            SysCategory entity = new SysCategory();
+            entity.setCategoryCode(dto.getCategoryCode());
+            entity.setName(dto.getName());
+            entity.setIconUrl(dto.getIconUrl());
+            entity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
+            entity.setParentCode(parentCode);
+            entity.setDescription(dto.getDescription());
+            entity.setIsSystem(true);
+            return entity;
         }
     }
 }

@@ -50,7 +50,7 @@ public class Transaction {
     private BigDecimal fee;
 
     /**
-     * 消费分类 ID
+     * 收支分类 ID
      * 仅 EXPENSE/INCOME 有效，转账通常不需要此分类
      */
     @Column(name = "category_id")
