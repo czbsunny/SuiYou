@@ -43,7 +43,7 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
             switch (key) {
                 case "asset_category":
                     // 业务 Service 负责查库并组装成 Tree
-                    resultMap.put(key, assetConfigService.getCategoryTree()); 
+                    resultMap.put(key, assetConfigService.getAssetCategoryTree()); 
                     break;
                     
                 case "institution_data":
@@ -65,7 +65,11 @@ public class ConfigManifestServiceImpl implements ConfigManifestService {
                     // 如果是简单的列表，直接返回 List
                     resultMap.put(key, goalConfigService.getAllTemplates());
                     break;
-                    
+                
+                case "transfer_category":
+                    // 如果是简单的列表，直接返回 List
+                    resultMap.put(key, assetConfigService.getTransferCategoryTree());
+                    break;
                 default:
                     // 忽略未知的 Key
                     break;

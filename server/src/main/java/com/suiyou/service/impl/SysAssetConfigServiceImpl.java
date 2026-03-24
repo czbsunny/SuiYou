@@ -1,5 +1,6 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.dto.CategoryRespDTO;
 import com.suiyou.dto.account.AssetCategoryRespDTO;
 import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
@@ -22,6 +23,7 @@ import com.suiyou.service.SysAssetConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.annotation.Resource;
@@ -57,7 +59,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
     private SysCategoryRepository categoryRepository;
 
     @Override
-    public List<AssetCategoryRespDTO> getCategoryTree() {
+    public List<AssetCategoryRespDTO> getAssetCategoryTree() {
         // 1. 查出所有数据 (关键：先按 sort_order 排序，这样生成的树也是有序的)
         // 如果是 MyBatis Plus: new QueryWrapper<>().orderByAsc("sort_order")
         List<SysAssetCategory> allEntities = assetCategoryRepository.findAll(Sort.by("sortOrder"));
@@ -72,7 +74,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
         
         // 转换 Entity -> VO 并放入 Map
         for (SysAssetCategory entity : allEntities) {
-            lookupMap.put(entity.getCategoryCode(), toCategoryRespDTO(entity));
+            lookupMap.put(entity.getCategoryCode(), toAssetCategoryRespDTO(entity));
         }
 
         // 3. 组装树 (再遍历一次，O(N))
@@ -105,7 +107,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
      * 辅助方法：Entity 转 VO
      * 实际项目中可以使用 MapStruct 或 BeanUtils 简化
      */
-    private AssetCategoryRespDTO toCategoryRespDTO(SysAssetCategory entity) {
+    private AssetCategoryRespDTO toAssetCategoryRespDTO(SysAssetCategory entity) {
         return AssetCategoryRespDTO.builder()
                 .id(entity.getId())
                 .name(entity.getName())
@@ -171,10 +173,62 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .build();
     }
     
+    @Override
+    public List<CategoryRespDTO> getTransferCategoryTree() {
+        List<SysCategory> allEntities = categoryRepository.findAll(Sort.by("sortOrder"));
+
+        if (allEntities == null || allEntities.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 2. 准备一个临时 Map 用于快速查找 (Key: ID, Value: VO)
+        // 这一步的时间复杂度是 O(N)
+        Map<String, CategoryRespDTO> lookupMap = new HashMap<>();
+        
+        // 转换 Entity -> VO 并放入 Map
+        for (SysCategory entity : allEntities) {
+            lookupMap.put(entity.getCategoryCode(), toCategoryRespDTO(entity));
+        }
+
+        // 3. 组装树 (再遍历一次，O(N))
+        List<CategoryRespDTO> rootNodes = new ArrayList<>();
+
+        for (SysCategory entity : allEntities) {
+            CategoryRespDTO currentVO = lookupMap.get(entity.getCategoryCode());
+            String parentId = entity.getParentCode();
+            if (parentId == null || parentId.isEmpty()) {
+                rootNodes.add(currentVO);
+            } else {
+                CategoryRespDTO parentVO = lookupMap.get(parentId);
+                if (parentVO != null) {
+                    parentVO.getChildren().add(currentVO);
+                } else {
+                    rootNodes.add(currentVO); 
+                }
+            }
+        }
+
+        return rootNodes;
+    }
+
+    /**
+     * 辅助方法：Entity 转 CategoryRespDTO
+     */
+    private CategoryRespDTO toCategoryRespDTO(SysCategory entity) {
+        return CategoryRespDTO.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .categoryCode(entity.getCategoryCode())
+                .iconUrl(entity.getIconUrl())
+                .sortOrder(entity.getSortOrder())
+                .build();
+    }
+
     /**
      * 供 DataLoader 使用的方法 (之前提到的)
      */
     @Override
+    @Transactional
     public void initAssetCategories(List<CategoryInitDTO> dtos) {
          // 收集所有需要存在的分类code
         List<String> expectedCodes = new ArrayList<>();
@@ -452,6 +506,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
     }
 
     @Override
+    @Transactional
     public void initCategories(List<CategoryInitDTO> dtos) {
          // 收集所有需要存在的分类code
         List<String> expectedCodes = new ArrayList<>();
@@ -514,6 +569,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             // 更新现有分类的属性
             existingEntity.setName(dto.getName());
             existingEntity.setIconUrl(dto.getIconUrl());
+            existingEntity.setGroupType(dto.getGroupType());
             existingEntity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
             existingEntity.setParentCode(parentCode);
             existingEntity.setDescription(dto.getDescription());
@@ -524,6 +580,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             entity.setCategoryCode(dto.getCategoryCode());
             entity.setName(dto.getName());
             entity.setIconUrl(dto.getIconUrl());
+            entity.setGroupType(dto.getGroupType());
             entity.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
             entity.setParentCode(parentCode);
             entity.setDescription(dto.getDescription());

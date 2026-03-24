@@ -1,5 +1,6 @@
 package com.suiyou.service;
 
+import com.suiyou.dto.CategoryRespDTO;
 import com.suiyou.dto.account.AssetCategoryRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
 import com.suiyou.dto.account.InstitutionInitDTO;
@@ -13,7 +14,7 @@ public interface SysAssetConfigService {
     /**
      * 获取资产分类树
      */
-    public List<AssetCategoryRespDTO> getCategoryTree();
+    public List<AssetCategoryRespDTO> getAssetCategoryTree();
 
     /**
      * 获取所有资产机构
@@ -24,6 +25,11 @@ public interface SysAssetConfigService {
      * 获取资产分类与机构的关联关系
      */
     public List<CategoryInstitutionRelationRespDTO> getCategoryInstitutionRelations();
+
+    /**
+     * 获取收支分类树
+     */
+    public List<CategoryRespDTO> getTransferCategoryTree();
 
     /**
      * 初始化资产分类
