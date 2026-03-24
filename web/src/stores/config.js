@@ -9,6 +9,7 @@ export const useConfigStore = defineStore('config', {
     institutionData: [], // 机构数据
     relations: [], // 关联关系
     institutionMap: {}, // 机构数据映射表
+    transferCategories: [], // 记账分类
     isLoaded: false // 是否加载完成
   }),
   getters: {
@@ -53,7 +54,7 @@ export const useConfigStore = defineStore('config', {
     // 这就是你刚才问的 initConfigs
     async initConfigs() {
       // 这里的 keys 对应后端 manifest 里的 modules 的 key
-      const keys = ['asset_category', 'goal_category', 'goal_template', 'institution_data', 'relation'];
+      const keys = ['asset_category', 'goal_category', 'goal_template', 'institution_data', 'relation', 'transfer_category'];
       const data = await configService.getConfigs(keys);
       
       this.assetCategories = data.asset_category || [];
