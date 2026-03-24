@@ -82,9 +82,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { useAccountStore } from '@/stores/account.js';
 
-const accountStore = useAccountStore();
 const accountInfo = ref(null);
 const assetItem = ref(null);
 
@@ -92,10 +90,10 @@ const systemAmount = ref(0); // 系统余额
 const actualAmount = ref(''); // 用户输入的实盘余额
 const remark = ref('');
 
-onLoad(() => {
+onLoad((options) => {
   // 从 Pinia 或 EventChannel 获取当前要校准的资产
-  accountInfo.value = accountStore.currentAccount;
-  assetItem.value = accountStore.selectedAsset;
+  accountInfo.value = options.currentAccount;
+  assetItem.value = options.selectedAsset;
   
   if (assetItem.value) {
     systemAmount.value = assetItem.value.totalBalance || 0;

@@ -47,6 +47,10 @@ export const useConfigStore = defineStore('config', {
 
     getInstitutionByCode: (state) => (instCode) => {
       return state.institutionMap[instCode] || null;
+    },
+
+    getTransferCategoriesByType: (state) => (type) => {
+      return state.transferCategories.filter(c => c.groupType === type);
     }
   },
 
@@ -66,7 +70,10 @@ export const useConfigStore = defineStore('config', {
         map[inst.instCode] = inst;
         return map;
       }, {});
+      
+      this.transferCategories = data.transfer_category || [];
 
+      this.isLoaded = true; 
       return data;
     }
   }

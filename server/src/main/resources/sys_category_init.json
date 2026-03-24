@@ -40,7 +40,7 @@
     "categoryCode": "transportation",
     "name": "出行交通",
     "groupType": "EXPENSE",
-    "iconUrl": "/static/assets/transportation.png",
+    "iconUrl": "/static/transfers/transportation.png",
     "sortOrder": 30,
     "children": [
       { "categoryCode": "TAXI", "name": "打车", "iconUrl": "/static/transfers/taxi.png", "sortOrder": 1, "description": "打车" },

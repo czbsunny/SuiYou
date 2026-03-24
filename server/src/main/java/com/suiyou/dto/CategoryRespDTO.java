@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * 分类响应DTO
  */
@@ -22,9 +23,9 @@ public class CategoryRespDTO {
     private String categoryCode;
 
     private String iconUrl;
-    
-    private String color;
-    
+
+    private String groupType;
+        
     private Integer sortOrder;
 
     @Builder.Default

@@ -1,6 +1,6 @@
 <template>
   <view class="record-page">
-    <!-- 1. 顶部切换 Tab (仅支出、收入) -->
+    <!-- 1. 顶部切换 Tab -->
     <view class="tabs-container">
       <view 
         v-for="tab in ['EXPENSE', 'INCOME']" 
@@ -14,80 +14,83 @@
       </view>
     </view>
 
-    <!-- 2. 分类选择区 -->
-    <view class="category-section">
-      <!-- 一级分类网格 -->
-      <scroll-view class="parent-scroll" scroll-y>
-        <view class="category-grid">
-          <view 
-            v-for="item in currentCategories" 
-            :key="item.id"
-            class="category-item"
-            @click="selectParent(item)"
-          >
-            <view class="icon-box" :class="{ active: parentCat?.id === item.id }">
-              <text class="emoji">{{ item.emoji }}</text>
+    <!-- 2. 分类选择区 (包裹在 card-warm 中) -->
+    <view class="category-main-wrapper card-warm">
+      <scroll-view class="category-scroll" scroll-y>
+        <view class="parent-grid">
+          <!-- 使用 template 包裹，方便在同一个 grid 容器中插入二级分类 -->
+          <template v-for="item in currentCategories" :key="item.id">
+            <!-- 一级分类项 -->
+            <view 
+              class="parent-item"
+              :class="{ 'parent-active': parentCat?.id === item.id }"
+              @click="selectParent(item)"
+            >
+              <view class="p-icon-wrapper">
+                <image :src="item.iconUrl" mode="aspectFit" class="p-cat-icon" />
+              </view>
+              <text class="p-cat-label">{{ item.name }}</text>
             </view>
-            <text class="cat-label">{{ item.name }}</text>
-          </view>
+
+            <!-- 二级分类网格 (仅在当前项被选中时插入，并占据整行) -->
+            <view 
+              class="sub-section-container" 
+              v-if="parentCat?.id === item.id && item.children?.length"
+            >
+              <view class="sub-section">
+                <view class="sub-grid">
+                  <view 
+                    v-for="sub in item.children" 
+                    :key="sub.id"
+                    class="sub-item"
+                    :class="{ 'sub-active': subCat?.id === sub.id }"
+                    @click.stop="subCat = sub"
+                  >
+                    <view class="s-icon-wrapper">
+                      <image :src="sub.iconUrl" mode="aspectFit" class="s-cat-icon" />
+                    </view>
+                    <text class="s-cat-label">{{ sub.name }}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </template>
         </view>
       </scroll-view>
-
-      <!-- 二级细分分类 (胶囊样式) -->
-      <view class="sub-category-bar" v-if="parentCat?.children?.length">
-        <scroll-view scroll-x class="sub-scroll" enable-flex>
-          <view 
-            v-for="sub in parentCat.children" 
-            :key="sub.id"
-            class="sub-chip"
-            :class="{ active: subCat?.id === sub.id }"
-            @click="subCat = sub"
-          >
-            {{ sub.name }}
-          </view>
-        </scroll-view>
-      </view>
     </view>
 
-    <!-- 3. 信息输入展示区 -->
+    <!-- 3. 输入面板 -->
     <view class="input-panel card-warm">
       <view class="info-row">
-        <!-- 备注与分类显示 -->
         <view class="remark-box">
-          <text class="selected-path" v-if="parentCat">
-            {{ parentCat.name }} <text class="sep">></text> {{ subCat?.name }}
-          </text>
           <input 
             type="text" 
-            v-model="remark" 
+            v-model="form.remark" 
             placeholder="添加备注..." 
             placeholder-class="placeholder-style"
           />
         </view>
-        <!-- 金额显示 -->
         <view class="amount-display num-font" :class="activeTab === 'EXPENSE' ? 'text-expense' : 'text-income'">
-          {{ amount || '0.00' }}
+          {{ form.amount || '0.00' }}
         </view>
       </view>
 
       <view class="meta-row">
-        <!-- 日期选择 -->
-        <picker mode="date" :value="date" @change="onDateChange">
+        <picker mode="date" :value="form.date" @change="e => form.date = e.detail.value">
           <view class="meta-btn">
-            <uni-icons type="calendar" size="14" color="#7a8582"></uni-icons>
-            <text>{{ isToday ? '今天' : date }}</text>
+            <image src="/static/assets/actions/calendar.png" class="meta-icon" />
+            <text>{{ isToday ? '今天' : form.date }}</text>
           </view>
         </picker>
 
-        <!-- 账户选择 -->
         <view class="meta-btn" @click="showAccountPicker">
-          <uni-icons type="wallet" size="14" color="#7a8582"></uni-icons>
+          <image src="/static/assets/actions/wallet.png" class="meta-icon" />
           <text>{{ selectedAccount?.name || '选择账户' }}</text>
         </view>
       </view>
     </view>
 
-    <!-- 4. 自定义数字键盘 (保持简洁) -->
+    <!-- 4. 键盘区 -->
     <view class="keyboard-container">
       <view class="key-grid">
         <view class="num-keys">
@@ -96,12 +99,12 @@
             {{ key }}
           </view>
           <view class="key-btn" hover-class="key-hover" @click="onDelete">
-            <uni-icons type="backspace" size="24"></uni-icons>
+            <image src="/static/assets/actions/backspace.png" class="backspace-icon" />
           </view>
         </view>
         <view class="action-keys">
-          <view class="action-btn next" hover-class="key-hover" @click="saveAndNext">再记</view>
-          <view class="action-btn finish" hover-class="key-hover" @click="save">完成</view>
+          <view class="action-btn next" hover-class="key-hover" @click="saveTransaction(true)">再记</view>
+          <view class="action-btn finish" hover-class="key-hover" @click="saveTransaction(false)">完成</view>
         </view>
       </view>
     </view>
@@ -109,87 +112,91 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
+
+const configStore = useConfigStore();
+
+const form = ref({
+  amount: '',
+  remark: '',
+  date: new Date().toISOString().split('T')[0],
+  categoryId: null,
+  accountId: null,
+  type: 'EXPENSE'
+});
 
 const activeTab = ref('EXPENSE');
-const amount = ref('');
-const remark = ref('');
-const date = ref(new Date().toISOString().split('T')[0]);
-const parentCat = ref(null); // 一级分类
-const subCat = ref(null);    // 二级分类
+const parentCat = ref(null);
+const subCat = ref(null);
 const selectedAccount = ref(null);
 
-// 模拟两级分类数据
-const mockCategories = {
-  EXPENSE: [
-    { 
-      id: 1, name: '食品餐饮', emoji: '🍱', 
-      children: [
-        { id: 101, name: '午餐/晚餐' }, { id: 102, name: '早餐' }, 
-        { id: 103, name: '零食下午茶' }, { id: 104, name: '买菜开火' }
-      ] 
-    },
-    { 
-      id: 2, name: '购物消费', emoji: '🛍️', 
-      children: [
-        { id: 201, name: '日用品' }, { id: 202, name: '服饰鞋包' }, 
-        { id: 203, name: '数码电器' }, { id: 204, name: '护肤美妆' }
-      ] 
-    },
-    { id: 3, name: '出行交通', emoji: '🚗', children: [{ id: 301, name: '打车租车' }, { id: 302, name: '公共交通' }, { id: 303, name: '加油停车' }] },
-    { id: 4, name: '居家生活', emoji: '🏠', children: [{ id: 401, name: '房租房贷' }, { id: 402, name: '水电燃气' }, { id: 403, name: '物业维修' }] },
-    { id: 9, name: '其他支出', emoji: '⚙️', children: [{ id: 901, name: '其他' }] }
-  ],
-  INCOME: [
-    { id: 1001, name: '职业报酬', emoji: '💰', children: [{ id: 1101, name: '工资' }, { id: 1102, name: '奖金' }, { id: 1103, name: '兼职' }] },
-    { id: 1002, name: '金融收益', emoji: '📈', children: [{ id: 1201, name: '理财分红' }, { id: 1202, name: '利息收入' }] }
-  ]
-};
+// 获取分类数据
+const currentCategories = computed(() => configStore.getTransferCategoriesByType(activeTab.value));
 
-const currentCategories = computed(() => mockCategories[activeTab.value]);
+const isToday = computed(() => form.value.date === new Date().toISOString().split('T')[0]);
 
-const isToday = computed(() => date.value === new Date().toISOString().split('T')[0]);
-
-// 逻辑：切换 Tab 时初始化分类
-const handleTabChange = (tab) => {
-  activeTab.value = tab;
-  selectParent(currentCategories.value[0]);
-};
-
-// 逻辑：选择一级分类
 const selectParent = (item) => {
   parentCat.value = item;
-  // 默认选中第一个二级分类
-  if (item.children && item.children.length > 0) {
-    subCat.value = item.children[0];
+  subCat.value = item.children?.length > 0 ? item.children[0] : null;
+};
+
+const handleTabChange = (tab) => {
+  activeTab.value = tab;
+  form.value.type = tab;
+  if (currentCategories.value.length > 0) {
+    selectParent(currentCategories.value[0]);
   }
 };
 
 onLoad((options) => {
-  // 默认选中第一个分类
-  selectParent(currentCategories.value[0]);
+  if (currentCategories.value.length > 0) {
+    selectParent(currentCategories.value[0]);
+  }
+  if (options.accountId) {
+    selectedAccount.value = configStore.institutionMap[options.accountId];
+  }
 });
 
-/* 键盘与业务逻辑保持之前版本一致 */
+// 键盘输入限制
 const onKeyPress = (k) => {
-  if (k === '.' && (amount.value.includes('.') || !amount.value)) return;
-  if (amount.value.includes('.') && amount.value.split('.')[1].length >= 2) return;
-  amount.value += k;
-};
-const onDelete = () => amount.value = amount.value.slice(0, -1);
-const onDateChange = (e) => date.value = e.detail.value;
-
-const save = () => {
-  if (!amount.value) return uni.showToast({ title: '请输入金额', icon: 'none' });
-  uni.showLoading({ title: '保存中' });
-  setTimeout(() => { uni.hideLoading(); uni.navigateBack(); }, 600);
+  let nextAmount = form.value.amount + k;
+  if (k === '.' && (form.value.amount.includes('.') || !form.value.amount)) return;
+  if (form.value.amount.includes('.') && form.value.amount.split('.')[1].length >= 2) return;
+  if (parseFloat(nextAmount) >= 100000000) {
+    uni.showToast({ title: '单笔金额上限为1亿', icon: 'none' });
+    return;
+  }
+  form.value.amount += k;
 };
 
-const saveAndNext = () => {
-  uni.showToast({ title: '已保存', icon: 'success' });
-  amount.value = '';
-  remark.value = '';
+const onDelete = () => form.value.amount = form.value.amount.slice(0, -1);
+
+const showAccountPicker = () => {
+  uni.showToast({ title: '账户选择开发中', icon: 'none' });
+};
+
+const saveTransaction = async (keepGoing = false) => {
+  if (!form.value.amount || parseFloat(form.value.amount) === 0) {
+    return uni.showToast({ title: '请输入金额', icon: 'none' });
+  }
+  const payload = {
+    amount: parseFloat(form.value.amount),
+    remark: form.value.remark,
+    occuredAt: form.value.date + 'T00:00:00',
+    categoryId: subCat.value?.id || parentCat.value?.id,
+    accountId: selectedAccount.value?.id || null,
+    type: form.value.type
+  };
+  console.log('提交 Payload:', payload);
+  uni.showToast({ title: '保存成功', icon: 'success' });
+  if (keepGoing) {
+    form.value.amount = '';
+    form.value.remark = '';
+  } else {
+    setTimeout(() => uni.navigateBack(), 800);
+  }
 };
 </script>
 
@@ -206,139 +213,169 @@ const saveAndNext = () => {
   display: flex;
   justify-content: center;
   gap: 80rpx;
-  padding: 24rpx 0;
+  padding: 30rpx 0;
   background-color: $bg-white;
+  z-index: 10;
   .tab-item {
     position: relative;
     font-size: 32rpx;
     color: $text-muted;
-    transition: all 0.3s;
     &.active {
       color: $primary;
       font-weight: $fw-bold;
       .active-line {
         position: absolute;
-        bottom: -12rpx;
-        left: 0;
-        width: 100%;
-        height: 6rpx;
-        background-color: $primary;
-        border-radius: 10rpx;
+        bottom: -16rpx;
+        left: 0; width: 100%; height: 6rpx;
+        background-color: $primary; border-radius: 10rpx;
       }
     }
   }
 }
 
-/* Category Section */
-.category-section {
+/* 分类展示区 */
+.category-main-wrapper {
   flex: 1;
+  margin: 20rpx $spacing-md;
+  overflow: hidden;
+  padding: 0;
+  
+  .category-scroll {
+    height: 100%;
+    padding: 24rpx;
+  }
+}
+
+/* 一级分类网格 */
+.parent-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24rpx 16rpx;
+}
+
+.parent-item {
   display: flex;
   flex-direction: column;
-  background-color: $bg-white;
-  overflow: hidden;
-
-  .parent-scroll {
-    flex: 1;
-    padding: 30rpx 30rpx 10rpx;
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 32rpx 20rpx;
-    }
+  align-items: center;
+  gap: 8rpx;
+  
+  .p-icon-wrapper {
+    width: 80rpx;
+    height: 80rpx;
+    background-color: $bg-page;
+    border-radius: 24rpx;
+    @include flex-center;
+    transition: all 0.2s;
+    .p-cat-icon { width: 50rpx; height: 50rpx; }
   }
+  
+  .p-cat-label { font-size: 20rpx; color: $text-sub; }
 
-  /* 二级分类条 */
-  .sub-category-bar {
-    padding: 20rpx 0 30rpx;
-    border-bottom: 1rpx solid $gray-50;
-    .sub-scroll {
-      display: flex;
-      padding: 0 30rpx;
-      white-space: nowrap;
-      height: 64rpx;
-      align-items: center;
+  &.parent-active {
+    .p-icon-wrapper {
+      background-color: $primary-subtle;
+      border: 2rpx solid $primary;
     }
-    .sub-chip {
-      display: inline-block;
-      padding: 10rpx 32rpx;
-      margin-right: 16rpx;
-      background-color: $bg-page;
-      color: $text-regular;
-      font-size: 24rpx;
-      border-radius: $radius-full;
-      transition: all 0.2s;
-      &.active {
-        background-color: $primary-subtle;
-        color: $primary;
-        font-weight: $fw-medium;
-      }
-    }
+    .p-cat-label { color: $primary; font-weight: $fw-bold; }
   }
 }
 
-/* Input Panel */
+/* 二级分类容器逻辑：跨越整行显示 */
+.sub-section-container {
+  grid-column: 1 / span 5; // 核心：强制占据 5 列宽度
+  margin: 10rpx 0 20rpx;
+}
+
+.sub-section {
+  padding: 24rpx;
+  background-color: $bg-subtle;
+  border-radius: $radius-base;
+  
+  .sub-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); // 内部同样保持 5 列
+    gap: 20rpx 16rpx;
+  }
+}
+
+.sub-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  
+  .s-icon-wrapper {
+    width: 64rpx;
+    height: 64rpx;
+    background-color: $bg-white;
+    border-radius: 16rpx;
+    @include flex-center;
+    .s-cat-icon { width: 40rpx; height: 40rpx; }
+  }
+  
+  .s-cat-label { font-size: 18rpx; color: $text-regular; }
+
+  &.sub-active {
+    .s-icon-wrapper {
+      background-color: $primary;
+      .s-cat-icon { filter: brightness(100); }
+    }
+    .s-cat-label { color: $primary; font-weight: $fw-bold; }
+  }
+}
+
+/* 输入面板 */
 .input-panel {
-  margin: 20rpx;
-  padding: 32rpx;
+  margin: 0 $spacing-md 20rpx;
+  padding: 24rpx 32rpx;
+  
   .info-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24rpx;
     .remark-box {
       flex: 1;
-      .selected-path {
-        display: block;
-        font-size: 20rpx;
-        color: $text-placeholder;
-        margin-bottom: 8rpx;
-        .sep { margin: 0 4rpx; }
-      }
       input { font-size: 30rpx; color: $text-main; }
     }
     .amount-display {
       font-size: 56rpx;
       font-weight: $fw-bold;
-      &.text-expense { color: $color-expense; }
-      &.text-income { color: $color-income; }
     }
   }
+  
   .meta-row {
-    display: flex;
-    gap: 16rpx;
+    display: flex; gap: 20rpx; margin-top: 20rpx;
     .meta-btn {
       background-color: $bg-page;
-      padding: 8rpx 20rpx;
-      border-radius: 8rpx;
-      display: flex;
-      align-items: center;
-      gap: 8rpx;
+      padding: 8rpx 20rpx; border-radius: $radius-base;
+      display: flex; align-items: center; gap: 10rpx;
+      .meta-icon { width: 28rpx; height: 28rpx; }
       text { font-size: 22rpx; color: $text-sub; }
     }
   }
 }
 
-/* Keyboard */
+/* 键盘容器 */
 .keyboard-container {
   background-color: $bg-white;
-  padding: 12rpx 12rpx calc(constant(safe-area-inset-bottom) + 12rpx);
   padding: 12rpx 12rpx calc(env(safe-area-inset-bottom) + 12rpx);
   .key-grid { display: flex; gap: 12rpx; }
   .num-keys { flex: 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
   .action-keys { flex: 1; display: flex; flex-direction: column; gap: 12rpx; }
   .key-btn, .action-btn {
-    height: 104rpx;
-    background-color: $bg-white;
-    border: 1rpx solid $gray-100;
-    border-radius: 16rpx;
-    @include flex-center;
-    font-size: 42rpx;
-    font-family: $font-family-money;
+    height: 100rpx; background-color: $bg-white;
+    border: 1rpx solid $gray-100; border-radius: 20rpx;
+    @include flex-center; font-size: 40rpx; font-family: $font-family-money;
   }
+  .backspace-icon { width: 44rpx; height: 44rpx; }
   .key-hover { background-color: $gray-50; }
   .action-btn {
-    font-size: 30rpx;
+    font-size: 28rpx;
     &.finish { background-color: $primary; color: $white; flex: 1; font-weight: $fw-bold; }
   }
 }
+
+.text-expense { color: $color-expense; }
+.text-income { color: $color-income; }
+.placeholder-style { color: $text-placeholder; }
 </style>

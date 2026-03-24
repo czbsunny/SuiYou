@@ -220,6 +220,7 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .name(entity.getName())
                 .categoryCode(entity.getCategoryCode())
                 .iconUrl(entity.getIconUrl())
+                .groupType(entity.getGroupType())
                 .sortOrder(entity.getSortOrder())
                 .build();
     }
