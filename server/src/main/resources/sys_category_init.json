@@ -99,10 +99,10 @@
     ]
   },
   {
-    "categoryCode": "LOAN",
+    "categoryCode": "HEALTHCARE",
     "name": "健康医疗",
     "groupType": "EXPENSE",
-    "iconUrl": "/static/transfers/debt.png",
+    "iconUrl": "/static/transfers/healthcare.png",
     "sortOrder": 50,
     "children": [
       { "categoryCode": "MEDICAL", "name": "医疗", "iconUrl": "/static/transfers/medical.png", "sortOrder": 1, "description": "医疗" },
