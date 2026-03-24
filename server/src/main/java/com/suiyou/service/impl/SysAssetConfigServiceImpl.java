@@ -219,8 +219,11 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
             .toList();
         
         if (!codesToDelete.isEmpty()) {
+            // 先删除与这些分类关联的机构关系
+            categoryInstitutionRelationRepository.deleteByCategoryCodeIn(codesToDelete);
+            // 再删除分类
             assetCategoryRepository.deleteByCategoryCodeIn(codesToDelete);
-            log.info("删除了 {} 个不存在于JSON文件中的系统分类。", codesToDelete.size());
+            log.info("删除了 {} 个不存在于JSON文件中的系统分类及其关联关系。", codesToDelete.size());
         }
 
         log.info("资产分类同步完成，共处理 {} 条记录。", entitiesToSave.size());

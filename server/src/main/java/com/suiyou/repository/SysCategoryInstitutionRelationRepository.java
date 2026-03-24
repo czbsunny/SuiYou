@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SysCategoryInstitutionRelationRepository extends JpaRepository<SysCategoryInstitutionRelation, Long> {
@@ -17,4 +16,7 @@ public interface SysCategoryInstitutionRelationRepository extends JpaRepository<
     
     // 根据机构编码和分类编码查询关联关系
     boolean existsByInstCodeAndCategoryCode(String instCode, String categoryCode);
+    
+    // 根据分类编码列表批量删除
+    void deleteByCategoryCodeIn(List<String> categoryCodes);
 }
