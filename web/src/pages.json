@@ -137,6 +137,15 @@
       }
     },
     {
+      "path": "pages/assets/account-selector",
+      "style": {
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black",
+        "navigationBarTitleText": "选择账户",
+        "backgroundColor": "#F9F8F4"
+      }
+    },
+    {
       "path": "pages/assets/manage-account",
       "style": {
         "navigationBarTitleText": "账户管理",

@@ -10,7 +10,7 @@
       { "categoryCode": "LUNCH", "name": "午餐", "iconUrl": "/static/transfers/lunch.png", "sortOrder": 2, "description": "中餐" },
       { "categoryCode": "DINNER", "name": "晚餐", "iconUrl": "/static/transfers/dinner.png", "sortOrder": 3, "description": "晚餐" },
       { "categoryCode": "NIGHT_SNACK", "name": "宵夜", "iconUrl": "/static/transfers/nightsnack.png", "sortOrder": 4, "description": "宵夜" },
-      { "categoryCode": "WINE", "name": "酒水", "iconUrl": "/static/transfers/wine.png", "sortOrder": 5, "description": "酒水" },
+      { "categoryCode": "BEVERAGES", "name": "酒水", "iconUrl": "/static/transfers/beverages.png", "sortOrder": 5, "description": "酒水" },
       { "categoryCode": "DRINK", "name": "奶茶", "iconUrl": "/static/transfers/drink‌.png", "sortOrder": 6, "description": "奶茶" },
       { "categoryCode": "SNACK", "name": "零食", "iconUrl": "/static/transfers/snack.png", "sortOrder": 7, "description": "零食" },
       { "categoryCode": "FRUIT", "name": "水果", "iconUrl": "/static/transfers/fruit.png", "sortOrder": 8, "description": "水果" },
@@ -79,7 +79,7 @@
       { "categoryCode": "GAS", "name": "燃气", "iconUrl": "/static/transfers/gas.png", "sortOrder": 2, "description": "燃气" },
       { "categoryCode": "RENT", "name": "房租", "iconUrl": "/static/transfers/rent.png", "sortOrder": 3, "description": "房租" },
       { "categoryCode": "PROPERTY", "name": "物业费", "iconUrl": "/static/transfers/property.png", "sortOrder": 4, "description": "物业费" },
-      { "categoryCode": "HOUSE_LOAN", "name": "房贷", "iconUrl": "/static/transfers/house-loan.png", "sortOrder": 5, "description": "房贷" },
+      { "categoryCode": "HOUSE_LOAN", "name": "房贷", "iconUrl": "/static/transfers/house_loan.png", "sortOrder": 5, "description": "房贷" },
       { "categoryCode": "HOUSEKEEPING", "name": "家政清洁", "iconUrl": "/static/transfers/housekeeping.png", "sortOrder": 6, "description": "家政清洁" }
     ]
   },
