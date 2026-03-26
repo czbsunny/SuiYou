@@ -9,12 +9,12 @@
         @click="!isFromLocked && handleSelect('from')"
       >
         <view class="account-icon-box bg-transfer">
-          <image :src="fromAccount?.iconUrl || '/static/images/account.png'" class="account-icon" />
+          <image :src="fromAccount?.logoUrl || '/static/images/account.png'" class="account-icon" />
         </view>
         <view class="account-info">
           <text class="direction-label">从（转出账户）</text>
           <text class="account-name" :class="{ 'placeholder': !fromAccount }">
-            {{ fromAccount?.name || '请选择转出账户' }}
+            {{ fromAccount?.accountName || '请选择转出账户' }}
           </text>
         </view>
         <uni-icons v-if="!isFromLocked" type="right" size="16" color="#ccd4d2"></uni-icons>
@@ -33,12 +33,12 @@
         @click="!isToLocked && handleSelect('to')"
       >
         <view class="account-icon-box bg-income">
-          <image :src="toAccount?.iconUrl || '/static/images/account.png'" class="account-icon" />
+          <image :src="toAccount?.logoUrl || '/static/images/account.png'" class="account-icon" />
         </view>
         <view class="account-info">
           <text class="direction-label">至（转入账户）</text>
           <text class="account-name" :class="{ 'placeholder': !toAccount }">
-            {{ toAccount?.name || '请选择转入账户' }}
+            {{ toAccount?.accountName || '请选择转入账户' }}
           </text>
         </view>
         <uni-icons v-if="!isToLocked" type="right" size="16" color="#ccd4d2"></uni-icons>
@@ -115,6 +115,9 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
+import { useConfigStore } from '@/stores/config.js';
+
+const configStore = useConfigStore();
 
 const fromAccount = ref(null);
 const toAccount = ref(null);
@@ -150,6 +153,8 @@ const displayDateTime = computed(() => {
 
 onLoad((options) => {
   uni.$on('acceptAccountFromSelector', (res) => {
+    const instConfig = configStore.institutionMap[res.account.institution] || {};
+    res.account.logoUrl = instConfig.logoUrl || '/static/icons/default-bank.png';
     if (currentDirection.value === 'from') fromAccount.value = res.account;
     else toAccount.value = res.account;
     uni.vibrateShort();
