@@ -3,8 +3,10 @@ package com.suiyou.repository;
 import com.suiyou.model.Asset;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -47,4 +49,12 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
      * @return 资产列表
      */
     List<Asset> findByOwnerIdAndStatus(Long userId, Integer status);
+    
+    /**
+     * 根据ID查询资产，并加载账户信息
+     * @param id 资产ID
+     * @return 资产对象
+     */
+    @Query("SELECT a FROM Asset a LEFT JOIN FETCH a.account WHERE a.id = :id")
+    Optional<Asset> findByIdWithAccount(Long id);
 }

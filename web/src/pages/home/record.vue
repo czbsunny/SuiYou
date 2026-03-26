@@ -69,9 +69,8 @@
 
       <!-- 第二行：操作栏（时间、账户、备注） -->
       <view class="meta-row">
-        <!-- 日期时间一体化选择器 -->
         <uni-datetime-picker 
-          v-model="form.datetime" 
+          v-model="form.datetime"
           type="datetime" 
           :border="false" 
           :clear-icon="false"
@@ -130,7 +129,9 @@ import { createTransaction } from '@/services/transactionService.js';
 
 const configStore = useConfigStore();
 
-// 格式化当前时间
+/**
+ * 时间处理：组件回显最稳定的格式是 YYYY-MM-DD HH:mm:ss
+ */
 const formatNow = () => {
   const now = new Date();
   const y = now.getFullYear();
@@ -159,16 +160,20 @@ const selectedAccount = ref(null);
 // 修改回显逻辑：兼容组件返回的不同格式
 const displayDateTime = computed(() => {
   if (!form.value.datetime) return '选择日期';
-  const dt = form.value.datetime.replace('T', ' '); // 统一格式
-  const nowStr = new Date().toISOString().split('T')[0];
-  
+  const dt = form.value.datetime.replace('T', ' '); // 统一成带空格的格式
+  const now = new Date();
+  const nowStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const currentYear = now.getFullYear().toString();
+
   if (dt.startsWith(nowStr)) {
-    // 如果是今天，显示 "今天 14:30"
-    const timePart = dt.split(' ')[1] || '';
-    return `今天 ${timePart.substring(0, 5)}`;
+    return `今天 ${dt.split(' ')[1].substring(0, 5)}`;
   }
-  // 其他日期显示 "MM-DD HH:mm"
-  return dt.substring(5, 16);
+
+  if (dt.startsWith(currentYear)) {
+    return dt.substring(5, 16);
+  }
+  
+  return dt.substring(0, 16);
 });
 
 const chunkedCategories = computed(() => {
@@ -224,7 +229,9 @@ onUnmounted(() => {
 
 // 处理时间选择器变化，确保响应式更新
 const onDateTimeChange = (val) => {
-  form.value.datetime = val;
+  if (val) {
+    form.value.datetime = val.replace('T', ' '); // 保持内部格式统一
+  }
 };
 
 const onKeyPress = (k) => {
@@ -254,13 +261,17 @@ const saveTransaction = async (keepGoing = false) => {
     return uni.showToast({ title: '请输入金额', icon: 'none' });
   }
   
-  // 处理后端需要的格式
+  if (!selectedAccount.value?.selectedAsset?.id) {
+    return uni.showToast({ title: '请选择账户', icon: 'none' });
+  }
+  
   const formattedDt = form.value.datetime.replace(' ', 'T');
   const payload = {
     type: form.value.type,
     amount: parseFloat(form.value.amount),
     transTime: formattedDt.length === 16 ? formattedDt + ':00' : formattedDt,
-    sourceAssetId: selectedAccount.value?.selectedAsset?.id || null,
+    sourceAssetId: form.value.type === 'EXPENSE' ? selectedAccount.value?.selectedAsset?.id : null,
+    targetAssetId: form.value.type === 'INCOME' ? selectedAccount.value?.selectedAsset?.id : null,
     categoryId: subCat.value?.id || parentCat.value?.id,
     description: form.value.remark,
     tags: []

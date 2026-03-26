@@ -7,21 +7,27 @@
     <QuickActions />
 
     <!-- 3. 最新动态 (记账流/动态) -->
-    <ActivityFeed :is-privacy-on="isPrivacyOn" />
-    
-    <!-- 底部垫片：确保内容不被 TabBar 遮挡 -->
-    <view class="safe-area-bottom"></view>
+    <ActivityFeed ref="activityFeedRef" :is-privacy-on="isPrivacyOn" />
   </view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { onReachBottom } from '@dcloudio/uni-app'; 
 import ActivityFeed from '@/components/home/ActivityFeed.vue';
 import QuickActions from '@/components/home/QuickActions.vue';
 import NetWorthCard from '@/components/home/NetWorthCard.vue';
 
 // 全局隐私模式状态
 const isPrivacyOn = ref(false);
+const activityFeedRef = ref(null);
+
+onReachBottom(() => {
+  console.log('首页触底，准备加载更多...');
+  if (activityFeedRef.value) {
+    activityFeedRef.value.handleLoadMore();
+  }
+});
 </script>
 
 <style lang="scss" scoped>

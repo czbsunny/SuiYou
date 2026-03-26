@@ -17,8 +17,12 @@ public class TransactionRespDTO {
     private BigDecimal fee;
     private Long sourceAssetId;
     private String sourceAccountName;
+    private String sourceAccountInstitution;
+    private String sourceAccountIdentifier;
     private Long targetAssetId;
     private String targetAccountName;
+    private String targetAccountInstitution;
+    private String targetAccountIdentifier;
     private Long categoryId;
     private String description;
     private List<String> tags;

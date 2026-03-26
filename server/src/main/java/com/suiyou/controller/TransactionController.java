@@ -30,7 +30,7 @@ public class TransactionController {
      * 新增交易 (记一笔)
      */
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody TransactionCreateReqDTO req) {
+    public ResponseEntity<?> create(@RequestBody TransactionCreateRespDTO req) {
 
         try {
             Long userId = getCurrentUserId();
@@ -67,7 +67,7 @@ public class TransactionController {
      */
     @GetMapping
     public ResponseEntity<Page<TransactionRespDTO>> list(
-            TransactionQueryReqDTO query,
+            TransactionQueryRespDTO query,
             @PageableDefault(sort = "transTime", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Long userId = getCurrentUserId();
