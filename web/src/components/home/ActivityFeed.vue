@@ -5,8 +5,8 @@
     </div>
     <div class="activity-list">
       <div class="activity-item" v-for="(item, index) in list" :key="index">
-        <div class="act-icon" :class="item.bgClass">
-          <i class="fa-solid" :class="item.icon"></i>
+        <div class="act-icon">
+          <img :src="item.icon" alt="icon" class="icon-image"></img>
         </div>
         <div class="act-content">
           <span class="act-title">{{ item.title }}</span>
@@ -21,13 +21,71 @@
 </template>
 
 <script setup>
+import { ref, onMounted, computed } from 'vue';
+import { getTransactions } from '@/services/transactionService';
+import { useConfigStore } from '@/stores/config';
+import { TRANSACTION_ICONS } from '@/configs/common';
+
+const configStore = useConfigStore();
+
 defineProps({ isPrivacyOn: Boolean });
 
-const list = [
-  { title: '工资收入', date: '今日 09:30', account: '招商银行', amount: '+35,000.00', icon: 'fa-wallet', bgClass: 'bg-green', textClass: 'text-green' },
-  { title: '基金定投扣款', date: '昨日 14:00', account: '且慢账户', amount: '-5,000.00', icon: 'fa-seedling', bgClass: 'bg-blue', textClass: 'text-black' },
-  { title: '房贷偿还', date: '10月20日', account: '工商银行', amount: '-8,500.00', icon: 'fa-house', bgClass: 'bg-orange', textClass: 'text-black' }
-];
+const transactions = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+const list = computed(() => {
+  return transactions.value.map(transaction => {
+    const isIncome = transaction.type === 'INCOME';
+    const amount = transaction.amount.toFixed(2);
+    
+    const category = configStore.getTransferCategoriesById(transaction.categoryId);
+    console.log(category);
+    
+    return {
+      title: category?.name || TRANSACTION_ICONS[transaction.type].name,
+      date: formatDate(transaction.transTime),
+      account: transaction.assetName || '未知账户',
+      amount: isIncome ? `+${amount}` : `-${amount}`,
+      icon: category?.iconUrl || TRANSACTION_ICONS[transaction.type].iconUrl,
+      textClass: isIncome ? 'text-green' : 'text-black'
+    };
+  }).slice(0, 5);
+});
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffTime = now - date;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    return `今日 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  } else if (diffDays === 1) {
+    return `昨日 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  } else {
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+};
+
+const fetchTransactions = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    const data = await getTransactions({ page: 0, size: 10, sort: 'transTime,desc' });
+    transactions.value = data.content || [];
+  } catch (err) {
+    console.error('获取交易记录失败:', err);
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchTransactions();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -39,10 +97,8 @@ const list = [
   display: flex; align-items: center; justify-content: space-between;
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
-.act-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px; font-size: 16px; }
-.bg-green { background: #10B981; }
-.bg-blue { background: #3B82F6; }
-.bg-orange { background: #F59E0B; }
+.act-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
+.icon-image { width: 32px; height: 32px; }
 .act-content { flex: 1; }
 .act-title { font-size: 14px; font-weight: 600; color: var(--text-main); display: block; margin-bottom: 2px; }
 .act-date { font-size: 11px; color: var(--text-sub); display: block; }

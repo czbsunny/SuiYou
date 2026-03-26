@@ -1,4 +1,4 @@
-package com.suiyou.model.dto;
+package com.suiyou.dto.transaction;
 
 import com.suiyou.model.enums.TransactionType;
 import lombok.Data;
@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-public class TransactionQueryReqDTO {
+public class TransactionQueryRespDTO {
 
     /**
      * 开始日期 (前端传 yyyy-MM-dd)

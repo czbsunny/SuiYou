@@ -1,4 +1,4 @@
-package com.suiyou.model.dto;
+package com.suiyou.dto.transaction;
 
 import com.suiyou.model.enums.TransactionType;
 import lombok.Data;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class TransactionCreateReqDTO {
+public class TransactionCreateRespDTO {
     private TransactionType type; // 枚举: EXPENSE, INCOME, TRANSFER...
     private BigDecimal amount;
     private BigDecimal targetAmount; // 可空，为空时默认等于 amount

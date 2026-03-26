@@ -4,8 +4,9 @@ import com.suiyou.model.Transaction;
 import com.suiyou.model.Asset;
 import com.suiyou.model.Family;
 
-import com.suiyou.model.dto.TransactionCreateReqDTO;
-import com.suiyou.model.dto.TransactionQueryReqDTO;
+import com.suiyou.dto.transaction.TransactionCreateRespDTO;
+import com.suiyou.dto.transaction.TransactionQueryRespDTO;
+import com.suiyou.dto.transaction.TransactionRespDTO;
 
 import com.suiyou.repository.TransactionRepository;
 import com.suiyou.repository.AssetRepository;
@@ -45,7 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Transaction createTransaction(Long userId, TransactionCreateReqDTO req) {
+    public Transaction createTransaction(Long userId, TransactionCreateRespDTO req) {
         Family family = familyService.getFirstActiveFamilyByUserId(userId);
 
         // 1. 构建交易实体
@@ -154,7 +155,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<Transaction> queryTransactions(Long userId, TransactionQueryReqDTO query, Pageable pageable) {
+    public Page<TransactionRespDTO> queryTransactions(Long userId, TransactionQueryRespDTO query, Pageable pageable) {
         Family family = familyService.getFirstActiveFamilyByUserId(userId);
         if (Objects.isNull(family)) {
             throw new IllegalArgumentException("用户未关联任何家庭");
@@ -209,6 +210,28 @@ public class TransactionServiceImpl implements TransactionService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        return transactionRepository.findAll(spec, pageable);
+        Page<Transaction> transactions = transactionRepository.findAll(spec, pageable);
+        return transactions.map(transaction -> {
+            TransactionRespDTO dto = new TransactionRespDTO();
+            BeanUtils.copyProperties(transaction, dto);
+            
+            // 获取源账户名称
+            if (transaction.getSourceAssetId() != null) {
+                Asset sourceAsset = assetRepository.findById(transaction.getSourceAssetId()).orElse(null);
+                if (sourceAsset != null && sourceAsset.getAccount() != null) {
+                    dto.setSourceAccountName(sourceAsset.getAccount().getAccountName());
+                }
+            }
+            
+            // 获取目标账户名称
+            if (transaction.getTargetAssetId() != null) {
+                Asset targetAsset = assetRepository.findById(transaction.getTargetAssetId()).orElse(null);
+                if (targetAsset != null && targetAsset.getAccount() != null) {
+                    dto.setTargetAccountName(targetAsset.getAccount().getAccountName());
+                }
+            }
+            
+            return dto;
+        });
     }
 }

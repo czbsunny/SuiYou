@@ -26,3 +26,19 @@ export const CACHE = {
   DEFAULT_EXPIRE: 3600, // 默认缓存时间（秒）
   MAX_SIZE: 100         // 最大缓存条目数
 };
+
+// 交易类型图标配置
+export const TRANSACTION_ICONS = {
+  ['INCOME']: {
+    name: '收入',
+    iconUrl: '/static/images/income.png',
+  },
+  ['EXPENSE']: {
+    name: '支出',
+    iconUrl: '/static/images/expense.png',
+  },
+  ['TRANSFER']: {
+    name: '转账',
+    iconUrl: '/static/images/transfer.png'
+  } 
+};

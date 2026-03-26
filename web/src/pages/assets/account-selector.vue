@@ -1,56 +1,80 @@
 <template>
   <view class="selector-page">
-    <!-- 1. 顶部搜索栏 -->
-    <view class="search-header">
-      <view class="search-input-box">
-        <uni-icons type="search" size="18" color="#a3b0ad"></uni-icons>
-        <input 
-          type="text" 
-          v-model="searchKeyword" 
-          placeholder="搜索账户名称/机构..." 
-          placeholder-class="placeholder-style"
-        />
-      </view>
-    </view>
-
-    <!-- 2. 账户列表区 -->
+    <!-- 1. 账户列表区 -->
     <scroll-view class="list-scroll" scroll-y>
-      <view v-for="(group, gIndex) in groupedAccounts" :key="gIndex" class="account-group">
-        <text class="group-title">{{ group.title }}</text>
-        
+      <view class="list-inner">
         <view 
-          v-for="account in group.list" 
+          v-for="account in sortedAccounts" 
           :key="account.id"
           class="account-card card-warm"
-          hover-class="item-active"
-          @click="handleSelect(account)"
         >
-          <view class="card-left">
-            <view class="icon-wrapper">
-              <image :src="getInstitutionIcon(account.institution)" mode="aspectFit" class="bank-icon" />
+          <!-- 账户头部 -->
+          <view class="card-header" @click="toggleAccountExpand(account.id)">
+            <view class="card-left">
+              <view class="icon-wrapper">
+                <image :src="account.logoUrl" mode="aspectFit" class="bank-icon" />
+              </view>
+              <view class="name-box">
+                <view class="name-row">
+                  <text class="main-name">{{ account.institutionName }}</text>
+                  <text v-if="account.accountName" class="sub-name">{{ account.accountName }}</text>
+                </view>
+                <text class="id-text num-font">**** {{ account.institutionIdentifier || '0000' }}</text>
+              </view>
             </view>
-            <view class="name-box">
-              <text class="main-name">{{ account.accountName || account.institutionName }}</text>
-              <text class="sub-name">{{ account.institutionIdentifier }}</text>
+            
+            <view class="card-right">
+              <view class="balance-box">
+                <text class="currency">￥</text>
+                <text class="amount num-font">{{ formatMoney(account.totalBalance) }}</text>
+              </view>
+              <uni-icons 
+                :type="expandedAccountId === account.id ? 'arrowup' : 'arrowdown'" 
+                size="14" 
+                color="#ccd4d2"
+              ></uni-icons>
             </view>
           </view>
           
-          <view class="card-right">
-            <view class="balance-box">
-              <text class="currency">￥</text>
-              <text class="amount num-font">{{ formatMoney(account.totalBalance) }}</text>
+          <!-- 资产项列表 -->
+          <view v-if="expandedAccountId === account.id" class="asset-list animate-slide-down">
+            <view 
+              v-for="asset in account.assets" 
+              :key="asset.id"
+              class="asset-item"
+              @click.stop="selectAsset(account.id, asset.id)"
+            >
+              <view class="asset-left">
+                <view class="radio-circle" :class="{ 'radio-active': selectedAssetId === asset.id }">
+                  <view class="radio-inner" v-if="selectedAssetId === asset.id"></view>
+                </view>
+                <text class="asset-name" :class="{ 'text-active': selectedAssetId === asset.id }">
+                  {{ asset.name }}
+                </text>
+              </view>
+              <view class="asset-balance">
+                <text class="currency">￥</text>
+                <text class="amount num-font">{{ formatMoney(asset.totalBalance) }}</text>
+              </view>
             </view>
-            <uni-icons type="right" size="14" color="#ccd4d2"></uni-icons>
           </view>
         </view>
       </view>
-      
-      <!-- 无数据占位 -->
-      <view v-if="groupedAccounts.length === 0" class="empty-state">
-        <image src="/static/images/empty-box.png" mode="aspectFit" class="empty-img" />
-        <text>未找到相关账户</text>
-      </view>
+      <view class="safe-area-spacer"></view>
     </scroll-view>
+
+    <!-- 2. 底部确认区 -->
+    <view class="footer-action card-warm">
+      <!-- 动态显示：仅在传参标识为可设置默认时显示 -->
+      <view class="default-setting" v-if="canSetDefault" @click="isSetDefault = !isSetDefault">
+        <view class="checkbox-box" :class="{ 'checkbox-active': isSetDefault }">
+          <uni-icons v-if="isSetDefault" type="checkmarkempty" size="14" color="#FFFFFF"></uni-icons>
+        </view>
+        <text class="default-text">设为记账默认账户</text>
+      </view>
+      
+      <button class="btn-primary" @click="confirmSelection">确定选择</button>
+    </view>
   </view>
 </template>
 
@@ -62,76 +86,95 @@ import { useConfigStore } from '@/stores/config.js';
 
 const configStore = useConfigStore();
 const allAccounts = ref([]);
-const searchKeyword = ref('');
 
-onLoad(async () => {
-  await loadAccounts();
+// 状态控制
+const expandedAccountId = ref(null);
+const selectedAccountId = ref(null);
+const selectedAssetId = ref(null);
+const isSetDefault = ref(false);
+const canSetDefault = ref(false);
+
+onLoad(async (options) => {
+  // 1. 是否显示"设为默认"勾选框
+  canSetDefault.value = options.canSetDefault === 'true';
+
+  // 2. 解析初始化回显 ID
+  const initAccId = options.initAccountId ? parseInt(options.initAccountId) : null;
+  const initAssetId = options.initAssetId ? parseInt(options.initAssetId) : null;
+
+  await loadAccounts(initAccId, initAssetId);
 });
 
-const loadAccounts = async () => {
+const loadAccounts = async (initAccId, initAssetId) => {
   try {
-    // 调用后端接口获取账户
     const res = await getAccounts();
-    allAccounts.value = res.accounts || [];
+    const instMap = configStore.institutionMap;
+    
+    const processed = res.accounts
+      .filter(a => a.assets?.length > 0 && a.assets.some(asset => asset.category === 'LIQUID'))
+      .map(a => {
+        const instConfig = instMap[a.institution] || {};
+        const liquidAssets = a.assets
+          .filter(asset => asset.category === 'LIQUID')
+          .sort((a, b) => a.sortOrder - b.sortOrder);
+        return {
+          ...a,
+          accountName: instConfig.instName +'('+a.institutionIdentifier +')',
+          institutionName: instConfig.instName,
+          logoUrl: instConfig.logoUrl,
+          assets: liquidAssets,
+          totalBalance: liquidAssets.reduce((acc, asset) => acc + asset.totalBalance, 0)
+        };
+      }) || [];
+    
+    allAccounts.value = processed;
+
+    // 3. 处理回显逻辑
+    if (initAccId && initAssetId) {
+      const targetAcc = processed.find(a => a.id === initAccId);
+      if (targetAcc) {
+        selectedAccountId.value = initAccId;
+        selectedAssetId.value = initAssetId;
+        // 如果有匹配的回显项，自动展开该账户
+        expandedAccountId.value = initAccId;
+      }
+    }
   } catch (e) {
     console.error('加载账户失败:', e);
   }
 };
 
-// 格式化金额
-const formatMoney = (val) => {
-  return Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
-};
-
-// 获取机构图标（从 configStore 映射）
-const getInstitutionIcon = (instCode) => {
-  // 假设 store 里有 institution 映射关系
-  return configStore.institutionMap[instCode]?.iconUrl || '/static/images/default-bank.png';
-};
-
-// 按类型分组并过滤搜索内容
-const groupedAccounts = computed(() => {
-  let list = allAccounts.value;
-
-  // 搜索过滤
-  if (searchKeyword.value) {
-    const kw = searchKeyword.value.toLowerCase();
-    list = list.filter(a => 
-      (a.accountName && a.accountName.toLowerCase().includes(kw)) || 
-      (a.institutionName && a.institutionName.toLowerCase().includes(kw))
-    );
-  }
-
-  // 分组逻辑
-  const groups = {
-    'LIQUID': { title: '现金/第三方支付', list: [] },
-    'BANK': { title: '银行借记卡', list: [] },
-    'INVEST': { title: '投资/券商账户', list: [] },
-    'OTHER': { title: '其他', list: [] }
-  };
-
-  list.forEach(acc => {
-    // 这里的 logic 根据你后端的 account.type 或 institution 判定
-    if (['ALIPAY', 'WECHAT', 'POCKET'].includes(acc.institution)) {
-      groups['LIQUID'].list.push(acc);
-    } else if (acc.institution.includes('BANK')) {
-      groups['BANK'].list.push(acc);
-    } else {
-      groups['OTHER'].list.push(acc);
-    }
-  });
-
-  return Object.values(groups).filter(g => g.list.length > 0);
+const sortedAccounts = computed(() => {
+  return [...allAccounts.value].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 });
 
-// 选择并返回
-const handleSelect = (account) => {
-  // 使用 UniApp 的 EventChannel 向上一页发送数据
-  const eventChannel = uni.getOpenerEventChannel();
-  eventChannel.emit('acceptAccountFromSelector', { data: account });
-  
-  // 震动反馈并返回
+const toggleAccountExpand = (accountId) => {
+  expandedAccountId.value = expandedAccountId.value === accountId ? null : accountId;
+  uni.vibrateShort({ style: 'light' });
+};
+
+const selectAsset = (accountId, assetId) => {
+  selectedAccountId.value = accountId;
+  selectedAssetId.value = assetId;
   uni.vibrateShort();
+};
+
+const formatMoney = (val) => Number(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+
+const confirmSelection = () => {
+  if (!selectedAssetId.value) {
+    return uni.showToast({ title: '请选择具体资产', icon: 'none' });
+  }
+
+  const account = allAccounts.value.find(a => a.id === selectedAccountId.value);
+  const asset = account.assets.find(as => as.id === selectedAssetId.value);
+
+  uni.$emit('acceptAccountFromSelector', { 
+    account,
+    asset,
+    isSetDefault: isSetDefault.value
+  });
+  
   uni.navigateBack();
 };
 </script>
@@ -144,96 +187,104 @@ const handleSelect = (account) => {
   flex-direction: column;
 }
 
-/* 搜索栏 */
-.search-header {
-  padding: 20rpx $spacing-md;
-  background-color: $bg-white;
-  .search-input-box {
-    background-color: $bg-page;
-    height: 80rpx;
-    border-radius: $radius-base;
-    display: flex;
-    align-items: center;
-    padding: 0 24rpx;
-    gap: 16rpx;
-    
-    input {
-      flex: 1;
-      font-size: 28rpx;
-      color: $text-main;
-    }
-  }
-}
-
-/* 列表区 */
 .list-scroll {
   flex: 1;
-  padding: 0 $spacing-md;
-}
-
-.group-title {
-  display: block;
-  font-size: 24rpx;
-  color: $text-muted;
-  margin: 40rpx 0 20rpx 10rpx;
-  font-weight: $fw-medium;
+  .list-inner { padding: $spacing-md; }
 }
 
 .account-card {
-  padding: 28rpx 32rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
-  
-  .card-left {
+  margin-bottom: $spacing-base;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  padding: 0 !important;
+
+  .card-header {
+    padding: 32rpx;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 24rpx;
-    
+    background-color: $bg-white;
+    &:active { background-color: $bg-subtle; }
+  }
+
+  .card-left {
+    display: flex; align-items: center; gap: 24rpx;
     .icon-wrapper {
-      width: 80rpx;
-      height: 80rpx;
-      background-color: $bg-page;
-      border-radius: $radius-base;
-      @include flex-center;
-      .bank-icon { width: 52rpx; height: 52rpx; }
+      width: 72rpx; height: 72rpx; background-color: $bg-page;
+      border-radius: 20rpx; @include flex-center;
+      .bank-icon { width: 48rpx; height: 48rpx; }
     }
-    
     .name-box {
-      display: flex;
-      flex-direction: column;
-      gap: 4rpx;
-      .main-name { font-size: 30rpx; color: $text-main; font-weight: $fw-semibold; }
-      .sub-name { font-size: 22rpx; color: $text-muted; }
+      .name-row {
+        display: flex; align-items: baseline; gap: 12rpx;
+        .main-name { font-size: 28rpx; font-weight: $fw-bold; color: $text-main; }
+        .sub-name { font-size: 22rpx; color: $text-sub; }
+      }
+      .id-text { font-size: 20rpx; color: $text-muted; margin-top: 4rpx; }
     }
   }
-  
+
   .card-right {
-    display: flex;
-    align-items: center;
-    gap: 12rpx;
-    
+    display: flex; align-items: center; gap: 16rpx;
     .balance-box {
       text-align: right;
-      .currency { font-size: 20rpx; color: $text-muted; margin-right: 4rpx; }
-      .amount { font-size: 32rpx; color: $text-sub; font-weight: $fw-bold; }
+      .currency { font-size: 18rpx; color: $text-muted; }
+      .amount { font-size: 30rpx; color: $text-sub; font-weight: $fw-bold; }
+    }
+  }
+
+  .asset-list {
+    padding: 0 32rpx 24rpx;
+    background-color: $bg-white;
+    .asset-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24rpx 0; border-top: 1rpx solid $gray-100;
+      .asset-left {
+        display: flex; align-items: center; gap: 20rpx;
+        .radio-circle {
+          width: 32rpx; height: 32rpx; border: 3rpx solid $gray-300;
+          border-radius: 50%; @include flex-center; transition: all 0.2s;
+          &.radio-active { border-color: $primary; background-color: $primary; }
+          .radio-inner { width: 12rpx; height: 12rpx; background-color: $white; border-radius: 50%; }
+        }
+        .asset-name { font-size: 26rpx; color: $text-main; &.text-active { color: $primary; font-weight: $fw-semibold; } }
+      }
+      .asset-balance {
+        .currency { font-size: 18rpx; color: $text-muted; }
+        .amount { font-size: 26rpx; color: $text-regular; font-weight: $fw-medium; }
+      }
     }
   }
 }
 
-.item-active {
-  background-color: $bg-subtle;
-  transform: scale(0.98);
+/* 底部操作区 */
+.footer-action {
+  background-color: $bg-white;
+  padding: 32rpx $spacing-md calc($spacing-md + env(safe-area-inset-bottom));
+  border-top-left-radius: $radius-lg;
+  border-top-right-radius: $radius-lg;
+  box-shadow: 0 -12rpx 32rpx rgba(50, 46, 43, 0.06);
+
+  .default-setting {
+    display: flex; align-items: center; gap: 16rpx;
+    margin-bottom: 32rpx; padding-left: 8rpx;
+    .checkbox-box {
+      width: 36rpx; height: 36rpx; border: 3rpx solid $gray-300;
+      border-radius: 10rpx; @include flex-center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      &.checkbox-active { background-color: $primary; border-color: $primary; }
+    }
+    .default-text { font-size: 24rpx; color: $text-sub; font-weight: $fw-medium; }
+  }
 }
 
-.empty-state {
-  padding-top: 200rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: $text-placeholder;
-  font-size: 26rpx;
-  .empty-img { width: 240rpx; height: 240rpx; margin-bottom: 20rpx; opacity: 0.5; }
+.safe-area-spacer { height: 180rpx; }
+
+.animate-slide-down {
+  animation: slideDown 0.25s ease-out forwards;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10rpx); max-height: 0; }
+  to { opacity: 1; transform: translateY(0); max-height: 1000rpx; }
 }
 </style>

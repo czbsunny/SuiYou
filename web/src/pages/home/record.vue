@@ -86,7 +86,7 @@
         <!-- 账户选择 -->
         <view class="meta-btn" @click="showAccountPicker">
           <image src="/static/images/account.png" class="meta-icon" />
-          <text>{{ selectedAccount?.name || '选择账户' }}</text>
+          <text>{{ selectedAccount?.accountName || '选择账户' }}</text>
         </view>
 
         <!-- 备注 -->
@@ -123,9 +123,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
+import { createTransaction } from '@/services/transactionService.js';
 
 const configStore = useConfigStore();
 
@@ -199,6 +200,15 @@ const handleTabChange = (tab) => {
 };
 
 onLoad((options) => {
+  uni.$on('acceptAccountFromSelector', (res) => {
+    selectedAccount.value = {
+      ...res.account,
+      selectedAsset: res.asset
+    };
+    console.log(selectedAccount.value);
+    form.value.accountId = res.account.id;
+  });
+
   const categories = configStore.getTransferCategoriesByType(activeTab.value);
   if (categories.length > 0) {
     selectParent(categories[0]);
@@ -206,6 +216,10 @@ onLoad((options) => {
   if (options.accountId) {
     selectedAccount.value = configStore.institutionMap[options.accountId];
   }
+});
+
+onUnmounted(() => {
+  uni.$off('acceptAccountFromSelector');
 });
 
 // 处理时间选择器变化，确保响应式更新
@@ -231,13 +245,7 @@ const onDelete = () => form.value.amount = form.value.amount.slice(0, -1);
 
 const showAccountPicker = () => {
     uni.navigateTo({
-        url: '/pages/assets/account-selector',
-        events: {
-            acceptAccountFromSelector: (res) => {
-                selectedAccount.value = res.data;
-                form.value.accountId = res.data.id;
-            }
-        }
+        url: `/pages/assets/account-selector?canSetDefault=true&initAccountId=${selectedAccount.value?.id}&initAssetId=${selectedAccount.value?.selectedAsset?.id}`
     });
 };
 
@@ -249,22 +257,31 @@ const saveTransaction = async (keepGoing = false) => {
   // 处理后端需要的格式
   const formattedDt = form.value.datetime.replace(' ', 'T');
   const payload = {
+    type: form.value.type,
     amount: parseFloat(form.value.amount),
-    remark: form.value.remark,
-    occuredAt: formattedDt.length === 16 ? formattedDt + ':00' : formattedDt,
+    transTime: formattedDt.length === 16 ? formattedDt + ':00' : formattedDt,
+    sourceAssetId: selectedAccount.value?.selectedAsset?.id || null,
     categoryId: subCat.value?.id || parentCat.value?.id,
-    accountId: selectedAccount.value?.id || null,
-    type: form.value.type
+    description: form.value.remark,
+    tags: []
   };
   
-  console.log('提交 Payload:', payload);
-  uni.showToast({ title: '保存成功', icon: 'success' });
-  
-  if (keepGoing) {
-    form.value.amount = '';
-    form.value.remark = '';
-  } else {
-    setTimeout(() => uni.navigateBack(), 800);
+  try {
+    uni.showLoading({ title: '保存中...' });
+    await createTransaction(payload);
+    uni.showToast({ title: '保存成功', icon: 'success' });
+    
+    if (keepGoing) {
+      form.value.amount = '';
+      form.value.remark = '';
+    } else {
+      setTimeout(() => uni.navigateBack(), 800);
+    }
+  } catch (error) {
+    console.error('保存交易记录失败:', error);
+    uni.showToast({ title: '保存失败，请重试', icon: 'none' });
+  } finally {
+    uni.hideLoading();
   }
 };
 </script>

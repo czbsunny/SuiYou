@@ -10,6 +10,7 @@ export const useConfigStore = defineStore('config', {
     relations: [], // 关联关系
     institutionMap: {}, // 机构数据映射表
     transferCategories: [], // 记账分类
+    categoryMap: {}, // 分类映射表
     isLoaded: false // 是否加载完成
   }),
   getters: {
@@ -51,6 +52,10 @@ export const useConfigStore = defineStore('config', {
 
     getTransferCategoriesByType: (state) => (type) => {
       return state.transferCategories.filter(c => c.groupType === type);
+    },
+
+    getTransferCategoriesById: (state) => (id) => {
+      return state.categoryMap[id] || null;
     }
   },
 
@@ -72,7 +77,16 @@ export const useConfigStore = defineStore('config', {
       }, {});
       
       this.transferCategories = data.transfer_category || [];
-
+      this.categoryMap = {};
+      const flattenCategories = (categories) => {
+        categories.forEach(category => {
+          this.categoryMap[category.id] = category;
+          if (category.children && category.children.length > 0) {
+            flattenCategories(category.children);
+          }
+        });
+      };
+      flattenCategories(this.transferCategories);
       this.isLoaded = true; 
       return data;
     }

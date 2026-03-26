@@ -113,13 +113,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 
 const fromAccount = ref(null);
 const toAccount = ref(null);
 const isFromLocked = ref(false);
 const isToLocked = ref(false);
+const currentDirection = ref(null);
 const amount = ref('');
 const feeAmount = ref('');
 const remark = ref('');
@@ -148,6 +149,12 @@ const displayDateTime = computed(() => {
 });
 
 onLoad((options) => {
+  uni.$on('acceptAccountFromSelector', (res) => {
+    if (currentDirection.value === 'from') fromAccount.value = res.account;
+    else toAccount.value = res.account;
+    uni.vibrateShort();
+  });
+
   if (options.fromAccount) {
     fromAccount.value = JSON.parse(decodeURIComponent(options.fromAccount));
     isFromLocked.value = true;
@@ -158,16 +165,14 @@ onLoad((options) => {
   }
 });
 
+onUnmounted(() => {
+  uni.$off('acceptAccountFromSelector');
+});
+
 const handleSelect = (direction) => {
+  currentDirection.value = direction;
   uni.navigateTo({
-    url: '/pages/assets/account-selector',
-    events: {
-      acceptAccountFromSelector: (res) => {
-        if (direction === 'from') fromAccount.value = res.data;
-        else toAccount.value = res.data;
-        uni.vibrateShort();
-      }
-    }
+    url: '/pages/assets/account-selector'
   });
 };
 
