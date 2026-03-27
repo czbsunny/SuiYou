@@ -211,12 +211,13 @@ const save = () => {
   if (!amount.value || parseFloat(amount.value) <= 0) return uni.showToast({ title: '请输入金额', icon: 'none' });
   
   const payload = {
-    fromAccountId: fromAccount.value.id,
-    toAccountId: toAccount.value.id,
+    type: 'TRANSFER',
     amount: parseFloat(amount.value),
     fee: parseFloat(feeAmount.value || 0),
-    remark: remark.value,
-    occuredAt: datetime.value.replace(' ', 'T')
+    transTime: datetime.value.replace(' ', 'T'),
+    sourceAssetId: fromAccount.value.id,
+    targetAssetId: toAccount.value.id,
+    description: remark.value
   };
   console.log('提交调拨:', payload);
   uni.showLoading({ title: '处理中' });
