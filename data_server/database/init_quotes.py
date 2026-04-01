@@ -18,9 +18,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import akshare as ak
 import pandas as pd
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.dialects.mysql import insert as mysql_insert
 
 # 请确保这些导入路径与你的项目结构一致
-from database.init_db import init_db, get_db
+from database.init_db import init_db, engine
 from models.fund import Fund
 from models.sw_index_info import SwIndexInfo
 from models.fund_nav_history import FundNavHistory
@@ -44,8 +45,9 @@ logger = logging.getLogger(__name__)
 class QuoteService:
     """内部市场行情同步服务"""
     
-    def __init__(self, db_session):
-        self.db = db_session
+    def __init__(self, session_factory):
+        self.session_factory = session_factory
+        self.db = self.session_factory()
         self.fetcher = FundFetcher()
 
     def init_sw_index_metadata(self):
@@ -229,100 +231,95 @@ class QuoteService:
 
     def sync_fund_nav_history(self, days=90):
         """
-        4. 同步基金历史净值 (使用 get_fund_latest_nav 接口)
+        4. 同步基金历史净值 (原子化 Upsert 版本)
         """
         logger.info(f"========== 步骤 4: 同步基金历史净值 (近{days}天) ==========")
         
-        # 1. 获取所有有效的非货币型基金
-        valid_funds = self.db.query(Fund).filter(
+        # 临时获取一个 session 用来查询基金列表
+        db = self.session_factory()
+        valid_funds = db.query(Fund.fund_code).filter(
             Fund.fund_type.notin_(['货币型-普通货币', '货币型-浮动净值', '货币型']),
             Fund.is_valid_fund == True
         ).all()
-        
-        total_funds = len(valid_funds)
-        logger.info(f"共有 {total_funds} 只有效基金需要同步")
+        fund_codes = [f.fund_code for f in valid_funds]
+        db.close()
 
-        # 定义每批并发的数量 (建议 10-20，防止被东方财富封 IP)
-        batch_size = 20 
-        # 使用异步包装器处理批量逻辑
-        async def process_all():
+        total_funds = len(fund_codes)
+        batch_size = 50 # 增加批次大小
+
+        async def run_sync():
+            # 顺序处理每个 batch，或者控制并发量
             for i in range(0, total_funds, batch_size):
-                batch_funds = valid_funds[i : i + batch_size]
-                tasks = [self._sync_single_fund_nav(f, days) for f in batch_funds]
+                batch_codes = fund_codes[i : i + batch_size]
+                
+                # 并发执行爬虫逻辑，但数据库写入建议控制
+                tasks = [self._sync_single_fund_upsert(code, days) for code in batch_codes]
                 await asyncio.gather(*tasks)
-        
-                # 每一批次完成后提交一次数据库，并打印进度
-                self.db.commit()
+                
                 logger.info(f"进度: {min(i + batch_size, total_funds)}/{total_funds} 完成")
-                # 批次间微小延迟
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.2)
 
-        # 运行异步任务
-        asyncio.run(process_all())
-        logger.info("✅ 所有基金净值同步完成！")
+        asyncio.run(run_sync())
 
-    async def _sync_single_fund_nav(self, fund: Fund, days: int):
+    async def _sync_single_fund_upsert(self, fund_code, days):
         """
-        内部异步方法：处理单只基金的抓取与入库
+        使用 MySQL 原生 Upsert 语法，无需先 Select
         """
-        fund_code = fund.fund_code
+        # 每个任务使用独立的 Session，彻底隔离
+        db = self.session_factory()
         try:
             nav_data = await self.fetcher.get_fund_latest_nav(fund_code, period=days)
-            
             if not nav_data:
                 return
 
-            all_dates = list(nav_data.keys())
-            existing_records = self.db.query(FundNavHistory).filter(
-                FundNavHistory.fund_code == fund_code,
-                FundNavHistory.date.in_(all_dates)
-            ).all()
-            date_map = {r.date: r for r in existing_records}
-
-            latest_dt = None
-            latest_nav_val = None
-            latest_growth_val = None
-
+            latest_item = None
+            
+            # 准备批量插入的数据
             for date_str, values in nav_data.items():
-                # values 格式: [nav, daily_growth, accumulated_nav, None]
                 dt = datetime.strptime(date_str, '%Y-%m-%d').date()
-                
                 nav = values[0]
-                growth = values[1] / 100 if values[1] is not None else None
+                growth = (values[1] / 100) if (values[1] is not None) else None
                 acc_nav = values[2]
 
-                if dt in date_map:
-                    # 更新
-                    rec = date_map[dt]
-                    rec.nav = nav
-                    rec.daily_growth_rate = growth
-                    rec.accumulated_nav = acc_nav
-                else:
-                    # 插入
-                    new_rec = FundNavHistory(
-                        fund_code=fund_code,
-                        date=dt,
-                        nav=nav,
-                        daily_growth_rate=growth,
-                        accumulated_nav=acc_nav
-                    )
-                    self.db.add(new_rec)
+                # 构造 MySQL 原生 UPSERT 语句
+                stmt = mysql_insert(FundNavHistory).values(
+                    fund_code=fund_code,
+                    date=dt,
+                    nav=nav,
+                    daily_growth_rate=growth,
+                    accumulated_nav=acc_nav,
+                    updated_at=datetime.now()
+                )
                 
-                # 追踪最新的一条数据更新到 Fund 表
-                if not latest_dt or dt > latest_dt:
-                    latest_dt = dt
-                    latest_nav_val = nav
-                    latest_growth_val = growth
+                # 定义如果主键/唯一索引冲突，则更新哪些字段
+                upsert_stmt = stmt.on_duplicate_key_update(
+                    nav=stmt.inserted.nav,
+                    daily_growth_rate=stmt.inserted.daily_growth_rate,
+                    accumulated_nav=stmt.inserted.accumulated_nav,
+                    updated_at=stmt.inserted.updated_at
+                )
+                
+                db.execute(upsert_stmt)
+
+                # 记录最新的一条
+                if not latest_item or dt > latest_item['dt']:
+                    latest_item = {'dt': dt, 'nav': nav, 'growth': growth}
 
             # 更新 Fund 主表快照
-            if latest_dt:
-                fund.latest_nav = latest_nav_val
-                fund.latest_nav_date = latest_dt
-                fund.daily_growth = latest_growth_val
-                fund.nav_updated_at = datetime.now()
+            if latest_item:
+                db.query(Fund).filter(Fund.fund_code == fund_code).update({
+                    "latest_nav": latest_item['nav'],
+                    "latest_nav_date": latest_item['dt'],
+                    "daily_growth": latest_item['growth'],
+                    "nav_updated_at": datetime.now()
+                })
 
+            db.commit()
         except Exception as e:
-            logger.error(f"处理基金 {fund_code} 异常: {str(e)}")
+            db.rollback()
+            logger.error(f"基金 {fund_code} 同步失败: {str(e)}")
+        finally:
+            db.close()
 
     # ==========================
     # 抓取工具方法
@@ -407,10 +404,10 @@ def main():
     init_db()
     
     # 2. 获取数据库 Session
-    db = next(get_db())
+    SessionLocal = sessionmaker(bind=engine)
     
     try:
-        sync_service = QuoteService(db)
+        sync_service = QuoteService(SessionLocal)
         
         # 执行流 1：初始化行业定义
         sync_service.init_sw_index_metadata()
