@@ -9,6 +9,7 @@ python-multipart==0.0.20
 akshare==1.17.68
 apscheduler==3.11.0
 elasticsearch==8.10.0
+pyarrow>=14.0.1
 
 # 数据库相关
 SQLAlchemy==1.4.46

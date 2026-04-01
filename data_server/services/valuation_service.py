@@ -135,7 +135,7 @@ class ValuationService:
             total_funds = len(fund_codes)
             completed = 0
             success_count = 0
-            logger.info(f"开始并行处理 {total_funds} 个基金，使用 4 个工作线程...")
+            logger.info(f"开始并行处理 {total_funds} 个基金，使用 2 个工作线程...")
 
             with ThreadPoolExecutor(max_workers=2) as executor:
                 futures = [executor.submit(process_fund, code) for code in fund_codes]
