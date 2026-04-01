@@ -18,7 +18,6 @@ from schedulers.fund_nav_tasks import initialize_fund_nav_data, update_daily_fun
 from schedulers.fund_industry_tasks import update_all_fund_industry_allocation
 from schedulers.fund_portfolio_tasks import update_all_fund_portfolio_hold
 from schedulers.stock_tasks import update_stock_data_and_calculate_fund_change
-from schedulers.portfolio_nav_tasks import update_all_portfolios_nav
 from schedulers.valuation_tasks import calculate_fund_valuation, update_fund_weights, health_check
 from services.attribution_service import attribution_service
 from schedulers.fund_asset_tasks import update_fund_asset_allocation
@@ -66,14 +65,7 @@ async def execute_fund_and_portfolio_update():
     logger.info("开始执行基金净值更新，并准备更新相关组合")
     
     # 执行基金净值更新
-    updated_fund_codes = await update_daily_fund_nav()
-    
-    # 如果有基金净值更新，更新相关组合
-    if updated_fund_codes and len(updated_fund_codes) > 0:
-        logger.info(f"共更新了 {len(updated_fund_codes)} 只基金，准备更新相关组合净值")
-        await asyncio.to_thread(update_all_portfolios_nav, target_date=today, updated_fund_codes=updated_fund_codes)
-    else:
-        logger.info("没有基金净值更新，跳过组合净值更新")
+    await update_daily_fund_nav()
         
 class SchedulerEntry:
     """基金数据定时更新调度器"""
@@ -150,16 +142,6 @@ class SchedulerEntry:
             replace_existing=True
         )
         logger.info("添加每晚7-12点每隔10分钟更新基金净值和相关组合的任务")
-        
-        # 保留原有的组合净值更新任务作为补充（凌晨1点执行，更新前一天所有组合数据）
-        self.scheduler.add_job(
-            update_all_portfolios_nav,
-            trigger=CronTrigger(hour=1, minute=0),
-            id='update_portfolio_nav',
-            name='凌晨1点更新所有组合净值',
-            replace_existing=True
-        )
-        logger.info("添加凌晨1点更新所有组合净值的任务")
         
         # 添加股票数据更新和基金涨跌计算任务（交易日9:25-11:30, 13:00-15:00每5分钟执行一次）
         self.scheduler.add_job(
