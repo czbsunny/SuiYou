@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 from typing import List, Dict, Optional, Any, Set
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from core.fund_processor import FundProcessor
+from datafetch.fund_fetcher import FundFetcher
 from database.init_db import get_db
 from models.fund import Fund
 from models.fund_nav_history import FundNavHistory
@@ -13,8 +13,8 @@ from models.fund_nav_history import FundNavHistory
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# 创建基金处理器实例
-fund_processor = FundProcessor()
+# 创建基金获取器实例
+fund_fetcher = FundFetcher()
 
 def get_valid_funds_map(db: Session) -> Dict[str, Fund]:
     """
@@ -198,7 +198,7 @@ async def process_single_fund_concurrent(
             return result
 
         # 获取基金净值数据
-        nav_data = await fund_processor.get_fund_nav(fund_code, period=period)
+        nav_data = await fund_fetcher.get_fund_nav(fund_code, period=period)
         
         # 处理净值数据
         success = await process_fund_nav_data(db, fund_code, nav_data, target_date)

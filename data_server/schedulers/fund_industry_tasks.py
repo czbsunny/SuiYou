@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import pandas as pd
 
-from core.fund_processor import FundProcessor
+from datafetch.fund_processor import FundProcessor
 from database.init_db import get_db
 from models.fund import Fund
 from models.fund_industry_allocation import FundIndustryAllocation

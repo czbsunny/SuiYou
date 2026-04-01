@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 
-from core.fund_processor import FundProcessor
+from datafetch.fund_fetcher import FundFetcher
 from database.init_db import get_db
 from models.fund import Fund
 
@@ -12,8 +12,8 @@ from models.fund import Fund
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 初始化基金处理器实例
-fund_processor = FundProcessor()
+# 初始化基金获取器实例
+fund_fetcher = FundFetcher()
 
 async def _process_fund_info(db: Session, fund_code: str, fund: Fund, is_new: bool) -> bool:
     """
@@ -30,7 +30,7 @@ async def _process_fund_info(db: Session, fund_code: str, fund: Fund, is_new: bo
     """
     try:
         # 获取基金信息
-        fund_info = await fund_processor.fetch_fund_profile(fund_code)
+        fund_info = await fund_fetcher.fetch_fund_profile(fund_code)
 
         if fund_info:    
             fund.name = fund_info.get('基金名称', '')
@@ -175,7 +175,7 @@ async def update_all_fund_info():
     db = None
     try:
         # 获取所有基金代码
-        fund_codes = await fund_processor.get_fund_codes()
+        fund_codes = await fund_fetcher.get_fund_codes()
         total_count = len(fund_codes)
         logger.info(f"获取到{total_count}个基金代码，开始并发更新")
         
@@ -219,7 +219,7 @@ async def add_new_funds():
         db = None
         
         # 获取所有基金代码
-        fund_codes = await fund_processor.get_fund_codes()
+        fund_codes = await fund_fetcher.get_fund_codes()
         
         # 找出不存在于数据库中的基金代码
         new_fund_codes = [code for code in fund_codes if code not in existing_set]

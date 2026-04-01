@@ -18,11 +18,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class FundProcessor:
-    """基金数据处理器类，提供基金数据相关的处理方法"""
+class FundFetcher:
+    """基金数据获取器类，提供基金数据相关的获取方法"""
     
     def __init__(self):
-        """初始化基金处理器，创建共享的HTTP会话"""
+        """初始化基金获取器，创建共享的HTTP会话"""
         # 创建共享的HTTP会话，用于复用连接
         self._session = requests.Session()
         # 设置默认headers
@@ -520,57 +520,5 @@ class FundProcessor:
             logger.error(f"获取基金概况信息失败: 基金代码={fund_code}, 错误={str(e)}")
             return None
 
-# 创建一个全局的基金处理器实例，方便API层调用
-fund_processor = FundProcessor()
-
-
-async def test_multiple_funds():
-    """
-    测试多只基金的净值获取
-    """
-    # 测试10只基金代码
-    fund_codes = [
-        "000017", "000020"
-    ]
-    
-    processor = FundProcessor()
-    
-    print(f"开始测试{len(fund_codes)}只基金的净值获取性能")
-    print(f"参数: page_index=1, period=5")
-    print("=" * 80)
-    
-    total_start_time = time.time()
-    
-    # 并发获取所有基金数据
-    tasks = [processor.get_fund_latest_nav(code, page_index=1, period=5) for code in fund_codes]
-    results = await asyncio.gather(*tasks)
-    
-    total_end_time = time.time()
-    total_time = total_end_time - total_start_time
-    
-    # 统计结果
-    success_count = sum(1 for r in results if r is not None)
-    
-    print("\n测试结果:")
-    print(f"总耗时: {total_time:.4f} 秒")
-    print(f"成功获取: {success_count}/{len(fund_codes)} 只基金")
-    print(f"平均每只基金耗时: {total_time/len(fund_codes):.4f} 秒")
-    
-    # 打印每只基金的结果摘要
-    print("\n各基金结果摘要:")
-    for i, (code, result) in enumerate(zip(fund_codes, results)):
-        if result:
-            print(f"基金 {code}: 成功获取 {len(result)} 条记录")
-        else:
-            print(f"基金 {code}: 获取失败")
-    
-    # 关闭资源
-    if hasattr(processor, 'close'):
-        await processor.close()
-
-if __name__ == "__main__":
-    import time
-    import asyncio
-    
-    # 运行多基金测试
-    asyncio.run(test_multiple_funds())
+# 创建一个全局的基金获取器实例，方便API层调用
+fund_fetcher = FundFetcher()
