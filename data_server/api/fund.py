@@ -37,7 +37,7 @@ async def get_fund_info(fund_code: str = Query(..., description="基金代码"))
     
     返回基金代码和名称的映射关系（key为基金代码，value为基金名称）
     """
-    return await fund_processor.get_fund_info(fund_code)
+    return await fund_fetcher.fetch_fund_profile(fund_code)
 
 @router.post("/nav", response_model=Dict[str, List[Union[float, None]]])
 async def get_fund_nav(request: FundDataRequest):
@@ -48,11 +48,11 @@ async def get_fund_nav(request: FundDataRequest):
     - **period**: 查询周期（天），默认20天
     """
     # 验证基金代码格式
-    if not await fund_processor.validate_fund_code(request.fund_code):
+    if not await fund_fetcher.validate_fund_code(request.fund_code):
         raise HTTPException(status_code=400, detail="基金代码格式不正确")
     
-    # 调用基金处理器获取净值数据
-    return await fund_processor.get_fund_nav(request.fund_code, request.period)
+    # 调用基金获取器获取净值数据
+    return await fund_fetcher.fetch_fund_nav(request.fund_code, request.period)
 
 @router.post("/estimate", response_model=Dict[str, FundChangeData])
 async def get_fund_estimate(request: FundChangeRequest):

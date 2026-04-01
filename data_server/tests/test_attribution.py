@@ -11,7 +11,7 @@ from datetime import datetime
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from data_server.core.attribution import AttributionAnalyzer
+from data_server.core.attribution_analyzer import AttributionAnalyzer
 from data_server.models.db import get_db_session
 
 def test_attribution_analyzer():

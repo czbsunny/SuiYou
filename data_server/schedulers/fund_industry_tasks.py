@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import pandas as pd
 
-from datafetch.fund_processor import FundProcessor
+from datafetch.fund_fetcher import FundFetcher
 from database.init_db import get_db
 from models.fund import Fund
 from models.fund_industry_allocation import FundIndustryAllocation
@@ -22,8 +22,8 @@ from models.fund_industry_allocation import FundIndustryAllocation
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 初始化基金处理器实例
-fund_processor = FundProcessor()
+# 初始化基金获取器实例
+fund_fetcher = FundFetcher()
 
 def get_target_date() -> str:
     """
@@ -128,7 +128,7 @@ async def process_single_fund_industry(fund_code: str, target_date: str, index: 
             return result
         
         # 获取行业配置数据
-        df = await fund_processor.fetch_fund_industry_allocation(fund_code, parse_date(target_date).year)
+        df = await fund_fetcher.fetch_fund_industry_allocation(fund_code, parse_date(target_date).year)
         if df is None or df.empty:
             result['error'] = "无行业配置数据"
             return result
