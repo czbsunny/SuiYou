@@ -11,7 +11,7 @@
         </view>
       </view>
 
-      <view class="holdings-list" v-if="holdings.length > 0">
+      <view class="holdings-list">
         <!-- 简洁表头 -->
         <view class="holdings-header">
           <view class="header-item name-col"><text>基金名称</text></view>
@@ -23,7 +23,7 @@
         </view>
 
         <!-- 内容列表 -->
-        <view class="holdings-content">
+        <view class="holdings-content" v-if="holdings.length > 0">
           <view class="holding-item" :class="'item-idx-' + index" 
             v-for="(item, index) in holdings" :key="index" 
             @touchstart="handleTouchStart($event, item, index)"
@@ -200,8 +200,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.single-account-section { padding: 0 10rpx; min-height: 100vh; }
-.account-assets-section { padding: 24rpx 16rpx; }
+.single-account-section { padding: 0 10rpx; min-height: 100vh; display: flex; flex-direction: column; }
+.account-assets-section { padding: 24rpx 16rpx; flex: 1; display: flex; flex-direction: column; }
+.holdings-list { flex: 1; display: flex; flex-direction: column; }
+.holdings-content { flex: 1; overflow-y: auto; }
 .account-assets-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
 .section-title { font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; }
 .add-fund-btn-circle {

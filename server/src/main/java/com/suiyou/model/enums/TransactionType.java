@@ -28,7 +28,7 @@ public enum TransactionType {
     // 逻辑：资金(Asset) <- 负债(Liability/Asset负值)
     BORROW("借入"),       
 
-    // 场景：还信用卡、还朋友钱
+    // 场景：还信用卡、还朋友钱0
     // 逻辑：资金(Asset) -> 负债(Liability/Asset负值)
     REPAY("还债/还款"),   
 

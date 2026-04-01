@@ -1,10 +1,5 @@
 <template>
   <view class="login-page">
-    <!-- 返回按钮 -->
-    <view class="back-button" @tap="goBack">
-      <image src="/static/images/back.png" class="back-icon"></image>
-    </view>
-    
     <!-- 背景装饰 -->
     <view class="background-decoration">
       <view class="circle circle-1"></view>
@@ -136,34 +131,6 @@ export default {
 </script>
 
 <style lang="scss">
-/* 返回按钮样式 */
-.back-button {
-  position: absolute;
-  top: 40px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background-color: rgba($bg-white, 0.8);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-}
-
-.back-button:active {
-  transform: scale(0.95);
-  background-color: rgba($bg-white, 0.9);
-}
-
-.back-icon {
-  width: 20px;
-  height: 20px;
-}
-
 /* 登录页面根容器样式 */
 .login-page {
   display: flex;

@@ -244,6 +244,10 @@ const saveAndNext = () => {
 }
 
 .account-selector-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin: 30rpx $spacing-md;
   padding: 40rpx 32rpx;
   
@@ -289,6 +293,7 @@ const saveAndNext = () => {
 }
 
 .input-panel {
+  flex-shrink: 0;
   margin: 0 $spacing-md 20rpx;
   padding: 24rpx 32rpx;
   
@@ -358,6 +363,7 @@ const saveAndNext = () => {
 }
 
 .keyboard-container {
+  flex-shrink: 0;
   background-color: $bg-white;
   padding: 12rpx 12rpx calc(env(safe-area-inset-bottom) + 12rpx);
   .key-grid { display: flex; gap: 12rpx; }
