@@ -73,20 +73,13 @@ class ValuationService:
             # =========================
             # 2️⃣ 批量查询（关键优化）
             # =========================
-
-            all_holds = db.query(FundPortfolioHold).filter(
-                FundPortfolioHold.fund_code.in_(fund_codes)
-            ).all()
+            all_holds = self.batch_query_holds(fund_codes)
             logger.info(f"持仓数据查询完成: {len(all_holds)} 条")
 
-            all_allocs = db.query(FundAssetAllocation).filter(
-                FundAssetAllocation.fund_code.in_(fund_codes)
-            ).all()
+            all_allocs = self.batch_query_allocs(fund_codes)
             logger.info(f"资产配置查询完成: {len(all_allocs)} 条")
 
-            all_mappings = db.query(FundIndexMapping).filter(
-                FundIndexMapping.fund_code.in_(fund_codes)
-            ).all()
+            all_mappings = self.batch_query_mappings(fund_codes)
             logger.info(f"指数映射查询完成: {len(all_mappings)} 条")
 
             # =========================
@@ -224,5 +217,50 @@ class ValuationService:
     def update_market_data(self, market_data: Dict[str, float]) -> Dict[str, float]:
         self.engine.update_market_data(market_data)
         return self.engine.calculate_all()
+
+    # ========================
+    # 🚀 加载数据（秒级）
+    # ========================
+    def batch_query_holds(self, fund_codes: List[str] = None):
+        results = []
+        for i in range(0, len(fund_codes), batch_size):
+            batch = fund_codes[i : i + batch_size]
+            latest_quarters_subq = self.db.query(
+                FundPortfolioHold.fund_code,
+                func.max(FundPortfolioHold.quarter).label('max_q')
+            ).filter(FundPortfolioHold.fund_code.in_(batch)).group_by(FundPortfolioHold.fund_code).subquery()
+
+            batch_data = self.db.query(
+                FundPortfolioHold.fund_code, FundPortfolioHold.stock_code, FundPortfolioHold.weight
+            ).join(
+                latest_quarters_subq,
+                (FundPortfolioHold.fund_code == latest_quarters_subq.c.fund_code) & 
+                (FundPortfolioHold.quarter == latest_quarters_subq.c.max_q)
+            ).all()
+            results.extend(batch_data)
+
+        return results
+
+    def batch_query_allocs(self, fund_codes: List[str] = None):
+        results = []
+        for i in range(0, len(fund_codes), batch_size):
+            batch = fund_codes[i : i + batch_size]
+            batch_data = self.db.query(FundAssetAllocation).filter(
+                FundAssetAllocation.fund_code.in_(batch)
+            ).all()
+            results.extend(batch_data)
+
+        return results
+
+    def batch_query_mappings(self, fund_codes: List[str] = None):
+        results = []
+        for i in range(0, len(fund_codes), batch_size):
+            batch = fund_codes[i : i + batch_size]
+            batch_data = self.db.query(FundIndexMapping).filter(
+                FundIndexMapping.fund_code.in_(batch)
+            ).all()
+            results.extend(batch_data)
+            
+        return results
 
 valuation_service = ValuationService()
