@@ -272,9 +272,10 @@ class QuoteService:
             if not nav_data:
                 return
 
+            all_dates = list(nav_data.keys())
             existing_records = self.db.query(FundNavHistory).filter(
                 FundNavHistory.fund_code == fund_code,
-                FundNavHistory.date >= (datetime.now() - timedelta(days=days+7)).date()
+                FundNavHistory.date.in_(all_dates)
             ).all()
             date_map = {r.date: r for r in existing_records}
 
