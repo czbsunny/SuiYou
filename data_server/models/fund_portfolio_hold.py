@@ -7,6 +7,7 @@ class FundPortfolioHold(Base):
     __tablename__ = 'fund_portfolio_holds'
     __table_args__ = (
         UniqueConstraint('fund_code', 'stock_code', 'quarter', name='_fund_stock_quarter_uc'),  # 添加复合唯一约束
+        Index('idx_fund_quarter', 'fund_code', 'quarter'),
     )
 
     # 主键
