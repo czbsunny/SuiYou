@@ -47,7 +47,7 @@ async def _process_fund_info(db: Session, fund_code: str, fund: Fund, is_new: bo
             fund.invest_target = fund_info.get('投资目标', '')
             fund.invest_scope = fund_info.get('投资范围', '')
             fund.benchmark = fund_info.get('业绩比较基准', '')
-            fund.tracking_index = fund_info.get('跟踪指数', '')
+            fund.tracking_index = fund_info.get('跟踪标的', '')
             
             fund.is_on_market = fund_info.get('场内基金', False)
             fund.is_backend_fund = fund_info.get('后端基金', False)
