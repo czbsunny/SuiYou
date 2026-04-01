@@ -92,6 +92,7 @@ class AttributionAnalyzer:
             unique_stocks.add(std_stock)
 
         logger.info(f"批量加载 {len(unique_stocks)} 只股票的行情数据...")
+
         # 3. 批量加载这些股票的行情
         stock_returns = pd.DataFrame()
         if unique_stocks:
@@ -147,9 +148,14 @@ class AttributionAnalyzer:
 
         new_mappings =[]
         success_count = 0
+        total_funds = len(fund_codes)
+        processed_count = 0
 
         # 3. 遍历单只基金进行本地内存计算
         for fund_code in fund_codes:
+            processed_count += 1
+            if processed_count % 20 == 0 or processed_count == total_funds:
+                logger.info(f"处理进度: {processed_count}/{total_funds} 只基金，成功: {success_count}")
             if fund_code not in fund_returns.columns:
                 continue
                 
