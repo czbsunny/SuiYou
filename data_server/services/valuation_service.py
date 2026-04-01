@@ -71,13 +71,13 @@ class ValuationService:
             # =========================
             # 2️⃣ 批量查询（关键优化）
             # =========================
-            all_holds = self.batch_query_holds(fund_codes)
+            all_holds = self.batch_query_holds(db, fund_codes)
             logger.info(f"持仓数据查询完成: {len(all_holds)} 条")
 
-            all_allocs = self.batch_query_allocs(fund_codes)
+            all_allocs = self.batch_query_allocs(db, fund_codes)
             logger.info(f"资产配置查询完成: {len(all_allocs)} 条")
 
-            all_mappings = self.batch_query_mappings(fund_codes)
+            all_mappings = self.batch_query_mappings(db, fund_codes)
             logger.info(f"指数映射查询完成: {len(all_mappings)} 条")
 
             # =========================
@@ -219,17 +219,17 @@ class ValuationService:
     # ========================
     # 🚀 加载数据（秒级）
     # ========================
-    def batch_query_holds(self, fund_codes: List[str] = None):
+    def batch_query_holds(self, db: SessionLocal, fund_codes: List[str] = None):
         results = []
         batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
-            latest_quarters_subq = self.db.query(
+            latest_quarters_subq = db.query(
                 FundPortfolioHold.fund_code,
                 func.max(FundPortfolioHold.quarter).label('max_q')
             ).filter(FundPortfolioHold.fund_code.in_(batch)).group_by(FundPortfolioHold.fund_code).subquery()
 
-            batch_data = self.db.query(
+            batch_data = db.query(
                 FundPortfolioHold.fund_code, FundPortfolioHold.stock_code, FundPortfolioHold.weight
             ).join(
                 latest_quarters_subq,
@@ -240,24 +240,24 @@ class ValuationService:
 
         return results
 
-    def batch_query_allocs(self, fund_codes: List[str] = None):
+    def batch_query_allocs(self, db: SessionLocal, fund_codes: List[str] = None):
         results = []
         batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
-            batch_data = self.db.query(FundAssetAllocation).filter(
+            batch_data = db.query(FundAssetAllocation).filter(
                 FundAssetAllocation.fund_code.in_(batch)
             ).all()
             results.extend(batch_data)
 
         return results
 
-    def batch_query_mappings(self, fund_codes: List[str] = None):
+    def batch_query_mappings(self, db: SessionLocal, fund_codes: List[str] = None):
         results = []
         batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
-            batch_data = self.db.query(FundIndexMapping).filter(
+            batch_data = db.query(FundIndexMapping).filter(
                 FundIndexMapping.fund_code.in_(batch)
             ).all()
             results.extend(batch_data)
