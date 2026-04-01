@@ -76,7 +76,7 @@ class AttributionAnalyzer:
 
     def _load_all_holdings_and_stocks(self, fund_codes: List[str], start_date: datetime.date, end_date: datetime.date) -> Tuple[Dict, pd.DataFrame]:
         """【优化】一次性加载所有基金的最新前十大重仓，以及这些股票的历史收益率"""
-        logger.info("批量加载重仓股及股票行情数据...")
+        logger.info("批量加载基金披露持仓股数据...")
         
         # 1. 批量查询所有基金的最新前十大重仓
         holdings_query = batch_query_holds(self.db, fund_codes)
@@ -91,6 +91,7 @@ class AttributionAnalyzer:
             fund_holdings[fund_code].append((std_stock, float(weight)))
             unique_stocks.add(std_stock)
 
+        logger.info(f"批量加载 {len(unique_stocks)} 只股票的行情数据...")
         # 3. 批量加载这些股票的行情
         stock_returns = pd.DataFrame()
         if unique_stocks:
