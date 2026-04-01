@@ -9,7 +9,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import func
 
 from database.init_db import SessionLocal
 from models.fund import Fund
@@ -60,12 +60,9 @@ class ValuationService:
 
         try:
             # 1️⃣ 基金列表
-            if fund_codes:
-                funds = db.query(Fund).filter(Fund.fund_code.in_(fund_codes)).all()
-            else:
-                funds = db.query(Fund).all()
+            if not fund_codes:
+                fund_codes = [f.fund_code for f in db.query(Fund.fund_code).filter(Fund.is_valid_fund == True).all()]
 
-            fund_codes = [f.fund_code for f in funds]
             logger.info(f"基金数量: {len(fund_codes)}")
 
             # =========================
