@@ -16,7 +16,7 @@ from database.init_db import SessionLocal
 from models.fund_nav_history import FundNavHistory
 from models.fund_index_mapping import FundIndexMapping
 from models.index_daily_quote import IndexDailyQuote
-from core.attribution import AttributionAnalyzer
+from core.attribution_analyzer import AttributionAnalyzer
 
 # 配置日志
 logging.basicConfig(
