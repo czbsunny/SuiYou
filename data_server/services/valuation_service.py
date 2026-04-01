@@ -9,7 +9,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import pandas as pd
-from sqlalchemy.orm import func
+from sqlalchemy import func
 
 from database.init_db import SessionLocal
 from models.fund import Fund
