@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.init_db import init_db
 import uvicorn
 from services.valuation_service import valuation_service
-from services.attribution_service import attribution_service
 
 # 确保中文正常显示
 if hasattr(sys.stdout, 'reconfigure'):
@@ -16,7 +15,6 @@ if hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8')
 
 from api.fund import router as fund_router
-from api.portfolio import router as portfolio_router
 from schedulers.scheduler_entry import scheduler_instance
 
 # 配置日志，确保中文正常显示
@@ -55,7 +53,6 @@ app.add_middleware(
 
 # 注册路由
 app.include_router(fund_router)
-app.include_router(portfolio_router)
 
 # 根路径
 @app.get("/")
@@ -76,10 +73,6 @@ async def root():
 async def startup_event():
     """应用启动时执行"""
     logger.info("Initializing fund data service...")
-    
-    # # 初始化估值服务
-    # logger.info("Initializing valuation service...")
-    # attribution_service.init_analyzer()
     
     # 初始化估值服务并预热
     logger.info("Warming up valuation service...")
