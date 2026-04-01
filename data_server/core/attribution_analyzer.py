@@ -148,6 +148,7 @@ class AttributionAnalyzer:
 
         new_mappings =[]
         success_count = 0
+        less_count = 0
         total_funds = len(fund_codes)
         processed_count = 0
 
@@ -155,7 +156,7 @@ class AttributionAnalyzer:
         for fund_code in fund_codes:
             processed_count += 1
             if processed_count % 20 == 0 or processed_count == total_funds:
-                logger.info(f"处理进度: {processed_count}/{total_funds} 只基金，成功: {success_count}")
+                logger.info(f"处理进度: {processed_count}/{total_funds} 只基金，成功: {success_count}，样本过少: {less_count}")
             if fund_code not in fund_returns.columns:
                 continue
                 
@@ -175,7 +176,8 @@ class AttributionAnalyzer:
 
             # 索引对齐
             aligned_index = y_residual.index.intersection(industry_returns.index)
-            if len(aligned_index) < 20: # 样本过少跳过
+            if len(aligned_index) < 20: # 样本过少跳过该基金
+                less_count += 1
                 continue
                 
             y = y_residual.loc[aligned_index]
