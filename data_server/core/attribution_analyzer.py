@@ -188,7 +188,7 @@ class AttributionAnalyzer:
                 scaler = StandardScaler()
                 X_scaled = scaler.fit_transform(X)
                 
-                model = Lasso(alpha=0.01, positive=True, max_iter=2000, positive=True)
+                model = Lasso(alpha=0.01, positive=True)
                 model.fit(X_scaled, y)
                 
                 # 提取 Beta
