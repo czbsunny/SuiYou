@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Dict, Union
-from core.fund_processor import fund_processor
+from datafetch.fund_fetcher import fund_fetcher
 from services.fund_estimate_service import fund_estimate_service
 
 router = APIRouter(prefix="/api/fund", tags=["fund"])
@@ -28,7 +28,7 @@ async def get_fund_codes():
     
     返回所有可用的基金代码列表
     """
-    return await fund_processor.get_fund_codes()
+    return await fund_fetcher.get_fund_codes()
 
 @router.get("/info", response_model=Dict[str, str])
 async def get_fund_info(fund_code: str = Query(..., description="基金代码")):

@@ -34,7 +34,7 @@ class FundFetcher:
         """
         异步关闭HTTP会话，释放资源
         
-        应该在不再使用FundProcessor实例时调用此方法，以确保所有资源被正确释放。
+        应该在不再使用FundFetcher实例时调用此方法，以确保所有资源被正确释放。
         """
         if hasattr(self, '_session') and self._session:
             # 使用to_thread包装同步操作
