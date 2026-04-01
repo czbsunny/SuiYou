@@ -53,8 +53,6 @@ class ValuationService:
     # 🚀 核心：重建矩阵（优化版）
     # ========================
     def rebuild_matrix(self, fund_codes: Optional[List[str]] = None) -> Dict[str, pd.DataFrame]:
-
-        start_time = datetime.now()
         logger.info("开始重建权重矩阵（优化版）...")
 
         db = SessionLocal()
@@ -260,7 +258,7 @@ class ValuationService:
                 FundIndexMapping.fund_code.in_(batch)
             ).all()
             results.extend(batch_data)
-            
+
         return results
 
 valuation_service = ValuationService()
