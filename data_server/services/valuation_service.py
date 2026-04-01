@@ -77,14 +77,17 @@ class ValuationService:
             all_holds = db.query(FundPortfolioHold).filter(
                 FundPortfolioHold.fund_code.in_(fund_codes)
             ).all()
+            logger.info(f"持仓数据查询完成: {len(all_holds)} 条")
 
             all_allocs = db.query(FundAssetAllocation).filter(
                 FundAssetAllocation.fund_code.in_(fund_codes)
             ).all()
+            logger.info(f"资产配置查询完成: {len(all_allocs)} 条")
 
             all_mappings = db.query(FundIndexMapping).filter(
                 FundIndexMapping.fund_code.in_(fund_codes)
             ).all()
+            logger.info(f"指数映射查询完成: {len(all_mappings)} 条")
 
             # =========================
             # 3️⃣ 内存分组
@@ -141,19 +144,28 @@ class ValuationService:
                 return fund_code, None
 
             # 并行执行
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                futures = [executor.submit(process_fund, code) for code in fund_codes]
+            total_funds = len(fund_codes)
+            completed = 0
+            success_count = 0
+            logger.info(f"开始并行处理 {total_funds} 个基金，使用 4 个工作线程...")
 
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                futures = [executor.submit(process_fund, code) for code in fund_codes]
+                
                 for future in as_completed(futures):
                     fund_code, matrix = future.result()
+                    completed += 1
                     if matrix is not None:
                         matrices[fund_code] = matrix
                         self.engine.update_weights(fund_code, matrix)
-
-                        # ✅ 落盘缓存
+                        success_count += 1
                         self._save_matrix(fund_code, matrix)
 
-            logger.info(f"完成，耗时: {(datetime.now() - start_time).total_seconds():.2f}s")
+                    if completed % max(1, total_funds // 10) == 0 or completed == total_funds:
+                        progress = completed / total_funds * 100
+                        logger.info(f"进度: {completed}/{total_funds} ({progress:.1f}%) - 成功: {success_count}")
+
+            logger.info(f"并行处理完成，成功: {success_count}/{total_funds}")
             return matrices
 
         finally:
