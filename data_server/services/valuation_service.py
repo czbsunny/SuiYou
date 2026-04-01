@@ -221,6 +221,7 @@ class ValuationService:
     # ========================
     def batch_query_holds(self, fund_codes: List[str] = None):
         results = []
+        batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
             latest_quarters_subq = self.db.query(
@@ -241,6 +242,7 @@ class ValuationService:
 
     def batch_query_allocs(self, fund_codes: List[str] = None):
         results = []
+        batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
             batch_data = self.db.query(FundAssetAllocation).filter(
@@ -252,6 +254,7 @@ class ValuationService:
 
     def batch_query_mappings(self, fund_codes: List[str] = None):
         results = []
+        batch_size = 1000
         for i in range(0, len(fund_codes), batch_size):
             batch = fund_codes[i : i + batch_size]
             batch_data = self.db.query(FundIndexMapping).filter(
