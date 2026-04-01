@@ -14,12 +14,9 @@ from sklearn.preprocessing import StandardScaler
 from sqlalchemy import func
 
 from models.fund_index_mapping import FundIndexMapping
-from models.fund_portfolio_hold import FundPortfolioHold
-from models.stock_daily_quote import StockDailyQuote
-from models.index_daily_quote import IndexDailyQuote
-from models.fund_nav_history import FundNavHistory
 from models.fund import Fund
 from utils.helpers import standardize_symbol
+from utils.db_utils import batch_query_stock_quotes, batch_query_index_returns, batch_query_fund_returns, batch_query_holds
 
 # 配置日志
 logging.basicConfig(
@@ -70,64 +67,19 @@ class AttributionAnalyzer:
     def _load_all_index_returns(self, start_date: datetime.date, end_date: datetime.date) -> pd.DataFrame:
         """【优化】一次性加载所有行业指数的收益率矩阵"""
         logger.info("批量加载行业指数数据...")
-        query = self.db.query(IndexDailyQuote.date, IndexDailyQuote.index_code, IndexDailyQuote.close).filter(
-            IndexDailyQuote.index_code.in_(self.all_industry_codes),
-            IndexDailyQuote.date >= start_date,
-            IndexDailyQuote.date <= end_date
-        ).all()
-        
-        if not query:
-            return pd.DataFrame()
-            
-        df = pd.DataFrame(query, columns=['date', 'symbol', 'close'])
-        pivot_df = df.pivot(index='date', columns='symbol', values='close')
-        # 计算收益率并丢弃全空行
-        returns = pivot_df.pct_change().dropna(how='all')
-        # 填充少量缺失值（停牌等）
-        returns = returns.fillna(0)
-        return returns
+        return batch_query_index_returns(self.db, self.all_industry_codes, start_date, end_date)
 
     def _load_all_fund_returns(self, fund_codes: List[str], start_date: datetime.date, end_date: datetime.date) -> pd.DataFrame:
         """【优化】一次性加载所有目标基金的收益率矩阵"""
         logger.info("批量加载基金净值数据...")
-        # 分批查询以防 SQL IN 过长
-        batch_size = 500
-        all_data =[]
-        for i in range(0, len(fund_codes), batch_size):
-            batch_codes = fund_codes[i:i+batch_size]
-            query = self.db.query(FundNavHistory.date, FundNavHistory.fund_code, FundNavHistory.nav).filter(
-                FundNavHistory.fund_code.in_(batch_codes),
-                FundNavHistory.date >= start_date,
-                FundNavHistory.date <= end_date
-            ).all()
-            all_data.extend(query)
-            
-        if not all_data:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(all_data, columns=['date', 'fund_code', 'nav'])
-        pivot_df = df.pivot(index='date', columns='fund_code', values='nav')
-        return pivot_df.pct_change().dropna(how='all')
+        return batch_query_fund_returns(self.db, fund_codes, start_date, end_date)
 
     def _load_all_holdings_and_stocks(self, fund_codes: List[str], start_date: datetime.date, end_date: datetime.date) -> Tuple[Dict, pd.DataFrame]:
         """【优化】一次性加载所有基金的最新前十大重仓，以及这些股票的历史收益率"""
         logger.info("批量加载重仓股及股票行情数据...")
         
-        # 1. 查找每个基金最新公布重仓的季度
-        latest_quarters_subq = self.db.query(
-            FundPortfolioHold.fund_code,
-            func.max(FundPortfolioHold.quarter).label('max_q')
-        ).filter(FundPortfolioHold.fund_code.in_(fund_codes)).group_by(FundPortfolioHold.fund_code).subquery()
-
-        # 2. 关联查询获取最新前十大重仓
-        # 注意：实际场景可能需要按权重 row_number() 取前10，此处简写，假设数据库里就是前十大
-        holdings_query = self.db.query(
-            FundPortfolioHold.fund_code, FundPortfolioHold.stock_code, FundPortfolioHold.weight
-        ).join(
-            latest_quarters_subq,
-            (FundPortfolioHold.fund_code == latest_quarters_subq.c.fund_code) & 
-            (FundPortfolioHold.quarter == latest_quarters_subq.c.max_q)
-        ).all()
+        # 1. 批量查询所有基金的最新前十大重仓
+        holdings_query = batch_query_holds(self.db, fund_codes)
 
         fund_holdings = {}
         unique_stocks = set()
@@ -143,21 +95,7 @@ class AttributionAnalyzer:
         stock_returns = pd.DataFrame()
         if unique_stocks:
             stock_list = list(unique_stocks)
-            all_stock_data =[]
-            batch_size = 500
-            for i in range(0, len(stock_list), batch_size):
-                batch_stocks = stock_list[i:i+batch_size]
-                query = self.db.query(StockDailyQuote.date, StockDailyQuote.stock_code, StockDailyQuote.adj_close).filter(
-                    StockDailyQuote.stock_code.in_(batch_stocks),
-                    StockDailyQuote.date >= start_date,
-                    StockDailyQuote.date <= end_date
-                ).all()
-                all_stock_data.extend(query)
-            
-            if all_stock_data:
-                df = pd.DataFrame(all_stock_data, columns=['date', 'stock_code', 'close'])
-                pivot_df = df.pivot(index='date', columns='stock_code', values='close')
-                stock_returns = pivot_df.pct_change().dropna(how='all').fillna(0)
+            stock_returns = batch_query_stock_quotes(self.db, stock_list, start_date, end_date)
 
         return fund_holdings, stock_returns
 
