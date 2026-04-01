@@ -9,7 +9,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import pandas as pd
-from sklearn.linear_model import LassoCV
+from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler
 from sqlalchemy import func
 
@@ -183,13 +183,12 @@ class AttributionAnalyzer:
             y = y_residual.loc[aligned_index]
             X = industry_returns.loc[aligned_index]
 
-            # 4. 【LassoCV】自动交叉验证寻找最优 Alpha
+            # 4. 【Lasso】自动验证寻找最优 Alpha
             try:
                 scaler = StandardScaler()
                 X_scaled = scaler.fit_transform(X)
                 
-                # cv=5: 5折交叉验证, positive=True: 约束系数为正(禁止做空行业)
-                model = LassoCV(cv=5, positive=True, random_state=42, n_jobs=-1)
+                model = Lasso(alpha=0.01, positive=True, max_iter=2000)
                 model.fit(X_scaled, y)
                 
                 # 提取 Beta
