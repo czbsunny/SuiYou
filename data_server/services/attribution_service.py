@@ -153,7 +153,7 @@ class AttributionService:
 
             success = 0
 
-            with ThreadPoolExecutor(max_workers=4) as executor:
+            with ThreadPoolExecutor(max_workers=2) as executor:
                 futures = [executor.submit(process_fund, code) for code in fund_codes]
 
                 for f in as_completed(futures):
