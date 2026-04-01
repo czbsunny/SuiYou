@@ -21,13 +21,17 @@ from sqlalchemy.orm import sessionmaker
 
 # 请确保这些导入路径与你的项目结构一致
 from database.init_db import init_db, get_db
+from models.fund import Fund
 from models.sw_index_info import SwIndexInfo
+from models.fund_nav_history import FundNavHistory
 from models.fund_portfolio_hold import FundPortfolioHold
 from models.index_daily_quote import IndexDailyQuote
 from models.stock_daily_quote import StockDailyQuote
 from services.audit_service import AuditService
 from utils.helpers import standardize_symbol, is_cdr
 from sqlalchemy import func
+from datafetch.fund_fetcher import FundFetcher
+import asyncio
 
 # 配置日志
 logging.basicConfig(
@@ -42,6 +46,7 @@ class QuoteService:
     
     def __init__(self, db_session):
         self.db = db_session
+        self.fetcher = FundFetcher()
 
     def init_sw_index_metadata(self):
         """1. 初始化申万行业指数基本信息 (一、二、三级)"""
@@ -222,6 +227,102 @@ class QuoteService:
                 
         logger.info("✅ 股票行情同步完成！")
 
+    def sync_fund_nav_history(self, days=90):
+        """
+        4. 同步基金历史净值 (使用 get_fund_latest_nav 接口)
+        """
+        logger.info(f"========== 步骤 4: 同步基金历史净值 (近{days}天) ==========")
+        
+        # 1. 获取所有有效的非货币型基金
+        valid_funds = self.db.query(Fund).filter(
+            Fund.fund_type.notin_(['货币型-普通货币', '货币型-浮动净值', '货币型']),
+            Fund.is_valid_fund == True
+        ).all()
+        
+        total_funds = len(valid_funds)
+        logger.info(f"共有 {total_funds} 只有效基金需要同步")
+
+        # 定义每批并发的数量 (建议 10-20，防止被东方财富封 IP)
+        batch_size = 20 
+        # 使用异步包装器处理批量逻辑
+        async def process_all():
+            for i in range(0, total_funds, batch_size):
+                batch_funds = valid_funds[i : i + batch_size]
+                tasks = [self._sync_single_fund_nav(f, days) for f in batch_funds]
+                await asyncio.gather(*tasks)
+        
+                # 每一批次完成后提交一次数据库，并打印进度
+                self.db.commit()
+                logger.info(f"进度: {min(i + batch_size, total_funds)}/{total_funds} 完成")
+                # 批次间微小延迟
+                await asyncio.sleep(0.5)
+
+        # 运行异步任务
+        asyncio.run(process_all())
+        logger.info("✅ 所有基金净值同步完成！")
+
+    async def _sync_single_fund_nav(self, fund: Fund, days: int):
+        """
+        内部异步方法：处理单只基金的抓取与入库
+        """
+        fund_code = fund.fund_code
+        try:
+            nav_data = await self.fetcher.get_fund_latest_nav(fund_code, period=days)
+            
+            if not nav_data:
+                return
+
+            existing_records = self.db.query(FundNavHistory).filter(
+                FundNavHistory.fund_code == fund_code,
+                FundNavHistory.date >= (datetime.now() - timedelta(days=days+7)).date()
+            ).all()
+            date_map = {r.date: r for r in existing_records}
+
+            latest_dt = None
+            latest_nav_val = None
+            latest_growth_val = None
+
+            for date_str, values in nav_data.items():
+                # values 格式: [nav, daily_growth, accumulated_nav, None]
+                dt = datetime.strptime(date_str, '%Y-%m-%d').date()
+                
+                nav = values[0]
+                growth = values[1] / 100 if values[1] is not None else None
+                acc_nav = values[2]
+
+                if dt in date_map:
+                    # 更新
+                    rec = date_map[dt]
+                    rec.nav = nav
+                    rec.daily_growth_rate = growth
+                    rec.accumulated_nav = acc_nav
+                else:
+                    # 插入
+                    new_rec = FundNavHistory(
+                        fund_code=fund_code,
+                        date=dt,
+                        nav=nav,
+                        daily_growth_rate=growth,
+                        accumulated_nav=acc_nav
+                    )
+                    self.db.add(new_rec)
+                
+                # 追踪最新的一条数据更新到 Fund 表
+                if not latest_dt or dt > latest_dt:
+                    latest_dt = dt
+                    latest_nav_val = nav
+                    latest_growth_val = growth
+
+            # 更新 Fund 主表快照
+            if latest_dt:
+                fund.latest_nav = latest_nav_val
+                fund.latest_nav_date = latest_dt
+                fund.daily_growth = latest_growth_val
+                fund.nav_updated_at = datetime.now()
+
+        except Exception as e:
+            logger.error(f"处理基金 {fund_code} 异常: {str(e)}")
+
     # ==========================
     # 抓取工具方法
     # ==========================
@@ -319,8 +420,8 @@ def main():
         # 执行流 3：拉取重仓股行情 (设为90天，对齐指数)
         sync_service.sync_fund_heavy_stocks_quotes(days=90)
         
-        # 执行流 4 (可选)：损失/审计数据
-        # init_loss_data(db)
+        # 执行流 4：拉取基金净值行情 (90天)
+        sync_service.sync_fund_nav_history(days=90)
         
         print("\n" + "="*50)
         print("🎉 所有底层数据初始化完毕！")
