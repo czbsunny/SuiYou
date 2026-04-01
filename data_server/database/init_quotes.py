@@ -427,11 +427,7 @@ def main():
         print("="*50 + "\n")
         
     except Exception as e:
-        db.rollback()
         logger.error(f"初始化过程中发生严重异常: {e}")
-    finally:
-        # 确保释放连接
-        db.close()
 
 if __name__ == "__main__":
     main()
