@@ -195,8 +195,8 @@ class AttributionAnalyzer:
                 betas = {}
                 for i, industry in enumerate(X.columns):
                     coef = float(model.coef_[i])
-                    # 只保留权重大于 0.01 (1%) 的行业，过滤噪音
-                    if coef > 0.01: 
+                    # 只保留权重大于 0 的行业，过滤噪音
+                    if coef > 0: 
                         betas[industry] = coef
                         
                 # 权重归一化
