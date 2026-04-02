@@ -321,7 +321,7 @@ class RealtimeFetcher:
                 return local_data
             
             # 使用 AkShare 获取申万指数实时数据
-            df = ak.index_realtime_sw(symbol="一级行业")
+            df = ak.index_realtime_sw(symbol="二级行业")
             
             if df.empty:
                 logger.warning("申万指数数据为空")
