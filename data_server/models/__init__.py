@@ -12,3 +12,5 @@ from .sw_index_info import SwIndexInfo
 from .fund_valuation_audit import FundValuationAudit
 from .stock_daily_quote import StockDailyQuote
 from .index_daily_quote import IndexDailyQuote
+from .fund_tracking_index import FundTrackingIndex
+from .csindex_info import CSIndexInfo

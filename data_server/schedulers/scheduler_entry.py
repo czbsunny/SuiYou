@@ -86,10 +86,7 @@ class SchedulerEntry:
             replace_existing=True
         )
         logger.info("添加季度更新所有基金信息的任务")
-        # 启动时立即执行一次基金信息更新任务
-        # logger.info("启动时立即执行基金信息更新任务")
-        # asyncio.create_task(update_all_fund_info())
-
+   
         # 添加每周更新基金资产配置任务（每周六凌晨4点）
         self.scheduler.add_job(
             update_fund_asset_allocation,
@@ -99,9 +96,6 @@ class SchedulerEntry:
             replace_existing=True
         )
         logger.info("添加每周更新基金资产配置的任务")
-        # 启动时立即执行一次基金资产配置更新任务
-        # logger.info("启动时立即执行基金资产配置更新任务")
-        # asyncio.create_task(update_fund_asset_allocation())
 
         # 添加季度更新基金行业配置任务（1、4、7、10月每天凌晨2点）
         self.scheduler.add_job(
@@ -211,26 +205,6 @@ class SchedulerEntry:
         )
         logger.info("添加盘后归因分析任务")
         
-        # 启动时立即执行一次基金持仓数据更新任务
-        # logger.info("启动时立即执行基金持仓数据更新任务")
-        # asyncio.create_task(update_all_fund_portfolio_hold())
-        
-        # 启动时立即执行一次股票数据更新和基金涨跌计算任务
-        # logger.info("启动时立即执行股票数据更新和基金涨跌计算任务")
-        # asyncio.create_task(asyncio.to_thread(update_stock_data_and_calculate_fund_change))
-
-        # 启动时立即执行一次检查并新增基金任务
-        # logger.info("启动时立即执行检查并新增基金任务")
-        # asyncio.create_task(check_and_init_fund_data())
-
-        # 启动时立即执行一次基金和组合数据更新任务
-        # logger.info("启动时立即执行基金和组合数据更新任务")
-        # asyncio.create_task(execute_fund_and_portfolio_update())
-
-        # 启动时立即执行一次基于新估值引擎的基金估值计算任务
-        # logger.info("启动时立即执行基于新估值引擎的基金估值计算任务")
-        # asyncio.create_task(calculate_fund_valuation())
-
         # 启动调度器
         self.scheduler.start()
         logger.info("基金数据定时更新调度器启动成功")
