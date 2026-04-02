@@ -9,17 +9,14 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 import pandas as pd
-from sklearn.linear_model import LassoCV
+from sklearn.linear_model import Lasso
 from sklearn.preprocessing import StandardScaler
 from sqlalchemy import func
 
 from models.fund_index_mapping import FundIndexMapping
-from models.fund_portfolio_hold import FundPortfolioHold
-from models.stock_daily_quote import StockDailyQuote
-from models.index_daily_quote import IndexDailyQuote
-from models.fund_nav_history import FundNavHistory
 from models.fund import Fund
 from utils.helpers import standardize_symbol
+from utils.db_utils import batch_query_stock_quotes, batch_query_index_returns, batch_query_fund_returns, batch_query_holds
 
 # 配置日志
 logging.basicConfig(
@@ -70,64 +67,19 @@ class AttributionAnalyzer:
     def _load_all_index_returns(self, start_date: datetime.date, end_date: datetime.date) -> pd.DataFrame:
         """【优化】一次性加载所有行业指数的收益率矩阵"""
         logger.info("批量加载行业指数数据...")
-        query = self.db.query(IndexDailyQuote.date, IndexDailyQuote.index_code, IndexDailyQuote.close).filter(
-            IndexDailyQuote.index_code.in_(self.all_industry_codes),
-            IndexDailyQuote.date >= start_date,
-            IndexDailyQuote.date <= end_date
-        ).all()
-        
-        if not query:
-            return pd.DataFrame()
-            
-        df = pd.DataFrame(query, columns=['date', 'symbol', 'close'])
-        pivot_df = df.pivot(index='date', columns='symbol', values='close')
-        # 计算收益率并丢弃全空行
-        returns = pivot_df.pct_change().dropna(how='all')
-        # 填充少量缺失值（停牌等）
-        returns = returns.fillna(0)
-        return returns
+        return batch_query_index_returns(self.db, self.all_industry_codes, start_date, end_date)
 
     def _load_all_fund_returns(self, fund_codes: List[str], start_date: datetime.date, end_date: datetime.date) -> pd.DataFrame:
         """【优化】一次性加载所有目标基金的收益率矩阵"""
         logger.info("批量加载基金净值数据...")
-        # 分批查询以防 SQL IN 过长
-        batch_size = 500
-        all_data =[]
-        for i in range(0, len(fund_codes), batch_size):
-            batch_codes = fund_codes[i:i+batch_size]
-            query = self.db.query(FundNavHistory.date, FundNavHistory.fund_code, FundNavHistory.nav).filter(
-                FundNavHistory.fund_code.in_(batch_codes),
-                FundNavHistory.date >= start_date,
-                FundNavHistory.date <= end_date
-            ).all()
-            all_data.extend(query)
-            
-        if not all_data:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(all_data, columns=['date', 'fund_code', 'nav'])
-        pivot_df = df.pivot(index='date', columns='fund_code', values='nav')
-        return pivot_df.pct_change().dropna(how='all')
+        return batch_query_fund_returns(self.db, fund_codes, start_date, end_date)
 
     def _load_all_holdings_and_stocks(self, fund_codes: List[str], start_date: datetime.date, end_date: datetime.date) -> Tuple[Dict, pd.DataFrame]:
         """【优化】一次性加载所有基金的最新前十大重仓，以及这些股票的历史收益率"""
-        logger.info("批量加载重仓股及股票行情数据...")
+        logger.info("批量加载基金披露持仓股数据...")
         
-        # 1. 查找每个基金最新公布重仓的季度
-        latest_quarters_subq = self.db.query(
-            FundPortfolioHold.fund_code,
-            func.max(FundPortfolioHold.quarter).label('max_q')
-        ).filter(FundPortfolioHold.fund_code.in_(fund_codes)).group_by(FundPortfolioHold.fund_code).subquery()
-
-        # 2. 关联查询获取最新前十大重仓
-        # 注意：实际场景可能需要按权重 row_number() 取前10，此处简写，假设数据库里就是前十大
-        holdings_query = self.db.query(
-            FundPortfolioHold.fund_code, FundPortfolioHold.stock_code, FundPortfolioHold.weight
-        ).join(
-            latest_quarters_subq,
-            (FundPortfolioHold.fund_code == latest_quarters_subq.c.fund_code) & 
-            (FundPortfolioHold.quarter == latest_quarters_subq.c.max_q)
-        ).all()
+        # 1. 批量查询所有基金的最新前十大重仓
+        holdings_query = batch_query_holds(self.db, fund_codes)
 
         fund_holdings = {}
         unique_stocks = set()
@@ -139,25 +91,13 @@ class AttributionAnalyzer:
             fund_holdings[fund_code].append((std_stock, float(weight)))
             unique_stocks.add(std_stock)
 
+        logger.info(f"批量加载 {len(unique_stocks)} 只股票的行情数据...")
+
         # 3. 批量加载这些股票的行情
         stock_returns = pd.DataFrame()
         if unique_stocks:
             stock_list = list(unique_stocks)
-            all_stock_data =[]
-            batch_size = 500
-            for i in range(0, len(stock_list), batch_size):
-                batch_stocks = stock_list[i:i+batch_size]
-                query = self.db.query(StockDailyQuote.date, StockDailyQuote.stock_code, StockDailyQuote.adj_close).filter(
-                    StockDailyQuote.stock_code.in_(batch_stocks),
-                    StockDailyQuote.date >= start_date,
-                    StockDailyQuote.date <= end_date
-                ).all()
-                all_stock_data.extend(query)
-            
-            if all_stock_data:
-                df = pd.DataFrame(all_stock_data, columns=['date', 'stock_code', 'close'])
-                pivot_df = df.pivot(index='date', columns='stock_code', values='close')
-                stock_returns = pivot_df.pct_change().dropna(how='all').fillna(0)
+            stock_returns = batch_query_stock_quotes(self.db, stock_list, start_date, end_date)
 
         return fund_holdings, stock_returns
 
@@ -208,9 +148,15 @@ class AttributionAnalyzer:
 
         new_mappings =[]
         success_count = 0
+        less_count = 0
+        total_funds = len(fund_codes)
+        processed_count = 0
 
         # 3. 遍历单只基金进行本地内存计算
         for fund_code in fund_codes:
+            processed_count += 1
+            if processed_count % 20 == 0 or processed_count == total_funds:
+                logger.info(f"处理进度: {processed_count}/{total_funds} 只基金，成功: {success_count}，样本过少: {less_count}")
             if fund_code not in fund_returns.columns:
                 continue
                 
@@ -230,27 +176,27 @@ class AttributionAnalyzer:
 
             # 索引对齐
             aligned_index = y_residual.index.intersection(industry_returns.index)
-            if len(aligned_index) < 20: # 样本过少跳过
+            if len(aligned_index) < 20: # 样本过少跳过该基金
+                less_count += 1
                 continue
                 
             y = y_residual.loc[aligned_index]
             X = industry_returns.loc[aligned_index]
 
-            # 4. 【LassoCV】自动交叉验证寻找最优 Alpha
+            # 4. 【Lasso】自动验证寻找最优 Alpha
             try:
                 scaler = StandardScaler()
                 X_scaled = scaler.fit_transform(X)
                 
-                # cv=5: 5折交叉验证, positive=True: 约束系数为正(禁止做空行业)
-                model = LassoCV(cv=5, positive=True, random_state=42, n_jobs=-1)
+                model = Lasso(alpha=0.01, positive=True)
                 model.fit(X_scaled, y)
                 
                 # 提取 Beta
                 betas = {}
                 for i, industry in enumerate(X.columns):
                     coef = float(model.coef_[i])
-                    # 只保留权重大于 0.01 (1%) 的行业，过滤噪音
-                    if coef > 0.01: 
+                    # 只保留权重大于 0 的行业，过滤噪音
+                    if coef > 0: 
                         betas[industry] = coef
                         
                 # 权重归一化
