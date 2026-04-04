@@ -2,6 +2,7 @@ package com.suiyou.service.impl;
 
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
+import com.suiyou.dto.portfolio.UpdatePortfolioHoldingsDTO;
 import com.suiyou.model.Portfolio;
 import com.suiyou.model.PortfolioHolding;
 import com.suiyou.repository.PortfolioHoldingRepository;
@@ -75,11 +76,28 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
 
     @Override
     @Transactional
+    public void updatePortfolioHoldings(Long portfolioId, UpdatePortfolioHoldingsDTO updatePortfolioHoldingsDTO) {
+        List<CreatePortfolioHoldingDTO> holdings = updatePortfolioHoldingsDTO.getHoldings();
+        for (CreatePortfolioHoldingDTO holdingDTO : holdings) {
+            createPortfolioHolding(holdingDTO, portfolioId);
+        }
+    }
+
+    @Override
+    @Transactional
     public boolean deletePortfolioHolding(Long id) {
         PortfolioHolding holding = portfolioItemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("持仓不存在"));
 
         portfolioItemRepository.delete(holding);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean clearPortfolioHoldings(Long portfolioId) {
+        List<PortfolioHolding> holdings = portfolioItemRepository.findByPortfolioId(portfolioId);
+        portfolioItemRepository.deleteAll(holdings);
         return true;
     }
 }

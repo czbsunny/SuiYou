@@ -12,11 +12,26 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/portfolio-holdings")
+@RequestMapping("/portfolioholdings")
 public class PortfolioHoldingController {
 
     @Autowired
     private PortfolioHoldingService portfolioHoldingService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPortfolioHoldingById(@PathVariable Long id) {
+        try {
+            PortfolioHoldingRespDTO holding = portfolioHoldingService.getPortfolioHoldingById(id);
+            return ResponseEntity.ok(Map.of(
+                    "holding", holding
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "error", "获取持仓失败",
+                    "message", e.getMessage()
+            ));
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> createPortfolioHolding(@RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO, @RequestParam Long portfolioId) {
@@ -33,36 +48,7 @@ public class PortfolioHoldingController {
         }
     }
 
-    @GetMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<?> getPortfolioHoldingsByPortfolioId(@PathVariable Long portfolioId) {
-        try {
-            List<PortfolioHoldingRespDTO> holdings = portfolioHoldingService.getPortfolioHoldingsByPortfolioId(portfolioId);
-            return ResponseEntity.ok(Map.of(
-                    "holdings", holdings,
-                    "count", holdings.size()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "error", "获取持仓列表失败",
-                    "message", e.getMessage()
-            ));
-        }
-    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getPortfolioHoldingById(@PathVariable Long id) {
-        try {
-            PortfolioHoldingRespDTO holding = portfolioHoldingService.getPortfolioHoldingById(id);
-            return ResponseEntity.ok(Map.of(
-                    "holding", holding
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "error", "获取持仓失败",
-                    "message", e.getMessage()
-            ));
-        }
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePortfolioHolding(@PathVariable Long id, @RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO) {
