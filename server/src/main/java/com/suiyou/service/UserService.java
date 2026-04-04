@@ -152,29 +152,26 @@ public class UserService {
         // 查找微信用户
         Optional<User> userOptional = userRepository.findByWechatOpenId(openId);
         User user;
-
+        String nickName = (nickname != null && !nickname.trim().isEmpty()) ? nickname : ("微信用户" + openId.substring(0, 10));
         if (userOptional.isPresent()) {
-            // 已存在的用户，更新信息
             user = userOptional.get();
-            
             // 检查用户是否已删除
             if (user.getIsDeleted() != null && user.getIsDeleted() == 1) {
                 throw new RuntimeException("用户已被删除");
             }
             user.setWechatUnionId(unionId);
-            user.setWechatNickname(nickname);
+            user.setWechatNickname(nickName);
             user.setAvatar(avatar);
         } else {
-            // 新用户，创建账号
             user = new User();
             user.setWechatOpenId(openId);
             user.setWechatUnionId(unionId);
-            user.setWechatNickname(nickname);
+            user.setWechatNickname(nickName);
             user.setAvatar(avatar);
             user.setPhoneNumber("wx_" + openId.substring(0, 10)); // 生成临时手机号
-            user.setUsername(user.getWechatNickname() != null ? user.getWechatNickname() : "微信用户");
+            user.setUsername(user.getWechatNickname());
             user.setPasswordHash(passwordEncoder.encode("wx_" + openId)); // 设置临时密码
-            user.setIsDeleted(0); // 设置为未删除状态
+            user.setIsDeleted(0);
         }
 
         // 更新登录时间
