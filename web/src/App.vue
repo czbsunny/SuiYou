@@ -1,14 +1,21 @@
 <script setup>
 import { onLaunch } from '@dcloudio/uni-app'
 import { useConfigStore } from '@/stores/config.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 const configStore = useConfigStore()
+const authStore = useAuthStore()
 
 onLaunch(async () => {
-  console.log('App Launch')
+  console.log('App Launching...')
 
-  // 全局静默加载配置
+  // 1. 执行登录（内部已处理并发锁和本地存储）
+  await authStore.login()
+  
+  // 2. 登录完成后（或并行）初始化全局配置
   await configStore.initConfigs()
+
+  console.log('App Ready')
 })
 </script>
 

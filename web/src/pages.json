@@ -83,24 +83,6 @@
       }
     },
     {
-      "path": "pages/auth/login",
-      "style": {
-        "navigationBarBackgroundColor": "#FFFFFF",
-        "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "登录",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
-      "path": "pages/auth/register",
-      "style": {
-        "navigationBarBackgroundColor": "#FAF9F6",
-        "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "注册",
-        "backgroundColor": "#F9F8F4"
-      }
-    },
-    {
       "path": "pages/assets/index",
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",

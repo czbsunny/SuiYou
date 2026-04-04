@@ -152,7 +152,7 @@ public class UserService {
         // 查找微信用户
         Optional<User> userOptional = userRepository.findByWechatOpenId(openId);
         User user;
-        String nickName = (nickname != null && !nickname.trim().isEmpty()) ? nickname : ("微信用户" + openId.substring(0, 10));
+        String nickName = (nickname != null && !nickname.trim().isEmpty()) ? nickname : ("用户" + openId.substring(0, 6));
         if (userOptional.isPresent()) {
             user = userOptional.get();
             // 检查用户是否已删除

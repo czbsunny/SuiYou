@@ -3,20 +3,20 @@
     <!-- 用户信息卡片 -->
     <view class="user-card" hover-class="hover-opacity" @click="handleAvatarClick">
       <view class="user-avatar">
-        <!-- 如果没有头像，显示首字母，背景使用品牌色 -->
-        <text class="avatar-text">{{ userInfo.username ? Array.from(userInfo.username)[0].toUpperCase() : '' }}</text>
-        <text v-if="!userInfo.username" class="avatar-icon">👤</text>
+        <!-- 使用 computed 的数据 -->
+        <text class="avatar-text">{{ firstChar }}</text>
+        <text v-if="!firstChar" class="avatar-icon">👤</text>
       </view>
       <view class="user-info">
-        <view class="user-name">{{ userInfo.username || '点击登录' }}</view>
+        <view class="user-name">{{ userInfo.username }}</view>
       </view>
       <view class="feature-arrow">
         <image src="/static/images/arrow-right.png" mode="aspectFit" class="arrow-icon"></image> 
       </view>
     </view>
     
-    <!-- 功能列表 (保留SuiYou功能) -->
-    <view class="menu-section" v-if="apiService.isLoggedIn()">
+    <!-- 功能列表 -->
+    <view class="menu-section">
       <view class="menu-item" hover-class="item-active" @click="handleReportClick">
         <view class="menu-item-left">
           <view class="menu-icon report-icon">
@@ -30,60 +30,32 @@
         </view>
       </view>
     </view>
-
-    <!-- 退出登录功能 -->
-    <view v-if="apiService.isLoggedIn()" class="logout-box">
-      <view class="logout-btn" @click="handleLogout" hover-class="hover-grey">
-        退出当前账号
-      </view>
-    </view>
   </view>
 </template>
 
-<script>
-import apiService from '../../services/apiService.js';
+<script setup>
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth.js'
 
-export default {
-  data() {
-    return {
-      userInfo: {},
-      apiService: apiService
-    }
-  },
-  onShow() {
-    this.updateUserInfo();
-  },
-  methods: {
-    updateUserInfo() {
-      this.userInfo = uni.getStorageSync('userInfo') || {};
-    },
-    handleAvatarClick() {
-      if (!apiService.isLoggedIn()) {
-        uni.navigateTo({ url: '/pages/auth/login' });
-      } else {
-        uni.navigateTo({ url: '/pages/profile/edit' });
-      }
-    },
-    handleReportClick() {
-      uni.navigateTo({ url: '/pages/report/index' });
-    },
-    handleLogout() {
-      uni.showModal({
-        title: '提示',
-        content: '确定要退出登录吗？',
-        cancelText: '取消',
-        confirmText: '确定退出',
-        confirmColor: '#FF8F1F', // 使用品牌色
-        success: (res) => {
-          if (res.confirm) {
-            uni.removeStorageSync('userInfo');
-            apiService.clearToken();
-            uni.reLaunch({ url: '/pages/home/index' }); // 改回 home/index
-          }
-        }
-      });
-    }
+const authStore = useAuthStore()
+
+// 使用响应式数据，无需手动在 onShow 里赋值
+const userInfo = computed(() => authStore.displayUserInfo)
+const firstChar = computed(() => {
+  const name = userInfo.value.username
+  return name ? Array.from(name)[0].toUpperCase() : ''
+})
+
+const handleAvatarClick = () => {
+  if (!authStore.isLoggedIn) {
+    authStore.login() // 如果没登录，点击触发登录
+  } else {
+    uni.navigateTo({ url: '/pages/profile/edit' })
   }
+}
+
+const handleReportClick = () => {
+  uni.navigateTo({ url: '/pages/report/index' })
 }
 </script>
 

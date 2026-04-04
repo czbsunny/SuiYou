@@ -81,11 +81,38 @@ export default {
     goBack() {
       uni.navigateBack();
     },
-    chooseAvatar() {
-      uni.showToast({
-        title: '头像修改功能即将上线',
-        icon: 'none'
-      });
+    async chooseAvatar() {
+      try {
+        // 调用微信授权获取用户信息
+        const userInfoRes = await uni.getUserProfile({
+          desc: '用于完善会员资料'
+        })
+        
+        if (userInfoRes.userInfo) {
+          // 将微信用户信息发送到后端更新
+          const response = await apiService.put('/api/auth/me', {
+            nickname: userInfoRes.userInfo.nickName,
+            avatar: userInfoRes.userInfo.avatarUrl
+          })
+          
+          // 更新本地存储的用户信息
+          const updatedUserInfo = { ...this.userInfo, ...response.data }
+          uni.setStorageSync('userInfo', updatedUserInfo)
+          
+          // 更新页面数据
+          this.userInfo = updatedUserInfo
+          this.formData.username = updatedUserInfo.username || updatedUserInfo.nickname || ''
+          
+          uni.showToast({ title: '头像更新成功', icon: 'success' })
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+        if (error.errMsg && error.errMsg.includes('cancel')) {
+          // 用户取消授权，不提示
+        } else {
+          uni.showToast({ title: '获取用户信息失败', icon: 'none' })
+        }
+      }
     },
     async saveChanges() {
       if (!this.formData.username.trim()) {
