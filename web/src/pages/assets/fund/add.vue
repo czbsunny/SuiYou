@@ -11,19 +11,13 @@
         <view class="field-item" :class="{ active: activeField === 'symbol' }">
           <text class="field-label">基金信息</text>
           <view class="value-row">
-            <view v-if="isLoggedIn()" class="search-trigger" @tap="navigateToFundSearch">
+            <view class="search-trigger" @tap="navigateToFundSearch">
               <text class="value" :class="{ placeholder: !form.symbol }">
                 {{ form.symbol ? `${form.symbol} ${form.name ? '-' + form.name : ''}` : '点击搜索或拍照识别' }}
               </text>
             </view>
-            
-            <view v-else class="manual-input" @tap="activeField = 'symbol'; showKeyboard = true">
-              <text class="value" :class="{ placeholder: !form.symbol }">
-                {{ form.symbol || '请输入基金代码' }}
-              </text>
-            </view>
 
-            <view v-if="isLoggedIn()" class="import-trigger" @tap="handleImageImport" hover-class="hover-opacity">
+            <view class="import-trigger" @tap="handleImageImport" hover-class="hover-opacity">
               <view class="import-line"></view>
               <image src="/static/images/import.png" class="import-icon" mode="aspectFit" />
               <text class="import-text">图片录入</text>
@@ -131,8 +125,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { addPortfoliosToAccount } from '../items/services/accountService.js';
-import { isLoggedIn } from '@/utils/apiService.js';
+import { addFundHolding, importFundHolding } from '@/services/fund.js';
 import Keyboard from '@/components/common/Keyboard.vue';
 
 const accountId = ref('');
@@ -155,11 +148,6 @@ const handleFundSelected = (fund) => {
 };
 
 const handleImageImport = () => {
-  if (!isLoggedIn()) {
-    uni.showToast({ title: '请先登录', icon: 'none' });
-    return;
-  }
-  
   uni.chooseImage({
     count: 1,
     sizeType: ['compressed'],
@@ -172,16 +160,10 @@ const handleImageImport = () => {
 const uploadFundImage = async (filePath) => {
   uni.showLoading({ title: '图片识别中...', mask: true });
   try {
-    const token = uni.getStorageSync('token');
-    const res = await uni.uploadFile({
-      url: '/api/portfolio/import/image',
-      filePath: filePath,
-      name: 'file',
-      header: { 'Authorization': token ? `Bearer ${token}` : '' }
-    });
+    const res = await importFundHolding(filePath);
     
-    const responseData = JSON.parse(res.data);
-    if (res.statusCode === 200 && responseData.status === 'success') {
+    if (res.success) {
+      const responseData = res.data;
       const newList = responseData.fundInfoList || [];
       newList.forEach(item => {
         stagingList.value.unshift({

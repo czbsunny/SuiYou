@@ -1,94 +1,108 @@
+import { useAuthStore } from '@/stores/auth.js'
+
 const BASE_URL = 'http://localhost:8080';
 
-export const request = async (options) => {
-  try {
-    const token = uni.getStorageSync('token');
-    
-    const headers = {
-      'content-type': 'application/json',
-      ...options.header
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+/**
+ * 辅助函数：构建完整 URL
+ */
+const buildUrl = (url, params) => {
+  let fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+  if (params && Object.keys(params).length > 0) {
+    const queryString = Object.entries(params)
+      .filter(([_, v]) => v !== undefined && v !== null)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&');
+    if (queryString) {
+      fullUrl += (fullUrl.includes('?') ? '&' : '?') + queryString;
     }
-    
-    let url = options.url;
-    if (!url.startsWith('http')) {
-        url = `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
-    }
+  }
+  return fullUrl;
+};
 
-    // 🟢 修改开始：移除数组解构，直接 await 获取 response
-    // UniApp Request (Standard Promise)
-    const response = await uni.request({
-        url: url,
-        method: options.method || 'GET',
-        header: headers,
-        data: options.data
+/**
+ * 辅助函数：获取请求头
+ */
+const getHeaders = (options, token) => {
+  const headers = {
+    'content-type': 'application/json',
+    ...options.header
+  };
+  if (token && !options.skipAuth) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+/**
+ * 核心请求函数 (封装 uni.request)
+ */
+const performRequest = (url, method, data, header) => {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url,
+      method,
+      data,
+      header,
+      success: (res) => resolve(res),
+      fail: (err) => reject(err)
     });
-    
-    // 注意：在 Promise 模式下，如果网络请求失败（如断网），uni.request 会直接抛出异常，
-    // 从而跳到下方的 catch 块，因此不需要在这里判断 if (error)。
-    
-    const res = {
-        statusCode: response.statusCode,
-        data: response.data,
-        header: response.header
-    };
-    // 🟢 修改结束
+  });
+};
 
-    // Handle 401 Unauthorized
-    if (res.statusCode === 401) {
-      const errorDetail = res.data?.detail || '';
-      // Check if it's a business logic error masquerading as 401
-      const isBusinessError = errorDetail.includes('DataIntegrityViolationException') || 
-                           errorDetail.includes('Column') || 
-                           errorDetail.includes('cannot be null');
+/**
+ * 统一请求入口
+ */
+export const request = async (options) => {
+  const authStore = useAuthStore();
+  
+  // 1. 登录锁等待
+  if (!options.skipAuth && authStore.isLoggingIn) {
+    await authStore.loginPromise;
+  }
+
+  const { url, method = 'GET', data, params, skipAuth } = options;
+  const targetUrl = buildUrl(url, params);
+  
+  // 2. 发起请求逻辑（定义为闭包方便重试）
+  const doRequest = async () => {
+    const headers = getHeaders(options, authStore.token);
+    return await performRequest(targetUrl, method, data, headers);
+  };
+
+  try {
+    let res = await doRequest();
+
+    // 3. 处理 401 逻辑
+    if (res.statusCode === 401 && !skipAuth) {
+      console.log('Token失效，尝试静默登录...');
+      const success = await authStore.silentLogin();
       
-      if (isBusinessError) {
-        return res;
-      } else {
-        uni.removeStorageSync('token');
-        uni.removeStorageSync('userInfo');
-        console.warn('Login expired');
-        uni.showToast({ title: '登录已过期', icon: 'none' });
-        // Optional: Redirect to login logic could go here
+      if (success) {
+        res = await doRequest(); // 重试
+        if (res.statusCode !== 401) return res; // 重试成功
       }
+      
+      // 静默登录失败或重试后依然401
+      authStore.logout();
+      uni.showToast({ title: '登录异常请重新进入小程序', icon: 'none' });
+      throw new Error('Unauthorized');
     }
-    
+
     return res;
   } catch (error) {
-    // 这里会捕获网络错误或上述代码抛出的异常
     console.error('API请求错误:', error);
     throw error;
   }
 };
 
-export const post = (url, data) => request({ url, method: 'POST', data });
+/**
+ * 快捷方法封装
+ */
+export const get = (url, params = {}, options = {}) => request({ ...options, url, method: 'GET', params });
+export const post = (url, data, options = {}) => request({ ...options, url, method: 'POST', data });
+export const put = (url, data, options = {}) => request({ ...options, url, method: 'PUT', data });
+export const del = (url, options = {}) => request({ ...options, url, method: 'DELETE' });
 
-export const get = (url, params = {}) => {
-  let fullUrl = url;
-  const queryString = Object.keys(params)
-    .filter(key => params[key] !== undefined && params[key] !== null)
-    .map(key => `${key}=${params[key]}`)
-    .join('&');
-    
-  if (queryString) {
-    fullUrl += (fullUrl.includes('?') ? '&' : '?') + queryString;
-  }
+export const isLoggedIn = () => useAuthStore().isLoggedIn;
 
-  return request({ url: fullUrl, method: 'GET' });
-};
-
-export const put = (url, data) => request({ url, method: 'PUT', data });
-export const del = (url) => request({ url, method: 'DELETE' });
-
-export const saveToken = (token) => {
-  if (token) uni.setStorageSync('token', token);
-};
-
-export const clearToken = () => uni.removeStorageSync('token');
-export const getToken = () => uni.getStorageSync('token') || null;
-export const isLoggedIn = () => !!getToken();
-
-export default { request, post, get, put, del, saveToken, clearToken, getToken, isLoggedIn };
+export default { request, get, post, put, del, isLoggedIn };

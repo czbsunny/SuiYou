@@ -53,7 +53,7 @@ public class Portfolio {
     private Double dailyReturnRate = 0.0;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PortfolioItem> items = new ArrayList<>();
+    private List<PortfolioHolding> holdings = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

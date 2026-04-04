@@ -1,8 +1,8 @@
 package com.suiyou.controller;
 
-import com.suiyou.dto.portfolio.CreatePortfolioItemDTO;
-import com.suiyou.dto.portfolio.PortfolioItemRespDTO;
-import com.suiyou.service.PortfolioItemService;
+import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
+import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
+import com.suiyou.service.PortfolioHoldingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/portfolio-items")
-public class PortfolioItemController {
+@RequestMapping("/portfolio-holdings")
+public class PortfolioHoldingController {
 
     @Autowired
-    private PortfolioItemService portfolioItemService;
+    private PortfolioHoldingService portfolioHoldingService;
 
     @PostMapping
-    public ResponseEntity<?> createPortfolioItem(@RequestBody CreatePortfolioItemDTO createPortfolioItemDTO, @RequestParam Long portfolioId) {
+    public ResponseEntity<?> createPortfolioHolding(@RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO, @RequestParam Long portfolioId) {
         try {
-            portfolioItemService.createPortfolioItem(createPortfolioItemDTO, portfolioId);
+            portfolioHoldingService.createPortfolioHolding(createPortfolioHoldingDTO, portfolioId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "message", "持仓创建成功"
             ));
@@ -34,12 +34,12 @@ public class PortfolioItemController {
     }
 
     @GetMapping("/portfolio/{portfolioId}")
-    public ResponseEntity<?> getPortfolioItemsByPortfolioId(@PathVariable Long portfolioId) {
+    public ResponseEntity<?> getPortfolioHoldingsByPortfolioId(@PathVariable Long portfolioId) {
         try {
-            List<PortfolioItemRespDTO> items = portfolioItemService.getPortfolioItemsByPortfolioId(portfolioId);
+            List<PortfolioHoldingRespDTO> holdings = portfolioHoldingService.getPortfolioHoldingsByPortfolioId(portfolioId);
             return ResponseEntity.ok(Map.of(
-                    "items", items,
-                    "count", items.size()
+                    "holdings", holdings,
+                    "count", holdings.size()
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
@@ -50,11 +50,11 @@ public class PortfolioItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPortfolioItemById(@PathVariable Long id) {
+    public ResponseEntity<?> getPortfolioHoldingById(@PathVariable Long id) {
         try {
-            PortfolioItemRespDTO item = portfolioItemService.getPortfolioItemById(id);
+            PortfolioHoldingRespDTO holding = portfolioHoldingService.getPortfolioHoldingById(id);
             return ResponseEntity.ok(Map.of(
-                    "item", item
+                    "holding", holding
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
@@ -65,9 +65,9 @@ public class PortfolioItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePortfolioItem(@PathVariable Long id, @RequestBody CreatePortfolioItemDTO createPortfolioItemDTO) {
+    public ResponseEntity<?> updatePortfolioHolding(@PathVariable Long id, @RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO) {
         try {
-            portfolioItemService.updatePortfolioItem(id, createPortfolioItemDTO);
+            portfolioHoldingService.updatePortfolioHolding(id, createPortfolioHoldingDTO);
             return ResponseEntity.ok(Map.of(
                     "id", id,
                     "message", "持仓更新成功"
@@ -81,9 +81,9 @@ public class PortfolioItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePortfolioItem(@PathVariable Long id) {
+    public ResponseEntity<?> deletePortfolioHolding(@PathVariable Long id) {
         try {
-            portfolioItemService.deletePortfolioItem(id);
+            portfolioHoldingService.deletePortfolioHolding(id);
             return ResponseEntity.ok(Map.of(
                     "id", id,
                     "message", "持仓删除成功"

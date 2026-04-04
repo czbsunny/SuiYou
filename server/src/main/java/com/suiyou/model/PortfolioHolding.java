@@ -10,7 +10,7 @@ import lombok.ToString;
 @Entity
 @ToString(exclude = {"portfolio"})
 @Table(name = "portfolio_items")
-public class PortfolioItem {
+public class PortfolioHolding {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

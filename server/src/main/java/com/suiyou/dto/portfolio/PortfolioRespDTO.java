@@ -23,7 +23,7 @@ public class PortfolioRespDTO {
     private Double totalReturnRate;
     private Double dailyReturn;
     private Double dailyReturnRate;
-    private List<PortfolioItemRespDTO> items;
+    private List<PortfolioHoldingRespDTO> items;
 
     public static PortfolioRespDTO fromEntity(Portfolio portfolio) {
         PortfolioRespDTO dto = new PortfolioRespDTO();
@@ -41,9 +41,9 @@ public class PortfolioRespDTO {
         dto.setTotalReturnRate(portfolio.getTotalReturnRate());
         dto.setDailyReturn(portfolio.getDailyReturn());
         dto.setDailyReturnRate(portfolio.getDailyReturnRate());
-        if (portfolio.getItems() != null) {
-            dto.setItems(portfolio.getItems().stream()
-                    .map(PortfolioItemRespDTO::fromEntity)
+        if (portfolio.getHoldings() != null) {
+            dto.setItems(portfolio.getHoldings().stream()
+                    .map(PortfolioHoldingRespDTO::fromEntity)
                     .collect(Collectors.toList()));
         }
         return dto;
