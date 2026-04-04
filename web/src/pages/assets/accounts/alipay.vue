@@ -156,8 +156,9 @@ const navToItemDetail = (item) => {
   // 保持原有跳转逻辑
   const routes = { 'BALANCE': 'cash', 'YUEBAO': 'cashPlus', 'FUND': 'fund' };
   const page = routes[item.subCategory];
+  const data = encodeURIComponent(JSON.stringify(item));
   if (page) {
-    uni.navigateTo({ url: `/pages/assets/items/${page}?name=${item.name}` });
+    uni.navigateTo({ url: `/pages/assets/items/${page}?data=${data}` });
   } else {
     uni.showToast({ title: item.name + '在开发中', icon: 'none' });
   }

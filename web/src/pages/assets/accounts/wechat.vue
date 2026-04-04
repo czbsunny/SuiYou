@@ -156,9 +156,7 @@ const navToItemDetail = (item) => {
   // 保持原有跳转逻辑
   const routes = { 'CHANGE': 'cash', 'MINIFUND': 'cashPlus', 'FUND': 'fund' };
   const page = routes[item.subCategory];
-
   const data = encodeURIComponent(JSON.stringify(item));
-
   if (page) {
     uni.navigateTo({ url: `/pages/assets/items/${page}?data=${data}` });
   } else {

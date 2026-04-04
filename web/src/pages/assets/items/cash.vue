@@ -56,8 +56,9 @@ const logs = ref([
 ]);
 
 onLoad((options) => {
+  let item = null;
   if (options.data) {
-    const item = JSON.parse(decodeURIComponent(options.data));
+    item = JSON.parse(decodeURIComponent(options.data));
     console.log('解析出的资产:', item);
   }
 

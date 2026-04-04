@@ -69,7 +69,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { updateAssetItem } from '../items/services/accountService.js';
+import { updateFundHoldings } from '@/services/fund.js';
 import Keyboard from '@/components/common/Keyboard.vue';
 
 const accountId = ref('');

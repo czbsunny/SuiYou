@@ -47,7 +47,7 @@
 import AssetSummary from '@/components/assets/fund/AssetSummary.vue';
 import SingleAccountPage from '@/components/assets/fund/SingleAccountPage.vue';
 import ActionMenu from '@/components/assets/fund/ActionMenu.vue';
-import { getAssetAccounts, calculateSummaryData as calcSummary, getAccountById, getAccountHoldings, deleteHolding } from './services/accountService.js';
+import { getAssetAccounts, calculateSummaryData as calcSummary, getAccountById, getAccountHoldings, deleteHolding } from '@/services/fund.js';
 
 export default {
   components: { AssetSummary, SingleAccountPage, ActionMenu },
@@ -75,7 +75,14 @@ export default {
       scrollHeight: 'calc(100vh - 400rpx)'
     }
   },
-  onLoad() {
+  onLoad(options) {
+    if (options.data) {
+      const item = JSON.parse(decodeURIComponent(options.data));
+      console.log('解析出的资产:', item);
+      // 这里可以根据需要处理资产对象
+    }
+    if (options.name) uni.setNavigationBarTitle({ title: options.name });
+    
     this.loadData();
     // 监听全局刷新事件
     uni.$on('refreshHoldings', (accountId) => {

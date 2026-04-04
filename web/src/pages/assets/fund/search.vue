@@ -68,7 +68,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { get } from '@/utils/apiService.js';
+import { fundSearch } from '@/services/fund.js';
 
 const searchKeyword = ref('');
 const fundList = ref([]);
@@ -95,13 +95,9 @@ const loadFundList = async () => {
     }
     loading.value = true;
     try {
-        const res = await get('/api/fund/search', {
-            keyword: searchKeyword.value,
-            page: currentPage.value,
-            pageSize: pageSize.value
-        });
+        const res = await fundSearch(searchKeyword.value, currentPage.value, pageSize.value);
 
-        if (res.statusCode === 200) {
+        if (res.success) {
             const data = res.data;
             const newData = (data.funds || []).map(fund => ({
                 fundCode: fund.fundCode,
