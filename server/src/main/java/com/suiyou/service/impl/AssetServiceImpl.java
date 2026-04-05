@@ -18,6 +18,8 @@ import com.suiyou.service.AssetService;
 import com.suiyou.service.AccountService;
 import com.suiyou.service.PortfolioService;
 
+import io.micrometer.common.util.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,24 +62,27 @@ public class AssetServiceImpl implements AssetService {
                 throw new IllegalArgumentException("创建资产账户失败");
             }
 
+            // 创建基础资产
             SysInstitution institution = institutionRepository.findByInstCode(account.getInstitution());
             String baseAssetType = DefaultAssetConfig.getBaseAssetType(institution.getInstType(), institution.getInstCode());
-            SysAssetCategory category = assetCategoryRepository.findByCategoryCode(baseAssetType);
-            Asset baseAsset = new Asset();
-            baseAsset.setAccount(account);
-            baseAsset.setOwnerId(userId);
-            baseAsset.setGroupType(category.getGroupType());
-            baseAsset.setCategory(category.getParentCode());
-            baseAsset.setSubCategory(category.getCategoryCode());
-            baseAsset.setName(category.getName());
-            baseAsset.setTotalBalance(BigDecimal.ZERO);
-            baseAsset.setFrozenBalance(BigDecimal.ZERO);
-            baseAsset.setAvailableBalance(BigDecimal.ZERO);
-            baseAsset.setCurrency("CNY");
-            baseAsset.setIncludeInNetWorth(true);
-            baseAsset.setStatus(1);
+            if (StringUtils.isNotEmpty(baseAssetType)) {
+                SysAssetCategory category = assetCategoryRepository.findByCategoryCode(baseAssetType);
+                Asset baseAsset = new Asset();
+                baseAsset.setAccount(account);
+                baseAsset.setOwnerId(userId);
+                baseAsset.setGroupType(category.getGroupType());
+                baseAsset.setCategory(category.getParentCode());
+                baseAsset.setSubCategory(category.getCategoryCode());
+                baseAsset.setName(category.getName());
+                baseAsset.setTotalBalance(BigDecimal.ZERO);
+                baseAsset.setFrozenBalance(BigDecimal.ZERO);
+                baseAsset.setAvailableBalance(BigDecimal.ZERO);
+                baseAsset.setCurrency("CNY");
+                baseAsset.setIncludeInNetWorth(true);
+                baseAsset.setStatus(1);
 
-            assetRepository.save(baseAsset);
+                assetRepository.save(baseAsset);
+            }
         }
         // 创建Account实体用于关联
         Asset asset = new Asset();
