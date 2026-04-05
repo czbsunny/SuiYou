@@ -3,6 +3,8 @@ package com.suiyou.controller;
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
+import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
+import com.suiyou.dto.portfolio.UpdatePortfolioHoldingsDTO;
 import com.suiyou.service.PortfolioService;
 import com.suiyou.service.PortfolioHoldingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,9 +109,9 @@ public class PortfolioController {
     }
 
     @PutMapping("/{id}/holdings")
-    public ResponseEntity<?> updatePortfolioHolding(@PathVariable Long id, @RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO) {
+    public ResponseEntity<?> updatePortfolioHoldings(@PathVariable Long id, @RequestBody UpdatePortfolioHoldingsDTO updatePortfolioHoldingsDTO) {
         try {
-            portfolioHoldingService.updatePortfolioHolding(id, createPortfolioHoldingDTO);
+            portfolioHoldingService.updatePortfolioHoldings(id, updatePortfolioHoldingsDTO);
             return ResponseEntity.ok(Map.of(
                     "id", id,
                     "message", "持仓更新成功"
