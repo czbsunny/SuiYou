@@ -8,6 +8,7 @@ import com.suiyou.model.Asset;
 import com.suiyou.model.Account;
 import com.suiyou.model.SysAssetCategory;
 import com.suiyou.model.SysInstitution;
+import com.suiyou.model.enums.PortfolioType;
 
 import com.suiyou.repository.AssetRepository;
 import com.suiyou.repository.SysAssetCategoryRepository;
@@ -112,12 +113,14 @@ public class AssetServiceImpl implements AssetService {
             createPortfolioDTO.setAssetId(assetRespDTO.getId());
             createPortfolioDTO.setName("默认组合");
             createPortfolioDTO.setDescription("系统创建的基金组合");
+            createPortfolioDTO.setType(PortfolioType.FUND);
             portfolioService.createPortfolio(createPortfolioDTO, userId);
         } else if (assetRespDTO.getSubCategory().equals("STOCK")) {
             CreatePortfolioDTO createPortfolioDTO = new CreatePortfolioDTO();
             createPortfolioDTO.setAssetId(assetRespDTO.getId());
             createPortfolioDTO.setName("默认组合");
             createPortfolioDTO.setDescription("系统创建的股票组合");
+            createPortfolioDTO.setType(PortfolioType.STOCK);
             portfolioService.createPortfolio(createPortfolioDTO, userId);
         }
         return assetRespDTO;

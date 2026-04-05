@@ -1,6 +1,7 @@
 package com.suiyou.dto.portfolio;
 
 import com.suiyou.model.Portfolio;
+import com.suiyou.model.enums.PortfolioType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class PortfolioRespDTO {
     private String assetName;
     private String name;
     private String description;
+    private PortfolioType type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Double currentValue;
@@ -33,6 +35,7 @@ public class PortfolioRespDTO {
         dto.setAssetName(portfolio.getAsset() != null ? portfolio.getAsset().getName() : null);
         dto.setName(portfolio.getName());
         dto.setDescription(portfolio.getDescription());
+        dto.setType(portfolio.getType());
         dto.setCreatedAt(portfolio.getCreatedAt());
         dto.setUpdatedAt(portfolio.getUpdatedAt());
         dto.setCurrentValue(portfolio.getCurrentValue());

@@ -115,10 +115,10 @@ export const getPortfolioHoldings = async (portfolioId) => {
 };
 
 /**
- * 创建组合持仓
+ * 添加组合持仓
  * @param {number|string} portfolioId - 组合ID
  * @param {Array} holdingsData - 持仓数据列表
- * @returns {Promise<Object>} 创建结果
+ * @returns {Promise<Object>} 添加结果
  */
 export const createPortfolioHoldings = async (portfolioId, holdingsData) => {
   try {
