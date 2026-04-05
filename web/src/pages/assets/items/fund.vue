@@ -132,14 +132,23 @@ export default {
       selectedHolding: null,
       menuPosStyle: {},
       touchTimer: null,
-      startX: 0, startY: 0, hasMoved: false
+      startX: 0, startY: 0, hasMoved: false,
+      assetId: ''
+    }
+  },
+  onLoad(options) {
+    if (options.data) {
+      const item = JSON.parse(decodeURIComponent(options.data));
+      if (item) {
+        this.assetId = item.id;
+      }
     }
   },
   onShow() { this.loadData(); },
   methods: {
     async loadData() {
       try {
-        const res = await getPortfolioByAssetId();
+        const res = await getPortfolioByAssetId(this.assetId);
         this.portfolio = res || { holdings: [] };
       } catch (e) { console.error(e); }
     },

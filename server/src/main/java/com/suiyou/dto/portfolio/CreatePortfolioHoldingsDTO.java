@@ -5,6 +5,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class UpdatePortfolioHoldingsDTO {
+public class CreatePortfolioHoldingsDTO {
     List<CreatePortfolioHoldingDTO> holdings;
 }

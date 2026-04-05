@@ -3,7 +3,7 @@ package com.suiyou.controller;
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.UpdatePortfolioHoldingsDTO;
+import com.suiyou.dto.portfolio.CreatePortfolioHoldingsDTO;
 import com.suiyou.service.PortfolioService;
 import com.suiyou.service.PortfolioHoldingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,17 +107,17 @@ public class PortfolioController {
         }
     }
 
-    @PutMapping("/{id}/holdings")
-    public ResponseEntity<?> updatePortfolioHoldings(@PathVariable Long id, @RequestBody UpdatePortfolioHoldingsDTO updatePortfolioHoldingsDTO) {
+    @PostMapping("/{id}/holdings")
+    public ResponseEntity<?> createPortfolioHoldings(@PathVariable Long id, @RequestBody CreatePortfolioHoldingsDTO createPortfolioHoldingsDTO) {
         try {
-            portfolioHoldingService.updatePortfolioHoldings(id, updatePortfolioHoldingsDTO);
-            return ResponseEntity.ok(Map.of(
+            portfolioHoldingService.createPortfolioHoldings(id, createPortfolioHoldingsDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "id", id,
-                    "message", "持仓更新成功"
+                    "message", "持仓添加成功"
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "error", "持仓更新失败",
+                    "error", "持仓添加失败",
                     "message", e.getMessage()
             ));
         }
