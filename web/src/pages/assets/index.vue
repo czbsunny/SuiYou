@@ -24,7 +24,7 @@
 import { ref, computed, onUnmounted } from 'vue';
 import { onShow, onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
-import { getAccounts } from '../../services/accountService.js';
+import { getAccounts } from '@/services/accountService.js';
 import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
 
 // 引入核心组件

@@ -1,6 +1,8 @@
 // 资产相关API服务模块
 import { get, post } from './apiService';
 
+const ASSET_API_BASE = '/api/assets';
+
 /**
  * 创建新的资产账户
  * @param {Object} assetData - 资产数据
@@ -19,7 +21,7 @@ import { get, post } from './apiService';
  */
 export const createAsset = async (assetData) => {
   try {
-    const response = await post('/api/assets', assetData);
+    const response = await post(ASSET_API_BASE, assetData);
     
     if (response.statusCode === 201 || response.statusCode === 200) {
       return response.data;
@@ -40,7 +42,7 @@ export const createAsset = async (assetData) => {
  */
 export const getAssets = async () => {
   try {
-    const response = await get('/api/assets');
+    const response = await get(ASSET_API_BASE);
     
     if (response.statusCode === 200) {
       return response.data;
@@ -49,6 +51,26 @@ export const getAssets = async () => {
     }
   } catch (error) {
     console.error('获取资产项错误:', error);
+    throw error;
+  }
+};
+
+/**
+ * 根据资产ID获取组合
+ * @param {number|string} assetId - 资产ID
+ * @returns {Promise<Object|null>} 组合对象
+ */
+export const getPortfolioByAssetId = async (assetId) => {
+  try {
+    const response = await get(`${ASSET_API_BASE}/portfolio`, { assetId });
+    
+    if (response.statusCode === 200 && response.data?.portfolio) {
+      return response.data.portfolio;
+    } else {
+      throw new Error(response.data?.message || '获取组合失败');
+    }
+  } catch (error) {
+    console.error('获取组合错误:', error);
     throw error;
   }
 };

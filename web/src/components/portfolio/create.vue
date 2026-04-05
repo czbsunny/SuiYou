@@ -126,7 +126,7 @@ import { ref, computed } from 'vue';
 // 确保路径正确，根据你的项目结构调整
 import { RISK_TEMPLATES, RiskLevel } from '../../constants'; 
 // 假设你有 API 服务
-import { createPortfolio } from '../../services/portfolioService'; 
+import { createPortfolio } from '@/services/portfolioService.js'; 
 
 const selectedLevel = ref('CUSTOM');
 const customName = ref('');

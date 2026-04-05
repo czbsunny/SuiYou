@@ -9,7 +9,7 @@ import lombok.ToString;
 @Data
 @Entity
 @ToString(exclude = {"portfolio"})
-@Table(name = "portfolio_items")
+@Table(name = "portfolio_holdings")
 public class PortfolioHolding {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -199,7 +199,6 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { getPortfolioItems } from '../../services/portfolioService';
 
 const portfolioId = ref('');
 const portfolio = ref({

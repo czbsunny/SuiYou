@@ -1,7 +1,9 @@
 /**
  * 基金服务，处理基金相关的API调用
  */
-import { get, post, del } from './apiService';
+import { get, post, put, del } from './apiService';
+
+const PORTFOLIO_API_BASE = '/api/portfolios';
 
 /**
  * 获取资产账户列表
@@ -182,7 +184,7 @@ export const addFundHolding = async (accountId, holdingList) => {
  * @param {string} filePath - 图片文件路径
  * @returns {Promise<Object>} 识别结果
  */
-export const importFundHolding = async (filePath) => {
+export const importFundHoldings = async (filePath) => {
   try {
     const token = uni.getStorageSync('token');
     const res = await uni.uploadFile({
@@ -237,9 +239,7 @@ export const updateFundHoldings = async (accountId, holdingId, holdingData) => {
       throw new Error(res.data?.message || '更新基金持仓失败');
     }
   } catch (error) {
-    console.error('更新基金持仓异常:', error);
-    throw error;
-  }
+		console.error('更新基金持仓异常:', error);
+		throw error;
+	}
 };
-
-

@@ -154,7 +154,7 @@ import { ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { formatCurrency, formatNumber, formatPercent } from '../../services/formatUtil';
 // 引入你的 API 服务
-import {  getPortfolioItems } from '../../services/portfolioService';
+import {  getPortfolioHoldings } from '@/services/portfolioService.js';
 
 const portfolioId = ref('');
 const loading = ref(true);
@@ -196,7 +196,7 @@ const loadData = async () => {
         const [infoRes, itemsRes] = await Promise.all([
             uni.getStorageSync('cachedPortfolio'),
 
-            getPortfolioItems(portfolioId.value)
+            getPortfolioHoldings(portfolioId.value)
         ]);
 
         if (infoRes) {

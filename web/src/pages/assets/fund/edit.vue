@@ -140,7 +140,7 @@ const finalSubmit = async () => {
   if (!form.value.amount) return uni.showToast({ title: '请填写金额', icon: 'none' });
   uni.showLoading({ title: '正在保存...', mask: true });
   try {
-    await updateAssetItem(accountId.value, assetItemId.value, form.value);
+    await updateFundHoldings(accountId.value, assetItemId.value, form.value);
     uni.showToast({ title: '修改成功' });
     uni.$emit('refreshHoldings', accountId.value);
     setTimeout(() => uni.navigateBack(), 1200);

@@ -48,8 +48,6 @@ public class PortfolioHoldingController {
         }
     }
 
-
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePortfolioHolding(@PathVariable Long id, @RequestBody CreatePortfolioHoldingDTO createPortfolioHoldingDTO) {
         try {

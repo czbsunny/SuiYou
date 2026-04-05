@@ -3,7 +3,6 @@ package com.suiyou.controller;
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.UpdatePortfolioHoldingsDTO;
 import com.suiyou.service.PortfolioService;
 import com.suiyou.service.PortfolioHoldingService;

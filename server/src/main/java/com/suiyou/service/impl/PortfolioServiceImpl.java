@@ -1,11 +1,14 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
+import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.model.Asset;
 import com.suiyou.model.Portfolio;
+import com.suiyou.model.PortfolioHolding;
 import com.suiyou.model.User;
 import com.suiyou.repository.AssetRepository;
+import com.suiyou.repository.PortfolioHoldingRepository;
 import com.suiyou.repository.PortfolioRepository;
 import com.suiyou.repository.UserRepository;
 import com.suiyou.service.PortfolioService;
@@ -28,6 +31,9 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Autowired
     private AssetRepository assetRepository;
 
+    @Autowired
+    private PortfolioHoldingRepository portfolioHoldingRepository;
+
     @Override
     @Transactional
     public Portfolio createPortfolio(CreatePortfolioDTO createPortfolioDTO, Long userId) {
@@ -48,9 +54,16 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public List<PortfolioRespDTO> getPortfoliosByUserId(Long userId) {
-        return portfolioRepository.findAll().stream()
-                .filter(portfolio -> portfolio.getUser() != null && portfolio.getUser().getId().equals(userId))
-                .map(PortfolioRespDTO::fromEntity)
+        List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
+        return portfolios.stream()
+                .map(portfolio -> {
+                    PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
+                    List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
+                    dto.setItems(holdings.stream()
+                            .map(PortfolioHoldingRespDTO::fromEntity)
+                            .collect(Collectors.toList()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -58,16 +71,26 @@ public class PortfolioServiceImpl implements PortfolioService {
     public PortfolioRespDTO getPortfolioById(Long id) {
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
-        return PortfolioRespDTO.fromEntity(portfolio);
+
+        PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
+        List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
+        dto.setItems(holdings.stream()
+                .map(PortfolioHoldingRespDTO::fromEntity)
+                .collect(Collectors.toList()));
+        return dto;
     }
 
     @Override
     public PortfolioRespDTO getPortfolioByAssetId(Long assetId) {
-        return portfolioRepository.findAll().stream()
-                .filter(portfolio -> portfolio.getAsset() != null && portfolio.getAsset().getId().equals(assetId))
-                .map(PortfolioRespDTO::fromEntity)
-                .findFirst()
+        Portfolio portfolio = portfolioRepository.findByAssetId(assetId)
                 .orElseThrow(() -> new IllegalArgumentException("资产对应的组合不存在"));
+ 
+        PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
+        List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
+        dto.setItems(holdings.stream()
+                .map(PortfolioHoldingRespDTO::fromEntity)
+                .collect(Collectors.toList()));
+        return dto;
     }
 
     @Override

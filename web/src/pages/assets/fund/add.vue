@@ -125,10 +125,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { addFundHolding, importFundHolding } from '@/services/fund.js';
+import { createPortfolioHoldings } from '@/services/portfolioService.js';
+import { importFundHoldings } from '@/services/fund.js';
 import Keyboard from '@/components/common/Keyboard.vue';
 
-const accountId = ref('');
+const portfolioId = ref('');
 const activeField = ref('symbol');
 const stagingList = ref([]);
 const isEditing = ref(false);
@@ -137,7 +138,7 @@ const showKeyboard = ref(false);
 
 const form = ref({ symbol: '', name: '', type: '', amount: '', returnValue: '' });
 
-onLoad((options) => { accountId.value = options.accountId; });
+onLoad((options) => { portfolioId.value = options.portfolioId; });
 onMounted(() => { uni.$on('fund-selected', handleFundSelected); });
 onUnmounted(() => { uni.$off('fund-selected', handleFundSelected); });
 
@@ -160,7 +161,7 @@ const handleImageImport = () => {
 const uploadFundImage = async (filePath) => {
   uni.showLoading({ title: '图片识别中...', mask: true });
   try {
-    const res = await importFundHolding(filePath);
+    const res = await importFundHoldings(filePath);
     
     if (res.success) {
       const responseData = res.data;
@@ -255,9 +256,9 @@ const handleRemove = (index) => { stagingList.value.splice(index, 1); };
 const finalSubmit = async () => {
   uni.showLoading({ title: '存入中...', mask: true });
   try {
-    await addPortfoliosToAccount(accountId.value, stagingList.value);
+    await createPortfolioHoldings(portfolioId.value, stagingList.value);
     uni.showToast({ title: '存入成功' });
-    uni.$emit('refreshHoldings', accountId.value);
+    uni.$emit('refreshHoldings', portfolioId.value);
     setTimeout(() => uni.navigateBack(), 1200);
   } catch (e) {
     uni.showToast({ title: e.message || '系统繁忙', icon: 'none' });

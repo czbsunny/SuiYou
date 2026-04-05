@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.suiyou.dto.asset.CreateAssetDTO;
 import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.service.AssetService;
+
+import com.suiyou.dto.portfolio.PortfolioRespDTO;
+import com.suiyou.service.PortfolioService;
 
 @RestController
 @RequestMapping("/assets")
@@ -24,6 +28,9 @@ public class AssetController {
     
     @Autowired
     private AssetService assetService;
+
+    @Autowired
+    private PortfolioService portfolioService;
 
     @PostMapping
     public ResponseEntity<?> createAsset(@RequestBody CreateAssetDTO asset) {
@@ -70,6 +77,28 @@ public class AssetController {
         }
     }
     
+    @GetMapping("/portfolio")
+    public ResponseEntity<?> getPortfoliosByAssetId(@RequestParam Long assetId) {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            
+            // 调用服务获取当前用户的所有活跃资产账户
+            PortfolioRespDTO portfolio = portfolioService.getPortfolioByAssetId(assetId);
+            
+            // 返回成功响应
+            return ResponseEntity.ok(Map.of(
+                "portfolio", portfolio
+            ));
+        } catch (Exception e) {
+            // 返回错误响应
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "获取组合失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
     /**
      * 获取当前登录用户的ID
      */
