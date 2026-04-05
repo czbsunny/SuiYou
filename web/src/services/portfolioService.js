@@ -115,6 +115,31 @@ export const getPortfolioHoldings = async (portfolioId) => {
 };
 
 /**
+ * 创建组合持仓
+ * @param {number|string} portfolioId - 组合ID
+ * @param {Array} holdingsData - 持仓数据列表
+ * @returns {Promise<Object>} 创建结果
+ */
+export const createPortfolioHoldings = async (portfolioId, holdingsData) => {
+  try {
+    const res = await post(`${PORTFOLIO_API_BASE}/${portfolioId}/holdings`, holdingsData);
+    
+    if (res.statusCode === 201) {
+      return {
+        success: true,
+        data: res.data
+      };
+    } else {
+      console.error('创建组合持仓失败:', res.data?.message || '未知错误');
+      throw new Error(res.data?.message || '创建组合持仓失败');
+    }
+  } catch (error) {
+    console.error('创建组合持仓异常:', error);
+    throw error;
+  }
+};
+
+/**
  * 更新组合持仓
  * @param {number|string} portfolioId - 组合ID
  * @param {Object} holdingsData - 持仓数据
@@ -170,6 +195,7 @@ export default {
   getPortfolioById,
   deletePortfolio,
   getPortfolioHoldings,
+  createPortfolioHoldings,
   updatePortfolioHoldings,
   clearPortfolioHoldings
 };
