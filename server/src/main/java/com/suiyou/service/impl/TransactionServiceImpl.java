@@ -127,10 +127,10 @@ public class TransactionServiceImpl implements TransactionService {
                 break;
 
             case ADJUSTMENT:
-                // 余额校准：直接修改余额，通常比较复杂，这里简化为视作收入或支出
-                // 实际建议：ADJUSTMENT 单独处理，直接 setBalance，这里略
-                if (trans.getTargetAssetId() != null) {
-                    increaseAsset(trans.getTargetAssetId(), targetAmount); // 正数加，负数减
+            case INVESTMENT_RETURN:
+                // 金额校准：资产校准通常是正向操作，不影响其他资产
+                if (trans.getSourceAssetId() != null) {
+                    increaseAsset(trans.getSourceAssetId(), amount);
                 }
                 break;
         }

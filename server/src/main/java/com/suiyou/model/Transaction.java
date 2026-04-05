@@ -27,7 +27,7 @@ public class Transaction {
     
     // 核心交易要素
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 30)
     private TransactionType type;
 
     @Column(name = "trans_time", nullable = false)

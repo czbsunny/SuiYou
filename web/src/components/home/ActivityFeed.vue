@@ -4,7 +4,14 @@
       <text class="h2">最新动态</text>
     </view>
     
-    <view class="activity-list">
+    <scroll-view 
+      class="activity-list" 
+      scroll-y 
+      enable-back-to-top
+      refresher-enabled 
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="handleRefresh"
+    >
       <view class="activity-item card-warm" v-for="(item, index) in list" :key="index" @click="navToDetail(item)">
         <!-- 左侧图标 -->
         <view class="act-icon" :style="{ backgroundColor: item.iconBg }">
@@ -44,7 +51,7 @@
           没有更多数据了
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
 </template>
 
@@ -58,6 +65,7 @@ const props = defineProps({ isPrivacyOn: Boolean });
 const configStore = useConfigStore();
 const transactions = ref([]);
 const loading = ref(false);
+const isRefreshing = ref(false);
 const page = ref(0);
 const hasMore = ref(true);
 
@@ -66,32 +74,45 @@ const list = computed(() => {
     const type = transaction.type;
     const isIncome = type === 'INCOME';
     const isTransfer = type === 'TRANSFER';
+    const isAdjustment = type === 'ADJUSTMENT';
+    const isInvestmentReturn = type === 'INVESTMENT_RETURN';
+
     const amount = transaction.amount.toFixed(2);
-    
     // 获取分类和机构配置
     const category = configStore.getTransferCategoriesById(transaction.categoryId);
     const instMap = configStore.institutionMap;
 
     // 逻辑处理：账户显示名
     let accountDisplay = '';
+    let amountDisplay = '';
     if (isTransfer) {
       // 转账显示 A -> B
       const source = transaction.sourceAccountName || instMap[transaction.sourceAccountInstitution]?.shortName+'('+transaction.sourceAccountIdentifier+')';
       const target = transaction.targetAccountName || instMap[transaction.targetAccountInstitution]?.shortName+'('+transaction.targetAccountIdentifier+')';
       accountDisplay = `${source} → ${target}`;
+      amountDisplay = amount;
+    } else if (isAdjustment) {
+      accountDisplay = transaction.sourceAccountName || instMap[transaction.sourceAccountInstitution]?.shortName+'('+transaction.sourceAccountIdentifier+')';
+      amountDisplay = `${amount}`;
+    } else if (isInvestmentReturn) {
+      accountDisplay = transaction.sourceAccountName || instMap[transaction.sourceAccountInstitution]?.shortName+'('+transaction.sourceAccountIdentifier+')';
+      amountDisplay = `${amount}`;
     } else if (isIncome) {
       // 收入显示转入到的账户
       accountDisplay = transaction.targetAccountName || instMap[transaction.targetAccountInstitution]?.shortName+'('+transaction.targetAccountIdentifier+')';
+      amountDisplay = `+${amount}`;
     } else {
       // 支出显示扣款账户
       accountDisplay = transaction.sourceAccountName || instMap[transaction.sourceAccountInstitution]?.shortName+'('+transaction.sourceAccountIdentifier+')';
+      amountDisplay = `-${amount}`;
     }
 
     // 逻辑处理：标题
     let title = category?.name;
     if (!title) {
         if (isTransfer) title = '账户调拨';
-        else if (type === 'ADJUST') title = '余额校准';
+        else if (type === 'ADJUSTMENT') title = '资产校准';
+        else if (type === 'INVESTMENT_RETURN') title = '投资收益';
         else title = isIncome ? '收金' : '杂项支出';
     }
 
@@ -100,7 +121,7 @@ const list = computed(() => {
       title: title,
       date: formatDate(transaction.transTime),
       accountDisplay: accountDisplay,
-      amountDisplay: isIncome ? `+${amount}` : (isTransfer ? amount : `-${amount}`),
+      amountDisplay: amountDisplay,
       icon: category?.iconUrl || TRANSACTION_ICONS[type]?.iconUrl || '/static/images/default-icon.png',
       iconBg: isIncome ? '#ECFDF5' : (isTransfer ? '#F5F3FF' : '#F9F8F4'), // 对应项目定义的背景色
       textClass: isIncome ? 'text-up' : (isTransfer ? 'text-main' : 'text-main')
@@ -151,7 +172,15 @@ const fetchTransactions = async (isLoadMore = false) => {
     console.error('获取交易记录失败:', err);
   } finally {
     loading.value = false;
+    isRefreshing.value = false;
   }
+};
+
+const handleRefresh = () => {
+  isRefreshing.value = true;
+  page.value = 0;
+  hasMore.value = true;
+  fetchTransactions(false);
 };
 
 const handleLoadMore = () => {

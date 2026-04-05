@@ -40,5 +40,13 @@ export const TRANSACTION_ICONS = {
   ['TRANSFER']: {
     name: '转账',
     iconUrl: '/static/images/transfer.png'
-  } 
+  },
+  ['ADJUSTMENT']: {
+    name: '资产校准',
+    iconUrl: '/static/assets/actions/scale.png'
+  },
+  ['INVESTMENT_RETURN']: {
+    name: '投资收益',
+    iconUrl: '/static/assets/actions/chart-trending.png'
+  },
 };

@@ -20,7 +20,7 @@
                 <image :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" class="icon-sm" mode="aspectFit" />
               </view>
               <text class="value num-font" :class="{ 'is-blur': isAssetHidden }">
-                {{ isAssetHidden ? '******' : formatMoney(accountInfo?.balance) }}
+                {{ isAssetHidden ? '******' : formatMoney(totalBalance) }}
               </text>
             </view>
             
@@ -29,8 +29,8 @@
               <view class="label-box">
                 <text class="label">今日收益</text>
               </view>
-              <text class="value num-font" :class="getReturnClass(accountInfo?.dailyProfit)">
-                {{ accountInfo?.dailyProfit >= 0 ? '+' : '' }}{{ isAssetHidden ? '****' : formatMoney(accountInfo?.dailyProfit) }}
+              <text class="value num-font" :class="getReturnClass(dailyProfit)">
+                {{ dailyProfit >= 0 ? '+' : '' }}{{ isAssetHidden ? '****' : formatMoney(dailyProfit) }}
               </text>
             </view>
           </view>
@@ -39,19 +39,19 @@
         <!-- 2. 快捷操作区 (仅保留校准和收益) -->
         <view class="action-bar-container">
           <!-- 更新收益 -->
-          <view class="action-item" @tap="openModal('INVESTMENT_RETURN')">
+          <view class="action-item" @tap="assets.length > 0 && navigateToReconcile('INVESTMENT_RETURN', assets[0])">
             <view class="icon-box icon-profit">
-              <image src="/static/assets/actions/profit.png" class="action-icon" mode="aspectFit" />
+              <image src="/static/assets/actions/chart-trending.png" class="action-icon" mode="aspectFit" />
             </view>
             <text class="action-label">录入盈亏</text>
           </view>
           
-          <!-- 校准余额 -->
-          <view class="action-item" @tap="openModal('ADJUSTMENT')">
+          <!-- 校准 -->
+          <view class="action-item" @tap="assets.length > 0 && navigateToReconcile('ADJUSTMENT', assets[0])">
             <view class="icon-box icon-liquid">
               <image src="/static/assets/actions/scale.png" class="action-icon" mode="aspectFit" />
             </view>
-            <text class="action-label">余额校准</text>
+            <text class="action-label">资产校准</text>
           </view>
         </view>
 
@@ -59,7 +59,7 @@
         <view class="card-warm list-card">
           <view class="list-header">
             <text class="title">对应资产</text>
-            <image src="/static/images/settings-gray.png" class="icon-settings" @tap="handleEditAccount" mode="aspectFit" />
+            <!-- <image src="/static/images/settings-gray.png" class="icon-settings" @tap="handleEditAccount" mode="aspectFit" /> -->
           </view>
 
           <view class="asset-item" v-for="(asset, index) in assets" :key="index">
@@ -80,47 +80,59 @@
       </view>
     </scroll-view>
 
-    <!-- 录入弹窗 -->
-    <uni-popup ref="inputPopup" type="dialog">
-      <uni-popup-dialog 
-        mode="input" 
-        :title="modalTitle" 
-        placeholder="请输入金额" 
-        :value="tempValue"
-        @confirm="submitTransaction"
-      ></uni-popup-dialog>
-    </uni-popup>
+
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
+import { ref, computed } from 'vue';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import { formatCurrency } from '@/utils/formatUtil';
 import { getAccountById } from '@/services/accountService.js';
-import { createTransaction } from '@/services/transactionService.js';
+import { useConfigStore } from '@/stores/config.js';
 
 const accountInfo = ref(null);
 const assets = ref([]);
 const isAssetHidden = ref(false);
 const isRefreshing = ref(false);
+const configStore = useConfigStore();
 
-// 弹窗相关
-const inputPopup = ref(null);
-const modalType = ref(''); // INVESTMENT_RETURN or ADJUSTMENT
-const modalTitle = ref('');
-const tempValue = ref('');
+// 导航到对账页面相关
+const navigateToReconcile = (type, asset) => {
+  const data = {
+    ...asset,
+    recordAsProfit: type === 'INVESTMENT_RETURN'
+  };
+  uni.navigateTo({
+    url: `/pages/home/reconcile?data=${encodeURIComponent(JSON.stringify(data))}`
+  });
+};
 
-onLoad(async (options) => {
-  await fetchAccountData(options.id);
+// 计算总余额：根据assets数组求和
+const totalBalance = computed(() => {
+  return assets.value.reduce((sum, asset) => sum + (asset.totalBalance || 0), 0);
 });
+
+// 计算日收益：暂时默认为0，因为JSON数据中没有提供
+const dailyProfit = computed(() => 0);
 
 const fetchAccountData = async (id) => {
   const res = await getAccountById(id);
   accountInfo.value = res.account;
   assets.value = res.account.assets || [];
-  uni.setNavigationBarTitle({ title: accountInfo.value.name });
+  uni.setNavigationBarTitle({ title: accountInfo.value.name || '资产账户' });
 };
+
+onLoad(async (options) => {
+  await fetchAccountData(options.id);
+});
+
+// 页面显示时刷新数据（从子页面返回时触发）
+onShow(async () => {
+  if (accountInfo.value?.id) {
+    await fetchAccountData(accountInfo.value.id);
+  }
+});
 
 const onPullDownRefresh = async () => {
   isRefreshing.value = true;
@@ -129,46 +141,15 @@ const onPullDownRefresh = async () => {
   uni.vibrateShort();
 };
 
-const openModal = (type) => {
-  modalType.value = type;
-  modalTitle.value = type === 'ADJUSTMENT' ? '校准最新余额' : '录入盈亏金额';
-  // 校准时默认带入当前余额，收益默认置空
-  tempValue.value = type === 'ADJUSTMENT' ? accountInfo.value.balance.toString() : '';
-  inputPopup.value.open();
-};
+const formatMoney = (val) => formatCurrency(val === null || val === undefined ? 0 : val, '');
 
-// 核心逻辑：创建交易记录
-const submitTransaction = async (val) => {
-  const amountNum = parseFloat(val);
-  if (isNaN(amountNum)) return;
-
-  const transactionDTO = {
-    type: modalType.value,
-    targetAssetId: assets.value[0]?.id || accountInfo.value.id, // 优先绑定具体资产项
-    transTime: new Date().toISOString(),
-    description: modalType.value === 'ADJUSTMENT' ? '余额校准' : '手动录入投资收益'
-  };
-
-  if (modalType.value === 'ADJUSTMENT') {
-    transactionDTO.targetAmount = amountNum; // 传入目标金额
-    transactionDTO.amount = 0; // 校准通常 delta 由后端算，或者这里传 0
-  } else {
-    transactionDTO.amount = amountNum; // 收益金额
-  }
-
-  try {
-    await createTransaction(transactionDTO);
-    uni.showToast({ title: '记录已生成', icon: 'success' });
-    await fetchAccountData(accountInfo.value.id);
-  } catch (e) {
-    uni.showToast({ title: '操作失败', icon: 'none' });
-  }
-};
-
-const formatMoney = (val) => formatCurrency(val, '');
 const getReturnClass = (val) => (val > 0 ? 'text-gain' : (val < 0 ? 'text-loss' : 'text-main'));
 const toggleVisibility = () => { isAssetHidden.value = !isAssetHidden.value; uni.vibrateShort(); };
-const getAssetIcon = (asset) => '/static/images/default-asset.png'; // 占位
+const getAssetIcon = (asset) => {
+  const subCategories = configStore.getSubCategoriesByCode(asset.category);
+  const subCategory = subCategories.find(s => s.categoryCode === asset.subCategory);
+  return subCategory?.iconUrl || '/static/images/default-asset.png';
+};
 const handleEditAccount = () => uni.navigateTo({ url: `/pages/accounts/edit?id=${accountInfo.value.id}` });
 </script>
 
