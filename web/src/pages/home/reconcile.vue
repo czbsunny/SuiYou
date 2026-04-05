@@ -156,7 +156,7 @@ const executeReconcile = () => {
 
 /* 1. 资产展示 */
 .asset-info-section {
-  padding: $spacing-md $spacing-md 0;
+  padding: $spacing-sm $spacing-base;
   .asset-card {
     padding: 32rpx;
     .item-header {
@@ -215,8 +215,8 @@ const executeReconcile = () => {
 
 /* 3. 输入区 */
 .input-panel {
-  margin: 0 $spacing-md;
-  padding: 24rpx 32rpx;
+  margin: 0 $spacing-base;
+  padding: $spacing-base $spacing-md;
   .remark-box {
     display: flex;
     align-items: center;

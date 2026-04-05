@@ -248,7 +248,7 @@ const saveAndNext = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 30rpx $spacing-md;
+  margin: $spacing-sm $spacing-base;
   padding: 40rpx 32rpx;
   
   .account-row {
@@ -294,7 +294,7 @@ const saveAndNext = () => {
 
 .input-panel {
   flex-shrink: 0;
-  margin: 0 $spacing-md 20rpx;
+  margin: 0rpx $spacing-base $spacing-base;
   padding: 24rpx 32rpx;
   
   .info-row {

@@ -178,18 +178,17 @@ onMounted(() => fetchTransactions());
 }
 
 .section-title-row {
-  padding: $spacing-md $spacing-md $spacing-sm;
+  padding: $spacing-base $spacing-base $spacing-sm;
   .h2 { font-size: 32rpx; font-weight: $fw-bold; color: $text-main; }
 }
 
 .activity-list {
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-base;
 }
 
 .activity-item {
-  /* card-warm 已定义基础卡片样式 */
-  padding: 24rpx;
-  margin-bottom: 20rpx;
+  padding: $spacing-base;
+  margin-bottom: $spacing-sm;
   display: flex;
   align-items: center;
   transition: all 0.2s;

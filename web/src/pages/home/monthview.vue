@@ -129,8 +129,6 @@
       <view class="report-footer">
         <text>理财不是为了发财，而是为了生活得更从容。</text>
       </view>
-
-      <view class="safe-area-bottom" style="height: 40rpx;"></view>
     </scroll-view>
   </view>
 </template>
@@ -216,7 +214,7 @@ const getExpenseHeight = () => {
 
 .report-content {
   flex: 1;
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-base;
 }
 
 /* 2. 看板卡片 */
@@ -246,10 +244,10 @@ const getExpenseHeight = () => {
 
 /* 3. 收支流向卡片 */
 .cashflow-card {
-  padding: 32rpx;
+  padding-top: $spacing-lg;
   .bar-chart {
     display: flex; justify-content: space-around; align-items: flex-end;
-    height: 240rpx; padding-bottom: 32rpx; border-bottom: 1rpx solid $gray-50;
+    height: 240rpx; padding: $spacing-sm 0rpx; border-bottom: 1rpx solid $gray-50;
     .bar-wrapper {
       display: flex; flex-direction: column; align-items: center; gap: 12rpx;
       .bar-income { 
@@ -327,7 +325,7 @@ const getExpenseHeight = () => {
   }
 }
 
-.section-title { padding: 40rpx 0 20rpx 10rpx; font-size: 28rpx; font-weight: $fw-bold; color: $text-main; }
+.section-title { padding: $spacing-sm 0rpx; font-size: 28rpx; font-weight: $fw-bold; color: $text-main; }
 .report-footer { padding: 60rpx 40rpx 100rpx; text-align: center; text { font-size: 22rpx; color: $text-placeholder; } }
 
 .animate-fade-in { animation: fadeIn 0.8s ease-out; }

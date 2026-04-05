@@ -60,8 +60,8 @@ const togglePrivacy = () => {
 .card-label { font-size: 16px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 .privacy-toggle {
   cursor: pointer;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #f3f4f6;
   display: flex;

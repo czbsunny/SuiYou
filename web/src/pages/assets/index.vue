@@ -174,7 +174,7 @@ const handleManageAccount = () => {
 }
 
 .content-view {
-  padding: 0 32rpx;
-  margin-bottom: 40rpx;
+  padding: 0 $spacing-base;
+  margin-bottom: $spacing-md;
 }
 </style>

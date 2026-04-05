@@ -61,7 +61,7 @@ const handleAction = (action) => {
 
 <style lang="scss" scoped>
 .quick-actions-grid {
-  margin: 0 $spacing-md; 
+  margin: 0 $spacing-base; 
   display: grid; 
   grid-template-columns: repeat(4, 1fr); 
   gap: $spacing-base;

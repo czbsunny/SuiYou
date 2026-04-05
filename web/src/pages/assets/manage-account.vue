@@ -308,7 +308,7 @@ const formatAmount = (val) => Number(val).toLocaleString('zh-CN', { minimumFract
 
 <style lang="scss" scoped>
 .manage-container {
-	min-height: 100vh; background-color: #F9F8F4; padding: 30rpx 32rpx 240rpx;
+	min-height: 100vh; background-color: $bg-page; padding: $spacing-sm $spacing-base;
 }
 
 /* 🟢 核心排序容器：相对定位 */
@@ -348,7 +348,7 @@ const formatAmount = (val) => Number(val).toLocaleString('zh-CN', { minimumFract
 	&.bg-confirm { background-color: #34C759; }
 }
 
-.section { margin-bottom: 50rpx; }
+.section { margin-bottom: 0rpx; }
 .section-header {
 	margin-bottom: 24rpx; padding-left: 10rpx;
 	.title { font-size: 30rpx; font-weight: 800; color: #1F2937; }
