@@ -28,11 +28,6 @@
           :default-asset-name="defaultAssetName"
         />
 
-        <!-- 4. 动态表单 -->
-        <!-- <DynamicFormCard
-          v-model:dynamicFields="form.dynamicFields"
-          :category-code="subCategoryCode"
-        /> -->
       </view>
     </scroll-view>
     
@@ -202,7 +197,7 @@ const saveAsset = async () => {
   height: 0;
 }
 .content-container {
-  padding: 24rpx 32rpx;
+  padding: $spacing-sm $spacing-md;
 }
 
 .fixed-bottom {
@@ -210,8 +205,7 @@ const saveAsset = async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16px 24px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding: $spacing-sm $spacing-base;
   z-index: 100;
   background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }
@@ -222,7 +216,7 @@ const saveAsset = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: $text-inverse;
   font-size: 16px;
   font-weight: 600;
   box-shadow: 0 8px 24px rgba($primary, 0.3);

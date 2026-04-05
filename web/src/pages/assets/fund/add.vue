@@ -106,7 +106,6 @@
       <button class="btn-primary" @tap="finalSubmit">
         确认存入账户 (¥{{ totalAmount }})
       </button>
-      <view class="safe-area-bottom"></view>
     </view>
 
     <!-- 4. 自定义键盘 -->
@@ -275,20 +274,21 @@ const formatNumber = (val) => Number(val).toLocaleString();
 
 /* 录入卡片 */
 .input-card {
-  margin: $spacing-md; padding: $spacing-md;
+  margin: $spacing-md; 
+  padding: $spacing-sm $spacing-base;
   .card-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30rpx; }
   .card-title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
   .edit-mode-tag { font-size: 20rpx; color: $primary; background: $primary-subtle; padding: 6rpx 20rpx; border-radius: 20rpx; font-weight: $fw-medium; }
 }
 
 .field-item {
-  padding: 24rpx 0; border-bottom: 2rpx solid $border-color; transition: all 0.3s ease;
+  padding: $spacing-base 0; border-bottom: 2rpx solid $border-color; transition: all 0.3s ease;
   &.active { 
     border-bottom-color: $primary; 
     .field-label { color: $primary; }
     .value { color: $text-main; font-weight: $fw-bold; }
   }
-  .field-label { font-size: 22rpx; color: $text-placeholder; font-weight: $fw-medium; margin-bottom: 12rpx; display: block; }
+  .field-label { font-size: 24rpx; color: $text-placeholder; font-weight: $fw-medium; margin-bottom: 12rpx; display: block; }
 }
 
 .value-row {
@@ -328,7 +328,7 @@ const formatNumber = (val) => Number(val).toLocaleString();
 .list-scroll { height: 420rpx; }
 
 .staging-card {
-  background: $bg-white; border-radius: $radius-lg; padding: 30rpx; margin-bottom: $spacing-base;
+  background: $bg-white; border-radius: $radius-lg; padding: $spacing-md; margin-bottom: $spacing-base;
   display: flex; justify-content: space-between; align-items: center; box-shadow: $shadow-card;
   .s-fund-row { display: flex; align-items: center; margin-bottom: 12rpx; }
   .s-name { font-size: 26rpx; color: $text-main; font-weight: $fw-semibold; margin-right: 12rpx; }
@@ -343,7 +343,11 @@ const formatNumber = (val) => Number(val).toLocaleString();
 }
 
 /* 底部按钮 */
-.bottom-bar { padding: $spacing-md; background-color: $bg-white; box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.03); }
+.bottom-bar { 
+  padding: $spacing-md; 
+  background-color: $bg-white; 
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.03); 
+}
 
 .empty-hint { 
   @include flex-center; 

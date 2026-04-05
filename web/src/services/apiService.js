@@ -1,11 +1,28 @@
 import { useAuthStore } from '@/stores/auth.js'
 
 const BASE_URL = 'http://localhost:8080';
+const PROD_URL = 'https://www.zhitouying.cn';
 
 /**
  * 辅助函数：构建完整 URL
  */
 const buildUrl = (url, params) => {
+  // 对于 /api/fund/search 使用生产环境 URL
+  if (url === '/api/fund/search') {
+    let fullUrl = `${PROD_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    if (params && Object.keys(params).length > 0) {
+      const queryString = Object.entries(params)
+        .filter(([_, v]) => v !== undefined && v !== null)
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join('&');
+      if (queryString) {
+        fullUrl += (fullUrl.includes('?') ? '&' : '?') + queryString;
+      }
+    }
+    return fullUrl;
+  }
+  
+  // 其他 API 使用原有逻辑
   let fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
   if (params && Object.keys(params).length > 0) {
     const queryString = Object.entries(params)

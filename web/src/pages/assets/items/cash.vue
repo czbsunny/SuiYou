@@ -60,13 +60,15 @@ onLoad((options) => {
   if (options.data) {
     item = JSON.parse(decodeURIComponent(options.data));
     console.log('解析出的资产:', item);
-  }
 
-  if (item) {
-    balance.value = item.availableBalance || 0;
-  }
+    if (item.name) {
+      uni.setNavigationBarTitle({ title: item.name });
+    }
 
-  if (options.name) uni.setNavigationBarTitle({ title: options.name });
+    if (item) {
+      balance.value = item.availableBalance || 0;
+    }
+  }
 });
 
 const formatMoney = (val) => Number(val).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
