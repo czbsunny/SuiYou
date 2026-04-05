@@ -154,7 +154,7 @@ const displayDateTime = computed(() => {
 onLoad((options) => {
   uni.$on('acceptAccountFromSelector', (res) => {
     const instConfig = configStore.institutionMap[res.account.institution] || {};
-    res.account.logoUrl = instConfig.logoUrl || '/static/icons/default-bank.png';
+    res.account.logoUrl = instConfig.logoUrl;
     if (currentDirection.value === 'from') fromAccount.value = res.account;
     else toAccount.value = res.account;
     uni.vibrateShort();

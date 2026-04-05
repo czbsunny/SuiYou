@@ -46,7 +46,7 @@
       <view v-if="searchText" class="search-results">
         <view v-for="item in filteredList" :key="item.id" class="institution-item" @click="selectInstitution(item)">
           <view class="logo-wrapper">
-            <image :src="formatImageUrl(item.logoUrl) || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
+            <image :src="formatImageUrl(item.logoUrl) || ''" class="institution-logo" mode="aspectFit" />
           </view>
           <text class="institution-name">{{ item.instName }}</text>
         </view>
@@ -63,7 +63,7 @@
           <view class="group-title">{{ group.indexLetter === '热' ? '热门机构' : group.indexLetter }}</view>
           <view v-for="item in group.data" :key="item.id" class="institution-item" @click="selectInstitution(item)">
             <view class="logo-wrapper">
-              <image :src="formatImageUrl(item.logoUrl) || '/static/icons/default-bank.png'" class="institution-logo" mode="aspectFit" />
+              <image :src="formatImageUrl(item.logoUrl)" class="institution-logo" mode="aspectFit" />
             </view>
             <text class="institution-name">{{ item.instName }}</text>
           </view>

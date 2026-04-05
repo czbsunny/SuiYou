@@ -206,7 +206,11 @@ export default {
     toggleReturnMode() { this.showReturnRate = !this.showReturnRate; uni.vibrateShort(); },
     isUpdated(date) { return false; },
     formatNavDate(date) { return date ? date.substring(5, 10) : '--'; },
-    navigateToAdd() { uni.navigateTo({ url: '/pages/assets/fund/add' }); }
+    navigateToAdd() { 
+      uni.navigateTo({ 
+        url: `/pages/assets/fund/add?portfolioId=${this.portfolio.id}`
+      }); 
+    }
   }
 }
 </script>

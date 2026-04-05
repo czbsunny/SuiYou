@@ -137,7 +137,10 @@ const showKeyboard = ref(false);
 
 const form = ref({ symbol: '', name: '', type: '', amount: '', returnValue: '' });
 
-onLoad((options) => { portfolioId.value = options.portfolioId; });
+onLoad((options) => { 
+  portfolioId.value = options.portfolioId;
+  console.log('portfolioId:', portfolioId.value);
+});
 onMounted(() => { uni.$on('fund-selected', handleFundSelected); });
 onUnmounted(() => { uni.$off('fund-selected', handleFundSelected); });
 
@@ -285,7 +288,7 @@ const formatNumber = (val) => Number(val).toLocaleString();
   padding: $spacing-base 0; border-bottom: 2rpx solid $border-color; transition: all 0.3s ease;
   &.active { 
     border-bottom-color: $primary; 
-    .field-label { color: $primary; }
+    .field-label { font-size: 24rpx; color: $primary; }
     .value { color: $text-main; font-weight: $fw-bold; }
   }
   .field-label { font-size: 24rpx; color: $text-placeholder; font-weight: $fw-medium; margin-bottom: 12rpx; display: block; }

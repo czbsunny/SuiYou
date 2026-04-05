@@ -61,7 +61,7 @@ const accountFlatList = computed(() => {
         instCode: acc.institution,
         accountName: acc.accountName,
         identifier: acc.institutionIdentifier,
-        logoUrl: instConfig.logoUrl || '/static/icons/default-bank.png',
+        logoUrl: instConfig.logoUrl || '',
         
         bgColor: acc.themeColor || ASSET_INSTITUTION_DISPLAY[instType]?.color || '#4b5563',
         totalBalance: acc.totalBalance || subItems.reduce((sum, i) => sum + (Number(i.totalBalance) || 0), 0), 

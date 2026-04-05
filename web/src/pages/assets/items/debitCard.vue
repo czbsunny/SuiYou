@@ -8,7 +8,7 @@
           <!-- 头部：机构与设置 -->
           <view class="hero-header">
             <view class="inst-info">
-              <image :src="instInfo?.logoUrl || '/static/icons/default-bank.png'" class="inst-logo" mode="aspectFit" />
+              <image :src="instInfo?.logoUrl" class="inst-logo" mode="aspectFit" />
               <view class="name-box">
                 <text class="asset-name">{{ asset.name }}</text>
                 <text class="inst-identifier">{{ instInfo?.instName }} | {{ account?.institutionIdentifier || '****' }}</text>

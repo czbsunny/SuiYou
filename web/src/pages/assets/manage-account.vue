@@ -164,7 +164,7 @@ const loadData = async () => {
 		const processedAccounts = res.accounts.map(acc => ({
 			...acc,
 			instName: instMap[acc.institution]?.instName || '其他',
-			logoUrl: instMap[acc.institution]?.logoUrl || '/static/icons/default-bank.png'
+			logoUrl: instMap[acc.institution]?.logoUrl || ''
 		})).sort((a, b) => {
             return a.sortOrder - b.sortOrder;
         });

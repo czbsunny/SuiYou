@@ -30,7 +30,7 @@
         <!-- 左侧内容 -->
         <view class="card-left">
           <view class="logo-wrapper">
-            <image :src="acc.logoUrl || '/static/icons/default-bank.png'" mode="aspectFit" class="logo-img" />
+            <image :src="acc.logoUrl" mode="aspectFit" class="logo-img" />
           </view>
           <view class="info-content">
             <view class="name-row">

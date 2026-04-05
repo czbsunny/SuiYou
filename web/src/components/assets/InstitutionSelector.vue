@@ -67,7 +67,7 @@
           >
             <view class="logo-wrapper">
               <image 
-                :src="item.logoUrl || '/static/icons/default-bank.png'" 
+                :src="item.logoUrl" 
                 class="institution-logo" 
                 mode="aspectFit" 
               />
@@ -100,7 +100,7 @@
             >
               <view class="logo-wrapper">
                 <image 
-                  :src="item.logoUrl || '/static/icons/default-bank.png'" 
+                  :src="item.logoUrl" 
                   class="institution-logo" 
                   mode="aspectFit" 
                 />
