@@ -37,9 +37,9 @@ export const useAuthStore = defineStore('auth', {
             { skipAuth: true }
           );
 
-          const { token, userInfo } = res.data || {};
+          const { token, user } = res.data || {};
           if (token) {
-            this.setAuthData(token, userInfo);
+            this.setAuthData(token, user);
             return true;
           }
           return false;

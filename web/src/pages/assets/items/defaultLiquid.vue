@@ -91,8 +91,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getAssetById } from '../../../services/assetService.js';
-import { getAccountById } from '../../../services/accountService.js';
 
 const route = useRoute();
 const assetId = route.params.id;

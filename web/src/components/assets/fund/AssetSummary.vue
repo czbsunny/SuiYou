@@ -26,7 +26,7 @@
             </view>
           </view>
           
-          <!-- 右侧 预估收益 -->
+          <!-- 右侧 今日收益 -->
           <view class="right-section">
             <view class="label-group" @click="toggleReturnDisplay" hover-class="hover-opacity">
               <view class="profit-toggle">
@@ -36,7 +36,7 @@
                   class="switch-icon"
                 ></image>
               </view>
-              <text class="label-text">预估{{ showReturnRate ? '收益率' : '总收益' }}</text>
+              <text class="label-text">今日{{ showReturnRate ? '收益率' : '总收益' }}</text>
             </view>
             
             <view class="value-group">
