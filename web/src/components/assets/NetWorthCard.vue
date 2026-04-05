@@ -210,8 +210,8 @@ const lastPoint = computed(() => {
 
 <style lang="scss" scoped>
 .card-container {
-  margin: 0 32rpx 40rpx; // 页面边距 32rpx，卡片间距 40rpx
-  padding: 32rpx; // 对应 p-5
+  margin: $spacing-sm $spacing-base $spacing-base;
+  padding: $spacing-base;
   background-color: $bg-white;
   border-radius: 32rpx; // 对应 rounded-3xl
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.02);
@@ -225,7 +225,7 @@ const lastPoint = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24rpx; // 增加间距
+  margin-bottom: $spacing-base;
   position: relative;
   z-index: 10;
 }

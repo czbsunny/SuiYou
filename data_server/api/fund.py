@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 from sqlalchemy.orm import Session
-
 from sqlalchemy.sql import row_number
 from database.init_db import get_db
 from models.fund_nav_history import FundNavHistory

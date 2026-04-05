@@ -331,7 +331,7 @@ const saveTransaction = async (keepGoing = false) => {
 
 .category-main-wrapper {
   flex: 1;
-  margin: 20rpx $spacing-md;
+  margin: $spacing-sm $spacing-base;
   overflow: hidden;
   padding: 0;
   .category-scroll {
@@ -384,7 +384,7 @@ const saveTransaction = async (keepGoing = false) => {
 
 /* 输入面板 */
 .input-panel {
-  margin: 0 $spacing-md 20rpx;
+  margin: $spacing-sm $spacing-base $spacing-base;
   padding: 24rpx 32rpx;
   
   .info-row {

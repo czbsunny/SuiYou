@@ -43,10 +43,10 @@ const togglePrivacy = () => {
 </script>
 
 <style lang="scss" scoped>
-.hero-section { padding: $spacing-md; }
+.hero-section { padding: $spacing-base; }
 .net-worth-card {
   background: #ffffff;
-  border-radius: $radius-lg; padding: $spacing-md; color: #2C3E50; position: relative; overflow: hidden;
+  border-radius: $radius-lg; padding: $spacing-base; color: #2C3E50; position: relative; overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(0, 0, 0, 0.05);
 }

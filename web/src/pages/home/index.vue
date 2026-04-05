@@ -34,7 +34,7 @@ onReachBottom(() => {
 .page-container {
   min-height: 100vh;
   background-color: $bg-page;
-  padding-bottom: $spacing-xl;
+  padding-bottom: $spacing-lg;
   box-sizing: border-box;
 
   animation: pageSlideUp 0.5s cubic-bezier(0.25, 1, 0.5, 1);
