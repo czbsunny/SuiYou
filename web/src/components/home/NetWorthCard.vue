@@ -63,7 +63,7 @@ const togglePrivacy = () => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #f3f4f6;
+  background: $gray-200;
   display: flex;
   align-items: center;
   justify-content: center;
