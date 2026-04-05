@@ -55,15 +55,15 @@ const items = [
 
 <style lang="scss" scoped>
 .health-section { margin-bottom: 20px; }
-.section-header { padding: 0 24px; display: flex; justify-content: space-between; margin-bottom: 10px; }
+.section-header { padding: 0 $spacing-base; display: flex; justify-content: space-between; margin-bottom: 10px; }
 .title { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; }
 .subtitle { font-size: 10px; color: #d1d5db; }
 
 .grid-container {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 $spacing-base;
 }
 .grid-item {
-  background: white; padding: 14px; border-radius: 16px;
+  background: white; padding: $spacing-base; border-radius: $radius-base;
   box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f9fafb;
 }
 .item-top { display: flex; justify-content: space-between; margin-bottom: 8px; }

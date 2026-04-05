@@ -26,7 +26,7 @@ const isPrivacyOn = ref(false);
   min-height: 100vh;
   background-color: #FAF9F6;
   box-sizing: border-box;
-  padding-top: 20px;
+  padding-top: $spacing-sm;
 }
 
 .page-subtitle {
@@ -37,7 +37,7 @@ const isPrivacyOn = ref(false);
 /* 底部提示 */
 .footer-tip {
   text-align: center;
-  padding: 20px 0;
+  padding: $spacing-sm 0;
 }
 
 .tip-text {

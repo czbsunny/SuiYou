@@ -66,7 +66,7 @@ const loanColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color;
 }
 
 .section-header {
-  padding: 0 24px;
+  padding: 0 $spacing-base;
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
@@ -80,10 +80,10 @@ const loanColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color;
 }
 
 .section-card {
-  margin: 0 16px;
+  margin: 0 $spacing-base;
   background: #FFFFFF;
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: $radius-base;
+  padding: $spacing-base;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 

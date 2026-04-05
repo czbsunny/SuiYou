@@ -238,14 +238,14 @@ const lastPoint = computed(() => {
 }
 
 .label-text {
-  font-size: 24rpx;
+  font-size: 32rpx;
   color: $text-muted;
 }
 
 .status-badge {
   background-color: rgba($green, 0.1);
   color: $green;
-  font-size: 20rpx;
+  font-size: 28rpx;
   padding: 4rpx 10rpx;
   border-radius: 8rpx;
   font-weight: 700;

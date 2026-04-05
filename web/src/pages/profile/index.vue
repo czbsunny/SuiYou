@@ -69,10 +69,10 @@ const handleReportClick = () => {
 .user-card {
   display: flex;
   align-items: center;
-  padding: 40rpx $spacing-md;
+  padding: $spacing-lg $spacing-md;
   background-color: $bg-white;
   border-radius: $radius-lg;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
   box-shadow: $shadow-card;
   transition: all 0.2s ease;
   position: relative;
