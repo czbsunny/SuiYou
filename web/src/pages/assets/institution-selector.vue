@@ -4,7 +4,7 @@
     <view class="header-sticky">
       <view class="search-section">
         <view class="search-bar">
-          <uni-icons type="search" size="18" color="#999"></uni-icons>
+          <image src="/static/images/search.png" class="search-icon"></image>
           <input type="text" v-model="searchText" placeholder="搜索机构名称" class="search-input" />
           <uni-icons v-if="searchText" type="closeempty" size="18" color="#ccc" @tap="searchText = ''"></uni-icons>
         </view>
@@ -230,11 +230,17 @@ const selectInstitution = (institution) => {
   box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
 }
 
-.search-section { padding: 24rpx 32rpx 16rpx; }
+.search-section { padding: $spacing-sm $spacing-base; }
 .search-bar { 
   display: flex; align-items: center; background-color: #f3f4f6; 
   padding: 0 24rpx; border-radius: 40rpx; height: 84rpx; 
-  .search-input { flex: 1; margin-left: 16rpx; font-size: 28rpx; color: #1e293b; }
+  .search-icon {
+    width: 40rpx;
+    height: 40rpx;
+    margin-right: 16rpx;
+    opacity: 0.3;
+  }
+  .search-input { flex: 1; font-size: 28rpx; color: #1e293b; }
 }
 
 /* 🟢 彻底修复文字垂直问题的 CSS 方案 */
@@ -253,7 +259,7 @@ const selectInstitution = (institution) => {
   .tabs-content { 
     /* 核心 2：使用 flex 且不限制宽度 */
     display: inline-flex; 
-    padding: 0 32rpx;
+    padding: 0 24rpx;
     height: 96rpx;
     align-items: center;
   }
@@ -308,9 +314,13 @@ const selectInstitution = (institution) => {
 /* 其他列表样式... */
 .list-scroll { flex: 1; overflow: hidden; }
 
+.group-block {
+  padding: 0 $spacing-base;
+}
+
 .group-title {
   /* 标题也增加右侧留白 */
-  padding: 16rpx 60rpx 16rpx 32rpx; 
+  padding: $spacing-sm $spacing-base; 
   font-size: 22rpx; 
   font-weight: 800; 
   color: #94a3b8; 
@@ -320,8 +330,8 @@ const selectInstitution = (institution) => {
 }
 
 .institution-item {
-  /* 增加右侧 padding，防止文字被字母栏挡住 */
-  padding: 32rpx 60rpx 32rpx 32rpx; 
+  padding: $spacing-sm $spacing-base;
+  border-radius: $radius-base;
   display: flex; 
   align-items: center; 
   background-color: #fff; 

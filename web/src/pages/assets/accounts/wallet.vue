@@ -123,10 +123,12 @@ const handleAction = (type) => {
 }
 
 /* 1. 总览卡片 */
-.summary-section { padding: $spacing-md $spacing-md 0; }
+.summary-section { 
+  padding: $spacing-sm $spacing-base; 
+}
 
 .asset-card {
-  padding: 48rpx 40rpx;
+  padding: $spacing-base;
   
   .brand-info {
     display: flex; align-items: center; gap: 20rpx; margin-bottom: 32rpx;
@@ -172,7 +174,7 @@ const handleAction = (type) => {
 
 /* 3. 现金列表 */
 .items-section {
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-base;
   .section-header { margin-bottom: $spacing-base; .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; } }
 }
 

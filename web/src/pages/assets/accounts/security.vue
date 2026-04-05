@@ -227,11 +227,11 @@ const handleAction = (btn) => {
 
 /* 1. 资产卡片 */
 .summary-section {
-  padding: $spacing-md $spacing-md 0;
+  padding: $spacing-sm $spacing-base;
 }
 
 .asset-card {
-  padding: 40rpx;
+  padding: $spacing-base;
 
   .brand-box {
     display: flex;

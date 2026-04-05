@@ -172,11 +172,11 @@ const navToItemDetail = (item) => {
 }
 
 .summary-section {
-  padding: $spacing-md $spacing-md 0;
+  padding: $spacing-sm $spacing-base;
 }
 
 .summary-card {
-  padding: 40rpx;
+  padding: $spacing-base;
   
   .header-row {
     display: flex;
@@ -266,7 +266,7 @@ const navToItemDetail = (item) => {
 
 /* 资产列表部分 (保持原有逻辑) */
 .items-section {
-  padding: 0 $spacing-md;
+  padding: 0 $spacing-base;
   .section-header {
     margin-bottom: $spacing-base;
     .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }

@@ -143,7 +143,7 @@ onMounted(() => {
 
 // 分类列表
 .category-list {
-  padding: 20rpx; // 10px = 20rpx
+  padding: $spacing-sm $spacing-base;
 }
 
 // 资产大类块

@@ -67,7 +67,7 @@ const togglePrivacy = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background 0.1s;
 }
 .privacy-toggle:hover {
   background: #e5e7eb;

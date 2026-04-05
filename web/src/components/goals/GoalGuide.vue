@@ -78,8 +78,6 @@
           </view>
           <image src="/static/images/plus-gray.png" mode="aspectFit" class="plus-icon" />
         </view>
-        
-        <view class="safe-bottom"></view>
       </view>
     </view>
   </view>
@@ -127,11 +125,11 @@ const formatMoney = (val) => Number(val).toLocaleString();
 
 /* 头部动态区域：增加 Step 2 时的紧凑感 */
 .header-area {
-  padding: 60rpx 48rpx 40rpx;
+  padding: $spacing-md $spacing-base 40rpx;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   
   &.header-step2 {
-    padding: 60rpx 48rpx 20rpx;
+    padding: $spacing-md $spacing-base 20rpx;
   }
 }
 
@@ -145,8 +143,8 @@ const formatMoney = (val) => Number(val).toLocaleString();
   display: flex;
   align-items: center;
   background: #ffffff;
-  padding: 32rpx;
-  border-radius: 40rpx;
+  padding: $spacing-base;
+  border-radius: $radius-base;
   box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.04);
   border: 1rpx solid rgba(255,255,255,0.8);
   /* 增加动画效果 */
@@ -183,7 +181,7 @@ const formatMoney = (val) => Number(val).toLocaleString();
 
 .step-panel {
   width: 50%;
-  padding: 20rpx 48rpx 100rpx;
+  padding: $spacing-sm $spacing-base 100rpx;
   box-sizing: border-box;
 }
 
@@ -196,9 +194,9 @@ const formatMoney = (val) => Number(val).toLocaleString();
 /* 卡片样式基础 */
 .goal-card {
   background: #ffffff;
-  border-radius: 40rpx;
-  padding: 32rpx;
-  margin-bottom: 24rpx;
+  border-radius: $radius-base;
+  padding: $spacing-md $spacing-base;
+  margin-bottom: $spacing-base;
   display: flex;
   align-items: center;
   box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.02);
@@ -241,7 +239,7 @@ const formatMoney = (val) => Number(val).toLocaleString();
   padding: 4rpx 12rpx; border-radius: 8rpx; margin-left: 12rpx;
   vertical-align: middle;
 }
-.plus-icon { width: 32rpx; height: 32rpx; opacity: 0.2; }
+.plus-icon { width: 32rpx; height: 32rpx; opacity: 0.5; }
 
 /* 纯 CSS 箭头 */
 .arrow-right {

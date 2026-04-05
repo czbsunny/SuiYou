@@ -61,7 +61,7 @@ const handleReportClick = () => {
 
 <style lang="scss" scoped>
 .profile-container {
-  padding: $spacing-md $spacing-base;
+  padding: $spacing-sm $spacing-base;
   min-height: 100vh;
   background-color: $bg-page;
 }

@@ -2,7 +2,6 @@
   <view class="add-asset-page">
     <scroll-view scroll-y class="content-scroll">
       <view class="content-container">
-        
         <!-- 1. 顶部上下文：展示已选分类和机构，允许返回重选 -->
         <AssetContextCard 
           :category-name="categoryName"
@@ -197,7 +196,7 @@ const saveAsset = async () => {
   height: 0;
 }
 .content-container {
-  padding: $spacing-sm $spacing-md;
+  padding: $spacing-sm $spacing-base;
 }
 
 .fixed-bottom {
@@ -205,7 +204,7 @@ const saveAsset = async () => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: $spacing-sm $spacing-base;
+  padding: $spacing-md $spacing-base;
   z-index: 100;
   background: linear-gradient(to top, rgba($bg-page, 1) 70%, rgba($bg-page, 0) 100%);
 }

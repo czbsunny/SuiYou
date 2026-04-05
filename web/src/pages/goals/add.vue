@@ -197,23 +197,23 @@ const handleSave = async () => {
 .add-goal-container {
   min-height: 100vh;
   background-color: #F9F8F4;
-  padding: 30rpx;
+  padding: $spacing-sm $spacing-base;
 }
 
 /* 顶部金额卡片 */
 .amount-card {
-  border-radius: 40rpx;
-  padding: 50rpx 40rpx;
-  margin-bottom: 40rpx;
+  border-radius: $radius-base;
+  padding: $spacing-md $spacing-base;
+  margin-bottom: $spacing-base;
   color: #fff;
   box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.05);
   transition: all 0.3s ease;
   background-color: $primary;
   
   .label {
-    font-size: 24rpx;
+    font-size: 32rpx;
     opacity: 0.8;
-    margin-bottom: 20rpx;
+    margin-bottom: $spacing-md;
     display: block;
   }
 
@@ -235,9 +235,9 @@ const handleSave = async () => {
 /* 表单组 */
 .form-group {
   background-color: #fff;
-  border-radius: 32rpx;
-  padding: 0 30rpx;
-  margin-bottom: 30rpx;
+  border-radius: $radius-base;
+  padding: 0 $spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .form-item {
@@ -262,7 +262,7 @@ const handleSave = async () => {
     .selected-icon-img {
       width: 60rpx;
       height: 60rpx;
-      border-radius: 12rpx;
+      border-radius: $radius-base;
     }
     .selected-icon-emoji { font-size: 44rpx; }
     .placeholder { color: #ccc; font-size: 28rpx; }
@@ -277,21 +277,20 @@ const handleSave = async () => {
   display: flex; align-items: flex-end;
 }
 .icon-picker-content {
-  width: 100%; background-color: #fff; border-radius: 40rpx 40rpx 0 0;
+  width: 100%; background-color: #fff; border-radius: $radius-lg $radius-lg 0 0;
   padding: 40rpx; padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
   .picker-header { font-size: 30rpx; font-weight: bold; margin-bottom: 40rpx; text-align: center; }
   .icon-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30rpx; }
   .emoji-item {
     height: 100rpx; display: flex; align-items: center; justify-content: center;
-    font-size: 50rpx; background-color: #f8fafc; border-radius: 24rpx;
+    font-size: 50rpx; background-color: #f8fafc; border-radius: $radius-base;
     &.active { border: 4rpx solid $primary; background-color: #eefdf5; }
   }
 }
 
 .footer-btn-box {
-  padding: 40rpx 20rpx;
   .save-btn {
-    color: #fff; height: 100rpx; line-height: 100rpx; border-radius: 50rpx; background-color: $primary;
+    color: #fff; height: 100rpx; line-height: 100rpx; border-radius: $radius-base; background-color: $primary;
     font-size: 32rpx; font-weight: bold; box-shadow: 0 10rpx 20rpx rgba(0,0,0,0.1);
     &:active { transform: scale(0.98); }
   }
