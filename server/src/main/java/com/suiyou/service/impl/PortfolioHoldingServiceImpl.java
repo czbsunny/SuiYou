@@ -2,7 +2,7 @@ package com.suiyou.service.impl;
 
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.UpdatePortfolioHoldingsDTO;
+import com.suiyou.dto.portfolio.CreatePortfolioHoldingsDTO;
 import com.suiyou.model.Portfolio;
 import com.suiyou.model.PortfolioHolding;
 import com.suiyou.repository.PortfolioHoldingRepository;
@@ -76,8 +76,8 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
 
     @Override
     @Transactional
-    public void updatePortfolioHoldings(Long portfolioId, UpdatePortfolioHoldingsDTO updatePortfolioHoldingsDTO) {
-        List<CreatePortfolioHoldingDTO> holdings = updatePortfolioHoldingsDTO.getHoldings();
+    public void createPortfolioHoldings(Long portfolioId, CreatePortfolioHoldingsDTO createPortfolioHoldingsDTO) {
+        List<CreatePortfolioHoldingDTO> holdings = createPortfolioHoldingsDTO.getHoldings();
         for (CreatePortfolioHoldingDTO holdingDTO : holdings) {
             createPortfolioHolding(holdingDTO, portfolioId);
         }
