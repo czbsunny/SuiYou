@@ -33,7 +33,9 @@ public enum TransactionType {
     REPAY("还债/还款"),   
 
     // ============ 5. 系统维护 ============
-    ADJUSTMENT("余额校准"); // 盘点、汇率波动修正
+    ADJUSTMENT("余额校准"), // 盘点、汇率波动修正
+    
+    INVESTMENT_RETURN("投资收益"); // 基金、股票等投资返回
 
     private final String desc;
 }

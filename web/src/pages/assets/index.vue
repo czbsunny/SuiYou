@@ -148,7 +148,7 @@ const handleAccountClick = (account) => {
       pagePath = `/pages/assets/accounts/security?id=${account.id}`;
       break;
     default:
-      pagePath = `/pages/assets/account-detail?id=${account.id}`;
+      pagePath = `/pages/assets/accounts/default?id=${account.id}`;
       break;
   }
   

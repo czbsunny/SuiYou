@@ -335,6 +335,15 @@
             "navigationBarTitleText": "证券账户",
             "backgroundColor": "#F9F8F4"
           }
+        },
+        {
+          "path": "default",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "常规资产",
+            "backgroundColor": "#F9F8F4"
+          }
         }
       ]
     },
