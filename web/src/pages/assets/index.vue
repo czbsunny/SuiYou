@@ -3,11 +3,6 @@
     <!-- 1. 顶部净值总览卡片 (由 assets 计算结果驱动) -->
     <NetWorthCard :currentNetWorth="currentNetWorth" :netWorthHistory="netWorthHistory" />
 
-    <!-- 2. 加载状态：仅在初次进入且无缓存数据时显示 -->
-    <view v-if="loading && !allAccounts.length" class="loading-container">
-      <uni-load-more status="loading" />
-    </view>
-
     <!-- 3. 核心内容区：唯一的机构/卡包视图 -->
     <view class="content-view">
       <AccountListView 
@@ -48,7 +43,6 @@ const accountFlatList = computed(() => {
   }
 
   const instMap = configStore.institutionMap;
-  console.log('[DEBUG] accountFlatList 计算 - instMap:', allAccounts.value);
   return allAccounts.value
     .filter(acc => acc.status === 1)
     .map(acc => {
@@ -201,10 +195,6 @@ const handleManageAccount = () => {
   min-height: 100vh;
   background-color: $bg-page;
   padding-bottom: 80rpx;
-}
-
-.loading-container {
-  padding: 100rpx 32rpx;
 }
 
 .content-view {
