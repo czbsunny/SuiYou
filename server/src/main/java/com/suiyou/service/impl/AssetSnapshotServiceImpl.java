@@ -46,7 +46,7 @@ public class AssetSnapshotServiceImpl implements AssetSnapshotService {
         
         // 计算汇总数值
         BigDecimal totalAssets = calculateTotalAssets(assetGroupBalances);
-        BigDecimal totalLiabilities = assetGroupBalances.getOrDefault("LIABILITY", BigDecimal.ZERO);
+        BigDecimal totalLiabilities = assetGroupBalances.getOrDefault("LOAN", BigDecimal.ZERO);
         BigDecimal netWorth = totalAssets.subtract(totalLiabilities);
         
         if (existingSnapshot != null) {
@@ -109,15 +109,30 @@ public class AssetSnapshotServiceImpl implements AssetSnapshotService {
      * 按资产大类计算资产金额
      */
     private Map<String, BigDecimal> calculateAssetGroupBalances(List<Asset> assets) {
-        return assets.stream()
+        Map<String, BigDecimal> balances = new HashMap<>();
+        
+        // 初始化各类资产的余额为0
+        balances.put("LIQUID", BigDecimal.ZERO);
+        balances.put("INVEST", BigDecimal.ZERO);
+        balances.put("FIXED", BigDecimal.ZERO);
+        balances.put("OTHER_ASSET", BigDecimal.ZERO);
+        balances.put("LOAN", BigDecimal.ZERO);
+        
+        // 按category字段计算各类资产金额
+        Map<String, BigDecimal> categoryBalances = assets.stream()
                 .collect(Collectors.groupingBy(
-                    Asset::getGroupType,
+                    Asset::getCategory,
                     Collectors.reducing(
                         BigDecimal.ZERO,
                         Asset::getTotalBalance,
                         BigDecimal::add
                     )
                 ));
+        
+        // 将category余额合并到结果map中
+        balances.putAll(categoryBalances);
+        
+        return balances;
     }
     
     /**
@@ -125,7 +140,7 @@ public class AssetSnapshotServiceImpl implements AssetSnapshotService {
      */
     private BigDecimal calculateTotalAssets(Map<String, BigDecimal> assetGroupBalances) {
         return assetGroupBalances.entrySet().stream()
-                .filter(entry -> !"LIABILITY".equals(entry.getKey()))
+                .filter(entry -> !"LOAN".equals(entry.getKey()))
                 .map(Map.Entry::getValue)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
