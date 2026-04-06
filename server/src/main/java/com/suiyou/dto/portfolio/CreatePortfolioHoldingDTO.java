@@ -15,11 +15,8 @@ public class CreatePortfolioHoldingDTO {
     @Size(max = 100, message = "资产名称不能超过100个字符")
     private String name;
     
-    @NotNull(message = "持有数量不能为空")
-    @Positive(message = "持有数量必须大于0")
     private Double quantity;
     
-    @NotNull(message = "单位成本不能为空")
     private Double cost;
     
     private Double amount;
