@@ -256,7 +256,13 @@ const handleRemove = (index) => { stagingList.value.splice(index, 1); };
 const finalSubmit = async () => {
   uni.showLoading({ title: '存入中...', mask: true });
   try {
-    await createPortfolioHoldings(portfolioId.value, stagingList.value);
+    const holdingsData = stagingList.value.map(item => ({
+      symbol: item.symbol,
+      name: item.name,
+      amount: parseFloat(item.amount || '0.00') || 0,
+      returnValue: parseFloat(item.returnValue || '0.00') || 0
+    }));
+    await createPortfolioHoldings(portfolioId.value, holdingsData);
     uni.showToast({ title: '存入成功' });
     uni.$emit('refreshHoldings', portfolioId.value);
     setTimeout(() => uni.navigateBack(), 1200);
