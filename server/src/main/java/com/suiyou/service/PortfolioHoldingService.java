@@ -2,7 +2,6 @@ package com.suiyou.service;
 
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.CreatePortfolioHoldingsDTO;
 import com.suiyou.model.PortfolioHolding;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,7 @@ public interface PortfolioHoldingService {
      * @param createPortfolioHoldingsDTO 持仓添加DTO
      * @return 操作结果
      */
-    void createPortfolioHoldings(Long id, CreatePortfolioHoldingsDTO createPortfolioHoldingsDTO);
+    void createPortfolioHoldings(Long id, List<CreatePortfolioHoldingDTO> createPortfolioHoldingsDTO);
 
     /**
      * 删除持仓
