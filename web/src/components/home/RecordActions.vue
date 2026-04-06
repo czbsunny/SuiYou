@@ -26,7 +26,7 @@ const handleRecordAction = () => {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: $spacing-xs;
+  gap: $spacing-sm;
   background-color: $primary;
   color: $text-inverse;
   border: none;
