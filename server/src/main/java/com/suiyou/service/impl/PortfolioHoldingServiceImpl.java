@@ -2,7 +2,6 @@ package com.suiyou.service.impl;
 
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.CreatePortfolioHoldingsDTO;
 import com.suiyou.model.Portfolio;
 import com.suiyou.model.PortfolioHolding;
 import com.suiyou.model.enums.PortfolioType;
@@ -85,11 +84,11 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
 
     @Override
     @Transactional
-    public void createPortfolioHoldings(Long portfolioId, CreatePortfolioHoldingsDTO createPortfolioHoldingsDTO) {
+    public void createPortfolioHoldings(Long portfolioId, List<CreatePortfolioHoldingDTO> createPortfolioHoldingsDTO) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
 
-        List<String> symbols = createPortfolioHoldingsDTO.getHoldings().stream()
+        List<String> symbols = createPortfolioHoldingsDTO.stream()
             .map(CreatePortfolioHoldingDTO::getSymbol)
             .collect(Collectors.toList());
 
@@ -100,7 +99,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
             navs.putAll(dataServerClient.getStockLatestNavs(symbols));
         }
         
-        List<PortfolioHolding> entities = createPortfolioHoldingsDTO.getHoldings().stream()
+        List<PortfolioHolding> entities = createPortfolioHoldingsDTO.stream()
             .map(dto -> convertToEntity(dto, portfolio, navs))
             .collect(Collectors.toList());
 

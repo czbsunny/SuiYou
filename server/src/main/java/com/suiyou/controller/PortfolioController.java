@@ -3,7 +3,7 @@ package com.suiyou.controller;
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
-import com.suiyou.dto.portfolio.CreatePortfolioHoldingsDTO;
+import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.service.PortfolioService;
 import com.suiyou.service.PortfolioHoldingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +108,7 @@ public class PortfolioController {
     }
 
     @PostMapping("/{id}/holdings")
-    public ResponseEntity<?> createPortfolioHoldings(@PathVariable Long id, @RequestBody CreatePortfolioHoldingsDTO createPortfolioHoldingsDTO) {
+    public ResponseEntity<?> createPortfolioHoldings(@PathVariable Long id, @RequestBody List<CreatePortfolioHoldingDTO> createPortfolioHoldingsDTO) {
         try {
             portfolioHoldingService.createPortfolioHoldings(id, createPortfolioHoldingsDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
