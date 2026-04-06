@@ -7,9 +7,9 @@
           <view class="item-icon-rect">
             <image :src="selectedAccount?.selectedAsset?.iconUrl || '/static/images/account.png'" class="item-icon" mode="aspectFit" />
           </view>
-          <view class="item-title">
-            <text class="name">{{ selectedAccount?.selectedAsset?.name || '未知资产' }}</text>
-            <text class="account" :class="{ 'disabled': isLocked }" @click="showAccountPicker">
+          <view class="item-title" :class="{ 'disabled': isLocked }" @click="showAccountPicker">
+            <text class="name">{{ selectedAccount?.selectedAsset?.name || '未选资产' }}</text>
+            <text class="account">
               {{ selectedAccount?.accountName || '点击选择账户' }}
             </text>
           </view>
@@ -139,6 +139,7 @@ onLoad((options) => {
           isLocked.value = true; // 锁定账户选择
         }
     } 
+    console.log("selectedAccount", selectedAccount.value)
     if (data.recordAsProfit !== undefined) {
       recordAsProfit.value = data.recordAsProfit;
     }

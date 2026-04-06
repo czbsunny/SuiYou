@@ -120,7 +120,12 @@ onLoad(async (options) => {
     const id = options.id;
     const res = await getAccountById(id);
     if (res && res.account) {
-      accountInfo.value = res.account;
+      const instInfo = configStore.getInstitutionByCode(res.account.institution);
+      accountInfo.value = {
+        ...res.account,
+        accountName: res.account.accountName || instInfo.instName +'('+res.account.institutionIdentifier +')',
+        logoUrl: instInfo.logoUrl,
+      };
       assets.value = accountInfo.value.assets || [];
     }
     console.log(accountInfo.value.institution);

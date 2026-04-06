@@ -60,7 +60,6 @@
           </view>
         </view>
       </view>
-      <view class="safe-area-spacer"></view>
     </scroll-view>
 
     <!-- 2. 底部确认区 -->
@@ -113,7 +112,7 @@ const loadAccounts = async (initAccId, initAssetId, assignAccountId) => {
     if (assignAccountId) {
       res.accounts = res.accounts.filter(a => a.id === assignAccountId);
     }
-    
+
     const processed = res.accounts
       .filter(a => a.assets?.length > 0 && a.assets.some(asset => asset.category === 'LIQUID'))
       .map(a => {
@@ -264,7 +263,7 @@ const confirmSelection = () => {
 /* 底部操作区 */
 .footer-action {
   background-color: $bg-white;
-  padding: 32rpx $spacing-md calc($spacing-md + env(safe-area-inset-bottom));
+  padding: $spacing-sm $spacing-base;
   border-top-left-radius: $radius-lg;
   border-top-right-radius: $radius-lg;
   box-shadow: 0 -12rpx 32rpx rgba(50, 46, 43, 0.06);

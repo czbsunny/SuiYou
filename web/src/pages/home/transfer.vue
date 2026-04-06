@@ -16,6 +16,9 @@
           <text class="account-name" :class="{ 'placeholder': !fromAccount }">
             {{ fromAccount?.accountName || '请选择转出账户' }}
           </text>
+          <text v-if="fromAccount?.selectedAsset" class="asset-name">
+            {{ fromAccount.selectedAsset.name }}
+          </text>
         </view>
         <uni-icons v-if="!isFromLocked" type="right" size="16" color="#ccd4d2"></uni-icons>
         <uni-icons v-else type="lock" size="14" color="#d1d5db"></uni-icons>
@@ -39,6 +42,9 @@
           <text class="direction-label">至（转入账户）</text>
           <text class="account-name" :class="{ 'placeholder': !toAccount }">
             {{ toAccount?.accountName || '请选择转入账户' }}
+          </text>
+          <text v-if="toAccount?.selectedAsset" class="asset-name">
+            {{ toAccount.selectedAsset.name }}
           </text>
         </view>
         <uni-icons v-if="!isToLocked" type="right" size="16" color="#ccd4d2"></uni-icons>
@@ -128,6 +134,7 @@ const amount = ref('');
 const feeAmount = ref('');
 const remark = ref('');
 const showFeeInput = ref(false);
+const assignAccountId = ref(null);
 
 const formatNow = () => {
   const now = new Date();
@@ -153,20 +160,45 @@ const displayDateTime = computed(() => {
 
 onLoad((options) => {
   uni.$on('acceptAccountFromSelector', (res) => {
-    const instConfig = configStore.institutionMap[res.account.institution] || {};
-    res.account.logoUrl = instConfig.logoUrl;
-    if (currentDirection.value === 'from') fromAccount.value = res.account;
-    else toAccount.value = res.account;
+    const accountWithAsset = {
+      ...res.account,
+      selectedAsset: res.asset
+    };
+    if (currentDirection.value === 'from') fromAccount.value = accountWithAsset;
+    else toAccount.value = accountWithAsset;
     uni.vibrateShort();
   });
 
-  if (options.fromAccount) {
-    fromAccount.value = JSON.parse(decodeURIComponent(options.fromAccount));
-    isFromLocked.value = true;
+  if (options.data) {
+    const data = JSON.parse(decodeURIComponent(options.data));
+    if (data.account) {
+      assignAccountId.value = data.account.id;
+      fromAccount.value = {
+        ...data.account,
+        selectedAsset: null
+      };
+      if (data.assetId) {
+        const asset = data.account.assets?.find(a => a.id === data.assetId);
+        if (asset) {
+          fromAccount.value.selectedAsset = asset;
+          isFromLocked.value = true; 
+        }
+      }
+    }
   }
   if (options.toAccount) {
-    toAccount.value = JSON.parse(decodeURIComponent(options.toAccount));
+    const toAccountData = JSON.parse(decodeURIComponent(options.toAccount));
+    toAccount.value = {
+      ...toAccountData,
+      selectedAsset: null
+    };
     isToLocked.value = true;
+    if (options.toAssetId && toAccountData.assets) {
+      const asset = toAccountData.assets.find(a => a.id === options.toAssetId);
+      if (asset) {
+        toAccount.value.selectedAsset = asset;
+      }
+    }
   }
 });
 
@@ -175,9 +207,18 @@ onUnmounted(() => {
 });
 
 const handleSelect = (direction) => {
+  const selectedAccount = direction === 'from' ? fromAccount : toAccount;
+  const accountId = direction === 'from' ? assignAccountId.value : null
   currentDirection.value = direction;
+    const payload = {
+    canSetDefault: true,
+    initAccountId: selectedAccount.value?.id,
+    initAssetId: selectedAccount.value?.selectedAsset?.id,
+    assignAccountId: accountId
+  }
+  const data = encodeURIComponent(JSON.stringify(payload));
   uni.navigateTo({
-    url: '/pages/assets/account-selector'
+      url: `/pages/assets/account-selector?data=${data}`
   });
 };
 
@@ -206,17 +247,27 @@ const toggleFeeInput = () => {
 };
 
 const save = () => {
-  if (!fromAccount.value || !toAccount.value) return uni.showToast({ title: '请选择账户', icon: 'none' });
-  if (fromAccount.value.id === toAccount.value.id) return uni.showToast({ title: '账户不能相同', icon: 'none' });
-  if (!amount.value || parseFloat(amount.value) <= 0) return uni.showToast({ title: '请输入金额', icon: 'none' });
+  if (!fromAccount.value)
+    return uni.showToast({ title: '请选择转出账户', icon: 'none' });
+  if (!toAccount.value) 
+    return uni.showToast({ title: '请选择转入账户', icon: 'none' });
+  if (!fromAccount.value.selectedAsset)
+    return uni.showToast({ title: '请选择转出资产', icon: 'none' });
+  if (!toAccount.value.selectedAsset) 
+    return uni.showToast({ title: '请选择转入资产', icon: 'none' });
+  
+  if (fromAccount.value.id === toAccount.value.id)
+    return uni.showToast({ title: '账户不能相同', icon: 'none' });
+  if (!amount.value || parseFloat(amount.value) <= 0)
+    return uni.showToast({ title: '请输入金额', icon: 'none' });
   
   const payload = {
     type: 'TRANSFER',
     amount: parseFloat(amount.value),
     fee: parseFloat(feeAmount.value || 0),
     transTime: datetime.value.replace(' ', 'T'),
-    sourceAssetId: fromAccount.value.id,
-    targetAssetId: toAccount.value.id,
+    sourceAssetId: fromAccount.value.selectedAsset.id,
+    targetAssetId: toAccount.value.selectedAsset.id,
     description: remark.value
   };
   console.log('提交转账:', payload);
@@ -279,6 +330,9 @@ const save = () => {
       .account-name { 
         font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; 
         &.placeholder { color: $text-placeholder; font-weight: $fw-regular; }
+      }
+      .asset-name { 
+        font-size: 22rpx; color: $text-sub; margin-top: 4rpx; display: block;
       }
     }
   }
