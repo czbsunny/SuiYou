@@ -164,7 +164,7 @@ import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getPortfolios, getPortfolioSummary } from '../../services/portfolioService';
 import { RiskLevel, RISK_TEMPLATES } from '../../constants';
-import { formatCurrency, formatNumber, formatPercent } from '../../services/formatUtil';
+import { formatCurrency, formatNumber, formatPercent } from '@/services/formatUtil';
 
 const portfolios = ref([]);
 

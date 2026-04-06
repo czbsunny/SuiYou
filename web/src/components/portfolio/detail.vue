@@ -152,7 +152,7 @@
 <script setup>
 import { ref } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
-import { formatCurrency, formatNumber, formatPercent } from '../../services/formatUtil';
+import { formatCurrency, formatNumber, formatPercent } from '@/services/formatUtil';
 // 引入你的 API 服务
 import {  getPortfolioHoldings } from '@/services/portfolioService.js';
 
