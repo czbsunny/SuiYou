@@ -4,8 +4,9 @@
     <NetWorthCard ref="netWorthRef" v-model:isPrivacyOn="isPrivacyOn" />
 
     <!-- 2. 快捷操作 (记一笔/对账/月报) -->
-    <QuickActions />
-
+    <!-- <QuickActions /> -->
+    <RecordActions />
+    
     <!-- 3. 最新动态 (记账流/动态) -->
     <ActivityFeed ref="activityFeedRef" :is-privacy-on="isPrivacyOn" />
   </view>
@@ -17,6 +18,7 @@ import { onReachBottom, onPullDownRefresh  } from '@dcloudio/uni-app';
 import ActivityFeed from '@/components/home/ActivityFeed.vue';
 import QuickActions from '@/components/home/QuickActions.vue';
 import NetWorthCard from '@/components/home/NetWorthCard.vue';
+import RecordActions from '@/components/home/RecordActions.vue';
 
 // 全局隐私模式状态
 const isPrivacyOn = ref(false);
