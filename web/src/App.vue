@@ -8,6 +8,15 @@ const authStore = useAuthStore()
 
 onLaunch(async () => {
   console.log('App Launching...')
+  const CURRENT_VERSION = '1.1.0'; // 当前代码的版本
+
+  const lastVersion = uni.getStorageSync('app_version');
+  if (lastVersion !== CURRENT_VERSION) {
+    configStore.clearConfigs()
+    authStore.logout()
+    
+    uni.setStorageSync('app_version', CURRENT_VERSION)
+  }
 
   // 1. 执行登录（内部已处理并发锁和本地存储）
   await authStore.login()

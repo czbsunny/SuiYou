@@ -60,7 +60,6 @@ export const useConfigStore = defineStore('config', {
   },
 
   actions: {
-    // 这就是你刚才问的 initConfigs
     async initConfigs() {
       // 这里的 keys 对应后端 manifest 里的 modules 的 key
       const keys = ['asset_category', 'goal_category', 'goal_template', 'institution_data', 'relation', 'transfer_category'];
@@ -89,6 +88,22 @@ export const useConfigStore = defineStore('config', {
       flattenCategories(this.transferCategories);
       this.isLoaded = true; 
       return data;
+    },
+    
+    clearConfigs() {
+      // 调用服务层清除本地存储缓存
+      configService.clearCache();
+      
+      // 重置所有状态变量
+      this.assetCategories = [];
+      this.goalCategories = [];
+      this.goalTemplates = [];
+      this.institutionData = [];
+      this.relations = [];
+      this.institutionMap = {};
+      this.transferCategories = [];
+      this.categoryMap = {};
+      this.isLoaded = false;
     }
   }
 })
