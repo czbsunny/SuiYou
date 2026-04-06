@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import HealthGrid from '@/components/statistics/HealthGrid.vue';
 import AssetStructure from '@/components/statistics/AssetStructure.vue';
 import { createAssetSnapshots } from '@/services/assetService';

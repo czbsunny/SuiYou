@@ -135,7 +135,7 @@ const isEditing = ref(false);
 const editingIndex = ref(-1);
 const showKeyboard = ref(false);
 
-const form = ref({ symbol: '', name: '', type: '', amount: '', returnValue: '' });
+const form = ref({ symbol: '', name: '', amount: '', returnValue: '' });
 
 onLoad((options) => { 
   portfolioId.value = options.portfolioId;
@@ -147,7 +147,6 @@ onUnmounted(() => { uni.$off('fund-selected', handleFundSelected); });
 const handleFundSelected = (fund) => {
   form.value.symbol = fund.fundCode;
   form.value.name = fund.fundName;
-  form.value.type = fund.type || '';
 };
 
 const handleImageImport = () => {
@@ -240,7 +239,7 @@ const pushToStaging = () => {
   } else {
     stagingList.value.unshift({ ...form.value });
   }
-  form.value = { symbol: '', name: '', type: '', amount: '', returnValue: '' };
+  form.value = { symbol: '', name: '', amount: '', returnValue: '' };
   activeField.value = 'symbol';
 };
 
