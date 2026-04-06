@@ -88,7 +88,8 @@
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black",
         "navigationBarTitleText": "资产",
-        "backgroundColor": "#F9F8F4"
+        "backgroundColor": "#F9F8F4",
+        "enablePullDownRefresh": true
       }
     },
     {

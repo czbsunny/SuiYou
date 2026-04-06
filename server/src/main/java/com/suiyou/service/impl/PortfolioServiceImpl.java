@@ -48,6 +48,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.setAsset(asset);
         portfolio.setName(createPortfolioDTO.getName());
         portfolio.setDescription(createPortfolioDTO.getDescription());
+        portfolio.setType(createPortfolioDTO.getType());
 
         return portfolioRepository.save(portfolio);
     }

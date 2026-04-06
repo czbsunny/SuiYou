@@ -31,15 +31,15 @@ export const CACHE = {
 export const TRANSACTION_ICONS = {
   ['INCOME']: {
     name: '收入',
-    iconUrl: '/static/images/income.png',
+    iconUrl: '/static/transfer/income.png',
   },
   ['EXPENSE']: {
     name: '支出',
-    iconUrl: '/static/images/expense.png',
+    iconUrl: '/static/transfer/expense.png',
   },
   ['TRANSFER']: {
     name: '转账',
-    iconUrl: '/static/images/transfer.png'
+    iconUrl: '/static/transfer/transfer.png'
   },
   ['ADJUSTMENT']: {
     name: '资产校准',

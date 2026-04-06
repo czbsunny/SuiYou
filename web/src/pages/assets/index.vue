@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
-import { onShow, onLoad } from '@dcloudio/uni-app';
+import { onShow, onLoad, onPullDownRefresh} from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
 import { getAccounts } from '@/services/accountService.js';
 import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
@@ -38,6 +38,7 @@ const allAssets = ref([]);
 const allAccounts = ref([]);
 const loading = ref(true);
 const dataLoaded = ref(false);
+const refreshing = ref(false);
 
 const accountFlatList = computed(() => {
   if (!dataLoaded.value) {
@@ -118,6 +119,18 @@ onShow(() => {
   loadData();
 });
 
+onPullDownRefresh(async () => {
+  console.log('触发了原生下拉刷新');
+  try {
+    await fetchAccounts();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    // 必须调用，否则顶部的刷新动画不会停止
+    uni.stopPullDownRefresh();
+  }
+});
+
 // 创建新的资产项
 const handleAddAsset = () => {
   uni.navigateTo({ url: `/pages/assets/category-selector?mode=create` });
@@ -144,9 +157,9 @@ const handleAccountClick = (account) => {
           break;
       }
       break;
-    case 'SECURITY':
-      pagePath = `/pages/assets/accounts/security?id=${account.id}`;
-      break;
+    // case 'SECURITY':
+    //   pagePath = `/pages/assets/accounts/security?id=${account.id}`;
+    //   break;
     default:
       pagePath = `/pages/assets/accounts/default?id=${account.id}`;
       break;
