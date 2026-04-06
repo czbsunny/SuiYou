@@ -5,6 +5,7 @@ import com.suiyou.dto.asset.UpdateAssetDTO;
 import com.suiyou.dto.asset.AssetRespDTO;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import org.springframework.stereotype.Service;
 
@@ -51,4 +52,11 @@ public interface AssetService {
      * @return 是否删除成功
      */
     boolean deleteAsset(Long id);
+    
+    /**
+     * 获取用户当前净资产
+     * @param userId 用户ID
+     * @return 净资产金额
+     */
+    BigDecimal getCurrentNetWorth(Long userId);
 }

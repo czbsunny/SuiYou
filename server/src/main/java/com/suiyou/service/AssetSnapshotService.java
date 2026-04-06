@@ -4,6 +4,7 @@ import com.suiyou.model.AssetSnapshot;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.math.BigDecimal;
 
 public interface AssetSnapshotService {
     /**
@@ -51,4 +52,11 @@ public interface AssetSnapshotService {
      * @return 资产快照列表
      */
     List<AssetSnapshot> getAllAssetSnapshotsDesc(Long userId);
+    
+    /**
+     * 获取用户上月净资产
+     * @param userId 用户ID
+     * @return 上月净资产金额
+     */
+    BigDecimal getLastMonthNetWorth(Long userId);
 }

@@ -75,3 +75,23 @@ export const getPortfolioByAssetId = async (assetId) => {
   }
 };
 
+/**
+ * 获取当前用户的净资产
+ * @returns {Promise<BigDecimal>} 当前净资产
+ */
+export const getNetWorth = async () => {
+  try {
+    const response = await get(`${ASSET_API_BASE}/networth`);
+    
+    if (response.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.data?.message || '获取净资产失败');
+    }
+  } catch (error) {
+    console.error('获取净资产错误:', error);
+    throw error;
+  }
+};
+
+

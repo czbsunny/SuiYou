@@ -189,4 +189,27 @@ public class AssetServiceImpl implements AssetService {
                 })
                 .orElse(false);
     }
+    
+    @Override
+    public BigDecimal getCurrentNetWorth(Long userId) {
+        // 获取用户所有有效资产
+        List<Asset> assets = assetRepository.findByOwnerIdAndStatus(userId, 1);
+        
+        // 计算总资产和总负债
+        BigDecimal totalAssets = BigDecimal.ZERO;
+        BigDecimal totalLiabilities = BigDecimal.ZERO;
+        
+        for (Asset asset : assets) {
+            if ("ASSET".equals(asset.getGroupType())) {
+                // 资产类别的余额累加
+                totalAssets = totalAssets.add(asset.getTotalBalance());
+            } else if ("LIABILITY".equals(asset.getGroupType())) {
+                // 负债类别的余额累加
+                totalLiabilities = totalLiabilities.add(asset.getTotalBalance());
+            }
+        }
+        
+        // 计算净资产：总资产 - 总负债
+        return totalAssets.subtract(totalLiabilities);
+    }
 }

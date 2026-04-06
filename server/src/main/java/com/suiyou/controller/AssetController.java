@@ -2,6 +2,7 @@ package com.suiyou.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import com.suiyou.service.AssetService;
 
 import com.suiyou.dto.portfolio.PortfolioRespDTO;
 import com.suiyou.service.PortfolioService;
+import com.suiyou.service.AssetSnapshotService;
 
 @RestController
 @RequestMapping("/assets")
@@ -31,6 +33,9 @@ public class AssetController {
 
     @Autowired
     private PortfolioService portfolioService;
+    
+    @Autowired
+    private AssetSnapshotService assetSnapshotService;
 
     @PostMapping
     public ResponseEntity<?> createAsset(@RequestBody CreateAssetDTO asset) {
@@ -94,6 +99,35 @@ public class AssetController {
             // 返回错误响应
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "error", "获取组合失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * 获取当前净资产环比上月增长的比值
+     */
+    @GetMapping("/networth")
+    public ResponseEntity<?> getNetWorth() {
+        try {
+            // 从Security上下文中获取用户ID
+            Long userId = getCurrentUserId();
+            
+            // 获取当前净资产
+            BigDecimal currentNetWorth = assetService.getCurrentNetWorth(userId);
+            
+            // 获取上月净资产
+            BigDecimal lastMonthNetWorth = assetSnapshotService.getLastMonthNetWorth(userId);
+            
+            // 返回成功响应
+            return ResponseEntity.ok(Map.of(
+                "currentNetWorth", currentNetWorth,
+                "lastMonthNetWorth", lastMonthNetWorth
+            ));
+        } catch (Exception e) {
+            // 返回错误响应
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "获取净资产增长比值失败",
                 "message", e.getMessage()
             ));
         }

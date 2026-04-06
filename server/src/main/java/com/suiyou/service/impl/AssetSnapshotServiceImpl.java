@@ -105,6 +105,18 @@ public class AssetSnapshotServiceImpl implements AssetSnapshotService {
         return assetSnapshotRepository.findAllByOwnerIdOrderBySnapshotDateDesc(userId);
     }
     
+    @Override
+    public BigDecimal getLastMonthNetWorth(Long userId) {
+        // 获取上个月的最后一天
+        LocalDate lastDayOfLastMonth = YearMonth.now().minusMonths(1).atEndOfMonth();
+        
+        // 获取该日期的资产快照
+        AssetSnapshot snapshot = assetSnapshotRepository.findByOwnerIdAndSnapshotDate(userId, lastDayOfLastMonth);
+        
+        // 如果有快照，返回快照中的净资产；否则返回0
+        return snapshot != null ? snapshot.getNetWorth() : BigDecimal.ZERO;
+    }
+    
     /**
      * 按资产大类计算资产金额
      */
