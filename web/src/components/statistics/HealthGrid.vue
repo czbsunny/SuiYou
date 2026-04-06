@@ -6,7 +6,7 @@
     </view>
     <view class="grid-container">
        <!-- 循环渲染4个指标 -->
-       <view class="grid-item" v-for="(item, i) in items" :key="i">
+       <view class="grid-item" v-for="(item, i) in props.items" :key="i">
           <view class="item-top">
             <view class="label-box">
               <view class="dot" :style="{ backgroundColor: item.color }"></view>
@@ -29,10 +29,18 @@
 <script setup>
 import { ASSET_CATEGORY_DISPLAY, ASSET_CATEGORY } from '../../configs/assets.js';
 
-// 获取各分类颜色配置
-const liquidColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LIQUID].color;
-const investColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.INVEST].color;
-const loanColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color;
+// 定义props，接收外部传入的items数据
+const props = defineProps({
+  items: {
+    type: Array,
+    default: () => [
+      { label: '结余率', status: '强', val: '45%', percent: '45%', color: '#22c55e' },
+      { label: '安全垫', status: '足', val: '6.5', unit: '个月', percent: '65%', color: ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LIQUID].color },
+      { label: '负债率', status: '良', val: '32%', percent: '32%', color: ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color },
+      { label: '钱生钱', status: '优', val: '60%', percent: '60%', color: ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.INVEST].color },
+    ]
+  }
+});
 
 // 辅助函数：生成带透明度的背景色
 const getBgColor = (hexColor) => {
@@ -44,13 +52,6 @@ const getBgColor = (hexColor) => {
   c = '0x' + c.join('');
   return 'rgba(' + [(c>>16)&255, (c>>8)&255, c&255].join(',') + ',0.1)';
 }
-
-const items = [
-  { label: '结余率', status: '强', val: '45%', percent: '45%', color: '#22c55e' }, // 保持原有绿色
-  { label: '安全垫', status: '足', val: '6.5', unit: '个月', percent: '65%', color: liquidColor }, // 流动资产颜色
-  { label: '负债率', status: '良', val: '32%', percent: '32%', color: loanColor }, // 负债颜色
-  { label: '钱生钱', status: '优', val: '60%', percent: '60%', color: investColor }, // 投资资产颜色
-]
 </script>
 
 <style lang="scss" scoped>

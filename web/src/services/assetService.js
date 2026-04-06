@@ -2,7 +2,7 @@
 import { get, post } from './apiService';
 
 const ASSET_API_BASE = '/api/assets';
-
+const ASSETSNAPSHOT_API_BASE = '/api/assetsnapshots';
 /**
  * 创建新的资产账户
  * @param {Object} assetData - 资产数据
@@ -94,4 +94,20 @@ export const getNetWorth = async () => {
   }
 };
 
+/**
+ * 创建当前用户所有资产的快照
+ */
+export const createAssetSnapshots = async () => {
+  try {
+    const response = await post(ASSETSNAPSHOT_API_BASE);
+    if (response.statusCode === 201 || response.statusCode === 200) {
+      return response.data.snapshot;
+    } else {
+      throw new Error(response.message || '创建资产快照失败');
+    }
+  } catch (error) {
+    console.error('创建资产快照错误:', error);
+    throw error;
+  }
+};
 

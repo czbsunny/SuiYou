@@ -69,10 +69,22 @@ export const getTransactions = async (params = {}) => {
   }
 };
 
+// 获取最近12个月的收入支出总额
+export const getMonthlySummary = async () => {
+  try {
+    const response = await get(`${TRANSACTION_API_BASE}/monthly-summary`);
+    return response.data;
+  } catch (error) {
+    console.error('获取最近12个月的收入支出总额失败:', error);
+    throw error;
+  }
+}
+
 export default {
   createTransaction,
   updateTransaction,
   deleteTransaction,
   getTransactionById,
-  getTransactions
+  getTransactions,
+  getMonthlySummary
 };

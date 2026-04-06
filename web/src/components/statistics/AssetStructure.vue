@@ -10,16 +10,16 @@
           <text class="chart-title">资产负债比</text>
           <text class="chart-value">
             <text class="unit">权益占比</text>
-            {{ isPrivacyOn ? '**%' : '72%' }} 
+            {{ isPrivacyOn ? '**%' : `${props.assetStructure.equityRatio}%` }} 
           </text>
         </view>
         <view class="balance-bar-container">
           <view class="balance-track">
-            <view class="balance-fill" style="width: 72%"></view>
+            <view class="balance-fill" :style="{ width: `${props.assetStructure.equityRatio}%` }"></view>
           </view>
           <view class="balance-labels">
-            <text>{{ isPrivacyOn ? '****' : '总资产 ¥405w' }}</text>
-            <text>{{ isPrivacyOn ? '****' : '负债 ¥120w' }}</text>
+            <text>{{ isPrivacyOn ? '****' : `总资产 ¥${formatAmount(props.assetStructure.totalAssets)}` }}</text>
+            <text>{{ isPrivacyOn ? '****' : `负债 ¥${formatAmount(props.assetStructure.totalLiabilities)}` }}</text>
           </view>
         </view>
       </view>
@@ -30,16 +30,16 @@
           <text class="chart-title">资产分布</text>
         </view>
         <view class="stack-bar">
-          <view class="stack-segment seg-liquid" style="width: 15%"></view>
-          <view class="stack-segment seg-invest" style="width: 45%"></view>
-          <view class="stack-segment seg-fixed" style="width: 30%"></view>
-          <view class="stack-segment seg-other" style="width: 10%"></view>
+          <view class="stack-segment seg-liquid" :style="{ width: `${props.assetStructure.assetDistribution.liquid}%` }"></view>
+          <view class="stack-segment seg-invest" :style="{ width: `${props.assetStructure.assetDistribution.invest}%` }"></view>
+          <view class="stack-segment seg-fixed" :style="{ width: `${props.assetStructure.assetDistribution.fixed}%` }"></view>
+          <view class="stack-segment seg-other" :style="{ width: `${props.assetStructure.assetDistribution.other}%` }"></view>
         </view>
         <view class="legend-row">
-          <view class="legend-item"><view class="dot seg-liquid"></view>流动 15%</view>
-          <view class="legend-item"><view class="dot seg-invest"></view>投资 45%</view>
-          <view class="legend-item"><view class="dot seg-fixed"></view>固定 30%</view>
-          <view class="legend-item"><view class="dot seg-other"></view>其他 10%</view>
+          <view class="legend-item"><view class="dot seg-liquid"></view>流动 {{ props.assetStructure.assetDistribution.liquid }}%</view>
+          <view class="legend-item"><view class="dot seg-invest"></view>投资 {{ props.assetStructure.assetDistribution.invest }}%</view>
+          <view class="legend-item"><view class="dot seg-fixed"></view>固定 {{ props.assetStructure.assetDistribution.fixed }}%</view>
+          <view class="legend-item"><view class="dot seg-other"></view>其他 {{ props.assetStructure.assetDistribution.other }}%</view>
         </view>
       </view>
     </view>
@@ -49,7 +49,24 @@
 <script setup>
 import { ASSET_CATEGORY_DISPLAY, ASSET_CATEGORY } from '../../configs/assets.js';
 
-defineProps({ isPrivacyOn: Boolean });
+// 定义props，接收外部传入的数据
+const props = defineProps({
+  isPrivacyOn: Boolean,
+  assetStructure: {
+    type: Object,
+    default: () => ({
+      totalAssets: 4050000,
+      totalLiabilities: 1200000,
+      equityRatio: 72,
+      assetDistribution: {
+        liquid: 15,
+        invest: 45,
+        fixed: 30,
+        other: 10
+      }
+    })
+  }
+});
 
 // 获取各分类颜色配置
 const liquidColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LIQUID].color;
@@ -58,6 +75,16 @@ const fixedColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.FIXED].color;
 const otherColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.OTHER].color;
 const loanColor = ASSET_CATEGORY_DISPLAY[ASSET_CATEGORY.LOAN].color;
 
+// 格式化金额
+const formatAmount = (amount) => {
+  if (amount >= 100000000) {
+    return (amount / 100000000).toFixed(2) + '亿';
+  } else if (amount >= 10000) {
+    return (amount / 10000).toFixed(2) + 'w';
+  } else {
+    return amount.toString();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
