@@ -1,10 +1,9 @@
-from datetime import date, datetime
 from sqlalchemy import Column, Integer, String, Float, Date, DateTime
 from models.base import Base
 
-class IndexInfo(Base):
+class CSIndexInfo(Base):
     """指数基本信息表"""
-    __tablename__ = 'index_info'
+    __tablename__ = 'csindex_info'
     
     index_code = Column(String(20), primary_key=True, nullable=False)  # 指数代码，主键
     index_short_name = Column(String(100), nullable=False)  # 指数简称
@@ -25,4 +24,4 @@ class IndexInfo(Base):
     release_time = Column(DateTime)  # 发布时间
 
     def __repr__(self):
-        return f"<IndexInfo(index_code={self.index_code}, index_short_name={self.index_short_name})>"
+        return f"<CSIndexInfo(index_code={self.index_code}, index_short_name={self.index_short_name})>"
