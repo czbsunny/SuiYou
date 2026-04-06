@@ -173,8 +173,7 @@ const uploadFundImage = async (filePath) => {
           symbol: item.symbol,
           name: item.name,
           amount: String(item.amount || '0.00'),
-          returnValue: String(item.returnValue || '0.00'),
-          type: item.type || ''
+          returnValue: String(item.returnValue || '0.00')
         });
       });
       uni.showToast({ title: `识别成功，已添加${newList.length}笔`, icon: 'none' });
