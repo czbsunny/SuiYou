@@ -1,7 +1,7 @@
 <template>
   <view class="structure-section">
     <view class="section-header">
-      <text class="title">资产结构分析</text>
+      <text class="title">资产结构</text>
     </view>
     <view class="section-card">
       <!-- 资产负债比 -->

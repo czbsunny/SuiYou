@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import jakarta.annotation.Resource;
@@ -73,6 +74,16 @@ public class TransactionController {
         Long userId = getCurrentUserId();
         Page<TransactionRespDTO> page = transactionService.queryTransactions(userId, query, pageable);
         return ResponseEntity.ok(page);
+    }
+
+    /**
+     * 获取最近12个月的收入支出总额
+     */
+    @GetMapping("/monthly-summary")
+    public ResponseEntity<List<Map<String, Object>>> getMonthlySummary() {
+        Long userId = getCurrentUserId();
+        List<Map<String, Object>> monthlySummary = transactionService.getMonthlyIncomeExpenseTotal(userId);
+        return ResponseEntity.ok(monthlySummary);
     }
 
     /**

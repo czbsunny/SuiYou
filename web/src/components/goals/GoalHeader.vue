@@ -87,14 +87,13 @@ const formatMoney = (val) => {
 <style lang="scss" scoped>
 .header-container {
   /* 增加顶部间距，彻底脱离导航栏 */
-  padding: $spacing-base $spacing-md 0;
+  padding: $spacing-sm $spacing-base 0;
   background-color: transparent;
 }
 
 .header-card {
-  /* 回归白底卡片风格 */
   background-color: $bg-white;
-  padding: 40rpx;
+  padding: $spacing-base $spacing-base;
   border-radius: $radius-lg;
   box-shadow: $shadow-card;
   border: 1rpx solid rgba(50, 46, 43, 0.02);

@@ -100,14 +100,14 @@ const formatMoney = (val) => Number(val).toLocaleString('zh-CN');
 
 <style lang="scss" scoped>
 .active-card-container {
-  margin-bottom: 40rpx;
+  margin-bottom: $spacing-lg;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: $spacing-sm;
 }
 
 .section-title {

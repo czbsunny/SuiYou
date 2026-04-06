@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- 1. 核心净资产 (墨绿渐变大卡片) -->
-    <NetWorthCard v-model:isPrivacyOn="isPrivacyOn" />
+    <NetWorthCard ref="netWorthRef" v-model:isPrivacyOn="isPrivacyOn" />
 
     <!-- 2. 快捷操作 (记一笔/对账/月报) -->
     <QuickActions />
@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { onReachBottom } from '@dcloudio/uni-app'; 
+import { onReachBottom, onPullDownRefresh  } from '@dcloudio/uni-app'; 
 import ActivityFeed from '@/components/home/ActivityFeed.vue';
 import QuickActions from '@/components/home/QuickActions.vue';
 import NetWorthCard from '@/components/home/NetWorthCard.vue';
@@ -21,11 +21,28 @@ import NetWorthCard from '@/components/home/NetWorthCard.vue';
 // 全局隐私模式状态
 const isPrivacyOn = ref(false);
 const activityFeedRef = ref(null);
+const netWorthRef = ref(null);
+
+const isRefreshing = ref(false);
 
 onReachBottom(() => {
   console.log('首页触底，准备加载更多...');
   if (activityFeedRef.value) {
     activityFeedRef.value.handleLoadMore();
+  }
+});
+
+onPullDownRefresh(async () => {
+  console.log('开始刷新...');
+  try {
+    const p1 = netWorthRef.value?.fetchNetWorth();
+    const p2 = activityFeedRef.value?.fetchTransactions(false);
+    
+    await Promise.all([p1, p2]);
+  } catch (err) {
+    console.error('刷新失败', err);
+  } finally {
+    uni.stopPullDownRefresh();
   }
 });
 </script>

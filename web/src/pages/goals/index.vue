@@ -115,7 +115,7 @@ const handleGoalSelect = (template) => {
 }
 
 .main-content {
-  padding: 24rpx 32rpx 80rpx; // 压缩顶部间距
+  padding: 0rpx $spacing-base; // 压缩顶部间距
 }
 
 .section {
@@ -126,7 +126,7 @@ const handleGoalSelect = (template) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx; // 压缩标题与卡片距离
+  margin-bottom: $spacing-sm;
 }
 
 .section-title {

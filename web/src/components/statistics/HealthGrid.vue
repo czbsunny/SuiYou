@@ -1,7 +1,7 @@
 <template>
   <view class="health-section">
     <view class="section-header">
-      <text class="title">财务体检</text>
+      <text class="title">核心指标</text>
       <text class="subtitle">更新于今日</text>
     </view>
     <view class="grid-container">

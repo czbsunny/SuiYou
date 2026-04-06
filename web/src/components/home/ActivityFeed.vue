@@ -8,9 +8,6 @@
       class="activity-list" 
       scroll-y 
       enable-back-to-top
-      refresher-enabled 
-      :refresher-triggered="isRefreshing"
-      @refresherrefresh="handleRefresh"
     >
       <view class="activity-item card-warm" v-for="(item, index) in list" :key="index" @click="navToDetail(item)">
         <!-- 左侧图标 -->
@@ -65,7 +62,6 @@ const props = defineProps({ isPrivacyOn: Boolean });
 const configStore = useConfigStore();
 const transactions = ref([]);
 const loading = ref(false);
-const isRefreshing = ref(false);
 const page = ref(0);
 const hasMore = ref(true);
 
@@ -172,16 +168,10 @@ const fetchTransactions = async (isLoadMore = false) => {
     console.error('获取交易记录失败:', err);
   } finally {
     loading.value = false;
-    isRefreshing.value = false;
   }
 };
 
-const handleRefresh = () => {
-  isRefreshing.value = true;
-  page.value = 0;
-  hasMore.value = true;
-  fetchTransactions(false);
-};
+
 
 const handleLoadMore = () => {
   if (!loading.value && hasMore.value) {
@@ -195,7 +185,8 @@ const navToDetail = (item) => {
 
 // 暴露方法给父组件
 defineExpose({
-  handleLoadMore
+  handleLoadMore,
+  fetchTransactions
 });
 
 onMounted(() => fetchTransactions());

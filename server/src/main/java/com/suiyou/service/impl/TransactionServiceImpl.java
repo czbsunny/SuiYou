@@ -3,7 +3,7 @@ package com.suiyou.service.impl;
 import com.suiyou.model.Transaction;
 import com.suiyou.model.Asset;
 import com.suiyou.model.Family;
-
+import com.suiyou.model.enums.TransactionType;
 import com.suiyou.dto.transaction.TransactionCreateRespDTO;
 import com.suiyou.dto.transaction.TransactionQueryRespDTO;
 import com.suiyou.dto.transaction.TransactionRespDTO;
@@ -29,6 +29,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import java.util.Objects;
 
 @Slf4j
@@ -238,5 +240,76 @@ public class TransactionServiceImpl implements TransactionService {
             
             return dto;
         });
+    }
+
+    @Override
+    public List<Map<String, Object>> getMonthlyIncomeExpenseTotal(Long userId) {
+        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        if (Objects.isNull(family)) {
+            throw new IllegalArgumentException("用户未关联任何家庭");
+        }
+
+        // 计算最近12个月的开始时间
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime twelveMonthsAgo = now.minusMonths(11).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        // 查询最近12个月的所有收入和支出交易
+        Specification<Transaction> spec = (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(root.get("familyId"), family.getId()));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("transTime"), twelveMonthsAgo));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transTime"), now));
+            predicates.add(criteriaBuilder.or(
+                criteriaBuilder.equal(root.get("type"), TransactionType.INCOME),
+                criteriaBuilder.equal(root.get("type"), TransactionType.EXPENSE)
+            ));
+            predicates.add(criteriaBuilder.equal(root.get("status"), "NORMAL"));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        List<Transaction> transactions = transactionRepository.findAll(spec);
+
+        // 初始化12个月的数据结构
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            LocalDateTime monthDate = now.minusMonths(i).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+            String monthKey = monthDate.getYear() + "-" + String.format("%02d", monthDate.getMonthValue());
+            Map<String, Object> monthData = Map.of(
+                "month", monthKey,
+                "income", BigDecimal.ZERO,
+                "expense", BigDecimal.ZERO
+            );
+            result.add(0, monthData); // 从最早的月份开始添加到结果列表
+        }
+
+        // 计算每个月的收入和支出
+        for (Transaction transaction : transactions) {
+            String monthKey = transaction.getTransTime().getYear() + "-" + String.format("%02d", transaction.getTransTime().getMonthValue());
+            
+            for (int i = 0; i < result.size(); i++) {
+                Map<String, Object> monthData = result.get(i);
+                if (monthKey.equals(monthData.get("month"))) {
+                    // 创建新的Map以更新值
+                    BigDecimal income = (BigDecimal) monthData.get("income");
+                    BigDecimal expense = (BigDecimal) monthData.get("expense");
+                    
+                    if (transaction.getType() == TransactionType.INCOME) {
+                        income = income.add(transaction.getTargetAmount());
+                    } else if (transaction.getType() == TransactionType.EXPENSE) {
+                        expense = expense.add(transaction.getAmount());
+                    }
+                    
+                    Map<String, Object> newMonthData = Map.of(
+                        "month", monthKey,
+                        "income", income,
+                        "expense", expense
+                    );
+                    result.set(i, newMonthData);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 }

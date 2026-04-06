@@ -7,7 +7,8 @@
         "navigationBarTextStyle": "black",
         "navigationStyle": "default",
         "navigationBarTitleText": "首页",
-        "backgroundColor": "#F9F8F4"
+        "backgroundColor": "#F9F8F4",
+        "enablePullDownRefresh": true
       }
     },
     {
@@ -160,7 +161,7 @@
       "style": {
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "财务体检报告",
+        "navigationBarTitleText": "资产概览",
         "backgroundColor": "#F9F8F4"
       }
     }

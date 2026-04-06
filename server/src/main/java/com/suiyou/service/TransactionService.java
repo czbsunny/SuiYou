@@ -8,10 +8,15 @@ import com.suiyou.dto.transaction.TransactionCreateRespDTO;
 import com.suiyou.dto.transaction.TransactionQueryRespDTO;
 import com.suiyou.dto.transaction.TransactionRespDTO;
 
+import java.util.List;
+import java.util.Map;
+
 public interface TransactionService {
     Transaction createTransaction(Long userId, TransactionCreateRespDTO req);
 
     void deleteTransaction(Long id);
 
     Page<TransactionRespDTO> queryTransactions(Long userId, TransactionQueryRespDTO query, Pageable pageable);
+
+    List<Map<String, Object>> getMonthlyIncomeExpenseTotal(Long userId);
 }
