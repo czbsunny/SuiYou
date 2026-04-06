@@ -95,20 +95,24 @@ const isSetDefault = ref(false);
 const canSetDefault = ref(false);
 
 onLoad(async (options) => {
-  // 1. 是否显示"设为默认"勾选框
-  canSetDefault.value = options.canSetDefault === 'true';
-
-  // 2. 解析初始化回显 ID
-  const initAccId = options.initAccountId ? parseInt(options.initAccountId) : null;
-  const initAssetId = options.initAssetId ? parseInt(options.initAssetId) : null;
-
-  await loadAccounts(initAccId, initAssetId);
+  if (options.data) {
+    const data = JSON.parse(decodeURIComponent(options.data));
+    canSetDefault.value = data.canSetDefault === 'true';
+    const initAccId = data.initAccountId ? parseInt(data.initAccountId) : null;
+    const initAssetId = data.initAssetId ? parseInt(data.initAssetId) : null;
+    const assignAccountId = data.assignAccountId ? parseInt(data.assignAccountId) : null;
+    
+    await loadAccounts(initAccId, initAssetId, assignAccountId);
+  }
 });
 
-const loadAccounts = async (initAccId, initAssetId) => {
+const loadAccounts = async (initAccId, initAssetId, assignAccountId) => {
   try {
     const res = await getAccounts();
     const instMap = configStore.institutionMap;
+    if (assignAccountId) {
+      res.accounts = res.accounts.filter(a => a.id === assignAccountId);
+    }
     
     const processed = res.accounts
       .filter(a => a.assets?.length > 0 && a.assets.some(asset => asset.category === 'LIQUID'))

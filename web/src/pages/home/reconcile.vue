@@ -5,11 +5,13 @@
       <view class="asset-card card-warm">
         <view class="item-header">
           <view class="item-icon-rect">
-            <image :src="assetItem?.iconUrl || '/static/images/account.png'" class="item-icon" mode="aspectFit" />
+            <image :src="selectedAccount?.selectedAsset?.iconUrl || '/static/images/account.png'" class="item-icon" mode="aspectFit" />
           </view>
           <view class="item-title">
-            <text class="name">{{ assetItem?.name || '未知资产' }}</text>
-            <text class="account">{{ accountInfo?.institutionName || '所属账户' }}</text>
+            <text class="name">{{ selectedAccount?.selectedAsset?.name || '未知资产' }}</text>
+            <text class="account" :class="{ 'disabled': isLocked }" @click="showAccountPicker">
+              {{ selectedAccount?.accountName || '点击选择账户' }}
+            </text>
           </view>
         </view>
 
@@ -100,28 +102,51 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { createTransaction } from '@/services/transactionService.js';
 
-const accountInfo = ref(null);
-const assetItem = ref(null);
 const systemAmount = ref(0);
 const actualAmount = ref('');
 const remark = ref('');
-const recordAsProfit = ref(false); // 默认不记为盈亏
+const recordAsProfit = ref(false);
+const selectedAccount = ref(null);
+const isLocked = ref(false);
+const assignAccountId = ref(null);
 
 onLoad((options) => {
+  // 监听账户选择结果
+  uni.$on('acceptAccountFromSelector', (res) => {
+    selectedAccount.value = {
+      ...res.account,
+      selectedAsset: res.asset
+    };
+    systemAmount.value = res.asset.totalBalance || 0;
+    isLocked.value = false;
+  });
+
   // 解析传入数据
   if (options.data) {
     const data = JSON.parse(decodeURIComponent(options.data));
-    assetItem.value = data;
-    systemAmount.value = data.totalBalance || 0;
-    // 解析recordAsProfit参数（如果有的话）
+    if (data.account) {
+        selectedAccount.value = {
+          ...data.account,
+          selectedAsset: data.asset || null
+        };
+        assignAccountId.value = data.account.id;
+        if (data.asset) {
+          systemAmount.value = data.asset.totalBalance || 0;
+          isLocked.value = true; // 锁定账户选择
+        }
+    } 
     if (data.recordAsProfit !== undefined) {
       recordAsProfit.value = data.recordAsProfit;
     }
   }
+});
+
+onUnmounted(() => {
+  uni.$off('acceptAccountFromSelector');
 });
 
 // 计算差额：输入值 - 系统值
@@ -152,12 +177,29 @@ const onKeyPress = (key) => {
 
 const onDelete = () => actualAmount.value = actualAmount.value.slice(0, -1);
 
+const showAccountPicker = () => {
+  const payload = {
+    canSetDefault: true,
+    initAccountId: selectedAccount.value?.id,
+    initAssetId: selectedAccount.value?.selectedAsset?.id,
+    assignAccountId: assignAccountId.value || null
+  }
+  const data = encodeURIComponent(JSON.stringify(payload));
+  uni.navigateTo({
+      url: `/pages/assets/account-selector?data=${data}`
+  });
+};
+
 const goBack = () => uni.navigateBack();
 
 const save = () => {
   if (!actualAmount.value || diffValue.value === 0) {
     uni.showToast({ title: '余额无变动', icon: 'none' });
     return;
+  }
+  
+  if (!selectedAccount.value?.selectedAsset?.id) {
+    return uni.showToast({ title: '请选择账户', icon: 'none' });
   }
   
   const typeText = recordAsProfit.value ? '投资收益' : '余额校准';
@@ -178,7 +220,7 @@ const executeReconcile = async () => {
     // 根据开关选择不同的枚举类型
     type: recordAsProfit.value ? 'INVESTMENT_RETURN' : 'ADJUSTMENT',
     amount: diffValue.value, 
-    sourceAssetId: assetItem.value.id,
+    sourceAssetId: selectedAccount.value.selectedAsset.id,
     transTime: new Date().toISOString(),
     description: remark.value || (recordAsProfit.value ? '手动更新投资盈亏' : '资产余额校准')
   };
@@ -288,4 +330,11 @@ const executeReconcile = async () => {
 .num-font { font-family: $font-family-money; @include tabular-nums; }
 .animate-fade-in { animation: fadeIn 0.4s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 账户选择样式 */
+.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  filter: grayscale(1);
+}
 </style>

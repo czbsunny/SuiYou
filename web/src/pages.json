@@ -184,12 +184,7 @@
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
       },
-      {
-        "pagePath": "pages/goals/index",
-        "text": "目标",
-        "iconPath": "static/tabbar/goals.png",
-        "selectedIconPath": "static/tabbar/goals-active.png"
-      },
+
       {
         "pagePath": "pages/assets/index",
         "text": "资产",

@@ -21,7 +21,7 @@
                 <image :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" class="icon-sm" />
               </view>
               <text class="value num-font" :class="{ 'is-blur': isAssetHidden }">
-                {{ isAssetHidden ? '******' : formatMoney(portfolio.totalAsset) }}
+                {{ isAssetHidden ? '******' : formatMoney(portfolio.currentValue) }}
               </text>
             </view>
             
@@ -124,7 +124,7 @@ import { getPortfolioByAssetId } from '@/services/assetService.js';
 export default {
   data() {
     return {
-      portfolio: { totalAsset: 0, dailyReturn: 0, dailyReturnRate: 0, holdings: [] },
+      portfolio: { currentValue: 0, dailyReturn: 0, dailyReturnRate: 0, holdings: [] },
       isAssetHidden: false,
       showReturnRate: false,
       isRefreshing: false,

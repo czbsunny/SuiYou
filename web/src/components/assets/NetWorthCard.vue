@@ -55,33 +55,50 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  amount: {
-    type: String,
-    default: '¥ 2,850,200'
+  // 最新月份的净值
+  currentNetWorth: {
+    type: Number,
+    default: 0
   },
-  trend: {
-    type: String,
-    default: '+12.5%'
-  },
-  // 历史数据，格式：[{ date: '2024-01-15', value: 2500000 }, ...]
-  historyData: {
+  // 过去12个月的月末快照，格式：[{ date: '2024-01-31', netWorth: 2500000 }, ...]
+  netWorthHistory: {
     type: Array,
     default: () => []
   }
 });
 
+// 格式化金额
+const amount = computed(() => {
+  return `¥ ${props.currentNetWorth.toLocaleString()}`;
+});
+
+// 计算趋势变化
+const trend = computed(() => {
+  // 如果过去12个月都为空则为--
+  if (!props.netWorthHistory || props.netWorthHistory.length === 0) return '--';
+  
+  const firstValue = props.netWorthHistory[0].netWorth;
+  // 如果第一个值为0，避免除以0
+  if (firstValue === 0) return '--';
+  
+  const currentValue = props.currentNetWorth;
+  const change = ((currentValue - firstValue) / firstValue) * 100;
+  
+  return change >= 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+});
+
 // 判断涨跌颜色
 const isPositive = computed(() => {
-  return props.trend.includes('+');
+  return props.netWorthHistory.length > 0 && props.currentNetWorth >= props.netWorthHistory[0].netWorth;
 });
 
 // 趋势标签
 const trendLabel = computed(() => {
-  if (!props.historyData || props.historyData.length < 2) return '暂无数据';
+  if (!props.netWorthHistory || props.netWorthHistory.length < 2) return '暂无数据';
   
-  const firstValue = props.historyData[0].value;
-  const lastValue = props.historyData[props.historyData.length - 1].value;
-  const change = ((lastValue - firstValue) / firstValue) * 100;
+  const firstValue = props.netWorthHistory[0].netWorth;
+  const currentValue = props.currentNetWorth;
+  const change = ((currentValue - firstValue) / firstValue) * 100;
   
   if (change > 5) return '稳健增长';
   if (change > 0) return '小幅增长';
@@ -91,14 +108,12 @@ const trendLabel = computed(() => {
 
 // 趋势样式类
 const trendClass = computed(() => {
-  if (!props.historyData || props.historyData.length < 2) return '';
+  if (!props.netWorthHistory || props.netWorthHistory.length < 2) return '';
   
-  const firstValue = props.historyData[0].value;
-  const lastValue = props.historyData[props.historyData.length - 1].value;
-  const change = ((lastValue - firstValue) / firstValue) * 100;
+  const firstValue = props.netWorthHistory[0].netWorth;
+  const currentValue = props.currentNetWorth;
   
-  if (change > 0) return 'trend-up';
-  return 'trend-down';
+  return currentValue >= firstValue ? 'trend-up' : 'trend-down';
 });
 
 // 生成最近12个月的时间轴标签
@@ -121,27 +136,33 @@ const axisLabels = computed(() => {
 
 // 计算是否有部分数据（不足12个月）
 const hasPartialData = computed(() => {
-  return props.historyData && props.historyData.length > 0 && props.historyData.length < 12;
+  return props.netWorthHistory && props.netWorthHistory.length > 0 && props.netWorthHistory.length < 12;
 });
 
 // 计算图表数据点
 const chartPoints = computed(() => {
-  if (!props.historyData || props.historyData.length === 0) {
+  if (!props.netWorthHistory || props.netWorthHistory.length === 0) {
     return [];
   }
+  
+  // 将当前净值添加到历史数据中，确保图表显示最新数据点
+  const allData = [
+    ...props.netWorthHistory,
+    { date: new Date().toISOString().split('T')[0], netWorth: props.currentNetWorth }
+  ];
   
   // 计算时间范围
   const now = new Date();
   const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1); // 12个月前
   
   // 找出最大值和最小值，包含0
-  const values = props.historyData.map(item => item.value);
+  const values = allData.map(item => item.netWorth);
   const maxValue = Math.max(...values, 0);
   const minValue = Math.min(...values, 0);
   const range = maxValue - minValue || 1;
   
   // 将数据映射到图表坐标 (300x100)
-  return props.historyData.map((item, index) => {
+  return allData.map((item, index) => {
     // 计算该数据点在12个月时间轴上的位置
     const itemDate = new Date(item.date);
     const totalMonths = 12;
@@ -149,7 +170,7 @@ const chartPoints = computed(() => {
     const x = (monthsSinceStart / (totalMonths - 1)) * 300;
     
     // 计算Y坐标，将0放在中间
-    const normalizedValue = (item.value - minValue) / range;
+    const normalizedValue = (item.netWorth - minValue) / range;
     const y = 100 - (normalizedValue * 80 + 10); // 留出上下边距
     return { x, y };
   });
@@ -157,11 +178,11 @@ const chartPoints = computed(() => {
 
 // 线条颜色
 const lineColor = computed(() => {
-  if (!props.historyData || props.historyData.length < 2) return '#2a806c';
+  if (!props.netWorthHistory || props.netWorthHistory.length < 2) return '#2a806c';
   
-  const firstValue = props.historyData[0].value;
-  const lastValue = props.historyData[props.historyData.length - 1].value;
-  return lastValue >= firstValue ? '#2a806c' : '#ff4d4f';
+  const firstValue = props.netWorthHistory[0].netWorth;
+  const currentValue = props.currentNetWorth;
+  return currentValue >= firstValue ? '#2a806c' : '#ff4d4f';
 });
 
 // 生成线条路径

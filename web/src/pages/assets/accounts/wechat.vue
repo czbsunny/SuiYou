@@ -58,7 +58,7 @@
       </view>
       
       <!-- 校准 (对应资产对账图标) -->
-      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('adjust')">
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('reconcile')">
         <view class="icon-box icon-liquid">
           <image src="/static/assets/actions/scale.png" class="action-icon"></image>
         </view>
@@ -144,11 +144,14 @@ const handleEditAccount = () => uni.navigateTo({ url: `/pages/accounts/edit?id=$
 
 const handleAction = (type) => {
   if (type === 'transfer') {
-    uni.navigateTo({ url: '/pages/assets/transfer' });
+    const data = encodeURIComponent(JSON.stringify({ account: accountInfo.value }));
+    uni.navigateTo({ url: `/pages/home/transfer?data=${data}` });
   } else if (type === 'record') {
-    uni.navigateTo({ url: '/pages/transactions/record' });
+    const data = encodeURIComponent(JSON.stringify({ account: accountInfo.value }));
+    uni.navigateTo({ url: `/pages/home/record?data=${data}` });
   } else {
-    uni.showToast({ title: '跳转至' + type, icon: 'none' });
+    const data = encodeURIComponent(JSON.stringify({ account: accountInfo.value, recordAsProfit: false }));
+    uni.navigateTo({ url: `/pages/home/reconcile?data=${data}` });
   }
 };
 

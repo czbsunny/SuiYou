@@ -111,3 +111,20 @@ export const createAssetSnapshots = async () => {
   }
 };
 
+/**
+ * 获取指定日期范围内的资产快照
+ */
+export const getNetWorthHistory = async (startDate, endDate) => {
+  try {
+    const response = await get(`${ASSETSNAPSHOT_API_BASE}/range?startDate=${startDate}&endDate=${endDate}`);
+    if (response.statusCode === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.message || '获取资产快照失败');
+    }
+  } catch (error) {
+    console.error('获取资产快照错误:', error);
+    throw error;
+  }
+};
+

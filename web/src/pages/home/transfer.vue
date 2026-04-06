@@ -104,7 +104,6 @@
           </view>
         </view>
         <view class="action-keys">
-          <view class="action-btn next" hover-class="key-hover" @click="saveAndNext">再记</view>
           <view class="action-btn finish" hover-class="key-hover" @click="save">完成</view>
         </view>
       </view>
@@ -116,6 +115,7 @@
 import { ref, computed, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
+import { createTransaction } from '@/services/transactionService';
 
 const configStore = useConfigStore();
 
@@ -219,20 +219,25 @@ const save = () => {
     targetAssetId: toAccount.value.id,
     description: remark.value
   };
-  console.log('提交调拨:', payload);
+  console.log('提交转账:', payload);
+  
   uni.showLoading({ title: '处理中' });
-  setTimeout(() => {
-    uni.hideLoading();
-    uni.navigateBack();
-  }, 600);
+  createTransaction(payload)
+    .then(res => {
+      uni.hideLoading();
+      uni.showToast({ title: '转账成功', icon: 'success' });
+      setTimeout(() => {
+        uni.navigateBack();
+      }, 1000);
+    })
+    .catch(err => {
+      uni.hideLoading();
+      console.error('转账失败:', err);
+      uni.showToast({ title: '转账失败，请重试', icon: 'none' });
+    });
 };
 
-const saveAndNext = () => {
-  uni.showToast({ title: '已保存', icon: 'success' });
-  amount.value = '';
-  feeAmount.value = '';
-  remark.value = '';
-};
+
 </script>
 
 <style lang="scss" scoped>
@@ -368,7 +373,7 @@ const saveAndNext = () => {
   padding: 12rpx 12rpx calc(env(safe-area-inset-bottom) + 12rpx);
   .key-grid { display: flex; gap: 12rpx; }
   .num-keys { flex: 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
-  .action-keys { flex: 1; display: flex; flex-direction: column; gap: 12rpx; }
+  .action-keys { flex: 1; display: flex; flex-direction: column; }
   .key-btn, .action-btn {
     height: 100rpx; background-color: $bg-white;
     border: 1rpx solid $gray-100; border-radius: 20rpx;
@@ -378,7 +383,7 @@ const saveAndNext = () => {
   .key-hover { background-color: $gray-50; }
   .action-btn {
     font-size: 28rpx;
-    &.finish { background-color: $primary; color: $white; flex: 1; font-weight: $fw-bold; }
+    &.finish { background-color: $primary; color: $white; height: 100%; font-weight: $fw-bold; }
   }
 }
 

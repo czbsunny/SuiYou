@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <!-- 1. 顶部净值总览卡片 (由 assets 计算结果驱动) -->
-    <NetWorthCard :assets="allAssets" />
+    <NetWorthCard :currentNetWorth="currentNetWorth" :netWorthHistory="netWorthHistory" />
 
     <!-- 2. 加载状态：仅在初次进入且无缓存数据时显示 -->
     <view v-if="loading && !allAccounts.length" class="loading-container">
@@ -26,6 +26,7 @@ import { onShow, onLoad, onPullDownRefresh} from '@dcloudio/uni-app';
 import { useConfigStore } from '@/stores/config.js';
 import { getAccounts } from '@/services/accountService.js';
 import { ASSET_INSTITUTION_DISPLAY } from '@/configs/assets.js';
+import { createAssetSnapshots, getNetWorthHistory } from '@/services/assetService.js';
 
 // 引入核心组件
 import NetWorthCard from '../../components/assets/NetWorthCard.vue';
@@ -38,7 +39,8 @@ const allAssets = ref([]);
 const allAccounts = ref([]);
 const loading = ref(true);
 const dataLoaded = ref(false);
-const refreshing = ref(false);
+const netWorthHistory = ref([]);
+const currentNetWorth = ref(0);
 
 const accountFlatList = computed(() => {
   if (!dataLoaded.value) {
@@ -97,8 +99,27 @@ const fetchAccounts = async () => {
   }
 };
 
+// 获取数据
+const fetchNetWorthData = async () => {
+  try {
+    const startDate = new Date(new Date().setMonth(new Date().getMonth() - 12)).toISOString().split('T')[0];
+    const endDate = new Date().toISOString().split('T')[0];
+    const [assetSnapshotData, netWorthHistoryData] = await Promise.all([
+      createAssetSnapshots(),
+      getNetWorthHistory(startDate, endDate)
+    ]);
+
+    netWorthHistory.value = netWorthHistoryData.snapshots || [];
+    currentNetWorth.value = assetSnapshotData.netWorth || 0;
+
+  } catch (error) {
+    console.error('获取资产数据失败:', error);
+  }
+};
+
 const loadData = async () => {
   loading.value = true;
+  await fetchNetWorthData();
   await fetchAccounts();
   loading.value = false;
 };
@@ -112,7 +133,6 @@ onLoad(() => {
 
 onUnmounted(() => {
   uni.$off('refreshAccountList');
-
 });
 
 onShow(() => {
@@ -123,6 +143,7 @@ onPullDownRefresh(async () => {
   console.log('触发了原生下拉刷新');
   try {
     await fetchAccounts();
+    await fetchNetWorthData();
   } catch (err) {
     console.error(err);
   } finally {

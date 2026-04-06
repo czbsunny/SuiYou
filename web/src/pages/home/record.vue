@@ -83,7 +83,7 @@
         </uni-datetime-picker>
 
         <!-- 账户选择 -->
-        <view class="meta-btn" @click="showAccountPicker">
+        <view class="meta-btn" :class="{ 'disabled': isAccountSelectionDisabled }" @click="showAccountPicker">
           <image src="/static/images/account.png" class="meta-icon" />
           <text>{{ selectedAccount?.accountName || '选择账户' }}</text>
         </view>
@@ -156,6 +156,13 @@ const activeTab = ref('EXPENSE');
 const parentCat = ref(null);
 const subCat = ref(null);
 const selectedAccount = ref(null);
+const isLocked = ref(false);
+const assignAccountId = ref(null)
+
+// 判断是否禁用账户选择功能
+const isAccountSelectionDisabled = computed(() => {
+  return isLocked.value;
+});
 
 // 修改回显逻辑：兼容组件返回的不同格式
 const displayDateTime = computed(() => {
@@ -212,14 +219,31 @@ onLoad((options) => {
     };
     console.log(selectedAccount.value);
     form.value.accountId = res.account.id;
+    isLocked.value = false;
   });
 
   const categories = configStore.getTransferCategoriesByType(activeTab.value);
   if (categories.length > 0) {
     selectParent(categories[0]);
   }
-  if (options.accountId) {
-    selectedAccount.value = configStore.institutionMap[options.accountId];
+
+  if (options.data) {
+    const data = JSON.parse(decodeURIComponent(options.data));
+    if (data.account) {
+      assignAccountId.value = data.account.id;
+      selectedAccount.value = {
+        ...data.account,
+        selectedAsset: null
+      };
+      form.value.accountId = data.account.id;
+      if (data.assetId) {
+        const asset = data.account.assets?.find(a => a.id === data.assetId);
+        if (asset) {
+          selectedAccount.value.selectedAsset = asset;
+          isLocked.value = true; 
+        }
+      }
+    }
   }
 });
 
@@ -251,9 +275,16 @@ const onKeyPress = (k) => {
 const onDelete = () => form.value.amount = form.value.amount.slice(0, -1);
 
 const showAccountPicker = () => {
-    uni.navigateTo({
-        url: `/pages/assets/account-selector?canSetDefault=true&initAccountId=${selectedAccount.value?.id}&initAssetId=${selectedAccount.value?.selectedAsset?.id}`
-    });
+  const payload = {
+    canSetDefault: true,
+    initAccountId: selectedAccount.value?.id,
+    initAssetId: selectedAccount.value?.selectedAsset?.id,
+    assignAccountId: assignAccountId.value || null
+  }
+  const data = encodeURIComponent(JSON.stringify(payload));
+  uni.navigateTo({
+      url: `/pages/assets/account-selector?data=${data}`
+  });
 };
 
 const saveTransaction = async (keepGoing = false) => {
@@ -422,6 +453,11 @@ const saveTransaction = async (keepGoing = false) => {
       &:active { opacity: 0.7; }
       .meta-icon { width: 28rpx; height: 28rpx; }
       text { font-size: 22rpx; color: $text-sub; font-weight: $fw-medium; }
+      &.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+        filter: grayscale(1);
+      }
     }
     
     .remark-box-inline {
