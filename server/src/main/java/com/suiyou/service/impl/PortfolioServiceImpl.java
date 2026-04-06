@@ -60,7 +60,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .map(portfolio -> {
                     PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
                     List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
-                    dto.setItems(holdings.stream()
+                    dto.setHoldings(holdings.stream()
                             .map(PortfolioHoldingRespDTO::fromEntity)
                             .collect(Collectors.toList()));
                     return dto;
@@ -75,7 +75,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
         List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
-        dto.setItems(holdings.stream()
+        dto.setHoldings(holdings.stream()
                 .map(PortfolioHoldingRespDTO::fromEntity)
                 .collect(Collectors.toList()));
         return dto;
@@ -88,7 +88,7 @@ public class PortfolioServiceImpl implements PortfolioService {
  
         PortfolioRespDTO dto = PortfolioRespDTO.fromEntity(portfolio);
         List<PortfolioHolding> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId());
-        dto.setItems(holdings.stream()
+        dto.setHoldings(holdings.stream()
                 .map(PortfolioHoldingRespDTO::fromEntity)
                 .collect(Collectors.toList()));
         return dto;
