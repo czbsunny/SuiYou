@@ -1,5 +1,7 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.core.es.ElasticsearchService;
+import com.suiyou.dto.es.SymoblLatestResp;
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
 import com.suiyou.model.Portfolio;
@@ -7,7 +9,6 @@ import com.suiyou.model.PortfolioHolding;
 import com.suiyou.model.enums.PortfolioType;
 import com.suiyou.repository.PortfolioHoldingRepository;
 import com.suiyou.repository.PortfolioRepository;
-import com.suiyou.service.DataServerClient;
 import com.suiyou.service.PortfolioHoldingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
     private PortfolioRepository portfolioRepository;
 
     @Autowired
-    private DataServerClient dataServerClient;
+    private ElasticsearchService elasticsearchService;
 
     @Override
     @Transactional
@@ -39,7 +40,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
 
         // 从数据服务获取当前净值
-        Map<String, Map<String, Object>> navs = dataServerClient.getFundLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol()));
+        Map<String, SymoblLatestResp> navs = elasticsearchService.getStockLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol()));
 
         PortfolioHolding holding = convertToEntity(createPortfolioHoldingDTO, portfolio, navs);
 
@@ -86,12 +87,12 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         List<String> symbols = createPortfolioHoldingsDTO.stream()
             .map(CreatePortfolioHoldingDTO::getSymbol)
             .collect(Collectors.toList());
-
-        final Map<String, Map<String, Object>> navs = new HashMap<>();
+        
+        final Map<String, SymoblLatestResp> navs = new HashMap<>();
         if (PortfolioType.FUND.equals(portfolio.getType())) {
-            navs.putAll(dataServerClient.getFundLatestNavs(symbols));
+            navs.putAll(elasticsearchService.getFundLatestNavs(symbols));
         } else {
-            navs.putAll(dataServerClient.getStockLatestNavs(symbols));
+            navs.putAll(elasticsearchService.getStockLatestNavs(symbols));
         }
         
         List<PortfolioHolding> entities = createPortfolioHoldingsDTO.stream()
@@ -119,32 +120,32 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         return true;
     }
 
-    private PortfolioHolding convertToEntity(CreatePortfolioHoldingDTO dto, Portfolio portfolio, Map<String, Map<String, Object>> navs) {
+    private PortfolioHolding convertToEntity(CreatePortfolioHoldingDTO dto, Portfolio portfolio, Map<String, SymoblLatestResp> navs) {
         PortfolioHolding holding = new PortfolioHolding();
         holding.setPortfolio(portfolio);
         holding.setSymbol(dto.getSymbol());
         holding.setName(dto.getName());
-        double currentNav = Double.parseDouble(navs.get(dto.getSymbol()).get("nav").toString());
-        String currentDate = navs.get(dto.getSymbol()).get("date").toString();
+        double latestNav = navs.get(dto.getSymbol()).getLatestNav();
+        LocalDateTime navUpdatedAt = navs.get(dto.getSymbol()).getNavUpdatedAt();
 
         if (PortfolioType.FUND.equals(portfolio.getType())) {
-            holding.setQuantity(dto.getAmount() / currentNav);
+            holding.setQuantity(dto.getAmount() / latestNav);
             holding.setCost((dto.getAmount() - dto.getReturnValue()) / dto.getAmount());
             holding.setAmount(dto.getAmount());  
             holding.setReturnValue(dto.getReturnValue());
             holding.setReturnRate(dto.getReturnValue() / dto.getAmount());
             holding.setDailyReturn(0.0);
             holding.setDailyReturnRate(0.0);
-            holding.setNavUpdatedAt(LocalDateTime.parse(currentDate));
+            holding.setNavUpdatedAt(navUpdatedAt);
         } else {
             holding.setQuantity(dto.getQuantity());
             holding.setCost(dto.getCost());
-            holding.setAmount(dto.getQuantity() * currentNav);
-            holding.setReturnValue((currentNav - dto.getCost()) * dto.getQuantity());
-            holding.setReturnRate((currentNav - dto.getCost()) / dto.getCost());
+            holding.setAmount(dto.getQuantity() * latestNav);
+            holding.setReturnValue((latestNav - dto.getCost()) * dto.getQuantity());
+            holding.setReturnRate((latestNav - dto.getCost()) / dto.getCost());
             holding.setDailyReturn(0.0);
             holding.setDailyReturnRate(0.0);
-            holding.setNavUpdatedAt(LocalDateTime.parse(currentDate));
+            holding.setNavUpdatedAt(navUpdatedAt);
         }
 
         return holding;

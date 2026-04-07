@@ -9,17 +9,9 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.WildcardQuery;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch.core.BulkRequest;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.DeleteRequest;
-import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
-import co.elastic.clients.elasticsearch.core.bulk.IndexOperation;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
-import co.elastic.clients.elasticsearch.indices.ExistsRequest;
 import com.suiyou.config.ElasticsearchConfig;
 import com.suiyou.core.es.ElasticsearchService;
 import com.suiyou.dto.es.FundDocument;
@@ -27,6 +19,10 @@ import com.suiyou.dto.es.FundSearchBase;
 import com.suiyou.dto.es.FundSearchReq;
 import com.suiyou.dto.es.FundSearchResp;
 import com.suiyou.dto.es.FundChangeVO;
+import com.suiyou.dto.es.FundLatestResp;
+import com.suiyou.dto.es.StockLatestResp;
+import com.suiyou.dto.es.SymoblLatestResp;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,116 +46,6 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     @Override
     public boolean isAvailable() {
         return elasticsearchConfig.isEnableElasticsearch() && esClient != null;
-    }
-
-    @Override
-    public boolean createIndex() {
-        if (!isAvailable()) {
-            return false;
-        }
-
-        String indexName = elasticsearchConfig.getFundIndex();
-
-        try {
-            // 1. 检查索引是否已存在
-            boolean exists = esClient.indices()
-                    .exists(ExistsRequest.of(e -> e.index(indexName)))
-                    .value();
-            if (exists) {
-                log.info("索引 {} 已存在", indexName);
-                return true;
-            }
-
-            log.info("开始创建索引 {}", indexName);
-
-            // 2. 创建索引请求
-            CreateIndexRequest createIndexRequest = CreateIndexRequest.of(c -> c
-                .index(indexName)
-                .settings(s -> s
-                    .numberOfShards("1")
-                    .numberOfReplicas("0")
-                    .analysis(a -> a
-                        // pinyin analyzer for name/full_name
-                        .analyzer("pinyin_analyzer", an -> an
-                            .custom(ca -> ca
-                                .tokenizer("ik_max_word")
-                                .filter("lowercase")
-                            )
-                        )
-                    )
-                )
-                .mappings(m -> m
-                    .properties("fundCode", p -> p.keyword(k -> k))
-                    .properties("name", p -> p.text(t -> t
-                        .analyzer("ik_max_word")
-                        .fields("pinyin", f -> f.text(tt -> tt.analyzer("pinyin_analyzer")))
-                        .fields("raw", f -> f.keyword(k -> k))
-                    ))
-                    .properties("fullName", p -> p.text(t -> t
-                        .analyzer("ik_max_word")
-                        .fields("pinyin", f -> f.text(tt -> tt.analyzer("pinyin_analyzer")))
-                        .fields("raw", f -> f.keyword(k -> k))
-                    ))
-                    .properties("fundType", p -> p.keyword(k -> k))
-                    .properties("company", p -> p.keyword(k -> k))
-                    .properties("manager", p -> p.keyword(k -> k))
-                    .properties("establishDate", p -> p.date(d -> d))
-                    .properties("riskLevel", p -> p.keyword(k -> k))
-                    .properties("rating", p -> p.keyword(k -> k))
-                )
-            );
-
-            // 3. 执行创建
-            esClient.indices().create(createIndexRequest);
-
-            log.info("成功创建索引 {}", indexName);
-            return true;
-
-        } catch (Exception e) {
-            log.error("创建索引 {} 失败: {}", indexName, e.getMessage(), e);
-            return false;
-        }
-    }
-
-    @Override
-    public Map<String, Object> bulkIndexFunds(List<FundDocument> funds) {
-        if (!isAvailable() || funds == null || funds.isEmpty()) {
-            return Map.of("success", false, "total", 0, "success_count", 0);
-        }
-
-        try {
-            List<BulkOperation> operations = new ArrayList<>();
-            for (FundDocument fund : funds) {
-                IndexOperation<FundDocument> indexOp = IndexOperation.of(i -> i
-                        .index(elasticsearchConfig.getFundIndex())
-                        .id(fund.getFundCode())
-                        .document(fund)
-                );
-                operations.add(BulkOperation.of(o -> o.index(indexOp)));
-            }
-
-            BulkRequest bulkRequest = BulkRequest.of(b -> b.operations(operations));
-
-            long startTime = System.currentTimeMillis();
-            BulkResponse bulkResponse = esClient.bulk(bulkRequest);
-            long endTime = System.currentTimeMillis();
-
-            int successCount = (int) (operations.size() - bulkResponse.items().stream()
-                    .filter(item -> item.error() != null)
-                    .count());
-            
-            log.info("批量索引 {} 条基金数据，成功 {} 条，耗时 {}秒", 
-                    funds.size(), successCount, (endTime - startTime) / 1000.0);
-
-            return Map.of(
-                    "success", !bulkResponse.errors(),
-                    "total", funds.size(),
-                    "success_count", successCount
-            );
-        } catch (Exception e) {
-            log.error("批量索引基金数据失败: {}", e.getMessage());
-            return Map.of("success", false, "total", funds.size(), "success_count", 0);
-        }
     }
 
     @SuppressWarnings("null")
@@ -361,84 +247,6 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     }
 
     @Override
-    public boolean indexSingleFund(FundDocument fund) {
-        if (!isAvailable()) {
-            return false;
-        }
-
-        try {
-            IndexRequest<FundDocument> request = IndexRequest.of(i -> i
-                    .index(elasticsearchConfig.getFundIndex())
-                    .id(fund.getFundCode())
-                    .document(fund)
-            );
-
-            esClient.index(request);
-            return true;
-        } catch (Exception e) {
-            log.error("索引基金 {} 失败: {}", fund.getFundCode(), e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteFund(String fundCode) {
-        if (!isAvailable()) {
-            return false;
-        }
-
-        try {
-            DeleteRequest request = DeleteRequest.of(d -> d
-                    .index(elasticsearchConfig.getFundIndex())
-                    .id(fundCode)
-            );
-
-            esClient.delete(request);
-            return true;
-        } catch (Exception e) {
-            log.error("删除基金 {} 索引失败: {}", fundCode, e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
-    public boolean clearIndex() {
-        if (!isAvailable()) {
-            return false;
-        }
-
-        try {
-            // 使用删除所有文档的方式清空索引
-            SearchRequest searchRequest = SearchRequest.of(s -> s
-                    .index(elasticsearchConfig.getFundIndex())
-                    .query(MatchAllQuery.of(m -> m)._toQuery())
-                    .size(10000)
-            );
-
-            SearchResponse<FundDocument> searchResponse = esClient.search(searchRequest, FundDocument.class);
-            List<BulkOperation> deleteOperations = new ArrayList<>();
-
-            for (Hit<FundDocument> hit : searchResponse.hits().hits()) {
-                deleteOperations.add(BulkOperation.of(o -> o.delete(d -> d
-                        .index(elasticsearchConfig.getFundIndex())
-                        .id(hit.id())
-                )));
-            }
-
-            if (!deleteOperations.isEmpty()) {
-                BulkRequest bulkRequest = BulkRequest.of(b -> b.operations(deleteOperations));
-                esClient.bulk(bulkRequest);
-            }
-
-            log.info("清空索引 {} 成功", elasticsearchConfig.getFundIndex());
-            return true;
-        } catch (Exception e) {
-            log.error("清空索引 {} 失败: {}", elasticsearchConfig.getFundIndex(), e.getMessage());
-            return false;
-        }
-    }
-
-    @Override
     public Map<String, FundChangeVO> getFundChanges(List<String> fundCodes) {
         Map<String, FundChangeVO> result = new HashMap<>();
 
@@ -470,6 +278,78 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
             }
 
             log.debug("ES获取基金数据 {} 条", result.size());
+
+        } catch (Exception e) {
+            log.error("ES查询失败", e);
+        }
+
+        return result;
+    }
+
+    @Override
+    public Map<String, SymoblLatestResp> getFundLatestNavs(List<String> fundCodes) {
+        Map<String, SymoblLatestResp> result = new HashMap<>();
+
+        if (!isAvailable() || fundCodes == null || fundCodes.isEmpty()) {
+            return result;
+        }
+
+        try {
+            SearchRequest request = SearchRequest.of(s -> s
+                    .index(elasticsearchConfig.getFundIndex())
+                    .query(q -> q
+                            .ids(i -> i.values(fundCodes))
+                    )
+                    .size(fundCodes.size())
+            );
+
+            SearchResponse<FundLatestResp> response =
+                    esClient.search(request, FundLatestResp.class);
+
+            for (Hit<FundLatestResp> hit : response.hits().hits()) {
+                FundLatestResp resp = hit.source();
+                if (resp != null) {
+                    result.put(resp.getFundCode(), resp.toSymoblLatestResp());
+                }
+            }
+
+            log.debug("ES获取基金数据 {} 条", result.size());
+
+        } catch (Exception e) {
+            log.error("ES查询失败", e);
+        }
+
+        return result;
+    }
+
+    @Override
+    public Map<String, SymoblLatestResp> getStockLatestNavs(List<String> stockCodes) {
+        Map<String, SymoblLatestResp> result = new HashMap<>();
+
+        if (!isAvailable() || stockCodes == null || stockCodes.isEmpty()) {
+            return result;
+        }
+
+        try {
+            SearchRequest request = SearchRequest.of(s -> s
+                    .index("stocks")
+                    .query(q -> q
+                            .ids(i -> i.values(stockCodes))
+                    )
+                    .size(stockCodes.size())
+            );
+
+            SearchResponse<StockLatestResp> response =
+                    esClient.search(request, StockLatestResp.class);
+
+            for (Hit<StockLatestResp> hit : response.hits().hits()) {
+                StockLatestResp resp = hit.source();
+                if (resp != null) {
+                    result.put(resp.getStockCode(), resp.toSymoblLatestResp());
+                }
+            }
+
+            log.debug("ES获取股票数据 {} 条", result.size());
 
         } catch (Exception e) {
             log.error("ES查询失败", e);
