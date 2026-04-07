@@ -301,6 +301,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
                             .ids(i -> i.values(fundCodes))
                     )
                     .size(fundCodes.size())
+                    .source(src -> src
+                        .filter(f -> f.includes("fundCode", "latestNav", "latestNavDate", "navUpdatedAt"))
+                    )
             );
 
             SearchResponse<FundLatestResp> response =
@@ -337,6 +340,9 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
                             .ids(i -> i.values(stockCodes))
                     )
                     .size(stockCodes.size())
+                    .source(src -> src
+                        .filter(f -> f.includes("stockCode", "latestNav", "latestNavDate", "navUpdatedAt"))
+                    )
             );
 
             SearchResponse<StockLatestResp> response =
