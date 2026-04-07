@@ -11,18 +11,18 @@ router = APIRouter(prefix="/api/fund", tags=["fund"])
 class BatchFundNavRequest(BaseModel):
     fund_codes: List[str] = Field(..., example=["000001", "000002", "320007"])
 
-@router.post("/nav", response_model=Dict[str, Optional[float]])
+@router.post("/nav", response_model=Dict[str, Optional[Dict[float, str]]])
 async def get_fund_latest_nav(request: BatchFundNavRequest, db: Session = Depends(get_db)):
     if not request.fund_codes:
         return {}
 
     try:
         # 1. 构造子查询
-        # 使用 func.row_number() 替代直接导入的 row_number
         subquery = (
             db.query(
                 FundNavHistory.fund_code,
                 FundNavHistory.nav,
+                FundNavHistory.date,
                 func.row_number().over(
                     partition_by=FundNavHistory.fund_code,
                     order_by=FundNavHistory.date.desc()
@@ -35,15 +35,15 @@ async def get_fund_latest_nav(request: BatchFundNavRequest, db: Session = Depend
         # 2. 主查询：只取序号为 1 的记录
         latest_navs = db.query(
             subquery.c.fund_code, 
-            subquery.c.nav
+            subquery.c.nav,
+            subquery.c.date
         ).filter(subquery.c.rn == 1).all()
 
         # 3. 构造结果字典
         result = {code: None for code in request.fund_codes}
         
         for nav in latest_navs:
-            # 注意：从子查询结果中取值时使用字段名
-            result[nav.fund_code] = float(nav.nav) if nav.nav is not None else 0.0
+            result[nav.fund_code] = {"nav": float(nav.nav), "date": nav.date} if nav.nav is not None else {"nav": 0.0, "date": None}
         
         return result
 
