@@ -6,6 +6,26 @@ import { useAuthStore } from '@/stores/auth.js'
 const configStore = useConfigStore()
 const authStore = useAuthStore()
 
+/**
+ * 全局请求拦截器配置
+ */
+const setupInterceptors = () => {
+  uni.addInterceptor('uploadFile', {
+    invoke(args) {
+      if (!args.url.startsWith('http')) {
+        args.url = 'https://www.zhitouying.cn' + args.url;
+      }
+      args.header = args.header || {};
+      const token = uni.getStorageSync('token');
+      if (token) args.header['Authorization'] = `Bearer ${token}`;
+      uni.showLoading({ title: '上传中', mask: true });
+    },
+    complete() {
+      uni.hideLoading();
+    }
+  });
+};
+
 onLaunch(async () => {
   console.log('App Launching...')
   const CURRENT_VERSION = '1.1.0'; // 当前代码的版本
@@ -24,6 +44,8 @@ onLaunch(async () => {
   // 2. 登录完成后（或并行）初始化全局配置
   await configStore.initConfigs()
 
+  setupInterceptors()
+  
   console.log('App Ready')
 })
 </script>

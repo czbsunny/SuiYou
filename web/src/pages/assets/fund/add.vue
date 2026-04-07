@@ -124,8 +124,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { createPortfolioHoldings } from '@/services/portfolioService.js';
-import { importFundHoldings } from '@/services/fund.js';
+import { createPortfolioHoldings } from '@/services/portfolioService';
+import { recognize_fund } from '@/services/ocr';
 import Keyboard from '@/components/common/Keyboard.vue';
 
 const portfolioId = ref('');
@@ -162,11 +162,9 @@ const handleImageImport = () => {
 const uploadFundImage = async (filePath) => {
   uni.showLoading({ title: '图片识别中...', mask: true });
   try {
-    const res = await importFundHoldings(filePath);
-    
-    if (res.success) {
-      const responseData = res.data;
-      const newList = responseData.fundInfoList || [];
+    const res = await recognize_fund(filePath);
+    if (res.status === 'success') {
+      const newList = res.fundInfoList || [];
       newList.forEach(item => {
         stagingList.value.unshift({
           symbol: item.symbol,
@@ -177,12 +175,10 @@ const uploadFundImage = async (filePath) => {
       });
       uni.showToast({ title: `识别成功，已添加${newList.length}笔`, icon: 'none' });
     } else {
-      uni.showToast({ title: '识别失败，请手动输入', icon: 'none' });
+      uni.showToast({ title: '识别失败，请尝试手动输入', icon: 'none', duration: 2000 });
     }
   } catch (error) {
     uni.showToast({ title: '识别异常', icon: 'none' });
-  } finally {
-    uni.hideLoading();
   }
 };
 
