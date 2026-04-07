@@ -1,6 +1,7 @@
 package com.suiyou.service;
 
 import com.suiyou.dto.portfolio.CreatePortfolioHoldingDTO;
+import com.suiyou.dto.portfolio.UpdatePortfolioHodingDTO;
 import com.suiyou.dto.portfolio.PortfolioHoldingRespDTO;
 import com.suiyou.model.PortfolioHolding;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,10 @@ public interface PortfolioHoldingService {
 
     /**
      * 更新持仓
-     * @param id 持仓ID
-     * @param createPortfolioHoldingDTO 持仓更新DTO
+     * @param dto 持仓更新DTO
      * @return 更新后的持仓
      */
-    PortfolioHolding updatePortfolioHolding(Long id, CreatePortfolioHoldingDTO createPortfolioHoldingDTO);
+    PortfolioHolding updatePortfolioHolding(UpdatePortfolioHodingDTO dto);
 
     /**
      * 添加组合持仓

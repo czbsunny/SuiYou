@@ -187,7 +187,7 @@ export default {
     },
     closeMenu() { this.menuVisible = false; },
     handleEdit() {
-      uni.navigateTo({ url: `/pages/assets/fund/edit?id=${this.selectedHolding.id}` });
+      uni.navigateTo({ url: `/pages/assets/fund/edit?portfolioId=${this.portfolio.id}&holdingInfo=${encodeURIComponent(JSON.stringify(this.selectedHolding))}` });
       this.closeMenu();
     },
     async handleDelete() {
@@ -322,7 +322,13 @@ export default {
   padding: 24rpx 0;
   border-bottom: 1rpx solid rgba($gray-100, 0.5);
   
-  .f-name { font-size: 26rpx; color: $text-main; font-weight: $fw-medium; margin-bottom: 4rpx; }
+  .col-name {
+    display: flex;
+    flex-direction: column;
+    gap: 8rpx;
+  }
+  
+  .f-name { font-size: 26rpx; color: $text-main; font-weight: $fw-medium; }
   .f-tags {
     display: flex; align-items: center;
     .tag { font-size: 16rpx; padding: 2rpx 8rpx; background: $gray-50; color: $text-muted; border-radius: 4rpx; margin-right: 10rpx; }
@@ -356,7 +362,7 @@ export default {
 .num-font { font-family: $font-family-money; @include tabular-nums; font-size: 26rpx; }
 .text-gain { color: $text-gain; }
 .text-loss { color: $text-loss; }
-.truncate { @include text-ellipsis; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .item-hover-bg { background-color: $bg-subtle; }
 .safe-area-bottom { height: calc(env(safe-area-inset-bottom) + 30rpx); }
 </style>
