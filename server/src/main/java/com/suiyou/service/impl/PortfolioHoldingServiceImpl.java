@@ -40,9 +40,12 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
 
-        // 从数据服务获取当前净值
-        Map<String, SymoblLatestResp> navs = elasticsearchService.getStockLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol()));
-
+        final Map<String, SymoblLatestResp> navs = new HashMap<>();
+        if (PortfolioType.FUND.equals(portfolio.getType())) {
+            navs.putAll(elasticsearchService.getFundLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol())));
+        } else {
+            navs.putAll(elasticsearchService.getStockLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol())));
+        }
         PortfolioHolding holding = createEntity(createPortfolioHoldingDTO, portfolio, navs);
 
         return portfolioHoldingRepository.save(holding);
@@ -72,8 +75,12 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
 
-        // 从数据服务获取当前净值
-        Map<String, SymoblLatestResp> navs = elasticsearchService.getStockLatestNavs(Arrays.asList(existingHolding.getSymbol()));
+        final Map<String, SymoblLatestResp> navs = new HashMap<>();
+        if (PortfolioType.FUND.equals(portfolio.getType())) {
+            navs.putAll(elasticsearchService.getFundLatestNavs(Arrays.asList(existingHolding.getSymbol())));
+        } else {
+            navs.putAll(elasticsearchService.getStockLatestNavs(Arrays.asList(existingHolding.getSymbol())));
+        }
 
         updateEntity(existingHolding, dto, portfolio, navs);
         
