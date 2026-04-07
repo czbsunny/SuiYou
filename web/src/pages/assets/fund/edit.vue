@@ -69,7 +69,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { updatePortfolioHolding } from '@/services/portfolioHolding';
+import { updatePortfolioHolding } from '@/services/portfolioHoldService';
 import Keyboard from '@/components/common/Keyboard.vue';
 
 const activeField = ref('amount');
@@ -83,7 +83,11 @@ onLoad((options) => {
   if (options.holdingInfo) {
     const holdingInfo = JSON.parse(decodeURIComponent(options.holdingInfo));
     console.log(holdingInfo);
-    form.value = holdingInfo;
+    form.value = {
+      ...holdingInfo,
+      amount: String(holdingInfo.amount || 0),
+      returnValue: String(holdingInfo.returnValue || 0),
+    };
   }
 });
 
@@ -124,10 +128,10 @@ const finalSubmit = async () => {
   if (!form.value.amount) return uni.showToast({ title: '请填写金额', icon: 'none' });
   uni.showLoading({ title: '正在保存...', mask: true });
   try {
-    payload = {
+    const payload = {
       id: form.value.id,
-      amount: form.value.amount,
-      returnValue: form.value.returnValue,
+      amount: parseFloat(form.value.amount),
+      returnValue: parseFloat(form.value.returnValue),
     }
     await updatePortfolioHolding(payload);
     uni.showToast({ title: '修改成功' });

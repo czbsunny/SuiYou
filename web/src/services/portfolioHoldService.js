@@ -1,7 +1,7 @@
 // 组合持仓相关API服务模块
 import { get, post, put, del } from './apiService';
 
-const PORTFOLIO_HOLDING_API_BASE = '/portfolioholdings';
+const PORTFOLIO_HOLDING_API_BASE = '/api/portfolioholdings';
 
 /**
  * 根据ID获取组合持仓
