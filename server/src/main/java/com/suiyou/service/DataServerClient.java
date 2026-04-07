@@ -14,7 +14,6 @@ import com.suiyou.config.DataServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.Iterator;
 
 @Service
 public class DataServerClient {
@@ -56,10 +55,7 @@ public class DataServerClient {
                 while (fields.hasNext()) {
                     Map.Entry<String, JsonNode> entry = fields.next();
                     String fundCode = entry.getKey();
-                    JsonNode fundData = entry.getValue();
-
-                    // 假设响应中的净值字段名为 "nav"，根据实际API调整
-                    double nav = fundData.get("nav").asDouble();
+                    double nav = entry.getValue().asDouble();
                     result.put(fundCode, nav);
                 }
 
@@ -101,10 +97,7 @@ public class DataServerClient {
                 while (fields.hasNext()) {
                     Map.Entry<String, JsonNode> entry = fields.next();
                     String stockCode = entry.getKey();
-                    JsonNode stockData = entry.getValue();
-
-                    // 假设响应中的净值字段名为 "nav"，根据实际API调整
-                    double nav = stockData.get("nav").asDouble();
+                    double nav = entry.getValue().asDouble();
                     result.put(stockCode, nav);
                 }
 
