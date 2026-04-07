@@ -73,8 +73,8 @@
               <view class="col-name">
                 <text class="f-name truncate">{{ item.name }}</text>
                 <view class="f-tags">
-                  <text :class="['tag', { 'updated': isUpdated(item.navDate) }]">
-                    {{ isUpdated(item.navDate) ? '已更新' : formatNavDate(item.navDate) }}
+                  <text :class="['tag', { 'updated': isUpdated(item.navUpdatedAt) }]">
+                    {{ isUpdated(item.navUpdatedAt) ? '已更新' : formatNavDate(item.navUpdatedAt) }}
                   </text>
                   <text class="f-amount num-font">{{ isAssetHidden ? '****' : formatMoney(item.amount) }}</text>
                 </view>
@@ -85,8 +85,8 @@
               <view :class="['col-profit', 'num-font', getReturnClass(item.dailyReturn)]">
                 {{ item.dailyReturn >= 0 ? '+' : '' }}{{ formatMoney(item.dailyReturn) }}
               </view>
-              <view :class="['col-total', 'num-font', getReturnClass(item.totalReturn)]">
-                {{ item.totalReturn >= 0 ? '+' : '' }}{{ formatMoney(item.totalReturn) }}
+              <view :class="['col-total', 'num-font', getReturnClass(item.returnValue)]">
+                {{ item.returnValue >= 0 ? '+' : '' }}{{ formatMoney(item.returnValue) }}
               </view>
             </view>
           </view>
