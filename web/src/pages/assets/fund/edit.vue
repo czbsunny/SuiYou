@@ -69,39 +69,23 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { updateFundHoldings } from '@/services/fund.js';
+import { updatePortfolioHolding } from '@/services/portfolioHolding';
 import Keyboard from '@/components/common/Keyboard.vue';
 
-const accountId = ref('');
-const assetItemId = ref('');
 const activeField = ref('amount');
 const showKeyboard = ref(false);
+const portfolioId = ref('');
 
-const form = ref({ symbol: '', name: '', amount: '', returnValue: '' });
+const form = ref({ id: '', symbol: '', name: '', amount: '', returnValue: '' });
 
 onLoad((options) => {
-  accountId.value = options.accountId;
-  assetItemId.value = options.assetItemId;
-  if (options.fundInfo) {
-    const fundInfo = JSON.parse(decodeURIComponent(options.fundInfo));
-    console.log(fundInfo);
-    form.value = {
-      symbol: fundInfo.code || '',
-      name: fundInfo.name || '',
-      amount: formatAmount(fundInfo.amount),
-      returnValue: formatAmount(fundInfo.returnValue)
-    };
+  portfolioId.value = options.portfolioId;
+  if (options.holdingInfo) {
+    const holdingInfo = JSON.parse(decodeURIComponent(options.holdingInfo));
+    console.log(holdingInfo);
+    form.value = holdingInfo;
   }
 });
-
-const formatAmount = (value) => {
-  if (!value) return '';
-  let strValue = String(value).replace(/[^0-9.]/g, '');
-  const parts = strValue.split('.');
-  if (parts.length > 2) strValue = parts[0] + '.' + parts.slice(1).join('');
-  if (parts.length === 2 && parts[1].length > 2) strValue = parts[0] + '.' + parts[1].substring(0, 2);
-  return strValue;
-};
 
 const getDisabledKeys = () => {
   const disabled = [];
@@ -140,9 +124,14 @@ const finalSubmit = async () => {
   if (!form.value.amount) return uni.showToast({ title: '请填写金额', icon: 'none' });
   uni.showLoading({ title: '正在保存...', mask: true });
   try {
-    await updateFundHoldings(accountId.value, assetItemId.value, form.value);
+    payload = {
+      id: form.value.id,
+      amount: form.value.amount,
+      returnValue: form.value.returnValue,
+    }
+    await updatePortfolioHolding(payload);
     uni.showToast({ title: '修改成功' });
-    uni.$emit('refreshHoldings', accountId.value);
+    uni.$emit('refreshHoldings', portfolioId.value);
     setTimeout(() => uni.navigateBack(), 1200);
   } catch (e) {
     uni.showToast({ title: e.message || '保存失败', icon: 'none' });

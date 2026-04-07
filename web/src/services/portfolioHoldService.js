@@ -46,13 +46,12 @@ export const createPortfolioHolding = async (holdingData, portfolioId) => {
 
 /**
  * 更新组合持仓
- * @param {number|string} holdingId - 持仓ID
  * @param {Object} holdingData - 持仓数据
  * @returns {Promise<Object>} 更新结果
  */
-export const updatePortfolioHolding = async (holdingId, holdingData) => {
+export const updatePortfolioHolding = async (holdingData) => {
   try {
-    const response = await put(`${PORTFOLIO_HOLDING_API_BASE}/${holdingId}`, holdingData);
+    const response = await put(PORTFOLIO_HOLDING_API_BASE, holdingData);
     
     if (response.statusCode === 200) {
       return response.data;
