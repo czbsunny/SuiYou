@@ -28,7 +28,7 @@ public class DataServerClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    public Map<String, Double> getFundLatestNavs(List<String> fundCodes) {
+    public Map<String, Map<String, Object>> getFundLatestNavs(List<String> fundCodes) {
         try {
             String url = dataServerConfig.getApiUrl("/api/fund/nav");
 
@@ -49,14 +49,16 @@ public class DataServerClient {
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 JsonNode root = objectMapper.readTree(response.getBody());
-                Map<String, Double> result = new HashMap<>();
+                Map<String, Map<String, Object>> result = new HashMap<>();
 
                 Iterator<Map.Entry<String, JsonNode>> fields = root.fields();
                 while (fields.hasNext()) {
                     Map.Entry<String, JsonNode> entry = fields.next();
                     String fundCode = entry.getKey();
-                    double nav = entry.getValue().asDouble();
-                    result.put(fundCode, nav);
+                    JsonNode navData = entry.getValue();
+                    double nav = navData.get("nav").asDouble();
+                    String date = navData.get("date").asText();
+                    result.put(fundCode, Map.of("nav", nav, "date", date));
                 }
 
                 return result;
@@ -70,7 +72,7 @@ public class DataServerClient {
         }
     }
 
-    public Map<String, Double> getStockLatestNavs(List<String> stockCodes) {
+    public Map<String, Map<String, Object>> getStockLatestNavs(List<String> stockCodes) {
         try {
             String url = dataServerConfig.getApiUrl("/api/stock/nav");
 
@@ -91,14 +93,16 @@ public class DataServerClient {
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 JsonNode root = objectMapper.readTree(response.getBody());
-                Map<String, Double> result = new HashMap<>();
+                Map<String, Map<String, Object>> result = new HashMap<>();
 
                 Iterator<Map.Entry<String, JsonNode>> fields = root.fields();
                 while (fields.hasNext()) {
                     Map.Entry<String, JsonNode> entry = fields.next();
                     String stockCode = entry.getKey();
-                    double nav = entry.getValue().asDouble();
-                    result.put(stockCode, nav);
+                    JsonNode navData = entry.getValue();
+                    double nav = navData.get("nav").asDouble();
+                    String date = navData.get("date").asText();
+                    result.put(stockCode, Map.of("nav", nav, "date", date));
                 }
 
                 return result;

@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
@@ -36,17 +38,10 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("组合不存在"));
 
-        PortfolioHolding holding = new PortfolioHolding();
-        if (portfolio.getType().equals(PortfolioType.FUND)) {
-            holding.setPortfolio(portfolio);
-            holding.setSymbol(createPortfolioHoldingDTO.getSymbol());
-            holding.setName(createPortfolioHoldingDTO.getName());
-            holding.setQuantity(createPortfolioHoldingDTO.getQuantity());
-            holding.setCost(createPortfolioHoldingDTO.getCost());
-            
-            // 计算持有金额
-            holding.setAmount(createPortfolioHoldingDTO.getQuantity() * createPortfolioHoldingDTO.getCost());
-        }
+        // 从数据服务获取当前净值
+        Map<String, Map<String, Object>> navs = dataServerClient.getFundLatestNavs(Arrays.asList(createPortfolioHoldingDTO.getSymbol()));
+
+        PortfolioHolding holding = convertToEntity(createPortfolioHoldingDTO, portfolio, navs);
 
         return portfolioHoldingRepository.save(holding);
     }
@@ -92,7 +87,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
             .map(CreatePortfolioHoldingDTO::getSymbol)
             .collect(Collectors.toList());
 
-        final Map<String, Double> navs = new HashMap<>();
+        final Map<String, Map<String, Object>> navs = new HashMap<>();
         if (PortfolioType.FUND.equals(portfolio.getType())) {
             navs.putAll(dataServerClient.getFundLatestNavs(symbols));
         } else {
@@ -124,12 +119,13 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
         return true;
     }
 
-    private PortfolioHolding convertToEntity(CreatePortfolioHoldingDTO dto, Portfolio portfolio, Map<String, Double> navs) {
+    private PortfolioHolding convertToEntity(CreatePortfolioHoldingDTO dto, Portfolio portfolio, Map<String, Map<String, Object>> navs) {
         PortfolioHolding holding = new PortfolioHolding();
         holding.setPortfolio(portfolio);
         holding.setSymbol(dto.getSymbol());
         holding.setName(dto.getName());
-        double currentNav = navs.get(dto.getSymbol());
+        double currentNav = Double.parseDouble(navs.get(dto.getSymbol()).get("nav").toString());
+        String currentDate = navs.get(dto.getSymbol()).get("date").toString();
 
         if (PortfolioType.FUND.equals(portfolio.getType())) {
             holding.setQuantity(dto.getAmount() / currentNav);
@@ -139,6 +135,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
             holding.setReturnRate(dto.getReturnValue() / dto.getAmount());
             holding.setDailyReturn(0.0);
             holding.setDailyReturnRate(0.0);
+            holding.setNavUpdatedAt(LocalDateTime.parse(currentDate));
         } else {
             holding.setQuantity(dto.getQuantity());
             holding.setCost(dto.getCost());
@@ -147,6 +144,7 @@ public class PortfolioHoldingServiceImpl implements PortfolioHoldingService {
             holding.setReturnRate((currentNav - dto.getCost()) / dto.getCost());
             holding.setDailyReturn(0.0);
             holding.setDailyReturnRate(0.0);
+            holding.setNavUpdatedAt(LocalDateTime.parse(currentDate));
         }
 
         return holding;
