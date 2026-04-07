@@ -11,7 +11,11 @@ router = APIRouter(prefix="/api/fund", tags=["fund"])
 class BatchFundNavRequest(BaseModel):
     fund_codes: List[str] = Field(..., example=["000001", "000002", "320007"])
 
-@router.post("/nav", response_model=Dict[str, Optional[Dict[float, str]]])
+class FundNavResponse(BaseModel):
+    nav: float
+    date: Optional[str]
+
+@router.post("/nav", response_model=Dict[str, Optional[FundNavResponse]])
 async def get_fund_latest_nav(request: BatchFundNavRequest, db: Session = Depends(get_db)):
     if not request.fund_codes:
         return {}
@@ -43,7 +47,7 @@ async def get_fund_latest_nav(request: BatchFundNavRequest, db: Session = Depend
         result = {code: None for code in request.fund_codes}
         
         for nav in latest_navs:
-            result[nav.fund_code] = {"nav": float(nav.nav), "date": nav.date} if nav.nav is not None else {"nav": 0.0, "date": None}
+            result[nav.fund_code] = {"nav": float(nav.nav), "date": nav.date.isoformat()} if nav.nav is not None else {"nav": 0.0, "date": None}
         
         return result
 
