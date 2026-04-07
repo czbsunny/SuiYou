@@ -49,8 +49,6 @@
       <button class="btn-primary" @tap="finalSubmit">
         确认修改
       </button>
-      <!-- 安全区适配 -->
-      <view class="safe-area-bottom"></view>
     </view>
 
     <!-- 3. 数字键盘 -->
@@ -61,6 +59,7 @@
       :showSubmitBar="false"
       @keyPress="onKeyPress"
       @nextField="nextField"
+      @done="showKeyboard = false"
       @close="showKeyboard = false"
     />
   </view>
@@ -153,22 +152,22 @@ const finalSubmit = async () => {
 
 /* 录入卡片重构 */
 .input-card {
-  margin: $spacing-md;
-  padding: 40rpx;
+  margin: $spacing-sm $spacing-base;
+  padding: $spacing-sm $spacing-base;
   
   .card-title-row {
-    margin-bottom: 40rpx;
+    margin-bottom: $spacing-sm;
   }
   
   .card-title {
-    font-size: 34rpx;
+    font-size: 32rpx;
     font-weight: $fw-semibold;
     color: $text-main;
   }
 }
 
 .field-item {
-  padding: 24rpx 0;
+  padding: $spacing-sm 0 0;
   border-bottom: 2rpx solid $border-color;
   transition: all 0.3s ease;
   
@@ -190,7 +189,7 @@ const finalSubmit = async () => {
 
   .field-label {
     font-size: 22rpx;
-    color: $text-placeholder;
+    color: $text-regular;
     font-weight: $fw-medium;
     margin-bottom: 12rpx;
     display: block;

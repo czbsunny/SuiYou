@@ -43,9 +43,13 @@
           <view class="key-btn del-key" @touchstart.stop.prevent="handleKeyPress('delete')" hover-class="key-hover-bg">
             <image src="/static/images/del-key.png" mode="aspectFit" class="del-icon" />
           </view>
-          <!-- 下一步/确定键 -->
+          <!-- 下一步键 -->
           <view class="key-btn next-key" @tap="handleNextField" hover-class="next-key-hover">
-            {{ nextFieldText }}
+            {{ nextText }}
+          </view>
+          <!-- 完成键 -->
+          <view class="key-btn done-key" @tap="handleDone" hover-class="done-key-hover">
+            {{ doneText }}
           </view>
         </view>
       </view>
@@ -61,10 +65,11 @@ const props = defineProps({
   disabledKeys: { type: Array, default: () => [] },
   showSubmitBar: { type: Boolean, default: false },
   submitBarData: { type: Object, default: null },
-  nextFieldText: { type: String, default: '确认' }
+  nextText: { type: String, default: '下一步' },
+  doneText: { type: String, default: '完成' }
 });
 
-const emit = defineEmits(['keyPress', 'nextField', 'close', 'submit']);
+const emit = defineEmits(['keyPress', 'nextField', 'done', 'close', 'submit']);
 
 const handleKeyPress = (key) => {
   // 增加触感反馈，金融级体验
@@ -75,6 +80,11 @@ const handleKeyPress = (key) => {
 const handleNextField = () => {
   uni.vibrateShort();
   emit('nextField');
+};
+
+const handleDone = () => {
+  uni.vibrateShort();
+  emit('done');
 };
 </script>
 
@@ -91,7 +101,7 @@ const handleNextField = () => {
   background: $bg-white; 
   border-radius: $radius-lg $radius-lg 0 0; // 32rpx 圆角
   padding: $spacing-base; 
-  padding-bottom: calc($spacing-base + env(safe-area-inset-bottom));
+  padding-bottom: $spacing-lg;
   box-shadow: 0 -10rpx 40rpx rgba(189, 182, 175, 0.2); // 环境色投影
   z-index: 999;
   animation: slideUp 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -154,6 +164,19 @@ const handleNextField = () => {
       
       &.next-key-hover {
         background: rgba($primary, 0.15);
+      }
+    }
+    
+    /* 功能键：完成 */
+    &.done-key { 
+      flex: 1; 
+      background: $primary;
+      color: $text-inverse; 
+      font-size: 32rpx; 
+      font-weight: $fw-semibold;
+      
+      &.done-key-hover {
+        background: $primary-pressed;
       }
     }
     

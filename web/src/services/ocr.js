@@ -9,9 +9,9 @@ export const recognize_fund = async (filePath) => {
         filePath: filePath,
         name: 'file',
     });
-    
+    console.log('基金持仓识别响应:', res);
     if (res.statusCode === 200) {
-      return res.data
+      return JSON.parse(res.data)
     } else {
       throw new Error(`请求失败: ${res.statusCode}`);
     }

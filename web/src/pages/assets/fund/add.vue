@@ -116,6 +116,7 @@
       :showSubmitBar="false"
       @keyPress="onKeyPress"
       @nextField="nextField"
+      @done="() => { if (pushToStaging()) showKeyboard = false }"
       @close="showKeyboard = false"
     />
   </view>
@@ -227,7 +228,8 @@ const nextField = () => {
 
 const pushToStaging = () => {
   if (form.value.symbol.length < 6 || !form.value.amount) {
-    return uni.showToast({ title: '请完善基金信息及金额', icon: 'none' });
+    uni.showToast({ title: '请完善基金信息及金额', icon: 'none' });
+    return false;
   }
   if (isEditing.value) {
     stagingList.value[editingIndex.value] = { ...form.value };
@@ -237,6 +239,7 @@ const pushToStaging = () => {
   }
   form.value = { symbol: '', name: '', amount: '', returnValue: '' };
   activeField.value = 'symbol';
+  return true;
 };
 
 const handleEdit = (index) => {
@@ -272,26 +275,33 @@ const formatNumber = (val) => Number(val).toLocaleString();
 
 <style lang="scss" scoped>
 .batch-container {
-  min-height: 100vh; background-color: $bg-page; display: flex; flex-direction: column;
+  height: 100vh; 
+  background-color: $bg-page; 
+  display: flex; 
+  flex-direction: column; 
+  /* 关键：防止整个页面滚动 */
+  overflow: hidden; 
 }
-
-/* 录入卡片 */
 .input-card {
-  margin: $spacing-md; 
+  flex-shrink: 0; /* 关键：防止在空间不足时被压缩 */
+  margin: $spacing-sm $spacing-base;
   padding: $spacing-sm $spacing-base;
-  .card-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30rpx; }
+  background-color: #fff; /* 确保有背景色遮盖底层 */
+  border-radius: $radius-lg;
+  z-index: 10;
+  .card-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-sm; }
   .card-title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
   .edit-mode-tag { font-size: 20rpx; color: $primary; background: $primary-subtle; padding: 6rpx 20rpx; border-radius: 20rpx; font-weight: $fw-medium; }
 }
 
 .field-item {
-  padding: $spacing-base 0; border-bottom: 2rpx solid $border-color; transition: all 0.3s ease;
+  padding: $spacing-sm 0 0; border-bottom: 2rpx solid $border-color; transition: all 0.3s ease;
   &.active { 
     border-bottom-color: $primary; 
     .field-label { font-size: 24rpx; color: $primary; }
     .value { color: $text-main; font-weight: $fw-bold; }
   }
-  .field-label { font-size: 24rpx; color: $text-placeholder; font-weight: $fw-medium; margin-bottom: 12rpx; display: block; }
+  .field-label { font-size: 24rpx; color: $text-regular; font-weight: $fw-medium; margin-bottom: 12rpx; display: block; }
 }
 
 .value-row {
@@ -315,23 +325,38 @@ const formatNumber = (val) => Number(val).toLocaleString();
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 .stage-push-btn {
-  margin-top: 40rpx; height: 90rpx; @include flex-center; background: $bg-white; border-radius: $radius-base;
-  font-size: 28rpx; font-weight: $fw-semibold; color: $text-muted; border: none; &::after { border: none; }
+  margin-top: 40rpx; height: 90rpx; @include flex-center; background: $primary-dark; border-radius: $radius-base;
+  font-size: 28rpx; font-weight: $fw-semibold; color: $text-inverse; border: none; &::after { border: none; }
 }
 
 /* 列表区 */
 .staging-area {
-  flex: 1; padding: 0 $spacing-md;
-  .area-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; padding: 0 10rpx;
+  flex: 1; /* 占据剩余的所有垂直空间 */
+  display: flex;
+  flex-direction: column;
+  padding: 0 $spacing-base;
+  overflow: hidden; /* 关键：容器本身不滚动 */
+
+  .area-header { 
+    flex-shrink: 0; /* 标题头也不滚动 */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 24rpx; 
+    padding: 0 10rpx;
     .title { font-size: 26rpx; color: $text-placeholder; font-weight: $fw-semibold; }
     .count-tag { font-size: 24rpx; color: $text-placeholder; background: $border-color; padding: 2rpx 16rpx; border-radius: 20rpx; }
   }
 }
 
-.list-scroll { height: 420rpx; }
+.list-scroll { 
+  flex: 1; 
+  height: 0;
+  padding-bottom: 160rpx; 
+}
 
 .staging-card {
-  background: $bg-white; border-radius: $radius-lg; padding: $spacing-md; margin-bottom: $spacing-base;
+  background: $bg-white; border-radius: $radius-lg; padding: $spacing-base; margin-bottom: $spacing-sm;
   display: flex; justify-content: space-between; align-items: center; box-shadow: $shadow-card;
   .s-fund-row { display: flex; align-items: center; margin-bottom: 12rpx; }
   .s-name { font-size: 26rpx; color: $text-main; font-weight: $fw-semibold; margin-right: 12rpx; }
@@ -347,9 +372,15 @@ const formatNumber = (val) => Number(val).toLocaleString();
 
 /* 底部按钮 */
 .bottom-bar { 
+  flex-shrink: 0;
+  position: fixed; /* 或者保持 fixed */
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
   padding: $spacing-md; 
   background-color: $bg-white; 
-  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.03); 
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.05); 
+  z-index: 100;
 }
 
 .empty-hint { 

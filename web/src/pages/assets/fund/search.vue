@@ -199,10 +199,10 @@ const clearSearch = () => {
 
 /* 列表项卡片化 */
 .fund-list {
-  padding: $spacing-md;
+  padding: $spacing-base;
   display: flex;
   flex-direction: column;
-  gap: $spacing-base;
+  gap: $spacing-sm;
 }
 
 .fund-item {
