@@ -60,7 +60,7 @@ class CSIndexFetcher:
         
         df = pd.read_excel(io.BytesIO(res.content))
         df['指数热点'] = df['指数热点'].fillna('')
-        df['样本数量'] = df['样本数量'].fillna(None)
+        df['样本数量'] = df['样本数量'].fillna(0)
         return df
 
     # ========================
