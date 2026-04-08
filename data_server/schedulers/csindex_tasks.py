@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from datafetch.csindex_data_fetcher import csindex_fetcher
 from models.csindex_info import CSIndexInfo
 from models.fund_index_mapping import FundIndexMapping
-from models.base import engine
+from database.init_db import engine
 
 # 配置日志
 logging.basicConfig(
