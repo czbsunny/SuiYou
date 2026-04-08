@@ -140,5 +140,5 @@ csindex_fetcher = CSIndexDataFetcher()
 # quote = csindex_fetcher.get_index_quote("H30463")
 # print(quote)
 
-df = csindex_fetcher.get_fund_tracking_index_info()
-print(df.head())
+# df = csindex_fetcher.get_fund_tracking_index_info()
+# print(df.head())
