@@ -111,7 +111,7 @@ def update_fund_index_mapping():
                 fund_code = row.get('产品代码')
                 index_code = row.get('标的指数代码')
                 index_name = row.get('标的指数')
-                
+                print(f"处理基金 {fund_code} 指数 {index_code} 命名 {index_name}")
                 if fund_code and index_code:
                     # 检查是否为国内公募基金
                     if not fund_fetcher.validate_fund_code(fund_code):
