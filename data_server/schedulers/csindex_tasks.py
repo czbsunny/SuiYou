@@ -7,8 +7,8 @@
 import logging
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
-from datafetch.csindex_data_fetcher import csindex_fetcher
-from datafetch.fund_data_fetcher import fund_fetcher
+from datafetch.csindex_fetcher import csindex_fetcher
+from datafetch.fund_fetcher import fund_fetcher
 from models.csindex_info import CSIndexInfo
 from models.fund_index_mapping import FundIndexMapping
 from database.init_db import engine

@@ -11,7 +11,7 @@ import time
 import random
 import io
 
-class CSIndexDataFetcher:
+class CSIndexFetcher:
 
     BASE_URL = "https://www.csindex.com.cn"
 
@@ -133,7 +133,7 @@ class CSIndexDataFetcher:
         return pd.read_excel(io.BytesIO(res.content))
 
 # 全局中证指数数据获取器实例
-csindex_fetcher = CSIndexDataFetcher()
+csindex_fetcher = CSIndexFetcher()
 # df = csindex_fetcher.get_tracked_index_list()
 # print(df.head())
 
