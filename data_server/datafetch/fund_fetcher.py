@@ -186,7 +186,7 @@ class FundFetcher:
             logger.error(f"获取基金净值数据失败: 基金代码={fund_code}, 错误={str(e)}")
             return {}
     
-    async def validate_fund_code(self, fund_code: str) -> bool:
+    def validate_fund_code(self, fund_code: str) -> bool:
         """
         验证基金代码格式是否正确
         
