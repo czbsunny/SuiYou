@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from datafetch.csindex_data_fetcher import csindex_fetcher
+from datafetch.fund_data_fetcher import fund_fetcher
 from models.csindex_info import CSIndexInfo
 from models.fund_index_mapping import FundIndexMapping
 from database.init_db import engine
@@ -112,6 +113,10 @@ def update_fund_index_mapping():
                 index_name = row.get('标的指数')
                 
                 if fund_code and index_code:
+                    # 检查是否为国内公募基金
+                    if not fund_fetcher.validate_fund_code(fund_code):
+                        continue
+
                     # 拼接指数代码
                     formatted_index_code = f"idx.cs{index_code}"
                     
