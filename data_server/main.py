@@ -8,6 +8,7 @@ from database.init_db import init_db
 import uvicorn
 from services.valuation_service import valuation_service
 from services.attribution_service import attribution_service
+from database.init_config import init_config
 
 # 确保中文正常显示
 if hasattr(sys.stdout, 'reconfigure'):
@@ -74,6 +75,10 @@ async def root():
 async def startup_event():
     """应用启动时执行"""
     logger.info("Initializing fund data service...")
+    
+    # 初始化配置
+    logger.info("Initializing config...")
+    init_config()
     
     # 初始化 attribution_service
     attribution_service.init_analyzer()

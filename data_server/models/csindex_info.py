@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Date, DateTime
 from models.base import Base
 
 class CSIndexInfo(Base):
-    """指数基本信息表"""
+    """中证指数基本信息表"""
     __tablename__ = 'csindex_info'
     
     index_code = Column(String(20), primary_key=True, nullable=False)  # 指数代码，主键

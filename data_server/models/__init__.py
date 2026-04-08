@@ -14,3 +14,5 @@ from .stock_daily_quote import StockDailyQuote
 from .index_daily_quote import IndexDailyQuote
 from .fund_tracking_index import FundTrackingIndex
 from .csindex_info import CSIndexInfo
+from .cnindex_info import CNIndexInfo
+from .config import Config
