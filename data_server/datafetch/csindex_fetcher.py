@@ -58,7 +58,7 @@ class CSIndexFetcher:
 
         res = self.session.post(url, json=payload, headers=self.headers, timeout=15)
         
-        return pd.read_excel(io.BytesIO(res.content))
+        return pd.read_excel(io.BytesIO(res.content), keep_default_na=False)
 
     # ========================
     # 2️⃣ 获取“有跟踪指数”
@@ -130,7 +130,7 @@ class CSIndexFetcher:
 
         res = self.session.post(url, json=payload, headers=self.headers, timeout=15)
         
-        return pd.read_excel(io.BytesIO(res.content))
+        return pd.read_excel(io.BytesIO(res.content), keep_default_na=False)
 
 # 全局中证指数数据获取器实例
 csindex_fetcher = CSIndexFetcher()

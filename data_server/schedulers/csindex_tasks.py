@@ -49,11 +49,11 @@ def update_csindex_info():
                     existing_index.base_date = row.get('基日')
                     existing_index.base_point = row.get('基点')
                     existing_index.index_series = row.get('指数系列')
-                    existing_index.sample_count = None if np.isnan(row.get('样本数量')) else row.get('样本数量')
+                    existing_index.sample_count = row.get('样本数量')
                     existing_index.latest_close = row.get('最新收盘')
                     existing_index.one_month_return = row.get('近一个月收益率')
                     existing_index.asset_class = row.get('资产类别')
-                    existing_index.index_hotspot = None if np.isnan(row.get('指数热点')) else row.get('指数热点')
+                    existing_index.index_hotspot = row.get('指数热点')
                     existing_index.index_currency = row.get('指数币种')
                     existing_index.cooperative_index = row.get('合作指数')
                     existing_index.tracking_product = row.get('跟踪产品')
@@ -69,11 +69,11 @@ def update_csindex_info():
                         base_date=row.get('基日'),
                         base_point=row.get('基点'),
                         index_series=row.get('指数系列'),
-                        sample_count=None if np.isnan(row.get('样本数量')) else row.get('样本数量'),
+                        sample_count=row.get('样本数量'),
                         latest_close=row.get('最新收盘'),
                         one_month_return=row.get('近一个月收益率'),
                         asset_class=row.get('资产类别'),
-                        index_hotspot=None if np.isnan(row.get('指数热点')) else row.get('指数热点'),
+                        index_hotspot=row.get('指数热点'),
                         index_currency=row.get('指数币种'),
                         cooperative_index=row.get('合作指数'),
                         tracking_product=row.get('跟踪产品'),
