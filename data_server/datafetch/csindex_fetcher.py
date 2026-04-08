@@ -58,7 +58,10 @@ class CSIndexFetcher:
 
         res = self.session.post(url, json=payload, headers=self.headers, timeout=15)
         
-        return pd.read_excel(io.BytesIO(res.content), keep_default_na=False)
+        df = pd.read_excel(io.BytesIO(res.content))
+        df['指数热点'] = df['指数热点'].fillna('')
+        df['样本数量'] = df['样本数量'].fillna(None)
+        return df
 
     # ========================
     # 2️⃣ 获取“有跟踪指数”
