@@ -21,6 +21,7 @@ from schedulers.stock_tasks import update_stock_data_and_calculate_fund_change
 from schedulers.valuation_tasks import calculate_fund_valuation, update_fund_weights, health_check
 from services.attribution_service import attribution_service
 from schedulers.fund_asset_tasks import update_fund_asset_allocation
+from schedulers.csindex_tasks import batch_update_csindex_data
 
 # 配置日志，确保中文正常显示
 logging.basicConfig(
@@ -204,6 +205,16 @@ class SchedulerEntry:
             replace_existing=True
         )
         logger.info("添加盘后归因分析任务")
+        
+        # 添加中证指数数据批量更新任务（每天凌晨2点执行）
+        self.scheduler.add_job(
+            batch_update_csindex_data,
+            trigger=CronTrigger(hour=2, minute=0),
+            id='batch_update_csindex_data',
+            name='中证指数数据批量更新',
+            replace_existing=True
+        )
+        logger.info("添加中证指数数据批量更新任务")
         
         # 启动调度器
         self.scheduler.start()
