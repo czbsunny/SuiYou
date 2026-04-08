@@ -117,8 +117,8 @@ class CSIndexFetcher:
             },
             "fundsFilter":{
                 "fundSize":None,
-                "assetClass":None,
-                "fundType":None,
+                "assetClass":["equity"],
+                "fundType":["feeder_fund", "lof", "index_boost", "index_fund"],
                 "coverage":None,
                 "market":None,
                 "fundAge":None,
