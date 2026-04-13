@@ -279,3 +279,23 @@ async def update_daily_fund_nav_concurrent(batch_size: int = 50, target_date: Op
         await asyncio.sleep(0.2)
 
     return updated_funds
+
+async def initialize_fund_nav_data():
+    """
+    初始化基金历史净值数据（兼容原接口，内部调用并发处理）
+    启动时执行一次，检查基金是否存在净值数据，不存在则拉取所有历史数据
+    """
+    # 直接调用并发处理函数
+    await initialize_fund_nav_data_concurrent(batch_size=10)
+    
+async def update_daily_fund_nav() -> Set[str]:
+    """
+    更新基金当日净值数据（兼容原接口，内部调用并发处理）
+    每晚7点-凌晨12点每隔5分钟执行一次
+    只更新当天净值的数据，QDII基金更新前一天的数据
+    
+    Returns:
+        成功更新的基金代码集合
+    """
+    # 直接调用并发处理函数
+    return await update_daily_fund_nav_concurrent(batch_size=50)

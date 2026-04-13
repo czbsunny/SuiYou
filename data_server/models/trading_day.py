@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Date, Boolean, Integer
+from sqlalchemy import Column, Date, Boolean, Integer, DateTime
 from models.base import Base
 
 class TradingDay(Base):
@@ -21,8 +21,8 @@ class TradingDay(Base):
     us_trading = Column(Boolean, nullable=True)
     
     # 时间戳
-    created_at = Column(String, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    updated_at = Column(String, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     
     def __repr__(self):
         return f"<TradingDay(date={self.date}, weekday={self.weekday}, a_share_trading={self.a_share_trading})>"
