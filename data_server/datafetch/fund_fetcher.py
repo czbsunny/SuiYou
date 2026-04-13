@@ -243,7 +243,7 @@ class FundFetcher:
             return sorted_result
         except Exception as e:
             logger.error(f"获取基金最新净值失败: 基金代码={fund_code}, 错误={str(e)}")
-            return None
+            return {}
     
     async def fetch_fund_industry_allocation(self, fund_code: str, year: str) -> Optional[pd.DataFrame]:
         """

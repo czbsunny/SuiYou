@@ -192,7 +192,7 @@ async def process_fund_task(fund_code: str, task_type: str, **kwargs) -> Dict[st
             while True:
                 nav_data = await fund_fetcher.get_fund_latest_nav(fund_code, page=page, page_size=page_size)
                 if not nav_data:
-                    continue
+                    break
                 if target_date_str in nav_data:
                     break
                 page += 1
