@@ -5,6 +5,9 @@ import asyncio
 from datetime import datetime
 from typing import List, Dict, Optional
 
+from database.init_db import get_db
+from models.trading_day import TradingDay
+
 # 配置日志记录
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -150,9 +153,37 @@ class TradingDayFetcher:
                 trading_days = await self.fetch_trading_days(month_str)
                 
                 if trading_days:
-                    total_count += len(trading_days)
-                    # 这里可以添加将数据保存到数据库的逻辑
-                    logger.info(f"已获取{month_str}月份的{len(trading_days)}条交易日数据")
+                    # 保存到数据库
+                    db = next(get_db())
+                    try:
+                        saved_count = 0
+                        for day_data in trading_days:
+                            # 解析日期
+                            day_date = datetime.strptime(day_data['date'], '%Y-%m-%d').date()
+                            
+                            # 检查是否已存在
+                            existing = db.query(TradingDay).filter(TradingDay.date == day_date).first()
+                            if not existing:
+                                # 创建新记录
+                                trading_day = TradingDay(
+                                    date=day_date,
+                                    weekday=day_data['weekday'],
+                                    a_share_trading=day_data['a_share_trading'],
+                                    hk_trading=day_data['hk_trading'],
+                                    us_trading=day_data['us_trading']
+                                )
+                                db.add(trading_day)
+                                saved_count += 1
+                        
+                        # 提交事务
+                        db.commit()
+                        total_count += saved_count
+                        logger.info(f"已保存{month_str}月份的{saved_count}条交易日数据")
+                    except Exception as e:
+                        db.rollback()
+                        logger.error(f"保存交易日数据失败: {str(e)}")
+                    finally:
+                        db.close()
                 
                 # 移动到下一个月
                 if current_date.month == 12:
