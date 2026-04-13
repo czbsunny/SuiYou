@@ -9,6 +9,7 @@ from datafetch.fund_fetcher import FundFetcher
 from database.init_db import get_db
 from models.fund import Fund
 from models.fund_nav_history import FundNavHistory
+from models.trading_day import TradingDay
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -245,10 +246,15 @@ async def update_daily_fund_nav_concurrent(batch_size: int = 50, target_date: Op
     valid_funds = get_valid_funds_map(db)
 
     today = target_date if target_date else date.today()
-    yesterday = today - timedelta(days=1)
+    previous_trading_day = db.query(TradingDay.date).filter(
+        TradingDay.date < today,
+        TradingDay.a_share_trading == True
+    ).order_by(TradingDay.date.desc()).first()
+    yesterday = previous_trading_day.date if previous_trading_day else today - timedelta(days=1)
     
-    # 获取每个基金目前的最后日期
-    latest_dates = {r.fund_code: r.m_date for r in db.query(FundNavHistory.fund_code, func.max(FundNavHistory.date).label('m_date')).group_by(FundNavHistory.fund_code).all()}
+    # 查询所有基金在today和yesterday的数据
+    today_funds = {r.fund_code for r in db.query(FundNavHistory.fund_code).filter(FundNavHistory.date == today).all()}
+    yesterday_funds = {r.fund_code for r in db.query(FundNavHistory.fund_code).filter(FundNavHistory.date == yesterday).all()}
     db.close()
 
     updated_funds = set()
@@ -256,10 +262,14 @@ async def update_daily_fund_nav_concurrent(batch_size: int = 50, target_date: Op
 
     for code, fund in valid_funds.items():
         is_qdii = fund.fund_type and ('QDII' in fund.fund_type or '海外股票' in fund.fund_type)
-        fund_target_date = yesterday if is_qdii else today
         
-        if latest_dates.get(code) != fund_target_date:
-            todo_list.append((code, fund_target_date))
+        # QDII基金检查yesterday的数据，非QDII基金检查today的数据
+        if is_qdii:
+            if code not in yesterday_funds:
+                todo_list.append((code, yesterday))
+        else:
+            if code not in today_funds:
+                todo_list.append((code, today))
 
     logger.info(f"共有 {len(todo_list)} 只基金需要更新当日净值")
 
@@ -287,7 +297,7 @@ async def initialize_fund_nav_data():
     """
     # 直接调用并发处理函数
     await initialize_fund_nav_data_concurrent(batch_size=10)
-    
+
 async def update_daily_fund_nav() -> Set[str]:
     """
     更新基金当日净值数据（兼容原接口，内部调用并发处理）
