@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta
 from typing import List, Dict, Optional, Any, Set, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from elasticsearch import Elasticsearch
 from datafetch.fund_fetcher import FundFetcher
 from database.init_db import get_db
 from models.fund import Fund
@@ -12,6 +13,26 @@ from models.fund_nav_history import FundNavHistory
 # 配置日志
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+# 初始化ES客户端
+def init_es():
+    try:
+        es = Elasticsearch(
+            "http://localhost:9200",
+            request_timeout=5
+        )
+
+        if not es.ping():
+            raise RuntimeError("ES ping failed")
+
+        logger.info("ES客户端初始化成功")
+        return es
+
+    except Exception:
+        logger.exception("ES客户端初始化失败")
+        return None
+
+es = init_es()
 
 # 假设的获取器实例
 fund_fetcher = FundFetcher()
@@ -74,15 +95,53 @@ async def save_nav_to_db(db: Session, fund_code: str, nav_data: Dict[str, List[f
 
         # 3. 更新 Fund 主表的最快信息
         if latest_record:
-            # 直接通过 update 语句更新，减少一次 select 基金对象的开销
-            db.query(Fund).filter(Fund.fund_code == fund_code).update({
-                "latest_nav": latest_record.nav,
-                "latest_nav_date": latest_record.date,
-                "daily_growth": latest_record.daily_growth_rate,
-                "nav_updated_at": datetime.now()
-            })
+            # 先查询当前基金的最新净值日期
+            current_fund = db.query(Fund).filter(Fund.fund_code == fund_code).first()
+            if not current_fund or (current_fund.latest_nav_date is None) or (latest_record.date > current_fund.latest_nav_date):
+                # 直接通过 update 语句更新，减少一次 select 基金对象的开销
+                db.query(Fund).filter(Fund.fund_code == fund_code).update({
+                    "latest_nav": latest_record.nav,
+                    "latest_nav_date": latest_record.date,
+                    "daily_growth": latest_record.daily_growth_rate,
+                    "nav_updated_at": datetime.now()
+                }) 
         
         db.commit()
+        
+        # 更新ES中的基金信息
+        if latest_record and es:
+            try:
+                # 获取更新后的基金信息
+                updated_fund = db.query(Fund).filter(Fund.fund_code == fund_code).first()
+                if updated_fund:
+                    # 准备ES文档
+                    es_doc = {
+                        "fundCode": updated_fund.fund_code,
+                        "name": updated_fund.name,
+                        "fullName": updated_fund.full_name,
+                        "fundType": updated_fund.fund_type,
+                        "company": updated_fund.company,
+                        "manager": updated_fund.manager,
+                        "establishDate": updated_fund.establish_date.isoformat() if updated_fund.establish_date else None,
+                        "latestNav": updated_fund.latest_nav,
+                        "latestNavDate": updated_fund.latest_nav_date.isoformat() if updated_fund.latest_nav_date else None,
+                        "dailyGrowth": updated_fund.daily_growth,
+                        "navUpdatedAt": datetime.now().isoformat(),
+                        "rating": updated_fund.rating,
+                        "riskLevel": updated_fund.risk_level
+                    }
+                    
+                    # 更新ES索引
+                    es.index(
+                        index="funds",
+                        id=fund_code,
+                        body=es_doc,
+                        refresh=True
+                    )
+                    logger.debug(f"更新基金 {fund_code} 到ES成功")
+            except Exception as e:
+                logger.error(f"更新基金 {fund_code} 到ES失败: {str(e)}")
+        
         return True
     except Exception as e:
         db.rollback()
