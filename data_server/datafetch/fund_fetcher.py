@@ -78,7 +78,7 @@ class FundFetcher:
             logger.error(f"获取基金信息失败: {str(e)}")
             return {}
     
-    async def _fetch_fund_nav_data(self, fund_code: str) -> Dict[str, List[Union[float, None]]]:
+    async def get_fund_all_history(self, fund_code: str) -> Dict[str, List[Union[float, None]]]:
         """
         内部方法：获取基金净值数据的核心实现
         
@@ -165,27 +165,6 @@ class FundFetcher:
             logger.error(f"获取基金净值数据失败: 基金代码={fund_code}, 错误={str(e)}")
             return {}
     
-    async def get_fund_nav(self, fund_code: str, period: int = None) -> Dict[str, List[Union[float, None]]]:
-        """
-        获取基金净值数据
-        
-        Args:
-            fund_code: 基金代码
-            period: 查询周期（天），当为0或None时获取所有历史数据
-            
-        Returns:
-            Dict[str, List[Union[float, None]]]: 基金净值数据，键为日期字符串，值为包含[单位净值, 日增长率, 累计净值, 累计收益率]的列表
-        """
-        try:
-            if period == 0 or period is None:
-                return await self._fetch_fund_nav_data(fund_code)
-            
-            return await self.get_fund_latest_nav(fund_code, period=period)
-            
-        except Exception as e:
-            logger.error(f"获取基金净值数据失败: 基金代码={fund_code}, 错误={str(e)}")
-            return {}
-    
     def validate_fund_code(self, fund_code: str) -> bool:
         """
         验证基金代码格式是否正确
@@ -203,7 +182,7 @@ class FundFetcher:
         # 基金代码通常是6位数字
         return fund_code.isdigit() and len(fund_code) == 6
     
-    async def get_fund_latest_nav(self, fund_code: str, page_index: int = 1, period: int = 1) -> Dict[str, List[Union[float, None]]]:
+    async def get_fund_latest_nav(self, fund_code: str, page: int = 1, page_size: int = 100) -> Dict[str, List[Union[float, None]]]:
         """
         获取基金最新净值
         
@@ -214,7 +193,7 @@ class FundFetcher:
             Optional[float]: 最新净值，如果获取失败返回None
         """
         try:
-            url = f"http://api.fund.eastmoney.com/f10/lsjz?fundCode={fund_code}&pageIndex={page_index}&pageSize={period}"
+            url = f"http://api.fund.eastmoney.com/f10/lsjz?fundCode={fund_code}&pageIndex={page}&pageSize={page_size}"
             # 使用会话对象并更新特定请求的headers
             headers = {
                 "Referer": f"http://fundf10.eastmoney.com/jjjz_{fund_code}.html"

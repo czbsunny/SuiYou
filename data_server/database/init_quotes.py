@@ -268,7 +268,7 @@ class QuoteService:
         # 每个任务使用独立的 Session，彻底隔离
         db = self.session_factory()
         try:
-            nav_data = await self.fetcher.get_fund_latest_nav(fund_code, period=days)
+            nav_data = await self.fetcher.get_fund_latest_nav(fund_code, page=1, page_size=days)
             if not nav_data:
                 return
 
