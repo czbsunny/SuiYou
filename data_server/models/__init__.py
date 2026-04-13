@@ -16,3 +16,4 @@ from .fund_tracking_index import FundTrackingIndex
 from .csindex_info import CSIndexInfo
 from .cnindex_info import CNIndexInfo
 from .config import Config
+from .trading_day import TradingDay

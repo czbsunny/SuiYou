@@ -7,5 +7,6 @@
 
 from .fund_fetcher import FundFetcher
 from .realtime_fetcher import RealtimeFetcher
+from .trading_day_fetcher import TradingDayFetcher
 
-__all__ = ["FundFetcher", "RealtimeFetcher"]
+__all__ = ["FundFetcher", "RealtimeFetcher", "TradingDayFetcher"]
