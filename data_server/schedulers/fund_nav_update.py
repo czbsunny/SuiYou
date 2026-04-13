@@ -95,6 +95,7 @@ async def save_nav_to_db(db: Session, fund_code: str, nav_data: Dict[str, List[f
         db.bulk_save_objects(new_records)
 
         # 3. 更新 Fund 主表的最快信息
+        is_update_es = False
         if latest_record:
             # 先查询当前基金的最新净值日期
             current_fund = db.query(Fund).filter(Fund.fund_code == fund_code).first()
@@ -106,11 +107,12 @@ async def save_nav_to_db(db: Session, fund_code: str, nav_data: Dict[str, List[f
                     "daily_growth": latest_record.daily_growth_rate,
                     "nav_updated_at": datetime.now()
                 }) 
+                is_update_es = True
         
         db.commit()
         
         # 更新ES中的基金信息
-        if latest_record and es:
+        if is_update_es and es:
             try:
                 # 获取更新后的基金信息
                 updated_fund = db.query(Fund).filter(Fund.fund_code == fund_code).first()
