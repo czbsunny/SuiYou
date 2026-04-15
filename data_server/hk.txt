@@ -14,7 +14,7 @@ HSUSLC	恒生港美大型股指数
 HSUSB	恒生港美生物科技指数
 HSUNTRI	恒生公用事业分类指数(NTR)
 HSUGTRI	恒生公用事业分类指数(GTR)
-HSU	恒生公用事业指数
+HSU	    恒生公用事业指数
 HSTUSS	恒生科技美股半导体指数
 HSTUSAI	恒生科技美股人工智能指数
 HSTUSA	恒生科技美股汽车指数
