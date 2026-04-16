@@ -76,7 +76,8 @@ async def get_fund_updated_date(request: BatchFundUpdatedRequest, db: Session = 
             fund_data = {
                 "fund_code": fund.fund_code,
                 "latest_nav": fund.latest_nav,
-                "latest_nav_date": fund.latest_nav_date.isoformat() if fund.latest_nav_date else None,
+                "latest_nav_date": fund.latest_nav_date.date().strftime("%Y-%m-%d") if fund.latest_nav_date else None,
+                "nav_updated_at": fund.nav_updated_at.strftime("%Y-%m-%d %H:%M:%S") if fund.nav_updated_at else None
             }
             fund_list.append(fund_data)
 
