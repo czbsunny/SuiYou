@@ -465,6 +465,7 @@ class FundFetcher:
             # 根据页面顺序提取关键信息
             is_backend_fund = False
             is_on_market = False
+            # is_etf_fund = False
             code_field = data[2].replace(" ", "")
             if '、' in code_field:
                 parts = code_field.split('、')
@@ -472,7 +473,11 @@ class FundFetcher:
                 if fund_code == back_code:
                     is_backend_fund = True
             elif '（主代码）' in code_field:
-                is_on_market = True
+                if 'LOF' in data[1]:
+                    is_on_market = False
+                else:
+                    is_on_market = True
+                    # is_etf_fund = True
             result = {
                 "基金代码": fund_code,
                 "基金名称": data[1],
