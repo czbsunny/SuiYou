@@ -474,9 +474,9 @@ class FundFetcher:
                     is_backend_fund = True
             elif '（主代码）' in code_field:
                 main_code = code_field.split('（')[0]
-                if fund_code == main_code:
+                if fund_code != main_code:
                     is_backend_fund = True
-                if 'LOF' in data[1]:
+                if 'LOF' in data[0]:
                     is_on_market = False
                 else:
                     is_on_market = True
