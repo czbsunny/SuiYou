@@ -65,6 +65,9 @@ public class Transaction {
     @Column(name = "location", length = 255)
     private String location;
 
+    @Column(name = "use_frozen_amount", nullable = false, columnDefinition = "bit(1) default 0")
+    private Boolean useFrozenAmount = false;
+
     /**
      * 状态: NORMAL(正常), DELETED(逻辑删除), PENDING(待确认/信用卡预授权)
      */

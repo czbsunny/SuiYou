@@ -1,6 +1,5 @@
 package com.suiyou.model;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Formula;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,9 +37,8 @@ public class Asset {
     @Column(name = "frozen_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
     private BigDecimal frozenBalance = BigDecimal.ZERO;
     
-    @Formula("total_balance - frozen_balance")
-    @Column(name = "available_balance", insertable = false, updatable = false)
-    private BigDecimal availableBalance;
+    @Column(name = "available_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
+    private BigDecimal availableBalance = BigDecimal.ZERO;
     
     @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")
     private String currency = "CNY";
@@ -65,12 +63,14 @@ public class Asset {
 
     @PrePersist
     protected void onCreate() {
+        this.availableBalance = this.totalBalance.subtract(this.frozenBalance);
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
+        this.availableBalance = this.totalBalance.subtract(this.frozenBalance);
         updatedAt = LocalDateTime.now();
     }
 }

@@ -56,11 +56,13 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/stores/auth.js';
 import apiService from '../../services/apiService.js';
 
 export default {
   data() {
     return {
+      authStore: useAuthStore(),
       userInfo: {},
       formData: {
         username: ''
@@ -73,7 +75,7 @@ export default {
   },
   methods: {
     loadUserInfo() {
-      this.userInfo = uni.getStorageSync('userInfo') || {};
+      this.userInfo = this.authStore.userInfo || {};
       this.formData = {
         username: this.userInfo.username || ''
       };
@@ -97,7 +99,7 @@ export default {
           
           // 更新本地存储的用户信息
           const updatedUserInfo = { ...this.userInfo, ...response.data }
-          uni.setStorageSync('userInfo', updatedUserInfo)
+          this.authStore.updateUserInfo(updatedUserInfo)
           
           // 更新页面数据
           this.userInfo = updatedUserInfo
@@ -127,7 +129,7 @@ export default {
         });
         
         const updatedUserInfo = { ...this.userInfo, username: response.data.username };
-        uni.setStorageSync('userInfo', updatedUserInfo);
+        this.authStore.updateUserInfo(updatedUserInfo)
         
         uni.showToast({ title: '修改成功', icon: 'success' });
         setTimeout(() => { this.goBack(); }, 1000);

@@ -35,15 +35,23 @@
 
 <script setup>
 import { computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { useAuthStore } from '@/stores/auth.js'
 
 const authStore = useAuthStore()
 
-// 使用响应式数据，无需手动在 onShow 里赋值
 const userInfo = computed(() => authStore.displayUserInfo)
 const firstChar = computed(() => {
   const name = userInfo.value.username
   return name ? Array.from(name)[0].toUpperCase() : ''
+})
+
+onShow(() => {
+  // 页面显示时确保用户信息已加载
+  if (authStore.isLoggedIn && !authStore.userInfo) {
+    userInfo.value = authStore.displayUserInfo
+    firstChar.value = userInfo.value.username ? Array.from(userInfo.value.username)[0].toUpperCase() : ''
+  }
 })
 
 const handleAvatarClick = () => {

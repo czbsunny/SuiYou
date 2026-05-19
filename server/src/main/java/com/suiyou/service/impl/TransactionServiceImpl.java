@@ -56,6 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
         BeanUtils.copyProperties(req, trans);
         trans.setUserId(userId);
         trans.setFamilyId(family.getId());
+        trans.setUseFrozenAmount(req.getUseFrozenAmount() != null && req.getUseFrozenAmount());
         
         // 处理默认值
         if (trans.getTransTime() == null) trans.setTransTime(LocalDateTime.now());
@@ -105,7 +106,7 @@ public class TransactionServiceImpl implements TransactionService {
         switch (trans.getType()) {
             case EXPENSE:
                 // 支出：源资产减少
-                decreaseAsset(trans.getSourceAssetId(), amount.add(fee));
+                decreaseAsset(trans.getSourceAssetId(), amount.add(fee), trans.getUseFrozenAmount());
                 break;
                 
             case INCOME:
@@ -118,13 +119,13 @@ public class TransactionServiceImpl implements TransactionService {
             case REPAY:   // 还债 (钱少了，负债少了/债权少了)
                 // 转账类：源减少，目标增加
                 // 注意：手续费通常扣在源资产
-                decreaseAsset(trans.getSourceAssetId(), amount.add(fee));
+                decreaseAsset(trans.getSourceAssetId(), amount.add(fee), trans.getUseFrozenAmount());
                 increaseAsset(trans.getTargetAssetId(), targetAmount);
                 break;
                 
             case RECOVER: // 收债/报销 (债权少了，钱多了)
             case BORROW:  // 借入 (负债多了，钱多了)
-                decreaseAsset(trans.getSourceAssetId(), amount); // 债权/负债来源减少
+                decreaseAsset(trans.getSourceAssetId(), amount, trans.getUseFrozenAmount()); // 债权/负债来源减少
                 increaseAsset(trans.getTargetAssetId(), targetAmount); // 钱包增加
                 break;
 
@@ -147,11 +148,28 @@ public class TransactionServiceImpl implements TransactionService {
         assetRepository.save(asset);
     }
 
-    // 辅助方法：减少余额
-    private void decreaseAsset(Long assetId, BigDecimal amount) {
+    // 辅助方法：减少余额（带冻结资金使用判断）
+    private void decreaseAsset(Long assetId, BigDecimal amount, Boolean useFrozenAmount) {
         if (assetId == null) return;
+        
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + assetId));
+
+        // 判断可用余额
+        BigDecimal availableBalance = asset.getTotalBalance().subtract(asset.getFrozenBalance());
+        
+        // 如果不允许使用冻结资金，只能使用可用余额
+        if (!Boolean.TRUE.equals(useFrozenAmount)) {
+            if (availableBalance.compareTo(amount) < 0) {
+                throw new IllegalArgumentException("资产可用余额不足，可用余额: " + availableBalance + ", 需要: " + amount);
+            }
+        } else {
+            // 如果允许使用冻结资金，可以使用总余额
+            if (asset.getTotalBalance().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("资产总余额不足，总余额: " + asset.getTotalBalance() + ", 需要: " + amount);
+            }
+        }
+
         asset.setTotalBalance(asset.getTotalBalance().subtract(amount));
         assetRepository.save(asset);
     }

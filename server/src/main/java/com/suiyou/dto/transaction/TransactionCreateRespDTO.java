@@ -21,4 +21,6 @@ public class TransactionCreateRespDTO {
     private Long categoryId;
     private String description;
     private List<String> tags; // 接收前端 ["出差", "打车"]
+    
+    private Boolean useFrozenAmount = false; // 是否允许使用冻结资金（如专款专用场景消费）
 }

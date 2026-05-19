@@ -44,7 +44,6 @@ public class TimeDepositItemServiceImpl implements TimeDepositItemService {
         existingItem.setInterestType(item.getInterestType());
         existingItem.setPayoutType(item.getPayoutType());
         existingItem.setAutoRenewal(item.getAutoRenewal());
-        existingItem.setTag(item.getTag());
 
         TimeDepositItem savedItem = timeDepositItemRepository.save(existingItem);
 

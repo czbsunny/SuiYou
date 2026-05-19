@@ -70,6 +70,11 @@ export const useAuthStore = defineStore('auth', {
       uni.setStorageSync('userInfo', userInfo);
     },
 
+    updateUserInfo(userInfo) {
+      this.userInfo = userInfo;
+      uni.setStorageSync('userInfo', userInfo);
+    },
+    
     logout() {
       this.token = null;
       this.userInfo = null;
