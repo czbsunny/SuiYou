@@ -9,7 +9,7 @@ const PROD_URL = 'https://www.zhitouying.cn';
 const buildUrl = (url, params) => {
   // 对于 /api/fund/search 使用生产环境 URL
   if (url === '/api/fund/search') {
-    let fullUrl = `${PROD_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+    let fullUrl = `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`;
     if (params && Object.keys(params).length > 0) {
       const queryString = Object.entries(params)
         .filter(([_, v]) => v !== undefined && v !== null)

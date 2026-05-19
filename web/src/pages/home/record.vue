@@ -321,7 +321,8 @@ const saveTransaction = async (keepGoing = false) => {
     }
   } catch (error) {
     console.error('保存交易记录失败:', error);
-    uni.showToast({ title: '保存失败，请重试', icon: 'none' });
+    const errorMsg = error.response?.data?.message || error.message || '保存失败，请重试';
+    uni.showToast({ title: errorMsg, icon: 'none', duration: 3000 });
   } finally {
     uni.hideLoading();
   }
