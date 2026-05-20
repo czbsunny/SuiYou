@@ -375,6 +375,15 @@
           }
         },
         {
+          "path": "stock",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "股票",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
           "path": "debitCard",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",

@@ -1,148 +1,115 @@
 <template>
-  <view class="broker-account-container">
-    <!-- 1. 资产看板卡片 -->
+  <view class="account-detail-page">
+    <!-- 1. 顶部总览卡片 -->
     <view class="summary-section animate-fade-in">
-      <view class="asset-card card-warm">
-        <view class="asset-header">
-          <view class="brand-box">
-            <image src="/static/images/broker-logo.png" mode="aspectFit" class="logo"></image>
-            <text class="name">国投证券</text>
-            <text class="account-id">**3501</text>
+      <view class="summary-card card-warm">
+        <view class="balance-content">
+          <view class="header-row">
+            <view class="label-group" @tap="toggleVisibility">
+              <text class="label">总资产 (元)</text>
+              <image 
+                :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" 
+                class="eye-icon"
+              ></image>
+            </view>
+            <image 
+              src="/static/images/settings-gray.png" 
+              class="settings-icon" 
+              @tap="handleEditAccount"
+            ></image>
           </view>
-        </view>
 
-        <view class="main-assets">
-          <view class="label-row">
-            <text class="label">总资产 (元)</text>
-            <uni-icons type="eye" size="16" color="#a3b0ad"></uni-icons>
+          <view class="amount-row">
+            <text class="amount num-font" :class="{ 'is-masked': isAssetHidden }">
+              {{ isAssetHidden ? '******' : formatMoney(totalBalance) }}
+            </text>
           </view>
-          <text class="value num-font">68,896.66</text>
-        </view>
 
-        <!-- 盈亏网格 -->
-        <view class="profit-info-grid">
-          <view class="info-item">
-            <text class="label">总盈亏</text>
-            <text class="val num-font text-down">-13,220.74</text>
-          </view>
-          <view class="info-item right-align">
-            <text class="label">当日参考盈亏</text>
-            <view class="val-group">
-              <text class="val num-font text-down">-1,562.20</text>
-              <text class="sub-val num-font text-down">-2.22%</text>
+          <view class="stats-row">
+            <view class="stat-item">
+              <text class="stat-label">今日盈亏</text>
+              <text class="stat-val num-font" :class="todayProfit >= 0 ? 'profit' : 'loss'">
+                {{ isAssetHidden ? '****' : (todayProfit >= 0 ? '+' : '') + formatMoney(todayProfit) }}
+              </text>
+            </view>
+            <view class="stat-divider"></view>
+            <view class="stat-item">
+              <text class="stat-label">累计盈亏</text>
+              <text class="stat-val num-font" :class="totalProfit >= 0 ? 'profit' : 'loss'">
+                {{ isAssetHidden ? '****' : (totalProfit >= 0 ? '+' : '') + formatMoney(totalProfit) }}
+              </text>
             </view>
           </view>
         </view>
-
-        <!-- 资金详情行 -->
-        <view class="funds-sub-row">
-          <view class="sub-item">
-            <text class="label">总市值</text>
-            <text class="val num-font">68,859.20</text>
-          </view>
-          <view class="sub-item center">
-            <text class="label">可用/国债</text>
-            <text class="val num-font">36.46</text>
-          </view>
-          <view class="sub-item right">
-            <text class="label">可取/转账</text>
-            <text class="val num-font">36.46</text>
-          </view>
-        </view>
       </view>
     </view>
 
-    <!-- 2. 操作快捷键 -->
-    <view class="action-grid">
-      <view class="action-btn" v-for="btn in actions" :key="btn.label" @click="handleAction(btn)">
-        <view class="icon-wrapper">
-          <text class="btn-text">{{ btn.iconText }}</text>
+    <!-- 2. 快捷操作区 -->
+    <view class="action-bar">
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('buy')">
+        <view class="icon-box icon-buy">
+          <image src="/static/assets/actions/buy.png" class="action-icon"></image>
         </view>
-        <text class="btn-label">{{ btn.label }}</text>
+        <text class="action-label">买入</text>
+      </view>
+      
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('sell')">
+        <view class="icon-box icon-sell">
+          <image src="/static/assets/actions/sell.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">卖出</text>
+      </view>
+      
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('transfer')">
+        <view class="icon-box icon-transfer">
+          <image src="/static/assets/actions/transfer.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">转账</text>
+      </view>
+      
+      <view class="action-item" hover-class="hover-opacity" @tap="handleAction('query')">
+        <view class="icon-box icon-query">
+          <image src="/static/assets/actions/query.png" class="action-icon"></image>
+        </view>
+        <text class="action-label">查询</text>
       </view>
     </view>
 
-    <!-- 3. 持仓列表区域 -->
-    <view class="holdings-section card-warm">
+    <!-- 3. 资产列表 -->
+    <view class="items-section">
       <view class="section-header">
-        <text class="title">持仓股</text>
-        <view class="view-modes">
-          <uni-icons type="list" size="20" color="#2a806c"></uni-icons>
-        </view>
+        <text class="title">资产列表</text>
       </view>
 
-      <!-- 横向滚动包裹层 -->
-      <scroll-view class="horizontal-scroll" scroll-x enable-flex>
-        <view class="table-container">
-          <!-- 自定义表头 -->
-          <view class="table-row header">
-            <view class="col col-fixed first">名称 / 市值</view>
-            <view class="col col-data">当日盈亏 / 率</view>
-            <view class="col col-data">总盈亏 / 率</view>
-            <view class="col col-data">成本 / 现价</view>
-            <view class="col col-sm">持仓数量</view>
-            <view class="col col-sm">个股仓位</view>
-            <view class="col col-sm">持股天数</view>
-            <view class="col col-md">证券代码</view>
+      <view class="item-list">
+        <view 
+          v-for="(item, index) in assets" 
+          :key="index" 
+          class="asset-item-card card-warm" 
+          hover-class="item-active"
+          @tap="navToItemDetail(item)"
+        >
+          <view class="item-left">
+            <view class="item-icon-rect">
+              <image :src="getAssetIconUrl(item)" class="item-icon"></image>
+            </view>
+            <view class="item-info">
+              <text class="item-name">{{ item.name }}</text>
+              <text class="item-subtitle">{{ item.subtitle }}</text>
+            </view>
           </view>
-
-          <!-- 数据行 -->
-          <view class="table-row data-row" v-for="(item, index) in holdings" :key="index">
-            <!-- 固定列：名称和市值 -->
-            <view class="col col-fixed first">
-              <text class="stock-name">{{ item.name }}</text>
-              <text class="stock-market-val num-font">{{ formatNumber(item.marketValue) }}</text>
-            </view>
-
-            <!-- 第二列：当日盈亏/率 -->
-            <view class="col col-data">
-              <text class="val-top num-font" :class="getReturnClass(item.dayProfit)">
-                {{ item.dayProfit > 0 ? '+' : '' }}{{ formatNumber(item.dayProfit) }}
-              </text>
-              <text class="val-bottom num-font" :class="getReturnClass(item.dayProfitRate)">
-                {{ item.dayProfitRate > 0 ? '+' : '' }}{{ item.dayProfitRate }}%
+          
+          <view class="item-right">
+            <view class="amount-box">
+              <text class="item-amount num-font">{{ isAssetHidden ? '****' : formatMoney(item.balance) }}</text>
+              <text v-if="item.profit !== undefined" class="item-profit" :class="item.profit >= 0 ? 'profit' : 'loss'">
+                {{ isAssetHidden ? '' : (item.profit >= 0 ? '+' : '') + formatMoney(item.profit) }}
               </text>
             </view>
-
-            <!-- 第三列：总盈亏/率 -->
-            <view class="col col-data">
-              <text class="val-top num-font" :class="getReturnClass(item.totalProfit)">
-                {{ item.totalProfit > 0 ? '+' : '' }}{{ formatNumber(item.totalProfit) }}
-              </text>
-              <text class="val-bottom num-font" :class="getReturnClass(item.totalProfitRate)">
-                {{ item.totalProfitRate > 0 ? '+' : '' }}{{ item.totalProfitRate }}%
-              </text>
-            </view>
-
-            <!-- 第四列：成本/现价 -->
-            <view class="col col-data">
-              <text class="val-top num-font">{{ item.costPrice }}</text>
-              <text class="val-bottom num-font">{{ item.currentPrice }}</text>
-            </view>
-
-            <!-- 第五列：持仓 -->
-            <view class="col col-sm">
-              <text class="val-top num-font">{{ item.holdCount }}</text>
-              <text class="val-bottom">股</text>
-            </view>
-
-            <!-- 第六列：仓位 -->
-            <view class="col col-sm">
-              <text class="val-top num-font">{{ item.position }}%</text>
-            </view>
-
-            <!-- 第七列：天数 -->
-            <view class="col col-sm">
-              <text class="val-top num-font">{{ item.holdDays }}</text>
-            </view>
-
-            <!-- 第八列：代码 -->
-            <view class="col col-md">
-              <text class="val-top num-font code">{{ item.symbol }}</text>
-            </view>
+            <image src="/static/images/arrow-right.png" class="arrow-icon"></image>
           </view>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <view class="safe-area-bottom" style="height: 40rpx;"></view>
@@ -150,225 +117,305 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
+import { getAccountById } from '@/services/accountService.js';
+import { useConfigStore } from '@/stores/config.js';
 
-const actions = [
-  { label: '买入', iconText: '买' },
-  { label: '卖出', iconText: '卖' },
-  { label: '撤单', iconText: '撤' },
-  { label: '查询', iconText: '查' }
-];
+const isAssetHidden = ref(false);
+const accountInfo = ref(null);
+const assets = ref([]);
+const configStore = useConfigStore();
 
-const holdings = ref([
-  {
-    name: '消费 ETF',
-    marketValue: 35189.00,
-    dayProfit: -250.40,
-    dayProfitRate: -0.71,
-    totalProfit: -1260.75,
-    totalProfitRate: -3.45,
-    costPrice: 0.798,
-    currentPrice: 0.770,
-    holdCount: 45700,
-    position: 51.2,
-    holdDays: 128,
-    symbol: '159928.SZ'
-  },
-  {
-    name: '新城控股',
-    marketValue: 30849.00,
-    dayProfit: 1102.32,
-    dayProfitRate: 3.58,
-    totalProfit: 1202.32,
-    totalProfitRate: 3.75,
-    costPrice: 15.262,
-    currentPrice: 14.690,
-    holdCount: 2100,
-    position: 44.8,
-    holdDays: 45,
-    symbol: '601155.SH'
-  },
-  {
-    name: '隆基绿能',
-    marketValue: 1852.00,
-    dayProfit: -42.32,
-    dayProfitRate: -2.23,
-    totalProfit: -1882.32,
-    totalProfitRate: -50.40,
-    costPrice: 37.343,
-    currentPrice: 18.520,
-    holdCount: 100,
-    position: 2.7,
-    holdDays: 312,
-    symbol: '601012.SH'
+onLoad(async (options) => {
+  try {
+    const id = options.id;
+    const res = await getAccountById(id);
+    if (res && res.account) {
+      const instInfo = configStore.getInstitutionByCode(res.account.institution);
+      accountInfo.value = {
+        ...res.account,
+        accountName: res.account.accountName || instInfo.instName + '(' + res.account.institutionIdentifier + ')',
+        logoUrl: instInfo.logoUrl,
+      };
+      initAssets();
+    }
+  } catch (e) {
+    console.error('获取账户详情失败:', e);
+    initAssets();
   }
-]);
+});
 
-const formatNumber = (val) => {
-  return val.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+const initAssets = () => {
+  assets.value = [
+    {
+      id: 'available',
+      name: '可用余额',
+      subtitle: '可用于交易的资金',
+      balance: 15000.50,
+      category: 'CASH',
+      subCategory: 'AVAILABLE'
+    },
+    {
+      id: 'stock',
+      name: '股票',
+      subtitle: '持仓市值',
+      balance: 85000.00,
+      profit: 3200.50,
+      category: 'SECURITY',
+      subCategory: 'STOCK'
+    },
+    {
+      id: 'fund',
+      name: '基金',
+      subtitle: '持仓市值',
+      balance: 32000.00,
+      profit: -850.00,
+      category: 'SECURITY',
+      subCategory: 'FUND'
+    }
+  ];
 };
 
-const getReturnClass = (val) => {
-  if (val > 0) return 'text-up';
-  if (val < 0) return 'text-down';
-  return '';
+const totalBalance = computed(() => assets.value.reduce((sum, item) => sum + (item.balance || 0), 0));
+const todayProfit = computed(() => 1250.30);
+const totalProfit = computed(() => assets.value.reduce((sum, item) => sum + (item.profit || 0), 0));
+
+const getAssetIconUrl = (item) => {
+  const iconMap = {
+    'AVAILABLE': '/static/assets/icons/available.png',
+    'STOCK': '/static/assets/icons/stock.png',
+    'FUND': '/static/assets/icons/fund.png'
+  };
+  return iconMap[item.subCategory] || '/static/assets/icons/default.png';
 };
 
-const handleAction = (btn) => {
-  uni.showToast({ title: '点击了' + btn.label, icon: 'none' });
+const formatMoney = (val) => Math.abs(val || 0).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+const toggleVisibility = () => { isAssetHidden.value = !isAssetHidden.value; uni.vibrateShort(); };
+const handleEditAccount = () => uni.navigateTo({ url: `/pages/accounts/edit?id=${accountInfo.value?.id || ''}` });
+
+const handleAction = (type) => {
+  const data = encodeURIComponent(JSON.stringify({ account: accountInfo.value }));
+  switch (type) {
+    case 'buy':
+      uni.navigateTo({ url: `/pages/security/buy?data=${data}` });
+      break;
+    case 'sell':
+      uni.navigateTo({ url: `/pages/security/sell?data=${data}` });
+      break;
+    case 'transfer':
+      uni.navigateTo({ url: `/pages/security/transfer?data=${data}` });
+      break;
+    case 'query':
+      uni.navigateTo({ url: `/pages/security/query?data=${data}` });
+      break;
+    default:
+      uni.showToast({ title: '功能开发中', icon: 'none' });
+  }
+};
+
+const navToItemDetail = (item) => {
+  const routes = { 'AVAILABLE': 'available', 'STOCK': 'stock', 'FUND': 'fund' };
+  const page = routes[item.subCategory];
+  const data = encodeURIComponent(JSON.stringify(item));
+  if (page) {
+    uni.navigateTo({ url: `/pages/assets/items/${page}?data=${data}` });
+  } else {
+    uni.showToast({ title: item.name + '在开发中', icon: 'none' });
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-.broker-account-container {
+.account-detail-page {
   min-height: 100vh;
   background-color: $bg-page;
 }
 
-/* 1. 资产卡片 */
 .summary-section {
   padding: $spacing-sm $spacing-base;
 }
 
-.asset-card {
+.summary-card {
   padding: $spacing-base;
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20rpx;
+    
+    .label-group {
+      display: flex;
+      align-items: center;
+      gap: 12rpx;
+      .label { font-size: 28rpx; color: $text-muted; }
+      .eye-icon { width: 32rpx; height: 32rpx; opacity: 0.4; }
+    }
+    
+    .settings-icon {
+      width: 40rpx;
+      height: 40rpx;
+      opacity: 0.5;
+    }
+  }
 
-  .brand-box {
+  .amount-row {
+    margin-bottom: 32rpx;
+    .amount { 
+      font-size: 64rpx; 
+      font-weight: $fw-bold; 
+      color: $text-main; 
+      &.is-masked { color: $text-placeholder; letter-spacing: 4rpx; }
+    }
+  }
+
+  .stats-row {
     display: flex;
     align-items: center;
-    gap: 12rpx;
-    margin-bottom: 32rpx;
-
-    .logo { width: 32rpx; height: 32rpx; background: $primary; border-radius: 6rpx; }
-    .name { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; }
-    .account-id { font-size: 24rpx; color: $text-placeholder; }
-  }
-
-  .main-assets {
-    margin-bottom: 32rpx;
-    .label-row { display: flex; align-items: center; gap: 8rpx; margin-bottom: 8rpx; }
-    .label { font-size: 24rpx; color: $text-muted; }
-    .value { font-size: 60rpx; font-weight: $fw-bold; color: $text-main; }
-  }
-
-  .profit-info-grid {
-    display: flex;
-    border-top: 1rpx solid $gray-100;
-    padding-top: 24rpx;
-    .info-item {
+    padding-top: 30rpx;
+    
+    .stat-item {
       flex: 1;
-      .label { font-size: 22rpx; color: $text-muted; display: block; margin-bottom: 4rpx; }
-      .val { font-size: 32rpx; font-weight: $fw-semibold; }
-      .val-group {
-        display: flex; align-items: baseline; justify-content: flex-end; gap: 8rpx;
-        .sub-val { font-size: 24rpx; }
+      display: flex;
+      flex-direction: column;
+      gap: 6rpx;
+      .stat-label { font-size: 24rpx; color: $text-muted; }
+      .stat-val { 
+        font-size: 30rpx; 
+        font-weight: $fw-semibold; 
+        &.profit { color: $text-gain; }
+        &.loss { color: $text-loss; }
       }
     }
-    .right-align { text-align: right; }
-  }
-
-  .funds-sub-row {
-    display: flex;
-    margin-top: 24rpx;
-    padding-top: 24rpx;
-    border-top: 1rpx dashed $gray-100;
-    .sub-item {
-      flex: 1;
-      .label { font-size: 20rpx; color: $text-muted; display: block; }
-      .val { font-size: 24rpx; color: $text-sub; font-weight: $fw-medium; }
-      &.center { text-align: center; }
-      &.right { text-align: right; }
+    
+    .stat-divider {
+      width: 2rpx;
+      height: 48rpx;
+      background-color: $bg-subtle;
     }
   }
 }
 
-/* 2. 操作区 */
-.action-grid {
+.items-section {
+  padding: $spacing-base;
+  .section-header {
+    margin-bottom: $spacing-base;
+    .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
+  }
+}
+
+.action-bar {
   display: flex;
   justify-content: space-around;
-  padding: 40rpx 0;
-  .action-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 12rpx;
-    .icon-wrapper {
-      width: 90rpx; height: 90rpx; background: $bg-white; border-radius: 20rpx;
-      box-shadow: $shadow-card; @include flex-center;
-      .btn-text { font-size: 28rpx; font-weight: $fw-bold; color: $primary; }
-    }
-    .btn-label { font-size: 24rpx; color: $text-sub; }
-  }
-}
+  padding: $spacing-md $spacing-md;
+  margin: 0 $spacing-base;
+  background-color: $bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
 
-/* 3. 持仓列表 - 核心滚动设计 */
-.holdings-section {
-  margin: 0 $spacing-md 40rpx;
-  padding: 0; // 内部由表格撑开
-  overflow: hidden;
-
-  .section-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 24rpx 32rpx; border-bottom: 1rpx solid $gray-100;
-    .title { font-size: 30rpx; font-weight: $fw-semibold; color: $text-main; }
-  }
-}
-
-.horizontal-scroll {
-  width: 100%;
-  .table-container {
+  .action-item {
     display: flex;
     flex-direction: column;
-    min-width: 950rpx; // 确保总宽度够 8 列显示
+    align-items: center;
+    gap: 16rpx;
+    
+    .action-label { 
+      font-size: 24rpx; 
+      color: $text-regular; 
+      font-weight: 500; 
+    }
   }
 }
 
-.table-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1rpx solid $bg-page;
+.icon-box {
+  width: 88rpx; 
+  height: 88rpx; 
+  border-radius: 28rpx;
+  @include flex-center; 
+  box-shadow: $shadow-card;
+  transition: transform 0.1s;
   
-  &.header {
-    background-color: $gray-50;
-    height: 70rpx;
-    .col { font-size: 22rpx; color: $text-muted; }
+  .action-icon { 
+    width: 56rpx; 
+    height: 56rpx; 
   }
-  
-  &.data-row:last-child { border-bottom: none; }
 }
 
-.col {
-  flex-shrink: 0;
-  padding: 20rpx 16rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.icon-buy { background-color: $bg-buy; }
+.icon-sell { background-color: $bg-sell; }
+.icon-transfer { background-color: $bg-transfer; }
+.icon-query { background-color: $bg-query; }
+
+.items-section {
+  padding: $spacing-base;
+  .section-header {
+    margin-bottom: $spacing-base;
+    .title { font-size: 32rpx; font-weight: $fw-semibold; color: $text-main; }
+  }
+}
+
+.asset-item-card {
+  padding: 28rpx; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: $spacing-base;
+  background-color: $bg-white;
+  border-radius: $radius-lg;
   
-  // 第一列固定逻辑
-  &.col-fixed {
-    width: 220rpx;
-    position: sticky;
-    left: 0;
-    background-color: $bg-white;
-    z-index: 5;
-    &::after {
-      content: ''; position: absolute; right: 0; top: 0; bottom: 0;
-      width: 6rpx; background: linear-gradient(to right, rgba(0,0,0,0.03), transparent);
+  .item-left {
+    display: flex; 
+    align-items: center; 
+    gap: 24rpx;
+    .item-icon-rect {
+      width: 88rpx; 
+      height: 88rpx; 
+      background-color: $bg-page; 
+      border-radius: $radius-base;
+      @include flex-center; 
+      .item-icon { width: 64rpx; height: 64rpx; }
+    }
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6rpx;
+      .item-name { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; }
+      .item-subtitle { font-size: 22rpx; color: $text-muted; }
     }
   }
   
-  &.col-data { width: 180rpx; text-align: right; align-items: flex-end; }
-  &.col-sm { width: 130rpx; text-align: right; align-items: flex-end; }
-  &.col-md { width: 180rpx; text-align: right; align-items: flex-end; }
+  .item-right {
+    display: flex; 
+    align-items: center; 
+    gap: 12rpx;
+    .amount-box {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4rpx;
+      .item-amount { font-size: 30rpx; font-weight: $fw-bold; color: $text-main; }
+      .item-profit { 
+        font-size: 22rpx; 
+        font-weight: $fw-medium;
+        &.profit { color: $text-gain; }
+        &.loss { color: $text-loss; }
+      }
+    }
+    .arrow-icon { width: 24rpx; height: 24rpx; opacity: 0.2; }
+  }
 }
 
-.stock-name { font-size: 28rpx; font-weight: $fw-semibold; color: $primary; margin-bottom: 4rpx; }
-.stock-market-val { font-size: 22rpx; color: $text-muted; }
+.item-active { 
+  background-color: $bg-subtle; 
+  transform: scale(0.98); 
+}
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10rpx); } to { opacity: 1; transform: translateY(0); } }
 
-.val-top { font-size: 28rpx; font-weight: $fw-semibold; color: $text-main; }
-.val-bottom { font-size: 22rpx; color: $text-muted; margin-top: 4rpx; }
-.code { color: $text-placeholder; font-size: 20rpx; }
-
-.animate-fade-in { animation: fadeIn 0.6s ease-out; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10rpx); }
-  to { opacity: 1; transform: translateY(0); }
+.hover-opacity:active {
+  opacity: 0.7;
+  .icon-box { transform: scale(0.92); }
 }
 </style>

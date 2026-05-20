@@ -172,9 +172,9 @@ const handleAccountClick = (account) => {
           break;
       }
       break;
-    // case 'SECURITY':
-    //   pagePath = `/pages/assets/accounts/security?id=${account.id}`;
-    //   break;
+    case 'SECURITY':
+      pagePath = `/pages/assets/accounts/security?id=${account.id}`;
+      break;
     default:
       pagePath = `/pages/assets/accounts/default?id=${account.id}`;
       break;
