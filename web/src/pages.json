@@ -384,6 +384,15 @@
           }
         },
         {
+          "path": "timeDeposit",
+          "style": {
+            "navigationBarBackgroundColor": "#FFFFFF",
+            "navigationBarTextStyle": "black",
+            "navigationBarTitleText": "定期存款",
+            "backgroundColor": "#F9F8F4"
+          }
+        },
+        {
           "path": "debitCard",
           "style": {
             "navigationBarBackgroundColor": "#FFFFFF",

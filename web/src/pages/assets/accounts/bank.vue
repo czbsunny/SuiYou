@@ -167,8 +167,9 @@ const handleAction = (type) => {
 
 const navToItemDetail = (item) => {
   // 保持原有跳转逻辑
-  const routes = { 'BALANCE': 'cash', 'YUEBAO': 'cashPlus', 'FUND': 'fund' };
+  const routes = { 'BALANCE': 'cash', 'YUEBAO': 'cashPlus', 'FUND': 'fund', 'TIME_DEPOSIT': 'timeDeposit' };
   const page = routes[item.subCategory];
+  console.log(page);
   const data = encodeURIComponent(JSON.stringify(item));
   if (page) {
     uni.navigateTo({ url: `/pages/assets/items/${page}?data=${data}` });
