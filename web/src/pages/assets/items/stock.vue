@@ -23,7 +23,7 @@
               </text>
             </view>
             <view class="indicator-item text-right">
-              <text class="label">今日预计收益</text>
+              <text class="label">今日收益</text>
               <view class="value-group" :class="{ 'is-blur': isAssetHidden }">
                 <text class="value-mid num-font text-up">{{ isAssetHidden ? '******' : '+1,562.20 (+2.22%)' }}</text>
               </view>

@@ -1,113 +1,120 @@
 <template>
   <view class="main-container">
-    <!-- 全局滚动区：确保下拉时所有卡片一起动 -->
     <scroll-view 
       class="main-scroll" 
       scroll-y 
       enable-back-to-top
-      refresher-enabled 
+      :refresher-enabled="true" 
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onPullDownRefresh"
     >
       <view class="content-wrapper">
         
-        <!-- 1. 资产汇总卡片 (与列表同级，同样使用 card-warm) -->
-        <view class="card-warm summary-card">
-          <view class="stats-row">
-            <!-- 左侧：资产 -->
-            <view class="stats-item">
-              <view class="label-box" @tap="toggleAssetHidden">
-                <text class="label">资产总额(元)</text>
-                <image :src="isAssetHidden ? '/static/images/eye-close.png' : '/static/images/eye-open.png'" class="icon-sm" />
-              </view>
-              <text class="value num-font" :class="{ 'is-blur': isAssetHidden }">
-                {{ isAssetHidden ? '******' : formatMoney(portfolio.currentValue) }}
+        <!-- 1. 资产汇总卡片 -->
+        <view class="card-warm summary-card animate-fade-in">
+          <view class="asset-main">
+            <view class="label-row" @tap="toggleAssetHidden">
+              <text class="label">基金总资产 (元)</text>
+              <uni-icons :type="isAssetHidden ? 'eye-slash' : 'eye'" size="16" color="#94a3b8"></uni-icons>
+            </view>
+            <text class="value-large num-font" :class="{ 'is-blur': isAssetHidden }">
+              {{ isAssetHidden ? '******' : formatMoney(portfolio.currentValue) }}
+            </text>
+          </view>
+
+          <view class="indicator-grid">
+            <view class="indicator-item">
+              <text class="label">持有收益</text>
+              <text class="value-mid num-font" :class="getReturnClass(portfolio.totalReturn)">
+                {{ isAssetHidden ? '******' : (portfolio.totalReturn >= 0 ? '+' : '') + formatMoney(portfolio.totalReturn) }}
               </text>
             </view>
-            
-            <!-- 右侧：收益 -->
-            <view class="stats-item align-right">
-              <view class="label-box" @tap="toggleReturnMode">
-                <image src="/static/images/switch.png" class="icon-sm" />
+            <view class="indicator-item text-right">
+              <view class="label-row justify-end" @tap="toggleReturnMode">
                 <text class="label">今日{{ showReturnRate ? '收益率' : '收益' }}</text>
+                <uni-icons type="loop" size="12" color="#94a3b8" class="ml-1"></uni-icons>
               </view>
-              <text class="value num-font" :class="getReturnClass(portfolio.dailyReturn)">
-                {{ portfolio.dailyReturn >= 0 ? '+' : '' }}{{ showReturnRate ? formatRate(portfolio.dailyReturnRate) : formatMoney(portfolio.dailyReturn) }}
+              <text class="value-mid num-font" :class="getReturnClass(portfolio.dailyReturn)">
+                {{ isAssetHidden ? '******' : (portfolio.dailyReturn >= 0 ? '+' : '') + (showReturnRate ? formatRate(portfolio.dailyReturnRate) : formatMoney(portfolio.dailyReturn)) }}
               </text>
             </view>
           </view>
         </view>
 
-        <!-- 2. 持仓列表卡片 (同样使用 card-warm) -->
-        <view class="card-warm list-card">
-          <view class="list-header">
-            <view class="title-group">
-              <text class="title">持有基金</text>
-              <text class="count">({{ portfolio.holdings.length }})</text>
-            </view>
-            <view class="add-btn" @tap="navigateToAdd">
-              <image src="/static/images/add.png" />
-            </view>
+        <!-- 2. 列表标题栏 -->
+        <view class="section-header">
+          <view class="header-left">
+            <text class="title">持有明细</text>
+            <text class="count-tag">{{ portfolio.holdings.length }}只</text>
           </view>
+          <view class="header-right" @tap="navigateToAdd">
+            <uni-icons type="plusempty" size="20" color="#64748b"></uni-icons>
+          </view>
+        </view>
 
-          <!-- 列表内容滚动容器 -->
-          <view class="list-content">
-            <!-- 列表内容 -->
-            <view class="table-head">
-              <text class="col-name">基金名称</text>
-              <text class="col-rate">今日涨跌</text>
-              <text class="col-profit">今日收益</text>
-              <text class="col-total">持有收益</text>
-            </view>
-
-            <view 
-              v-for="(item, index) in portfolio.holdings" 
-              :key="item.id"
-              :class="['holding-item', 'item-ref-' + index]"
-              @touchstart="handleTouchStart($event, item, index)"
-              @touchmove="handleTouchMove"
-              @touchend="handleTouchEnd"
-              @tap="onItemTap(item)"
-              hover-class="item-hover-bg"
-            >
-              <view class="col-name">
+        <!-- 3. 持仓列表 -->
+        <view class="card-list">
+          <view 
+            v-for="(item, index) in portfolio.holdings" 
+            :key="item.id"
+            :class="['card-warm', 'holding-card', 'item-ref-' + index]"
+            @touchstart="handleTouchStart($event, item, index)"
+            @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"
+            @tap="onItemTap(item)"
+          >
+            <view class="card-row">
+              <view class="name-box">
                 <text class="f-name truncate">{{ item.name }}</text>
-                <view class="f-tags">
-                  <text :class="['tag', { 'updated': isUpdated(item.navUpdatedAt) }]">
-                    {{ isUpdated(item.navUpdatedAt) ? '已更新' : formatNavDate(item.navUpdatedAt) }}
+                <view class="status-box">
+                  <text :class="['status-tag', { 'is-final': isUpdated(item.navUpdatedAt) }]">
+                    {{ isUpdated(item.navUpdatedAt) ? '净值已出' : '盘中估值' }}
                   </text>
-                  <text class="f-amount num-font">{{ isAssetHidden ? '****' : formatMoney(item.amount) }}</text>
+                  <text class="update-time">{{ formatNavDate(item.navUpdatedAt) }}</text>
                 </view>
               </view>
-              <view :class="['col-rate', 'num-font', getReturnClass(item.dailyReturnRate)]">
-                {{ item.dailyReturnRate >= 0 ? '+' : '' }}{{ formatRate(item.dailyReturnRate) }}
+              <view class="profit-box">
+                <text class="main-val num-font" :class="getReturnClass(item.dailyReturnRate)">
+                  {{ item.dailyReturnRate >= 0 ? '+' : '' }}{{ formatRate(item.dailyReturnRate) }}
+                </text>
               </view>
-              <view :class="['col-profit', 'num-font', getReturnClass(item.dailyReturn)]">
-                {{ item.dailyReturn >= 0 ? '+' : '' }}{{ formatMoney(item.dailyReturn) }}
+            </view>
+
+            <view class="card-row mt-20">
+              <view class="data-item">
+                <text class="d-label">市值</text>
+                <text class="d-val num-font" :class="{ 'is-blur': isAssetHidden }">{{ isAssetHidden ? '****' : formatMoney(item.amount) }}</text>
               </view>
-              <view :class="['col-total', 'num-font', getReturnClass(item.returnValue)]">
-                {{ item.returnValue >= 0 ? '+' : '' }}{{ formatMoney(item.returnValue) }}
+              <view class="data-item text-center">
+                <text class="d-label">今日收益</text>
+                <text class="d-val num-font" :class="getReturnClass(item.dailyReturn)">{{ item.dailyReturn >= 0 ? '+' : '' }}{{ formatMoney(item.dailyReturn) }}</text>
+              </view>
+              <view class="data-item text-right">
+                <text class="d-label">总收益</text>
+                <text class="d-val num-font" :class="getReturnClass(item.returnValue)">{{ item.returnValue >= 0 ? '+' : '' }}{{ formatMoney(item.returnValue) }}</text>
               </view>
             </view>
           </view>
         </view>
+
+        <view class="safe-area-bottom"></view>
       </view>
     </scroll-view>
 
-    <!-- 3. 长按操作菜单 -->
+    <!-- 4. 操作菜单 -->
     <view v-if="menuVisible" class="menu-mask" @tap="closeMenu" @touchmove.stop.prevent>
       <view class="menu-card" :style="menuPosStyle" @tap.stop>
         <view class="menu-header">
-          <text class="m-title truncate">{{ selectedHolding?.name }}</text>
+          <text class="m-title truncate" v-if="selectedHolding">{{ selectedHolding.name }}</text>
         </view>
         <view class="menu-body">
-          <view class="menu-option" @tap="handleEdit" hover-class="item-hover-bg">
-            <image src="/static/images/edit_fund.png" class="m-icon" />
-            <text>修改持仓</text>
+          <view class="menu-option" @tap="handleEdit">
+            <uni-icons type="compose" size="20" color="#64748b"></uni-icons>
+            <text class="m-text">修改持仓</text>
           </view>
-          <view class="menu-option is-delete" @tap="handleDelete" hover-class="item-hover-bg">
-            <image src="/static/images/del-fund.png" class="m-icon" />
-            <text>删除持仓</text>
+          <view class="menu-option is-delete" @tap="handleDelete">
+            <uni-icons type="trash" size="20" color="#ef4444"></uni-icons>
+            <text class="m-text text-red">删除持仓</text>
           </view>
         </view>
       </view>
@@ -115,254 +122,180 @@
   </view>
 </template>
 
-<script>
-/* JS 部分保持您的逻辑和接口调用不变 */
-import { formatCurrency, formatPercentage } from '@/utils/formatUtil';
-import { deletePortfolioHolding } from '@/services/portfolioHoldService.js';
-import { getPortfolioByAssetId } from '@/services/assetService.js';
+<script setup>
+import { ref, reactive } from 'vue';
 
-export default {
-  data() {
-    return {
-      portfolio: { currentValue: 0, dailyReturn: 0, dailyReturnRate: 0, holdings: [] },
-      isAssetHidden: false,
-      showReturnRate: false,
-      isRefreshing: false,
-      menuVisible: false,
-      selectedHolding: null,
-      menuPosStyle: {},
-      touchTimer: null,
-      startX: 0, startY: 0, hasMoved: false,
-      assetId: ''
-    }
-  },
-  onLoad(options) {
-    if (options.data) {
-      const item = JSON.parse(decodeURIComponent(options.data));
-      if (item) {
-        this.assetId = item.id;
-      }
-    }
-  },
-  onShow() { this.loadData(); },
-  methods: {
-    async loadData() {
-      try {
-        const res = await getPortfolioByAssetId(this.assetId);
-        this.portfolio = res || { holdings: [] };
-      } catch (e) { console.error(e); }
-    },
-    async onPullDownRefresh() {
-      this.isRefreshing = true;
-      await this.loadData();
-      this.isRefreshing = false;
+// 响应式数据
+const isRefreshing = ref(false);
+const isAssetHidden = ref(false);
+const showReturnRate = ref(false);
+const menuVisible = ref(false);
+const selectedHolding = ref(null);
+const menuPosStyle = ref({});
+
+const portfolio = reactive({
+  currentValue: 504285.00,
+  totalReturn: 24800.50,
+  dailyReturn: 1562.20,
+  dailyReturnRate: 2.22,
+  holdings: [
+    { id: 1, name: '招商中证500指数增强', amount: 35189.0, dailyReturn: 250.4, dailyReturnRate: 0.71, returnValue: -1260.75, navUpdatedAt: '2023-10-27 14:45' },
+    { id: 2, name: '纳斯达克100ETF(QDII)', amount: 130849.0, dailyReturn: 1102.32, dailyReturnRate: 3.58, returnValue: 1202.32, navUpdatedAt: '2023-10-27 10:30' }
+  ]
+});
+
+// 手势相关
+let touchTimer = null;
+let startX = 0;
+let startY = 0;
+let hasMoved = false;
+
+// 方法定义
+const formatMoney = (v) => v ? v.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '0.00';
+const formatRate = (v) => v ? v.toFixed(2) + '%' : '0.00%';
+const getReturnClass = (v) => v > 0 ? 'text-up' : (v < 0 ? 'text-down' : '');
+const toggleAssetHidden = () => { isAssetHidden.value = !isAssetHidden.value; uni.vibrateShort(); };
+const toggleReturnMode = () => { showReturnRate.value = !showReturnRate.value; uni.vibrateShort(); };
+
+const isUpdated = (dateStr) => {
+  if (!dateStr) return false;
+  // 简单逻辑：如果包含 19:xx 以后或者日期是今天且当前时间已过 19 点
+  return dateStr.includes('19:') || dateStr.includes('20:'); 
+};
+
+const formatNavDate = (date) => date ? date.substring(5, 10) : '--';
+
+const onPullDownRefresh = () => {
+  isRefreshing.value = true;
+  setTimeout(() => {
+    isRefreshing.value = false;
+    uni.showToast({ title: '已更新', icon: 'none' });
+  }, 1000);
+};
+
+// 长按菜单逻辑
+const handleTouchStart = (e, item, index) => {
+  hasMoved = false;
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+  touchTimer = setTimeout(() => {
+    if (!hasMoved) {
+      selectedHolding.value = item;
       uni.vibrateShort();
-    },
-    handleTouchStart(e, item, index) {
-      this.hasMoved = false;
-      this.startX = e.touches[0].clientX;
-      this.startY = e.touches[0].clientY;
-      this.touchTimer = setTimeout(() => {
-        if (!this.hasMoved) this.showActionMenu(item, index);
-      }, 450);
-    },
-    handleTouchMove(e) {
-      if (Math.abs(e.touches[0].clientX - this.startX) > 10 || Math.abs(e.touches[0].clientY - this.startY) > 10) {
-        this.hasMoved = true;
-        this.clearTimer();
-      }
-    },
-    handleTouchEnd() { this.clearTimer(); },
-    clearTimer() { if (this.touchTimer) clearTimeout(this.touchTimer); },
-    showActionMenu(item, index) {
-      this.selectedHolding = item;
-      uni.vibrateShort();
-      uni.createSelectorQuery().in(this).select('.item-ref-' + index).boundingClientRect(rect => {
-        if (!rect) return;
-        let topPos = rect.bottom + 10;
-        if (topPos + 120 > uni.getWindowInfo().windowHeight) topPos = rect.top - 130;
-        this.menuPosStyle = { top: topPos + 'px', left: '50%', transform: 'translateX(-50%)' };
-        this.menuVisible = true;
+      const query = uni.createSelectorQuery();
+      query.select('.item-ref-' + index).boundingClientRect(rect => {
+        if (rect) {
+          let topPos = rect.bottom + 10;
+          if (topPos + 120 > uni.getSystemInfoSync().windowHeight) topPos = rect.top - 130;
+          menuPosStyle.value = `top: ${topPos}px; left: 50%; transform: translateX(-50%);`;
+          menuVisible.value = true;
+        }
       }).exec();
-    },
-    closeMenu() { this.menuVisible = false; },
-    handleEdit() {
-      uni.navigateTo({ url: `/pages/assets/fund/edit?portfolioId=${this.portfolio.id}&holdingInfo=${encodeURIComponent(JSON.stringify(this.selectedHolding))}` });
-      this.closeMenu();
-    },
-    async handleDelete() {
-      const res = await uni.showModal({ title: '确认删除', content: '确定要移除这项基金持仓吗？', confirmColor: '#ef4444' });
-      if (res.confirm) {
-        await deletePortfolioHolding(this.selectedHolding.id);
-        this.loadData();
-      }
-      this.closeMenu();
-    },
-    onItemTap(item) { console.log('detail:', item.id); },
-    formatMoney(v) { return formatCurrency(v, ''); },
-    formatRate(v) { return formatPercentage(v); },
-    getReturnClass(v) { return v > 0 ? 'text-gain' : (v < 0 ? 'text-loss' : 'text-main'); },
-    toggleAssetHidden() { this.isAssetHidden = !this.isAssetHidden; uni.vibrateShort(); },
-    toggleReturnMode() { this.showReturnRate = !this.showReturnRate; uni.vibrateShort(); },
-    isUpdated(date) { return false; },
-    formatNavDate(date) { return date ? date.substring(5, 10) : '--'; },
-    navigateToAdd() { 
-      uni.navigateTo({ 
-        url: `/pages/assets/fund/add?portfolioId=${this.portfolio.id}`
-      }); 
     }
+  }, 500);
+};
+
+const handleTouchMove = (e) => {
+  if (Math.abs(e.touches[0].clientX - startX) > 10 || Math.abs(e.touches[0].clientY - startY) > 10) {
+    hasMoved = true;
+    if (touchTimer) clearTimeout(touchTimer);
   }
-}
+};
+
+const handleTouchEnd = () => { if (touchTimer) clearTimeout(touchTimer); };
+const closeMenu = () => { menuVisible.value = false; };
+const navigateToAdd = () => uni.showToast({ title: '去添加', icon: 'none' });
+const onItemTap = (item) => console.log('详情', item.name);
+const handleEdit = () => { uni.showToast({ title: '编辑' }); closeMenu(); };
+const handleDelete = () => { uni.showToast({ title: '删除' }); closeMenu(); };
+
 </script>
 
 <style lang="scss" scoped>
-/* 核心布局 */
-.main-container {
-  height: 100vh;
-  background-color: $bg-page;
+/* 变量定义 */
+$text-main: #1e293b;
+$text-sub: #64748b;
+$up: #ef4444;
+$down: #22c55e;
+$bg-page: #f8fafc;
+
+.main-container { height: 100vh; background-color: $bg-page; }
+.content-wrapper { padding: 20rpx; }
+
+/* 通用卡片 */
+.card-warm {
+  background-color: #ffffff;
+  border-radius: 28rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }
 
-.main-scroll {
-  height: 100%;
-}
-
-.content-wrapper {
-  padding: $spacing-sm; 
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-/* 1. 资产汇总区域样式优化 */
+/* 看板 */
 .summary-card {
-  margin-bottom: $spacing-sm;
-  
-  .stats-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* 垂直居中 */
+  .asset-main {
+    margin-bottom: 30rpx;
+    .label-row { display: flex; align-items: center; gap: 8rpx; margin-bottom: 8rpx; }
+    .label { font-size: 24rpx; color: $text-sub; }
+    .value-large { font-size: 56rpx; font-weight: 700; color: $text-main; }
   }
-  
-  .stats-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    
-    &.align-right { align-items: flex-end; }
-    
-    .label-box {
-      display: flex;
-      align-items: center;
-      margin-bottom: $spacing-base;
-      
-      .label { font-size: 32rpx; color: $text-muted; }
-      .icon-sm { width: 32rpx; height: 32rpx; margin: 0 8rpx; opacity: 0.5; }
-    }
-    
-    .value {
-      font-size: 44rpx; /* 统一大小 */
-      font-weight: $fw-bold;
-      color: $text-main;
-      
-      &.is-blur { filter: blur(6px); opacity: 0.3; }
+  .indicator-grid {
+    display: flex; justify-content: space-between;
+    .indicator-item {
+      display: flex; flex-direction: column;
+      .label { font-size: 22rpx; color: $text-sub; margin-bottom: 6rpx; }
+      .value-mid { font-size: 32rpx; font-weight: 600; }
     }
   }
 }
 
-/* 2. 持仓列表区域样式优化 */
-.list-card {
-  /* 直接继承 card-warm 样式 */
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $spacing-base;
-    
-    .title { font-size: 32rpx; font-weight: $fw-bold; color: $text-main; }
-    .count { font-size: 28rpx; color: $text-muted; margin-left: 8rpx; }
-    
-    .add-btn {
-      width: 48rpx; height: 48rpx; border-radius: 50%;
-      background-color: $primary-dark; @include flex-center;
-      image { width: 32rpx; height: 32rpx; }
+/* 标题 */
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10rpx 10rpx 20rpx;
+  .header-left { display: flex; align-items: center; gap: 10rpx; 
+    .title { font-size: 30rpx; font-weight: 700; color: $text-main; }
+    .count-tag { font-size: 22rpx; color: $text-sub; background-color: $bg-subtle; padding: 4rpx 16rpx; border-radius: 20rpx; }
+  }
+}
+
+/* 列表卡片 */
+.holding-card {
+  .card-row {
+    display: flex; justify-content: space-between; align-items: center;
+    .name-box { 
+      flex: 1; min-width: 0; 
+      .f-name { font-size: 28rpx; font-weight: 600; margin-bottom: 6rpx; display: block; }
     }
-  }
-  
-  .table-head {
-    flex-shrink: 0;
-  }
-  
-  .holding-item {
-    flex-shrink: 0;
-  }
-  
-  .list-content {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* 优化iOS滚动体验 */
+    .status-box { 
+      display: flex; align-items: center; gap: 10rpx; 
+      .status-tag { font-size: 18rpx; padding: 2rpx 8rpx; border-radius: 4rpx; background: #f1f5f9; color: #94a3b8; }
+      .status-tag.is-final { background: #f0fdf4; color: $down; }
+      .update-time { font-size: 18rpx; color: #cbd5e1; }
+    }
+    .main-val { font-size: 32rpx; font-weight: 700; }
+    .data-item { flex: 1; display: flex; flex-direction: column; .d-label { font-size: 20rpx; color: #94a3b8; } .d-val { font-size: 26rpx; font-weight: 600; } }
   }
 }
 
-/* 表格对齐 */
-.table-head {
-  display: flex;
-  padding-bottom: 16rpx;
-  border-bottom: 1rpx solid $gray-100;
-  text { font-size: 24rpx; color: $text-muted; }
-}
-
-.holding-item {
-  display: flex;
-  align-items: center;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid rgba($gray-100, 0.5);
-  
-  .col-name {
-    display: flex;
-    flex-direction: column;
-    gap: 8rpx;
-  }
-  
-  .f-name { font-size: 26rpx; color: $text-main; font-weight: $fw-medium; }
-  .f-tags {
-    display: flex; align-items: center;
-    .tag { font-size: 16rpx; padding: 2rpx 8rpx; background: $gray-50; color: $text-muted; border-radius: 4rpx; margin-right: 10rpx; }
-    .tag.updated { background: $green-50; color: $color-success; }
-    .f-amount { font-size: 24rpx; color: $text-placeholder; }
-  }
-}
-
-/* 列比例保持一致 */
-.col-name { flex: 2.2; min-width: 0; }
-.col-rate { flex: 1.2; text-align: right; }
-.col-profit { flex: 1.4; text-align: right; }
-.col-total { flex: 1.4; text-align: right; }
-
-/* 菜单样式 (继承 card-warm 影子感) */
+/* 菜单 */
 .menu-mask {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.15); backdrop-filter: blur(1px); z-index: 999;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.15); z-index: 999;
   .menu-card {
-    position: absolute; width: 500rpx; background: $white; border-radius: $radius-base;
-    box-shadow: $shadow-card; overflow: hidden;
-    .menu-header { padding: 24rpx; background: $bg-subtle; text-align: center; border-bottom: 1rpx solid $gray-100; }
-    .m-title { font-size: 24rpx; color: $text-main; font-weight: $fw-bold; }
-    .menu-body { display: flex; .menu-option { flex: 1; @include flex-center; flex-direction: column; padding: 24rpx 0; } }
-    .m-icon { width: 44rpx; height: 44rpx; margin-bottom: 8rpx; }
-    text { font-size: 24rpx; color: $text-sub; }
-    .is-delete text { color: $color-error; }
+    position: absolute; width: 440rpx; background: #fff; border-radius: 24rpx; box-shadow: 0 10rpx 40rpx rgba(0,0,0,0.1);
+    .menu-header { padding: 20rpx; background: #f8fafc; text-align: center; border-bottom: 1rpx solid #f1f5f9; }
+    .m-title { font-size: 22rpx; color: #64748b; }
+    .menu-body { display: flex; .menu-option { flex: 1; padding: 30rpx 0; display: flex; flex-direction: column; align-items: center; .m-text { font-size: 22rpx; margin-top: 10rpx; } } }
   }
 }
 
-/* 通用工具 */
-.num-font { font-family: $font-family-money; @include tabular-nums; font-size: 26rpx; }
-.text-gain { color: $text-gain; }
-.text-loss { color: $text-loss; }
+.num-font { font-family: "Helvetica Neue", Arial, sans-serif; }
+.text-up { color: $up; }
+.text-down { color: $down; }
+.is-blur { filter: blur(10rpx); opacity: 0.4; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.item-hover-bg { background-color: $bg-subtle; }
-.safe-area-bottom { height: calc(env(safe-area-inset-bottom) + 30rpx); }
+.justify-end { justify-content: flex-end; }
+.mt-20 { margin-top: 20rpx; }
+.ml-1 { margin-left: 4rpx; }
+.text-red { color: $up; }
 </style>
