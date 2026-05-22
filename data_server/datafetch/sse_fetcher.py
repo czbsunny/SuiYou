@@ -244,211 +244,202 @@ class SSEFetcher:
             logger.error(f"获取终止上市公司列表失败: {str(e)}")
             return None
     
-    async def get_etf_list(self, date_str: Optional[str] = None) -> Optional[pd.DataFrame]:
+    async def get_fund_list(self, fund_type: str = "ETF") -> Optional[pd.DataFrame]:
         """
-        获取上交所ETF列表
+        获取上交所基金列表
         
         Args:
-            date_str: 日期参数，格式如"2026-05-22"，默认为None
+            fund_type: 基金类型，可选值: "ETF", "LOF", "Reits"，默认为"ETF"
         
         Returns:
-            Optional[pd.DataFrame]: ETF列表DataFrame
+            Optional[pd.DataFrame]: 基金列表DataFrame
         """
-        logger.info(f"获取上交所ETF列表")
+        logger.info(f"获取上交所基金列表: {fund_type}")
         
-        url = "http://query.sse.com.cn/security/fund/getFundListData.do"
-        params = {
-            "jsonCallBack": "",
-            "isPagination": "true",
-            "pageHelp.cacheSize": "1",
-            "pageHelp.beginPage": "1",
-            "pageHelp.pageSize": "5000",
-            "pageHelp.pageNo": "1",
-            "pageHelp.endPage": "5",
-        }
-        
-        if date_str:
-            params["txtDate"] = date_str
-        
-        try:
-            headers = self._session.headers.copy()
-            headers.update({
-                "Referer": "http://www.sse.com.cn/assortment/fund/etf/list/",
-            })
-            
-            resp = await asyncio.to_thread(
-                self._session.get,
-                url,
-                params=params,
-                headers=headers,
-                timeout=30
-            )
-            
-            if resp.status_code != 200:
-                logger.error(f"请求失败，状态码: {resp.status_code}")
-                return None
-            
-            data_text = resp.text
-            if data_text.startswith("(") and data_text.endswith(")"):
-                data_text = data_text[1:-1]
-            
-            data = json.loads(data_text)
-            
-            if "result" not in data:
-                logger.error("响应数据格式不正确")
-                return None
-            
-            df = pd.DataFrame(data["result"])
-            logger.info(f"成功获取ETF列表，共 {len(df)} 条记录")
-            return df
-            
-        except Exception as e:
-            logger.error(f"获取ETF列表失败: {str(e)}")
-            return None
-    
-    async def get_bond_list(self) -> Optional[pd.DataFrame]:
-        """
-        获取上交所债券列表
-        
-        Returns:
-            Optional[pd.DataFrame]: 债券列表DataFrame
-        """
-        logger.info("获取上交所债券列表")
-        
-        url = "http://query.sse.com.cn/security/bond/getBondListData.do"
-        params = {
-            "jsonCallBack": "",
-            "isPagination": "true",
-            "pageHelp.cacheSize": "1",
-            "pageHelp.beginPage": "1",
-            "pageHelp.pageSize": "5000",
-            "pageHelp.pageNo": "1",
-            "pageHelp.endPage": "5",
-        }
-        
-        try:
-            headers = self._session.headers.copy()
-            headers.update({
-                "Referer": "http://www.sse.com.cn/assortment/bond/list/",
-            })
-            
-            resp = await asyncio.to_thread(
-                self._session.get,
-                url,
-                params=params,
-                headers=headers,
-                timeout=30
-            )
-            
-            if resp.status_code != 200:
-                logger.error(f"请求失败，状态码: {resp.status_code}")
-                return None
-            
-            data_text = resp.text
-            if data_text.startswith("(") and data_text.endswith(")"):
-                data_text = data_text[1:-1]
-            
-            data = json.loads(data_text)
-            
-            if "result" not in data:
-                logger.error("响应数据格式不正确")
-                return None
-            
-            df = pd.DataFrame(data["result"])
-            logger.info(f"成功获取债券列表，共 {len(df)} 条记录")
-            return df
-            
-        except Exception as e:
-            logger.error(f"获取债券列表失败: {str(e)}")
-            return None
-    
-    async def get_all_securities(self) -> Dict[str, pd.DataFrame]:
-        """
-        获取所有上交所证券产品数据
-        
-        Returns:
-            Dict[str, pd.DataFrame]: 包含股票、ETF、债券列表的字典
-        """
-        logger.info("获取所有上交所证券产品数据")
-        
-        tasks = [
-            self.get_stock_list("主板A股"),
-            self.get_etf_list(),
-            self.get_bond_list()
-        ]
-        
-        results = await asyncio.gather(*tasks)
-        
-        return {
-            "stocks": results[0],
-            "etfs": results[1],
-            "bonds": results[2]
-        }
-    
-    def parse_to_security_model(self, df: pd.DataFrame, security_type: str) -> List[Dict]:
-        """
-        将DataFrame转换为Security模型的字典列表
-        
-        Args:
-            df: 原始数据DataFrame
-            security_type: 证券类型
-        
-        Returns:
-            List[Dict]: Security模型字典列表
-        """
-        if df is None or df.empty:
-            return []
-        
-        result = []
-        for _, row in df.iterrows():
-            security = {
-                "security_type": security_type,
-                "market": "SH",
-                "status": "LISTED"
+        # 基金类型参数映射
+        fund_type_params = {
+            "ETF": {
+                "fundType": "00",
+                "subClass": "01,02,03,04,06,08,09,31,32,33,34,35,36,37,38"
+            },
+            "LOF": {
+                "fundType": "10",
+                "subClass": "11,14,15"
+            },
+            "Reits": {
+                "fundType": "50",
+                "subClass": ""
             }
+        }
+        
+        if fund_type not in fund_type_params:
+            logger.error(f"不支持的基金类型: {fund_type}")
+            return None
+        
+        # 生成随机的 jsonCallBack 名称
+        import random
+        callback_name = f"jsonpCallback{random.randint(10000000, 99999999)}"
+        
+        url = "https://query.sse.com.cn/commonSoaQuery.do"
+        params = {
+            "jsonCallBack": callback_name,
+            "isPagination": "true",
+            "pageHelp.pageSize": "10000",
+            "pageHelp.pageNo": "1",
+            "pageHelp.beginPage": "1",
+            "pageHelp.cacheSize": "1",
+            "pageHelp.endPage": "1",
+            "pagecache": "false",
+            "sqlId": "FUND_LIST",
+            "fundType": fund_type_params[fund_type]["fundType"],
+            "subClass": fund_type_params[fund_type]["subClass"],
+            "order": "",
+            "_": str(int(asyncio.get_event_loop().time() * 1000)),
+        }
+        
+        try:
+            headers = self._session.headers.copy()
+            headers.update({
+                "Referer": "https://www.sse.com.cn/",
+                "Accept": "*/*",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+            })
             
-            # 尝试从不同列名获取代码和名称
-            code = None
-            name = None
+            resp = await asyncio.to_thread(
+                self._session.get,
+                url,
+                params=params,
+                headers=headers,
+                timeout=30
+            )
             
-            code_columns = ["证券代码", "公司代码", "A_STOCK_CODE", "B_STOCK_CODE", 
-                          "SECURITY_CODE_ABBR", "PRODUCT_CODE", "SECUCODE", "CODE"]
-            name_columns = ["证券简称", "公司简称", "COMPANY_ABBR", "SECURITY_NAME_ABBR", 
-                           "PRODUCT_NAME", "SECURITY_ABBR", "NAME"]
+            if resp.status_code != 200:
+                logger.error(f"请求失败，状态码: {resp.status_code}")
+                return None
             
-            for col in code_columns:
-                if col in df.columns:
-                    code = str(row[col]).strip()
-                    break
+            # 处理 JSONP 响应
+            data_text = resp.text
+            if data_text.startswith(callback_name + "(") and data_text.endswith(")"):
+                data_text = data_text[len(callback_name) + 1:-1]
+            elif data_text.startswith("(") and data_text.endswith(")"):
+                data_text = data_text[1:-1]
             
-            for col in name_columns:
-                if col in df.columns:
-                    name = str(row[col]).strip()
-                    break
+            data = json.loads(data_text)
             
-            if code and name:
-                security["unified_code"] = f"SH.{code}"
-                security["symbol"] = code
-                security["name"] = name
-                
-                # 尝试获取上市日期
-                date_columns = ["上市日期", "LIST_DATE", "LISTING_DATE", "挂牌日期"]
+            # 数据在 pageHelp.data 中
+            if "pageHelp" not in data or "data" not in data["pageHelp"]:
+                logger.error("响应数据格式不正确")
+                return None
+            
+            df = pd.DataFrame(data["pageHelp"]["data"])
+            
+            # 数据清洗和格式化
+            if not df.empty:
+                # 转换日期字段
+                if "listingDate" in df.columns:
+                    df["listingDate"] = pd.to_datetime(df["listingDate"], format="%Y%m%d", errors="coerce").dt.date
+            
+            logger.info(f"成功获取{fund_type}基金列表，共 {len(df)} 条记录")
+            return df
+            
+        except Exception as e:
+            logger.error(f"获取{fund_type}基金列表失败: {str(e)}")
+            return None
+    
+    async def get_convertible_bond_list(self) -> Optional[pd.DataFrame]:
+        """
+        获取上交所可转换债券列表
+        
+        Returns:
+            Optional[pd.DataFrame]: 可转换债券列表DataFrame
+        """
+        logger.info("获取上交所可转换债券列表")
+        
+        # 生成随机的 jsonCallBack 名称
+        import random
+        callback_name = f"jsonpCallback{random.randint(10000000, 99999999)}"
+        
+        url = "https://query.sse.com.cn/sseQuery/commonSoaQuery.do"
+        params = {
+            "jsonCallBack": callback_name,
+            "isPagination": "true",
+            "pageHelp.pageSize": "5000",
+            "pageHelp.pageNo": "1",
+            "pageHelp.beginPage": "1",
+            "pageHelp.cacheSize": "1",
+            "pageHelp.endPage": "1",
+            "sqlId": "CP_ZQ_ZQLB",
+            "BOND_CODE": "",
+            "BOND_TYPE": "可转换公司债券",
+            "_": str(int(asyncio.get_event_loop().time() * 1000)),
+        }
+        
+        try:
+            headers = self._session.headers.copy()
+            headers.update({
+                "Referer": "https://www.sse.com.cn/",
+                "Accept": "*/*",
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+            })
+            
+            resp = await asyncio.to_thread(
+                self._session.get,
+                url,
+                params=params,
+                headers=headers,
+                timeout=30
+            )
+            
+            if resp.status_code != 200:
+                logger.error(f"请求失败，状态码: {resp.status_code}")
+                return None
+            
+            # 处理 JSONP 响应
+            data_text = resp.text
+            # 移除 jsonpCallback(...) 包装
+            if data_text.startswith(callback_name + "(") and data_text.endswith(")"):
+                data_text = data_text[len(callback_name) + 1:-1]
+            elif data_text.startswith("(") and data_text.endswith(")"):
+                data_text = data_text[1:-1]
+            
+            data = json.loads(data_text)
+            
+            # 数据在 pageHelp.data 中
+            if "pageHelp" not in data or "data" not in data["pageHelp"]:
+                logger.error("响应数据格式不正确")
+                return None
+            
+            df = pd.DataFrame(data["pageHelp"]["data"])
+            
+            # 数据清洗和格式化
+            if not df.empty:
+                # 转换日期字段
+                date_columns = ["LISTING_DATE_CVS", "END_DATE_CVS", "ONLINE_START_DATE_CVS", 
+                              "ONLINE_END_DATE_CVS", "START_DATE", "END_DATE", "LISTING_DATE", "TRADE_DATE"]
                 for col in date_columns:
                     if col in df.columns:
-                        try:
-                            security["listed_date"] = pd.to_datetime(row[col]).date()
-                        except:
-                            pass
-                        break
+                        # 处理日期格式，尝试多种格式
+                        if col.endswith("_CVS"):
+                            df[col] = pd.to_datetime(df[col], errors="coerce").dt.date
+                        else:
+                            # 处理纯数字格式的日期如 20260511
+                            df[col] = pd.to_datetime(df[col], format="%Y%m%d", errors="coerce").dt.date
                 
-                # 尝试获取公司全称
-                if "公司全称" in df.columns:
-                    security["full_name"] = str(row["公司全称"]).strip()
-                
-                result.append(security)
-        
-        logger.info(f"解析完成，共 {len(result)} 条 {security_type} 数据")
-        return result
+                # 转换数值字段
+                numeric_columns = ["FACE_RATE", "FACE_VALUE", "ISSUE_PRICE", "TERM_YEAR", 
+                                 "TERM_DAY", "ISSUE_VALUE_HM", "ISSUE_VALUE"]
+                for col in numeric_columns:
+                    if col in df.columns:
+                        df[col] = pd.to_numeric(df[col], errors="coerce")
+            
+            logger.info(f"成功获取可转换债券列表，共 {len(df)} 条记录")
+            return df
+            
+        except Exception as e:
+            logger.error(f"获取可转换债券列表失败: {str(e)}")
+            return None
 
 
 # 创建一个全局的上交所获取器实例
