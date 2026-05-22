@@ -18,3 +18,4 @@ from .cnindex_info import CNIndexInfo
 from .config import Config
 from .trading_day import TradingDay
 from .security import Security
+from .security_corporate_action import SecurityCorporateAction
