@@ -1,0 +1,583 @@
+// ============================================
+// Heritage Hearth Design System - Common Styles
+// 基于设计文件 designs/ 中的原型图定义
+// ============================================
+
+@import './variables.scss';
+@import './mixins.scss';
+
+// --------------------------------------------
+// 全局页面样式
+// --------------------------------------------
+page {
+  background: $background;
+  font-family: $font-family-primary;
+  font-size: $font-size-body-reg;
+  color: $on-surface;
+  line-height: $line-height-base;
+  --status-bar-height: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// --------------------------------------------
+// 容器样式
+// --------------------------------------------
+.container {
+  min-height: 100vh;
+  background: $background;
+  @include flex-column;
+}
+
+.page-container {
+  min-height: 100vh;
+  background: $background;
+  padding-bottom: 180rpx;
+}
+
+// --------------------------------------------
+// 按钮样式
+// --------------------------------------------
+.btn-primary {
+  @include button-primary;
+  height: 88rpx;
+  font-size: $font-size-body-reg;
+  margin: 0 $stack-gap-md;
+}
+
+.btn-secondary {
+  @include button-secondary;
+  height: 88rpx;
+  font-size: $font-size-body-reg;
+  margin: 0 $stack-gap-md;
+}
+
+.btn-default {
+  @include button-default;
+  height: 88rpx;
+  font-size: $font-size-body-reg;
+  margin: 0 $stack-gap-md;
+}
+
+.btn-outline {
+  @include button-outline;
+  height: 88rpx;
+  font-size: $font-size-body-reg;
+  margin: 0 $stack-gap-md;
+}
+
+// --------------------------------------------
+// 卡片样式
+// --------------------------------------------
+.card {
+  @include card;
+  margin: $stack-gap-md;
+}
+
+.card-lg {
+  @include card-lg;
+  margin: $stack-gap-md;
+}
+
+.card-surface {
+  background: $surface-container-lowest;
+  border-radius: $rounded-md;
+  box-shadow: $shadow-soft;
+}
+
+// --------------------------------------------
+// Flex 布局工具类
+// --------------------------------------------
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-between {
+  @include flex-between;
+}
+
+.flex-column {
+  @include flex-column;
+}
+
+.flex-start {
+  @include flex-start;
+}
+
+.flex-end {
+  @include flex-end;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.gap-sm {
+  gap: $stack-gap-sm;
+}
+
+.gap-md {
+  gap: $stack-gap-md;
+}
+
+.gap-lg {
+  gap: $stack-gap-lg;
+}
+
+// --------------------------------------------
+// 文本工具类
+// --------------------------------------------
+.text-ellipsis {
+  @include text-ellipsis;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: $primary;
+}
+
+.text-secondary {
+  color: $secondary;
+}
+
+.text-on-surface {
+  color: $on-surface;
+}
+
+.text-on-surface-variant {
+  color: $on-surface-variant;
+}
+
+.text-outline {
+  color: $outline;
+}
+
+.text-profit {
+  color: $profit;
+}
+
+.text-loss {
+  color: $loss;
+}
+
+.font-mono {
+  font-family: $font-family-mono;
+}
+
+.font-bold {
+  font-weight: $font-weight-bold;
+}
+
+.font-semibold {
+  font-weight: $font-weight-semibold;
+}
+
+.font-medium {
+  font-weight: $font-weight-medium;
+}
+
+.font-regular {
+  font-weight: $font-weight-regular;
+}
+
+// 字体大小工具类
+.text-display-lg {
+  font-size: $font-size-display-lg;
+  font-weight: $font-weight-bold;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+}
+
+.text-headline-md {
+  font-size: $font-size-headline-md;
+  font-weight: $font-weight-semibold;
+  line-height: 32px;
+}
+
+.text-title-sm {
+  font-size: $font-size-title-sm;
+  font-weight: $font-weight-semibold;
+  line-height: 24px;
+}
+
+.text-body-reg {
+  font-size: $font-size-body-reg;
+  font-weight: $font-weight-regular;
+  line-height: 24px;
+}
+
+.text-body-sm {
+  font-size: $font-size-body-sm;
+  font-weight: $font-weight-regular;
+  line-height: 20px;
+}
+
+.text-label-caps {
+  font-size: $font-size-label-caps;
+  font-weight: $font-weight-bold;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text-num-display {
+  font-family: $font-family-mono;
+  font-size: $font-size-num-display;
+  font-weight: $font-weight-semibold;
+  line-height: 32px;
+  letter-spacing: -0.05em;
+}
+
+.text-num-data {
+  font-family: $font-family-mono;
+  font-size: $font-size-num-data;
+  font-weight: $font-weight-medium;
+  line-height: 20px;
+}
+
+// --------------------------------------------
+// 安全区域
+// --------------------------------------------
+.safe-area-bottom {
+  @include safe-area-bottom;
+}
+
+.safe-area-top {
+  @include safe-area-top;
+}
+
+.safe-area-bottom-adapt {
+  @include safe-area-bottom-adapt;
+}
+
+// --------------------------------------------
+// 状态栏和导航栏
+// --------------------------------------------
+.status-bar {
+  height: var(--status-bar-height);
+  background: $surface-container-lowest;
+}
+
+.nav-bar {
+  height: 88rpx;
+  @include flex-center;
+  background: $surface-container-lowest;
+  position: relative;
+  border-bottom: 1rpx solid $outline-variant;
+
+  &__title {
+    font-size: $font-size-headline-md;
+    font-weight: $font-weight-semibold;
+    color: $on-surface;
+  }
+
+  &__back {
+    position: absolute;
+    left: $stack-gap-md;
+    @include flex-center;
+    width: 60rpx;
+    height: 60rpx;
+  }
+
+  &__right {
+    position: absolute;
+    right: $stack-gap-md;
+    @include flex-center;
+    width: 60rpx;
+    height: 60rpx;
+  }
+}
+
+// 微信风格顶部导航栏
+.wechat-top-bar {
+  height: 88rpx;
+  @include flex-center;
+  justify-content: space-between;
+  padding: 0 $container-padding;
+  background: $surface-container-lowest;
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  border-bottom: 1rpx solid $outline-variant;
+}
+
+// --------------------------------------------
+// 空状态
+// --------------------------------------------
+.empty-state {
+  @include flex-column;
+  align-items: center;
+  padding: $spacing-xl * 2;
+  color: $text-color-placeholder;
+
+  &__image {
+    width: 240rpx;
+    height: 240rpx;
+    margin-bottom: $stack-gap-lg;
+  }
+
+  &__text {
+    font-size: $font-size-body-reg;
+    color: $on-surface-variant;
+  }
+}
+
+// --------------------------------------------
+// 加载状态
+// --------------------------------------------
+.loading {
+  @include flex-center;
+  padding: $spacing-xl;
+
+  &__spinner {
+    width: 60rpx;
+    height: 60rpx;
+    border: 4rpx solid $outline-variant;
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// --------------------------------------------
+// 价格显示
+// --------------------------------------------
+.price {
+  color: $on-surface;
+  font-weight: $font-weight-medium;
+  font-family: $font-family-mono;
+
+  &.positive {
+    color: $profit;
+  }
+
+  &.negative {
+    color: $loss;
+  }
+
+  &.profit {
+    color: $profit;
+  }
+
+  &.loss {
+    color: $loss;
+  }
+}
+
+// --------------------------------------------
+// 标签样式
+// --------------------------------------------
+.tag {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  font-size: $font-size-label-caps;
+  border-radius: $rounded-sm;
+  background: $surface-container-high;
+  color: $on-surface-variant;
+
+  &--primary {
+    @include badge('primary');
+  }
+
+  &--secondary {
+    @include badge('secondary');
+  }
+
+  &--success {
+    @include badge('success');
+  }
+
+  &--warning {
+    @include badge('warning');
+  }
+
+  &--error {
+    background: rgba($error, 0.1);
+    color: $error;
+  }
+}
+
+// --------------------------------------------
+// 徽章样式
+// --------------------------------------------
+.badge {
+  @include badge();
+
+  &.primary {
+    @include badge('primary');
+  }
+
+  &.secondary {
+    @include badge('secondary');
+  }
+
+  &.success {
+    @include badge('success');
+  }
+
+  &.warning {
+    @include badge('warning');
+  }
+}
+
+// --------------------------------------------
+// 进度条
+// --------------------------------------------
+.progress-bar {
+  @include progress-bar();
+}
+
+.progress-bar__fill {
+  @include progress-bar-fill();
+}
+
+// --------------------------------------------
+// 底部导航栏
+// --------------------------------------------
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120rpx;
+  @include flex-center;
+  justify-content: space-around;
+  background: $surface-container-lowest;
+  border-top: 1rpx solid $outline-variant;
+  z-index: $z-index-tab-bar;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  &__item {
+    @include flex-column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    color: $on-surface-variant;
+    transition: color $transition-base;
+
+    &.active {
+      color: $primary;
+
+      .icon {
+        font-variation-settings: 'FILL' 1;
+      }
+    }
+
+    .icon {
+      font-size: 52rpx;
+      margin-bottom: 4rpx;
+    }
+
+    .text {
+      font-size: $font-size-label-caps;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// --------------------------------------------
+// 列表样式
+// --------------------------------------------
+.list {
+  background: $surface-container-lowest;
+  border-radius: $rounded-default;
+  overflow: hidden;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: $stack-gap-md;
+    border-bottom: 1rpx solid $surface-container;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:active {
+      background: $surface-container-low;
+    }
+  }
+}
+
+// --------------------------------------------
+// 头像样式
+// --------------------------------------------
+.avatar {
+  border-radius: $rounded-full;
+  overflow: hidden;
+  background: $surface-container-low;
+
+  &--sm {
+    width: 64rpx;
+    height: 64rpx;
+  }
+
+  &--md {
+    width: 80rpx;
+    height: 80rpx;
+  }
+
+  &--lg {
+    width: 96rpx;
+    height: 96rpx;
+  }
+
+  &--xl {
+    width: 192rpx;
+    height: 192rpx;
+  }
+}
+
+// --------------------------------------------
+// 毛玻璃效果
+// --------------------------------------------
+.glass {
+  @include glass-effect;
+}
+
+// --------------------------------------------
+// 毛玻璃卡片
+// --------------------------------------------
+.glass-card {
+  background: $surface-container-lowest;
+  box-shadow: $shadow-soft;
+  border-radius: $rounded-md;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  }
+}
+
+// --------------------------------------------
+// 毛玻璃徽章背景
+// --------------------------------------------
+.glass-badge {
+  background: rgba($primary, 0.05);
+}

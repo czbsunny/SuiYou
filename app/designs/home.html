@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Stewardship - 财富管理</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#dbdad7",
+                      "on-tertiary-container": "#fff8f2",
+                      "inverse-primary": "#84d6be",
+                      "outline-variant": "#bec9c4",
+                      "on-primary-fixed-variant": "#005142",
+                      "on-primary-container": "#e7fff5",
+                      "tertiary": "#705624",
+                      "secondary-container": "#db313f",
+                      "surface-tint": "#066b58",
+                      "surface-container-highest": "#e3e2e0",
+                      "on-surface-variant": "#3f4945",
+                      "on-secondary-container": "#fffbff",
+                      "tertiary-fixed": "#ffdeaa",
+                      "on-tertiary-fixed": "#271900",
+                      "error": "#ba1a1a",
+                      "surface-variant": "#e3e2e0",
+                      "outline": "#6f7975",
+                      "on-background": "#1a1c1a",
+                      "surface-container-high": "#e9e8e5",
+                      "primary": "#006754",
+                      "surface": "#faf9f6",
+                      "primary-container": "#2a806c",
+                      "background": "#faf9f6",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#002019",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#84d6be",
+                      "on-secondary-fixed": "#410007",
+                      "tertiary-container": "#8b6e3a",
+                      "on-secondary-fixed-variant": "#92001c",
+                      "secondary-fixed": "#ffdad8",
+                      "on-error-container": "#93000a",
+                      "surface-container": "#efeeeb",
+                      "tertiary-fixed-dim": "#e6c185",
+                      "surface-bright": "#faf9f6",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#a0f2da",
+                      "on-tertiary-fixed-variant": "#5b4313",
+                      "secondary": "#b7102a",
+                      "surface-container-low": "#f4f3f1",
+                      "inverse-on-surface": "#f2f1ee",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#2f312f",
+                      "on-surface": "#1a1c1a",
+                      "secondary-fixed-dim": "#ffb3b1",
+                      "on-secondary": "#ffffff",
+                      "success": "#b7102a", // Chinese market Red for profit
+                      "danger": "#006754" // Chinese market Green for loss/expense
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap-md": "16px",
+                      "section-margin": "32px",
+                      "container-padding": "16px", // Reduced from 20px
+                      "stack-gap-lg": "24px",
+                      "stack-gap-sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "num-display": ["JetBrains Mono"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "label-caps": ["Plus Jakarta Sans"],
+                      "title-sm": ["Plus Jakarta Sans"],
+                      "body-reg": ["Plus Jakarta Sans"],
+                      "body-sm": ["Plus Jakarta Sans"],
+                      "num-data": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "num-display": ["28px", {"lineHeight": "32px", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                      "body-reg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "num-data": ["16px", {"lineHeight": "20px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #faf9f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="font-body-reg text-on-surface select-none">
+<!-- WeChat Style Top AppBar -->
+<header class="w-full top-0 sticky z-40 bg-background flex items-center px-4 h-12 border-b border-surface-container-low">
+<div class="flex-none">
+<img alt="Avatar" class="w-8 h-8 rounded-full border border-primary/20 object-cover" data-alt="A professional close-up portrait of a refined man in his 50s." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjhe-C6MCpZkW5q2MupxJBrHXyMlYgIZGAMHzBWxd0SH2qMWSTg62xqWYXpudyjNhYd_aad0_QGHNPpV1XhJEFUG6sY-_uyOHKz1ypYyjdXZQToVhijVXagkqjV0JNXVNsNwuQ_LAO7-9x9GjobnLSC__g3cvECNJNSPw2A-Zg6hhxuH6ZDVlsYdpMAAQcaB1Zm9mETyWkKUFMeKdJXyblIsg3d2_bXbJXulE9GwLciX9jIXiaejHyZbPxu_t4GXVlIAENeh16qFu0">
+</div>
+<div class="flex-grow flex flex-col items-center justify-center">
+<span class="text-[17px] font-semibold text-on-surface">Stewardship</span>
+<span class="text-[10px] text-outline -mt-0.5">早上好, 伟健</span>
+</div>
+<div class="flex-none w-8 flex justify-end">
+<button class="text-on-surface-variant">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+</button>
+</div>
+</header>
+<main class="px-4 pb-32">
+<!-- Hero Wealth Card -->
+<section class="mt-4">
+<div class="bg-surface-container-lowest p-8 rounded-[24px] shadow-[0_4px_20px_0_rgba(0,0,0,0.04)] relative overflow-hidden group cursor-pointer">
+<p class="text-label-caps font-label-caps text-outline tracking-widest">家庭资产净值</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-primary">¥</span>
+<h1 class="text-display-lg font-num-display tracking-tighter">12,482,930.00</h1>
+</div>
+<div class="mt-8 flex items-center justify-between">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-body-sm text-outline">本月增长</span>
+<div class="flex items-baseline gap-1">
+<span class="text-num-data font-num-data text-secondary">+$42,105.20</span>
+<span class="text-[12px] font-bold text-secondary/80">+3.2%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<section class="mt-stack-gap-lg">
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-primary group-active:scale-95 transition-transform bg-white shadow-sm">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">预算</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-primary group-active:scale-95 transition-transform bg-white shadow-sm">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">记账</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-primary group-active:scale-95 transition-transform bg-white shadow-sm">
+<span class="material-symbols-outlined">savings</span>
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">存钱</span>
+</div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-2xl flex items-center justify-center text-primary group-active:scale-95 transition-transform bg-white shadow-sm">
+<span class="material-symbols-outlined">insights</span>
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">报告</span>
+</div>
+</div>
+</section>
+<!-- Recent Transactions -->
+<section class="mt-section-margin">
+<div class="flex justify-between items-end mb-6">
+<h2 class="text-headline-md font-headline-md">近期交易</h2>
+<span class="text-body-sm text-primary font-medium">查看全部</span>
+</div>
+<div class="space-y-4">
+<!-- Transaction Item 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-2xl hover:bg-white transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">精品百货</p>
+<p class="text-body-sm text-outline">14:20 · 购物</p>
+</div>
+</div>
+<div class="text-right">
+<!-- Green for Expense in China -->
+<p class="text-num-data font-num-data text-primary">-¥1,280.00</p>
+<p class="text-[10px] text-outline-variant font-label-caps">招商银行卡</p>
+</div>
+</div>
+<!-- Transaction Item 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-2xl hover:bg-white transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">股票红利发放</p>
+<p class="text-body-sm text-outline">昨天 · 投资</p>
+</div>
+</div>
+<div class="text-right">
+<!-- Red for Profit in China -->
+<p class="text-num-data font-num-data text-secondary">+¥24,500.00</p>
+<p class="text-[10px] text-outline-variant font-label-caps">证券账户</p>
+</div>
+</div>
+<!-- Transaction Item 3 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-2xl hover:bg-white transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">home</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">物业管理费</p>
+<p class="text-body-sm text-outline">昨天 · 住宅</p>
+</div>
+</div>
+<div class="text-right">
+<!-- Green for Expense -->
+<p class="text-num-data font-num-data text-primary">-¥4,600.00</p>
+<p class="text-[10px] text-outline-variant font-label-caps">自动转账</p>
+</div>
+</div>
+<!-- Transaction Item 4 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-2xl hover:bg-white transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">米其林餐厅订座</p>
+<p class="text-body-sm text-outline">3天前 · 餐饮</p>
+</div>
+</div>
+<div class="text-right">
+<!-- Green for Expense -->
+<p class="text-num-data font-num-data text-primary">-¥2,880.00</p>
+<p class="text-[10px] text-outline-variant font-label-caps">运通百夫长</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (WeChat Style) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-1 pb-safe bg-surface-container-lowest border-t border-surface-container-low z-50">
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-[10px] font-medium mt-0.5">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">target</span>
+<span class="text-[10px] font-medium mt-0.5">目标</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">account_balance_wallet</span>
+<span class="text-[10px] font-medium mt-0.5">资产</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium mt-0.5">我的</span>
+</a>
+</nav>
+<script>
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('text-primary');
+                    l.classList.add('text-outline');
+                    l.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                });
+                this.classList.add('text-primary');
+                this.classList.remove('text-outline');
+                this.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+        
+        const card = document.querySelector('.bg-surface-container-lowest');
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 40;
+            const rotateY = (centerX - x) / 40;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+            card.style.transition = 'transform 0.5s ease';
+        });
+    </script>
+
+
+</body></html>

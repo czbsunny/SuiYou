@@ -1,0 +1,75 @@
+{"pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "首页",
+        "backgroundColor": "#FAF9F6",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/goals/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "目标",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/assets/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "资产",
+        "backgroundColor": "#FAF9F6",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "我的",
+        "backgroundColor": "#FAF9F6"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "岁有",
+    "backgroundColor": "#FAF9F6"
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#006754",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/goals/index",
+        "text": "目标",
+        "iconPath": "static/tabbar/goals.png",
+        "selectedIconPath": "static/tabbar/goals-active.png"
+      },
+      {
+        "pagePath": "pages/assets/index",
+        "text": "资产",
+        "iconPath": "static/tabbar/assets.png",
+        "selectedIconPath": "static/tabbar/assets-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png"
+      }
+    ]
+  }
+}

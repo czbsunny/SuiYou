@@ -1,0 +1,232 @@
+// ============================================
+// Heritage Hearth Design System - Variables
+// 基于设计文件 designs/ 中的原型图定义
+// ============================================
+
+// --------------------------------------------
+// Typography (字体系统)
+// --------------------------------------------
+$font-family-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-family-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+// 字体大小 (rpx 单位，适配移动端)
+$font-size-xs: 24rpx;
+$font-size-sm: 26rpx;
+$font-size-base: 28rpx;
+$font-size-lg: 32rpx;
+$font-size-xl: 36rpx;
+$font-size-2xl: 40rpx;
+
+// 设计文件中的字体尺寸变体
+$font-size-headline-md: 48rpx;      // 24px
+$font-size-num-display: 56rpx;      // 28px
+$font-size-display-lg: 64rpx;       // 32px
+$font-size-label-caps: 24rpx;       // 12px
+$font-size-title-sm: 36rpx;         // 18px
+$font-size-body-reg: 32rpx;         // 16px
+$font-size-body-sm: 28rpx;          // 14px
+$font-size-num-data: 32rpx;         // 16px
+
+// 字重
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// 行高
+$line-height-tight: 1.25;
+$line-height-base: 1.5;
+$line-height-relaxed: 1.75;
+
+// --------------------------------------------
+// Brand Colors (品牌色) - 来自设计文件
+// --------------------------------------------
+$primary: #006754;
+$primary-dark: #005142;
+$primary-light: #84d6be;
+$primary-container: #2a806c;
+$primary-fixed: #a0f2da;
+$primary-fixed-dim: #84d6be;
+
+// 次色调
+$secondary: #b7102a;
+$secondary-container: #db313f;
+$secondary-fixed: #ffdad8;
+$secondary-fixed-dim: #ffb3b1;
+
+// 第三色调（金色/棕色系）
+$tertiary: #705624;
+$tertiary-container: #8b6e3a;
+$tertiary-fixed: #ffdeaa;
+$tertiary-fixed-dim: #e6c185;
+
+// 兼容旧变量名
+$primary-color: $primary;
+
+// --------------------------------------------
+// Semantic Colors (语义色) - 基于中国市场习惯
+// --------------------------------------------
+$profit: #E02020;        // 盈利色 - 红色（中国市场标准）
+$loss: #009688;          // 亏损色 - 绿色（中国市场标准）
+$accent: #C5A36A;        // 强调色 - Champagne Gold (香槟金，用于高端标识)
+$success-color: #b7102a; // 成功色与次要色一致
+$error-color: #ba1a1a;   // 错误色
+$warning-color: #FF9800;
+$info-color: #2196F3;
+
+// 设计文件中定义的语义颜色别名
+$profit-red: $profit;
+$loss-green: $loss;
+
+// --------------------------------------------
+// Surface Colors (表面颜色) - 来自设计文件
+// --------------------------------------------
+$background: #FAF9F6;
+$background-color: $background;
+$surface: #FAF9F6;
+$surface-dim: #dbdad7;
+$surface-bright: #FAF9F6;
+
+$surface-container-lowest: #FFFFFF;
+$surface-container-low: #f4f3f1;
+$surface-container: #efeeeb;
+$surface-container-high: #e9e8e5;
+$surface-container-highest: #e3e2e0;
+
+// 背景色变体（兼容旧代码）
+$background-white: $surface-container-lowest;
+$background-gray: $surface-container-low;
+
+// --------------------------------------------
+// Text Colors (文字颜色) - 来自设计文件
+// --------------------------------------------
+$text-color: #1a1c1a;              // on-surface
+$text-color-secondary: #3f4945;    // on-surface-variant
+$text-color-placeholder: #6f7975;  // outline
+$text-color-disabled: #bec9c4;     // outline-variant
+
+// 设计文件中的文字颜色
+$on-surface: $text-color;
+$on-surface-variant: $text-color-secondary;
+$on-background: $text-color;
+$on-primary: #ffffff;
+$on-secondary: #ffffff;
+$on-tertiary: #ffffff;
+$on-primary-container: #e7fff5;
+$on-secondary-container: #fffbff;
+$on-tertiary-container: #fff8f2;
+$on-error: #ffffff;
+
+// --------------------------------------------
+// Border Colors (边框颜色) - 来自设计文件
+// --------------------------------------------
+$border-color: #e3e2e0;            // surface-variant
+$border-light: #f4f3f1;            // surface-container-low
+$border-dark: #6f7975;             // outline
+
+$outline: #6f7975;
+$outline-variant: #bec9c4;
+$surface-variant: #e3e2e0;
+
+// --------------------------------------------
+// Inverse Colors (反色) - 来自设计文件
+// --------------------------------------------
+$inverse-surface: #2f312f;
+$inverse-on-surface: #f2f1ee;
+$inverse-primary: #84d6be;
+
+// --------------------------------------------
+// Error Colors (错误颜色) - 来自设计文件
+// --------------------------------------------
+$error: #ba1a1a;
+$error-container: #ffdad6;
+$on-error-container: #93000a;
+
+// --------------------------------------------
+// Surface Tint (表面着色) - 来自设计文件
+// --------------------------------------------
+$surface-tint: #066b58;
+
+// ========================================
+// 圆角系统 (Border Radius) - 来自设计文件
+// ========================================
+$rounded-default: 16rpx;   // 1rem = 16px
+$rounded-sm: 8rpx;
+$rounded-md: 24rpx;        // 大圆角，用于卡片
+$rounded-lg: 32rpx;        // 2rem = 32px
+$rounded-xl: 48rpx;        // 3rem = 48px
+$rounded-full: 9999px;
+
+// 兼容旧变量名
+$border-radius-base: $rounded-default;
+$border-radius-sm: $rounded-sm;
+$border-radius-lg: $rounded-md;
+
+// ========================================
+// 阴影系统 (Shadows) - 来自设计文件
+// ========================================
+$shadow-base: 0 4px 20px rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+// 设计文件中的软阴影
+$shadow-soft: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+
+// ========================================
+// 间距和布局系统 (Spacing) - 来自设计文件
+// ========================================
+
+// 容器和组件间距
+$container-padding: 32rpx;     // 16px
+$stack-gap-lg: 48rpx;          // 24px
+$stack-gap-md: 32rpx;          // 16px
+$stack-gap-sm: 16rpx;          // 8px
+$section-margin: 64rpx;        // 32px
+
+// 安全区域
+$safe-zone-horizontal: 40rpx;
+
+// Base-8 间距比例系统
+$spacing-1: 8rpx;    // 4px
+$spacing-2: 16rpx;   // 8px
+$spacing-3: 24rpx;   // 12px
+$spacing-4: 32rpx;   // 16px
+$spacing-5: 40rpx;   // 20px
+$spacing-6: 48rpx;   // 24px
+$spacing-7: 56rpx;   // 28px
+$spacing-8: 64rpx;   // 32px
+$spacing-10: 80rpx;  // 40px
+$spacing-12: 96rpx;  // 48px
+
+// 旧版 rpx 间距变量 (已废弃，建议使用 base-8 系统)
+$spacing-xs: 10rpx;
+$spacing-sm: 16rpx;
+$spacing-base: 20rpx;
+$spacing-lg: 30rpx;
+$spacing-xl: 40rpx;
+
+// ========================================
+// 过渡动画
+// ========================================
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+$transition-slow: 0.3s ease;
+$transition-long: 0.5s ease;
+
+// ========================================
+// Z-Index 层级系统
+// ========================================
+$z-index-dropdown: 100;
+$z-index-sticky: 200;
+$z-index-fixed: 300;
+$z-index-modal-backdrop: 400;
+$z-index-modal: 500;
+$z-index-popover: 600;
+$z-index-tooltip: 700;
+
+// Compatibility fixes for source files that referenced aliases lost during
+// earlier encoding conversion.
+$secondary: #b7102a;
+$error-color: #ba1a1a;
+$warning-color: #FF9800;
+$z-index-tab-bar: 50;

@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>储蓄目标 - Stewardship</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: #FFFFFF;
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .glass-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.02);
+        }
+        body {
+            background-color: #FAF9F6;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100dvh;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad7",
+                        "on-tertiary-container": "#fff8f2",
+                        "inverse-primary": "#84d6be",
+                        "outline-variant": "#bec9c4",
+                        "on-primary-fixed-variant": "#005142",
+                        "on-primary-container": "#e7fff5",
+                        "tertiary": "#705624",
+                        "secondary-container": "#db313f",
+                        "surface-tint": "#066b58",
+                        "surface-container-highest": "#e3e2e0",
+                        "on-surface-variant": "#3f4945",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#ffdeaa",
+                        "on-tertiary-fixed": "#271900",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e3e2e0",
+                        "outline": "#6f7975",
+                        "on-background": "#1a1c1a",
+                        "surface-container-high": "#e9e8e5",
+                        "primary": "#006754",
+                        "surface": "#faf9f6",
+                        "primary-container": "#2a806c",
+                        "background": "#faf9f6",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002019",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#84d6be",
+                        "on-secondary-fixed": "#410007",
+                        "tertiary-container": "#8b6e3a",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "secondary-fixed": "#ffdad8",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#efeeeb",
+                        "tertiary-fixed-dim": "#e6c185",
+                        "surface-bright": "#faf9f6",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#a0f2da",
+                        "on-tertiary-fixed-variant": "#5b4313",
+                        "secondary": "#b7102a",
+                        "surface-container-low": "#f4f3f1",
+                        "inverse-on-surface": "#f2f1ee",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f312f",
+                        "on-surface": "#1a1c1a",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-md": "16px",
+                        "section-margin": "32px",
+                        "container-padding": "20px",
+                        "stack-gap-lg": "24px",
+                        "stack-gap-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "num-display": ["JetBrains Mono"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "title-sm": ["Plus Jakarta Sans"],
+                        "body-reg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "num-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "num-display": ["28px", {"lineHeight": "32px", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-reg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "num-data": ["16px", {"lineHeight": "20px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-reg text-on-background selection:bg-primary-fixed">
+<!-- Top AppBar -->
+<header class="w-full top-0 sticky z-50 bg-background/80 backdrop-blur-md h-16 flex justify-between items-center border-b border-surface-container px-4">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="用户头像" class="w-10 h-10 rounded-full border-2 border-[#C5A36A]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNWUgo6q278uEU1RaVYmFGX6VuL5210sPbwkN1AFgJHeIeZ0T3pdz8rh-fEuo8WQtX_1VHbxsGwR64DvsGMSoTecYGk3Qnudwul1I9976J0SqMCV7b1GHax1MQ5jkOczvQEMKfCGpNJ-mZBryeSnjNnkbv7WRZqN1w6bSrmOxmDphiNEurcLOaCwCCmRpoVmkH5bkr5wxh4vqR_JG3bIUuBie2R2kY9Pt0Nmn1ZwNRA8krtM2Gy2VpjAPtomGJKwTLFg5kv2XSePR5">
+<div class="absolute -bottom-1 -right-1 bg-surface-container-lowest rounded-full p-0.5">
+<span class="material-symbols-outlined text-primary text-[14px]">verified</span>
+</div>
+</div>
+<span class="text-title-sm font-title-sm font-bold text-primary">Stewardship</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</div>
+</header>
+<main class="pb-32 pt-4 max-w-2xl mx-auto px-4">
+<!-- Goals Summary Widget (Reduced top margin) -->
+<div class="bg-surface-container-lowest p-6 rounded-[24px] shadow-[0_4px_20px_0_rgba(0,0,0,0.04)] relative overflow-hidden group mb-6">
+<p class="text-label-caps font-label-caps text-outline tracking-widest">累计储蓄</p>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-headline-md font-headline-md text-primary">¥</span>
+<h1 class="text-display-lg font-num-display tracking-tighter">1,248,500.00</h1>
+</div>
+<div class="mt-8">
+<div class="flex justify-between items-center mb-2">
+<span class="text-body-sm text-outline">总体进度</span>
+<span class="text-num-data font-num-data text-primary">64%</span>
+</div>
+<div class="w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full transition-all duration-1000" style="width: 64%;"></div>
+</div>
+</div>
+</div>
+<!-- Wishlist Section Header -->
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-headline-md font-headline-md text-on-surface">愿望清单</h2>
+<div class="flex items-center gap-1">
+<button class="p-2 text-primary hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined">sort</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Sorting Row -->
+<div class="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
+<button class="flex items-center gap-1 px-4 py-2 bg-primary-container/10 text-primary-container rounded-full text-label-caps font-label-caps transition-colors border border-primary-container/20 whitespace-nowrap">
+<span>目标金额</span>
+<span class="material-symbols-outlined text-[18px]">swap_vert</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-full text-label-caps font-label-caps transition-colors border border-outline-variant/30 whitespace-nowrap">
+<span>截止时间</span>
+<span class="material-symbols-outlined text-[18px] text-outline">swap_vert</span>
+</button>
+<button class="flex items-center gap-1 px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-full text-label-caps font-label-caps transition-colors border border-outline-variant/30 whitespace-nowrap">
+<span>完成度</span>
+<span class="material-symbols-outlined text-[18px] text-outline">swap_vert</span>
+</button>
+</div>
+<!-- Goal Cards Grid -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Redesigned Goal Card: New Car -->
+<div class="glass-card rounded-[1.5rem] flex flex-col gap-4 p-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">directions_car</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm">购车计划</h3>
+<p class="text-body-sm text-on-surface-variant">家庭 SUV 升级</p>
+</div>
+</div>
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full">
+<span class="text-label-caps font-label-caps">还剩 45 天</span>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-end mb-1">
+<div>
+<p class="text-[10px] text-outline font-label-caps uppercase">已储蓄</p>
+<p class="text-title-sm font-num-data text-primary">¥450,000</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline font-label-caps uppercase">目标金额</p>
+<p class="text-title-sm font-num-data text-on-surface">¥600,000</p>
+</div>
+</div>
+<div class="relative w-full bg-surface-container-low h-3 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full transition-all duration-1000" style="width: 75%;"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-[10px] font-bold text-on-primary-container drop-shadow-sm">75%</span>
+</div>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<p class="text-[10px] text-outline">起始: 2023.01</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline">结束: 2024.12</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Redesigned Goal Card: Education Fund -->
+<div class="glass-card rounded-[1.5rem] flex flex-col gap-4 p-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm">教育基金</h3>
+<p class="text-body-sm text-on-surface-variant">常春藤盟校储备</p>
+</div>
+</div>
+<div class="bg-surface-container-high text-outline px-3 py-1 rounded-full">
+<span class="text-label-caps font-label-caps">倒计时 6 年</span>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-end mb-1">
+<div>
+<p class="text-[10px] text-outline font-label-caps uppercase">已储蓄</p>
+<p class="text-title-sm font-num-data text-primary">¥680,000</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline font-label-caps uppercase">目标金额</p>
+<p class="text-title-sm font-num-data text-on-surface">¥1,600,000</p>
+</div>
+</div>
+<div class="relative w-full bg-surface-container-low h-3 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full transition-all duration-1000" style="width: 42%;"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-[10px] font-bold text-on-primary-container drop-shadow-sm">42%</span>
+</div>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<p class="text-[10px] text-outline">起始: 2022.09</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline">结束: 2030.09</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Redesigned Goal Card: Vacation -->
+<div class="glass-card rounded-[1.5rem] flex flex-col gap-4 p-4">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">beach_access</span>
+</div>
+<div>
+<h3 class="text-title-sm font-title-sm">度假基金</h3>
+<p class="text-body-sm text-on-surface-variant">2025 地中海邮轮游</p>
+</div>
+</div>
+<div class="bg-primary/10 text-primary px-3 py-1 rounded-full">
+<span class="text-label-caps font-label-caps">还剩 14 个月</span>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-end mb-1">
+<div>
+<p class="text-[10px] text-outline font-label-caps uppercase">已储蓄</p>
+<p class="text-title-sm font-num-data text-primary">¥118,500</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline font-label-caps uppercase">目标金额</p>
+<p class="text-title-sm font-num-data text-on-surface">¥125,000</p>
+</div>
+</div>
+<div class="relative w-full bg-surface-container-low h-3 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full transition-all duration-1000" style="width: 95%;"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="text-[10px] font-bold text-on-primary-container drop-shadow-sm">95%</span>
+</div>
+</div>
+<div class="flex justify-between items-start pt-1">
+<div>
+<p class="text-[10px] text-outline">起始: 2024.04</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline">结束: 2025.06</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New Goal Button (Simplified) -->
+<button class="w-full border-2 border-dashed border-outline-variant rounded-full py-4 flex items-center justify-center gap-2 text-outline hover:border-primary hover:text-primary transition-all group mt-2">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-label-caps font-label-caps">创建新目标</span>
+</button>
+</div>
+</main>
+<!-- FAB -->
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest shadow-[0_-4px_20px_0_rgba(0,0,0,0.04)] z-50 rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-caps font-label-caps mt-1">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">target</span>
+<span class="text-label-caps font-label-caps mt-1">目标</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-label-caps font-label-caps mt-1">资产</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-caps font-label-caps mt-1">我的</span>
+</a>
+</nav>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.bg-primary-container.h-full');
+            bars.forEach(bar => {
+                const finalWidth = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = finalWidth;
+                }, 300);
+            });
+        });
+
+        const clickable = document.querySelectorAll('.glass-card, button, a');
+        clickable.forEach(el => {
+            el.addEventListener('click', () => {
+                if (window.navigator.vibrate) {
+                    window.navigator.vibrate(5);
+                }
+            });
+        });
+    </script>
+</body></html>

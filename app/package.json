@@ -1,0 +1,46 @@
+{
+  "name": "suiyou-app",
+  "version": "1.0.0",
+  "description": "岁有应用 - 多平台资产管理应用",
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "dev:mp-toutiao": "uni -p mp-toutiao",
+    "dev:app": "uni -p app",
+    "dev:h5": "uni",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "build:mp-toutiao": "uni build -p mp-toutiao",
+    "build:app": "uni build -p app",
+    "build:h5": "uni build",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-4070620250821001",
+    "@dcloudio/uni-app-plus": "3.0.0-4070620250821001",
+    "@dcloudio/uni-components": "3.0.0-4070620250821001",
+    "@dcloudio/uni-h5": "3.0.0-4070620250821001",
+    "@dcloudio/uni-mp-toutiao": "3.0.0-4070620250821001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-4070620250821001",
+    "dayjs": "^1.11.10",
+    "pinia": "^3.0.4",
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.1.9",
+    "vue-router": "^5.0.7"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.14",
+    "@dcloudio/uni-automator": "3.0.0-4070620250821001",
+    "@dcloudio/uni-cli-shared": "3.0.0-4070620250821001",
+    "@dcloudio/uni-stacktracey": "3.0.0-4070620250821001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-4070620250821001",
+    "sass": "^1.94.2",
+    "vite": "^5.2.8"
+  },
+  "keywords": [
+    "uni-app",
+    "微信小程序",
+    "抖音小程序",
+    "资产管理"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html><html lang="zh-CN" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>Stewardship - 个人中心</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-elevation {
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+        }
+        .glass-badge {
+            background: rgba(0, 103, 84, 0.05);
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .wechat-top-bar {
+            height: 44px; /* Standard WeChat mini program header height */
+        }
+        .wechat-bottom-bar {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dbdad7",
+                        "on-tertiary-container": "#fff8f2",
+                        "inverse-primary": "#84d6be",
+                        "outline-variant": "#bec9c4",
+                        "on-primary-fixed-variant": "#005142",
+                        "on-primary-container": "#e7fff5",
+                        "tertiary": "#705624",
+                        "secondary-container": "#db313f",
+                        "surface-tint": "#066b58",
+                        "surface-container-highest": "#e3e2e0",
+                        "on-surface-variant": "#3f4945",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-fixed": "#ffdeaa",
+                        "on-tertiary-fixed": "#271900",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e3e2e0",
+                        "outline": "#6f7975",
+                        "on-background": "#1a1c1a",
+                        "surface-container-high": "#e9e8e5",
+                        "primary": "#006754",
+                        "surface": "#faf9f6",
+                        "primary-container": "#2a806c",
+                        "background": "#faf9f6",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#002019",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#84d6be",
+                        "on-secondary-fixed": "#410007",
+                        "tertiary-container": "#8b6e3a",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "secondary-fixed": "#ffdad8",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#efeeeb",
+                        "tertiary-fixed-dim": "#e6c185",
+                        "surface-bright": "#faf9f6",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#a0f2da",
+                        "on-tertiary-fixed-variant": "#5b4313",
+                        "secondary": "#b7102a",
+                        "surface-container-low": "#f4f3f1",
+                        "inverse-on-surface": "#f2f1ee",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f312f",
+                        "on-surface": "#1a1c1a",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-md": "16px",
+                        "section-margin": "32px",
+                        "container-padding": "20px",
+                        "stack-gap-lg": "24px",
+                        "stack-gap-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "num-display": ["JetBrains Mono"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "title-sm": ["Plus Jakarta Sans"],
+                        "body-reg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "num-data": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "num-display": ["28px", {"lineHeight": "32px", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-reg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "num-data": ["16px", {"lineHeight": "20px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen font-body-reg pb-24">
+<!-- WeChat Style TopAppBar -->
+<nav class="w-full top-0 sticky z-50 bg-background flex items-center justify-between wechat-top-bar px-4">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full border border-primary/20 p-0.5 overflow-hidden">
+<img alt="Head of Household" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkMo8iVo5oQx5Eaq-jp52RHveMGWmwA7ftGh4F4hK8SZFehQf-BOO66qlcJ3BVQNq0GOLCQF7cVfn5mRkWrCvmO4-Hnk1zF6J1iMVYPljRg-xLA9Vm5pY_tclCUwqp_gmupNuBQQTfg07OpGFBZnwP1q-KZOM3FKi4dgIhYqjp6NpBlQEGqG3UcKXHnc9lI3HCq60BEs7f1XnRzdJBffwbh6MhzsCTCtXmR8jeaLuo8CqYu4wpMjeLOazRU6VMRmbBJhS3mySGruLn">
+</div>
+<span class="text-[17px] font-semibold text-on-surface">Stewardship</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px] text-on-surface">notifications</span>
+</button>
+<!-- WeChat capsule menu placeholder look -->
+<div class="flex items-center bg-white/50 border border-black/10 rounded-full px-3 py-1 gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-black/60"></span>
+<span class="w-4 h-4 rounded-full border-2 border-black/60"></span>
+</div>
+</div>
+</nav>
+<main class="pt-4 space-y-stack-gap-lg px-4">
+<!-- Profile Header -->
+<section class="flex flex-col items-center text-center space-y-stack-gap-md py-4">
+<div class="relative">
+<div class="w-24 h-24 rounded-full border-4 border-surface-container-lowest soft-elevation overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-resolution, professional portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7K9OaxEkT555BojtfDZjQaWzZebp7LQBl2L58G1_v4L6EFazmHzi1S1RiXKlQ7fF0gQPyolL9LCi0J9bH0VDZ2tYdIgD8mg4ObckkW91HKGaz76ys9Mj1J8fTCItekBmcT774jtKCy-jDdj0Fqhun1ihJUIsU6S-vGZKuoTtQiQxsBTC2asOYNQ29Jgm1uPaJPhqUgzqVFyCiRDDVUF9LDb90kY_BBDF9pWvxMGtWVfTNueuKBk4y7EKtsYdkh2F4FCVSuAopAM48">
+</div>
+<div class="absolute bottom-0 right-0 bg-primary text-on-primary w-7 h-7 rounded-full flex items-center justify-center border-2 border-surface shadow-sm">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</div>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md text-on-surface">陈伟</h1>
+<p class="text-body-sm font-body-sm text-on-surface-variant">主管理员 • 始于2012年</p>
+</div>
+</section>
+<!-- Family Management Section -->
+<section class="bg-surface-container-lowest rounded-lg p-container-padding soft-elevation">
+<div class="flex justify-between items-center mb-stack-gap-md">
+<h2 class="text-title-sm font-title-sm text-on-surface">家庭成员</h2>
+<button class="text-primary text-label-caps font-label-caps tracking-widest">管理</button>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+<!-- Member 1 -->
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-14 h-14 rounded-full border-2 border-primary p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfRvMYvqidcOE_ChD-io-djSAOU35KbkjcatZiSKbhlacCPXMJkEP1ixGyPgiuhOZ9IICKdolv6CzXqnZ2O3WWvfE3Fovl6YFujktVF9sChO9zI1Alcwx3-htZNHPbo9y6Qz6W-QSRrE_fF8HOnfSWohPvfZX3koYdTofLM2UmboMKyc9pgt6HHM0SiVIZMD2_7-qHhxbsUkCPf_f1FqFZqX06FrSc919aFQjJFr2QdIheCm7N1sjw6tacIleEArns69FaEqvddMWC">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">SARAH</span>
+</div>
+<!-- Member 2 -->
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-14 h-14 rounded-full border-2 border-surface-container-high p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait Kevin" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrXNTaDL7THRyD-Dsu9QBWf7XwMGCjfZBpDwl7XMOJnppaL8_gHY9SK1UyJdQpaxRJ8-N6kF5wfy6OC80ESRbdK4VziQxSl3P-AQuNbHUneMbhbmmXdsseKgqKEzHysisya9n8ssle01qkBjttQJ1ujXE3MuowU0fnUaMzLB0bqhA_uEwT0VToEjO7EK3YPrHDuSzEUskJe6IcZbZ2mdKKIZNDBIQGmta6mjuF_fegG0qI9Yo2HBIoNRnostJABEhYBoxQPkha3lo2">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">KEVIN</span>
+</div>
+<!-- Member 3 -->
+<div class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-14 h-14 rounded-full border-2 border-surface-container-high p-0.5">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait Maya" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN39y4tQca1FLI4FHBhx9D0DphghuHpSqXMUg8UTQiHGdGadPkO450srC2nbgNLFsYUeOcE-ARTCrdshtGQCm9TCo2d1FFc0UYWIUwzXRDDX6KskYlaFW7FtM2kLKzTO2hrQxkfMu811Lcb_kS1BXQumFYf_Jf-TW8ozgCBbKlalvSlQQWj-nPzRGeSg1Dnez7-sm4kZWH5M6vQOdo7G2dhr_Y_mARIfWc-S8nprMnkLdyQU2yLmFgP4e02AbrZpED8wcD4j0AxmUn">
+</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">MAYA</span>
+</div>
+<!-- Add Member -->
+<button class="flex flex-col items-center gap-2 flex-shrink-0">
+<div class="w-14 h-14 rounded-full border-2 border-dashed border-outline flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">add</span>
+</div>
+<span class="text-label-caps font-label-caps text-outline">添加</span>
+</button>
+</div>
+</section>
+<!-- Menu List -->
+<section class="space-y-stack-gap-sm">
+<div class="bg-surface-container-lowest rounded-lg overflow-hidden soft-elevation"><!-- Account Settings -->
+<a class="flex items-center justify-between p-container-padding hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full glass-badge flex items-center justify-center text-primary group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<span class="text-body-reg font-body-reg text-on-surface">账户设置</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</a>
+<!-- Information Assessment -->
+<a class="flex items-center justify-between p-container-padding hover:bg-surface-container-low transition-colors group border-t border-surface-container" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full glass-badge flex items-center justify-center text-primary group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined">assessment</span>
+</div>
+<span class="text-body-reg font-body-reg text-on-surface">个人测评</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</a>
+<!-- Bill Export -->
+<a class="flex items-center justify-between p-container-padding hover:bg-surface-container-low transition-colors group border-t border-surface-container" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full glass-badge flex items-center justify-center text-primary group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="text-body-reg font-body-reg text-on-surface">账单导出</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</a>
+<!-- About Us -->
+<a class="flex items-center justify-between p-container-padding hover:bg-surface-container-low transition-colors group border-t border-surface-container" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full glass-badge flex items-center justify-center text-primary group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined">info</span>
+</div>
+<span class="text-body-reg font-body-reg text-on-surface">关于我们</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</a><!-- Feedback -->
+<a class="flex items-center justify-between p-container-padding hover:bg-surface-container-low transition-colors group border-t border-surface-container" href="#">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full glass-badge flex items-center justify-center text-primary group-active:scale-95 transition-transform">
+<span class="material-symbols-outlined">chat_bubble</span>
+</div>
+<span class="text-body-reg font-body-reg text-on-surface">反馈意见</span>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</a></div>
+</section>
+</main>
+<!-- WeChat Style BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-1 bg-surface-container-lowest border-t border-black/5 z-50 wechat-bottom-bar">
+<a class="flex flex-col items-center justify-center text-outline/80 p-2 hover:text-primary transition-all flex-1" href="#">
+<span class="material-symbols-outlined text-[26px]">home</span>
+<span class="text-[10px] mt-0.5">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline/80 p-2 hover:text-primary transition-all flex-1" href="#">
+<span class="material-symbols-outlined text-[26px]">target</span>
+<span class="text-[10px] mt-0.5">目标</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline/80 p-2 hover:text-primary transition-all flex-1" href="#">
+<span class="material-symbols-outlined text-[26px]">account_balance_wallet</span>
+<span class="text-[10px] mt-0.5">资产</span>
+</a>
+<!-- Active Tab: 我的 -->
+<a class="flex flex-col items-center justify-center text-primary p-2 flex-1" href="#">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-medium mt-0.5">我的</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for list items
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('touchstart', () => {
+                el.classList.add('opacity-80');
+            });
+            el.addEventListener('touchend', () => {
+                el.classList.remove('opacity-80');
+            });
+        });
+
+        // Add a subtle scroll effect to the header
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-sm');
+                nav.classList.add('bg-white/90');
+                nav.classList.add('backdrop-blur-md');
+            } else {
+                nav.classList.remove('shadow-sm');
+                nav.classList.remove('bg-white/90');
+                nav.classList.remove('backdrop-blur-md');
+            }
+        });
+    </script>
+
+
+</body></html>

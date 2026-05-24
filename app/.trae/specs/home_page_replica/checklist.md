@@ -1,0 +1,5 @@
+- [x] Checkpoint 1: Hero资产卡片视觉效果与原型一致
+- [x] Checkpoint 2: 快速操作按钮布局和样式与原型一致
+- [x] Checkpoint 3: 近期交易列表布局和样式与原型一致
+- [x] Checkpoint 4: 配色方案与原型一致
+- [x] Checkpoint 5: 字体大小和间距与原型一致

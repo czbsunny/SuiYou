@@ -1,0 +1,297 @@
+// ============================================
+// Heritage Hearth Design System - Mixins
+// 基于设计文件 designs/ 中的原型图定义
+// ============================================
+
+@import './variables.scss';
+
+// --------------------------------------------
+// Flex 布局混合宏
+// --------------------------------------------
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// --------------------------------------------
+// 文本处理混合宏
+// --------------------------------------------
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin multi-line-ellipsis($lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// --------------------------------------------
+// 安全区域混合宏
+// --------------------------------------------
+@mixin safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@mixin safe-area-top {
+  padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
+}
+
+// --------------------------------------------
+// 卡片混合宏
+// --------------------------------------------
+@mixin card {
+  background: $surface-container-lowest;
+  border-radius: $rounded-default;
+  box-shadow: $shadow-soft;
+  padding: $container-padding;
+}
+
+@mixin card-lg {
+  background: $surface-container-lowest;
+  border-radius: $rounded-md;
+  box-shadow: $shadow-soft;
+  padding: $stack-gap-lg;
+}
+
+// --------------------------------------------
+// 按钮混合宏
+// --------------------------------------------
+
+@mixin button-primary {
+  background: $primary;
+  color: $on-primary;
+  border: none;
+  border-radius: $rounded-full;
+  box-shadow: none;
+  @include flex-center;
+
+  &:active {
+    background: $primary-dark;
+  }
+
+  &[disabled] {
+    background: $primary;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-secondary {
+  background: $secondary;
+  color: $on-secondary;
+  border: none;
+  border-radius: $rounded-full;
+  box-shadow: none;
+  @include flex-center;
+
+  &:active {
+    background: darken($secondary, 10%);
+  }
+}
+
+@mixin button-default {
+  background: $surface-container-lowest;
+  color: $on-surface;
+  border: 1px solid $outline-variant;
+  border-radius: $rounded-default;
+  @include flex-center;
+
+  &:active {
+    background: $surface-container-low;
+  }
+}
+
+@mixin button-outline {
+  background: transparent;
+  color: $primary;
+  border: 1px solid $primary;
+  border-radius: $rounded-full;
+  @include flex-center;
+
+  &:active {
+    background: rgba($primary, 0.1);
+  }
+}
+
+// --------------------------------------------
+// 财富卡片混合宏
+// 用途: 创建展示财富数据的卡片容器
+// 样式: 白色背景、24px圆角、柔和阴影、数字使用等宽字体
+// --------------------------------------------
+@mixin wealth-card {
+  background: $surface-container-lowest;
+  border-radius: $rounded-md;
+  box-shadow: $shadow-soft;
+  padding: $spacing-6;
+
+  &__number {
+    font-family: $font-family-mono;
+  }
+}
+
+// --------------------------------------------
+// 幽灵列表混合宏
+// 用途: 创建无边框的列表样式
+// 样式: 无分隔线、垂直间距分隔、背景变化区分行
+// --------------------------------------------
+@mixin ghost-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    padding: $stack-gap-md 0;
+    border: none;
+
+    &:nth-child(even) {
+      background: $surface-container-low;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: $stack-gap-md;
+    }
+  }
+}
+
+// --------------------------------------------
+// 输入框混合宏
+// 用途: 创建表单输入框样式
+// 样式: 象牙白背景、无边框、聚焦时主色调内发光
+// --------------------------------------------
+@mixin input-field {
+  background: $surface-container-low;
+  border: none;
+  border-radius: $rounded-default;
+  padding: $spacing-4;
+  outline: none;
+  transition: box-shadow $transition-base;
+
+  &:focus {
+    box-shadow: inset 0 0 0 2rpx $primary;
+  }
+
+  &::placeholder {
+    color: $text-color-placeholder;
+  }
+}
+
+// --------------------------------------------
+// 盈亏徽章混合宏
+// 用途: 创建显示盈利或亏损状态的徽章
+// 参数: $type - 'profit' (盈利) 或 'loss' (亏损)
+// 样式: 胶囊形状、10%不透明度背景、100%不透明度文字
+// --------------------------------------------
+@mixin profit-loss-badge($type: 'profit') {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $rounded-full;
+  font-size: $font-size-label-caps;
+  font-weight: $font-weight-medium;
+  font-family: $font-family-mono;
+
+  @if $type == 'profit' {
+    background: rgba($profit, 0.1);
+    color: $profit;
+  } @else if $type == 'loss' {
+    background: rgba($loss, 0.1);
+    color: $loss;
+  }
+}
+
+// --------------------------------------------
+// 标签徽章混合宏
+// --------------------------------------------
+@mixin badge($type: 'default') {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $rounded-full;
+  font-size: $font-size-label-caps;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  @if $type == 'primary' {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  } @else if $type == 'secondary' {
+    background: rgba($secondary, 0.1);
+    color: $secondary;
+  } @else if $type == 'success' {
+    background: rgba($profit, 0.1);
+    color: $profit;
+  } @else if $type == 'warning' {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  } @else {
+    background: $surface-container-high;
+    color: $on-surface-variant;
+  }
+}
+
+// --------------------------------------------
+// 进度条混合宏
+// --------------------------------------------
+@mixin progress-bar($color: $primary-container, $bg-color: $surface-container-low) {
+  height: 6rpx;
+  background: $bg-color;
+  border-radius: $rounded-full;
+  overflow: hidden;
+}
+
+@mixin progress-bar-fill($color: $primary-container) {
+  height: 100%;
+  background: $color;
+  border-radius: $rounded-full;
+  transition: width $transition-slow;
+}
+
+// --------------------------------------------
+// 毛玻璃效果混合宏
+// --------------------------------------------
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+// --------------------------------------------
+// 安全区域底部适配
+// --------------------------------------------
+@mixin safe-area-bottom-adapt {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20rpx);
+}
