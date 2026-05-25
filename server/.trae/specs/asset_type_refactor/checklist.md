@@ -1,0 +1,10 @@
+- [x] Checkpoint 1: AssetType 枚举编译成功
+- [x] Checkpoint 2: 包含 CURRENT（活期）类型
+- [x] Checkpoint 3: 包含 CURRENT_PLUS（活期理财）类型
+- [x] Checkpoint 4: 包含 CASH（现金）类型
+- [x] Checkpoint 5: 包含所有投资理财类型（TIME_DEPOSIT, FUND, STOCK, BANK_PRODUCT, GOLD_ACCUMULATION/PHYSICAL_GOLD, PORTFOLIO, PRIVATE_FUND, SAVING_INSURANCE, CRYPTO）
+- [x] Checkpoint 6: 包含所有固定资产类型（REAL_ESTATE, VEHICLE, JEWELRY）
+- [x] Checkpoint 7: 包含所有其他资产类型（HOUSING_FUND, MEDICAL_INSURANCE, PENSION_ACCOUNT, PRIVATE_PENSION, RECEIVABLE）
+- [x] Checkpoint 8: 包含所有负债类型（MORTGAGE, CAR_LOAN, CREDIT_CARD, INTERNET_CREDIT, CONSUMER_LOAN, PAYABLE）
+- [x] Checkpoint 9: 每个枚举值都有中文描述
+- [x] Checkpoint 10: 枚举命名符合 Java 规范

@@ -5,26 +5,20 @@ import com.suiyou.dto.asset.CreateAssetDTO;
 import com.suiyou.dto.asset.UpdateAssetDTO;
 import com.suiyou.dto.portfolio.CreatePortfolioDTO;
 import com.suiyou.model.Asset;
-import com.suiyou.model.Account;
+import com.suiyou.model.AccountModule;
 import com.suiyou.model.SysAssetCategory;
-import com.suiyou.model.SysInstitution;
 import com.suiyou.model.enums.PortfolioType;
 
 import com.suiyou.repository.AssetRepository;
 import com.suiyou.repository.SysAssetCategoryRepository;
-import com.suiyou.repository.SysInstitutionRepository;
 
 import com.suiyou.service.AssetService;
-import com.suiyou.service.AccountService;
+import com.suiyou.service.AccountModuleService;
 import com.suiyou.service.PortfolioService;
-
-import io.micrometer.common.util.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.suiyou.config.DefaultAssetConfig;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,6 +41,9 @@ public class AssetServiceImpl implements AssetService {
     private AccountService accountService;
 
     @Autowired
+    private AccountModuleService accountModuleService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -55,41 +52,26 @@ public class AssetServiceImpl implements AssetService {
     @Override
     @Transactional
     public AssetRespDTO createAsset(CreateAssetDTO assetDTO, Long userId) {
-        Account account = accountService.getAccountByInstitutionAndIdentifier(userId, assetDTO.getAccountDTO().getInstitution(), assetDTO.getAccountDTO().getInstitutionIdentifier());
-        if (account == null) {
-            account = accountService.createAccount(assetDTO.getAccountDTO(), userId);
-            if (account == null) {
-                throw new IllegalArgumentException("创建资产账户失败");
-            }
-
-            // 创建基础资产
-            SysInstitution institution = institutionRepository.findByInstCode(account.getInstitution());
-            String baseAssetType = DefaultAssetConfig.getBaseAssetType(institution.getInstType(), institution.getInstCode());
-            if (StringUtils.isNotEmpty(baseAssetType)) {
-                SysAssetCategory category = assetCategoryRepository.findByCategoryCode(baseAssetType);
-                Asset baseAsset = new Asset();
-                baseAsset.setAccount(account);
-                baseAsset.setOwnerId(userId);
-                baseAsset.setGroupType(category.getGroupType());
-                baseAsset.setCategory(category.getParentCode());
-                baseAsset.setSubCategory(category.getCategoryCode());
-                baseAsset.setName(category.getName());
-                baseAsset.setTotalBalance(BigDecimal.ZERO);
-                baseAsset.setFrozenBalance(BigDecimal.ZERO);
-                baseAsset.setAvailableBalance(BigDecimal.ZERO);
-                baseAsset.setCurrency("CNY");
-                baseAsset.setIncludeInNetWorth(true);
-                baseAsset.setStatus(1);
-
-                assetRepository.save(baseAsset);
-            }
+        AccountModule accountModule = accountModuleService.getModuleById(assetDTO.getModuleId());
+        
+        if (accountModule == null) {
+            throw new IllegalArgumentException("资产模块不存在");
         }
-        // 创建Account实体用于关联
+        
+        if (!accountModule.getAccount().getOwnerId().equals(userId)) {
+            throw new IllegalArgumentException("无权操作该资产模块");
+        }
+        
+        SysAssetCategory category = assetCategoryRepository.findByCategoryCode(assetDTO.getSubCategory());
+        if (category == null) {
+            throw new IllegalArgumentException("无效的资产分类: " + assetDTO.getSubCategory());
+        }
+        
         Asset asset = new Asset();
-        asset.setAccount(account);
+        asset.setAccountModule(accountModule);
         asset.setOwnerId(userId);
-        asset.setGroupType(assetDTO.getGroupType());
-        asset.setCategory(assetDTO.getCategory());
+        asset.setGroupType(category.getGroupType());
+        asset.setCategory(category.getParentCode());
         asset.setSubCategory(assetDTO.getSubCategory());
         asset.setName(assetDTO.getName());
 
@@ -163,7 +145,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<AssetRespDTO> getAssetsByAccountId(Long accountId) {
-        return assetRepository.findByAccountId(accountId).stream()
+        return assetRepository.findByAccountModule_AccountId(accountId).stream()
                 .map(AssetRespDTO::fromEntity)
                 .collect(Collectors.toList());  
     }

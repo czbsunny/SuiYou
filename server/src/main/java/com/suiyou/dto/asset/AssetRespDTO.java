@@ -20,6 +20,10 @@ public class AssetRespDTO {
     private String institutionIdentifier;
     private String accountName;
     private Long accountId;
+    
+    private Long moduleId;
+    private String moduleName;
+    private String assetType;
 
     private String attributes;
     private BigDecimal totalBalance;
@@ -33,10 +37,13 @@ public class AssetRespDTO {
 
     public static AssetRespDTO fromEntity(Asset asset) {
         AssetRespDTO dto = new AssetRespDTO();
-        dto.setInstitution(asset.getAccount().getInstitution());
-        dto.setInstitutionIdentifier(asset.getAccount().getInstitutionIdentifier());
-        dto.setAccountName(asset.getAccount().getAccountName());
-        dto.setAccountId(asset.getAccount().getId());
+        dto.setInstitution(asset.getAccountModule().getAccount().getInstitution());
+        dto.setInstitutionIdentifier(asset.getAccountModule().getAccount().getInstitutionIdentifier());
+        dto.setAccountName(asset.getAccountModule().getAccount().getAccountName());
+        dto.setAccountId(asset.getAccountModule().getAccount().getId());
+        dto.setModuleId(asset.getAccountModule().getId());
+        dto.setModuleName(asset.getAccountModule().getModuleName());
+        dto.setAssetType(asset.getAccountModule().getAssetType().name());
         dto.setAttributes(asset.getAttributes());
         dto.setAvailableBalance(asset.getAvailableBalance());
         dto.setCategory(asset.getCategory());

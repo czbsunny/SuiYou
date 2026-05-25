@@ -1,9 +1,12 @@
 package com.suiyou.controller;
 
+import com.suiyou.dto.account.AccountModuleDTO;
+import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.dto.account.BatchUpdateAccountsDTO;
 import jakarta.validation.Valid;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.dto.account.AccountRespDTO;
+import com.suiyou.service.AccountModuleService;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,9 @@ import java.util.Map;
 public class AccountController {
     @Autowired
     private AccountService accountService;
+    
+    @Autowired
+    private AccountModuleService accountModuleService;
     
     @GetMapping
     public ResponseEntity<?> getAccounts(@RequestParam(required = false) String institution) {
@@ -190,6 +197,60 @@ public class AccountController {
             return ResponseEntity.badRequest().body(Map.of(
                 "success", false,
                 "message", "账户配置失败：" + e.getMessage()
+            ));
+        }
+    }
+    
+    @PostMapping("/{accountId}/modules")
+    public ResponseEntity<?> addAccountModule(@PathVariable Long accountId, @Valid @RequestBody AccountModuleDTO moduleDTO) {
+        try {
+            Long userId = getCurrentUserId();
+            accountModuleService.addModule(accountId, moduleDTO.getAssetType(), moduleDTO.getModuleName(), userId);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "资产模块添加成功"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        }
+    }
+    
+    @DeleteMapping("/{accountId}/modules/{moduleId}")
+    public ResponseEntity<?> removeAccountModule(@PathVariable Long accountId, @PathVariable Long moduleId) {
+        try {
+            Long userId = getCurrentUserId();
+            accountModuleService.removeModule(accountId, moduleId, userId);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "资产模块删除成功"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
+            ));
+        }
+    }
+    
+    @GetMapping("/{accountId}/modules")
+    public ResponseEntity<?> getAccountModules(@PathVariable Long accountId) {
+        try {
+            Long userId = getCurrentUserId();
+            List<AccountModuleRespDTO> modules = accountModuleService.getModulesByAccountId(accountId, userId);
+            
+            return ResponseEntity.ok(Map.of(
+                "modules", modules,
+                "count", modules.size()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "success", false,
+                "message", e.getMessage()
             ));
         }
     }

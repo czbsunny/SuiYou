@@ -11,50 +11,23 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, Long> {
-    /**
-     * 根据账户ID查询所有资产
-     * @param accountId 账户ID
-     * @return 资产列表
-     */
-    List<Asset> findByAccountId(Long accountId);
     
-    /**
-     * 根据账户ID和状态查询资产
-     * @param accountId 账户ID
-     * @param status 状态
-     * @return 资产列表
-     */
-    List<Asset> findByAccountIdAndStatus(Long accountId, Integer status);
+    List<Asset> findByAccountModuleId(Long accountModuleId);
     
-    /**
-     * 根据账户ID和分类查询资产
-     * @param accountId 账户ID
-     * @param category 分类
-     * @return 资产列表
-     */
-    List<Asset> findByAccountIdAndCategory(Long accountId, String category);
+    List<Asset> findByAccountModuleIdAndStatus(Long accountModuleId, Integer status);
     
-    /**
-     * 根据账户ID和组类型查询资产
-     * @param accountId 账户ID
-     * @param groupType 组类型
-     * @return 资产列表
-     */
-    List<Asset> findByAccountIdAndGroupType(Long accountId, String groupType);
-
-    /**
-     * 根据用户ID和状态查询资产
-     * @param userId 用户ID
-     * @param status 状态
-     * @return 资产列表
-     */
+    List<Asset> findByAccountModuleIdAndCategory(Long accountModuleId, String category);
+    
+    List<Asset> findByAccountModule_AccountId(Long accountId);
+    
+    List<Asset> findByAccountModule_AccountIdAndStatus(Long accountId, Integer status);
+    
+    List<Asset> findByAccountModule_AccountIdAndCategory(Long accountId, String category);
+    
+    List<Asset> findByAccountModule_AccountIdAndGroupType(Long accountId, String groupType);
+    
     List<Asset> findByOwnerIdAndStatus(Long userId, Integer status);
     
-    /**
-     * 根据ID查询资产，并加载账户信息
-     * @param id 资产ID
-     * @return 资产对象
-     */
-    @Query("SELECT a FROM Asset a LEFT JOIN FETCH a.account WHERE a.id = :id")
-    Optional<Asset> findByIdWithAccount(Long id);
+    @Query("SELECT a FROM Asset a LEFT JOIN FETCH a.accountModule WHERE a.id = :id")
+    Optional<Asset> findByIdWithAccountModule(Long id);
 }

@@ -13,8 +13,8 @@ public class Asset {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "account_module_id", nullable = false)
+    private AccountModule accountModule;
 
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;

@@ -90,7 +90,7 @@ public class AccountServiceImpl implements AccountService {
         return accounts.stream()
                 .map(account -> {
                     AccountRespDTO dto = AccountRespDTO.fromEntity(account);
-                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
                     dto.setAssets(assets.stream()
                             .map(AssetRespDTO::fromEntity)
                             .collect(Collectors.toList()));
@@ -105,7 +105,7 @@ public class AccountServiceImpl implements AccountService {
         return accounts.stream()
                 .map(account -> {
                     AccountRespDTO dto = AccountRespDTO.fromEntity(account);
-                    List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+                    List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
                     dto.setAssets(assets.stream()
                             .map(AssetRespDTO::fromEntity)
                             .collect(Collectors.toList()));
@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
         AccountRespDTO dto = AccountRespDTO.fromEntity(account);
-        List<Asset> assets = assetRepository.findByAccountIdAndStatus(account.getId(), 1);
+        List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
         dto.setAssets(assets.stream()
                 .map(AssetRespDTO::fromEntity)
                 .collect(Collectors.toList()));
