@@ -32,6 +32,22 @@
         "navigationBarTitleText": "我的",
         "backgroundColor": "#FAF9F6"
       }
+    },
+    {
+      "path": "pages/accounts/search-institution",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "添加账户",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/add-account",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "账户信息",
+        "backgroundColor": "#FAF9F6"
+      }
     }
   ],
   "globalStyle": {

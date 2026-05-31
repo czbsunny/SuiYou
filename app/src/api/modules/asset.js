@@ -51,3 +51,27 @@ export const getAssetSummary = () => {
 export const getAssetStructure = () => {
   return get('/api/assets/structure')
 }
+
+export const getInstitutionTypes = () => {
+  return get('/institution-types')
+}
+
+export const getAllInstitutions = () => {
+  return get('/institutions')
+}
+
+export const getInstitutionsByType = (typeCode) => {
+  return get(`/institutions/type/${typeCode}`)
+}
+
+export const getHotInstitutions = () => {
+  return get('/institutions/hot')
+}
+
+export const getInstitutionDetail = (instCode) => {
+  return get(`/institutions/${instCode}`)
+}
+
+export const getInstitutionCategories = (instCode) => {
+  return get(`/institutions/${instCode}/categories`)
+}

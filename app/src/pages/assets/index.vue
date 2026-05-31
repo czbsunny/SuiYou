@@ -35,7 +35,7 @@
           <text class="section-title">账户列表</text>
           <view class="heading-actions">
             <text>filter</text>
-            <text class="plus">+</text>
+            <text class="plus" @tap="handleAddAccount">+</text>
           </view>
         </view>
 
@@ -119,6 +119,12 @@ const accounts = [
 
 const notify = () => {
   uni.showToast({ title: '暂无新通知', icon: 'none' })
+}
+
+const handleAddAccount = () => {
+  uni.navigateTo({
+    url: '/pages/accounts/search-institution'
+  })
 }
 </script>
 

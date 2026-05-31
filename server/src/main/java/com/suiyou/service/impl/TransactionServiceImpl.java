@@ -237,22 +237,22 @@ public class TransactionServiceImpl implements TransactionService {
             
             // 获取源账户名称
             if (transaction.getSourceAssetId() != null) {
-                Asset sourceAsset = assetRepository.findByIdWithAccount(transaction.getSourceAssetId()).orElse(null);
+                Asset sourceAsset = assetRepository.findByIdWithAccountModule(transaction.getSourceAssetId()).orElse(null);
                 log.info("sourceAsset: {}", sourceAsset);
-                if (sourceAsset != null && sourceAsset.getAccount() != null) {
-                    dto.setSourceAccountName(sourceAsset.getAccount().getAccountName());
-                    dto.setSourceAccountInstitution(sourceAsset.getAccount().getInstitution());
-                    dto.setSourceAccountIdentifier(sourceAsset.getAccount().getInstitutionIdentifier());
+                if (sourceAsset != null && sourceAsset.getAccountModule() != null && sourceAsset.getAccountModule().getAccount() != null) {
+                    dto.setSourceAccountName(sourceAsset.getAccountModule().getAccount().getAccountName());
+                    dto.setSourceAccountInstitution(sourceAsset.getAccountModule().getAccount().getInstitution());
+                    dto.setSourceAccountIdentifier(sourceAsset.getAccountModule().getAccount().getInstitutionIdentifier());
                 }
             }
             
             // 获取目标账户名称
             if (transaction.getTargetAssetId() != null) {
-                Asset targetAsset = assetRepository.findByIdWithAccount(transaction.getTargetAssetId()).orElse(null);
-                if (targetAsset != null && targetAsset.getAccount() != null) {
-                    dto.setTargetAccountName(targetAsset.getAccount().getAccountName());
-                    dto.setTargetAccountInstitution(targetAsset.getAccount().getInstitution());
-                    dto.setTargetAccountIdentifier(targetAsset.getAccount().getInstitutionIdentifier());
+                Asset targetAsset = assetRepository.findByIdWithAccountModule(transaction.getTargetAssetId()).orElse(null);
+                if (targetAsset != null && targetAsset.getAccountModule() != null && targetAsset.getAccountModule().getAccount() != null) {
+                    dto.setTargetAccountName(targetAsset.getAccountModule().getAccount().getAccountName());
+                    dto.setTargetAccountInstitution(targetAsset.getAccountModule().getAccount().getInstitution());
+                    dto.setTargetAccountIdentifier(targetAsset.getAccountModule().getAccount().getInstitutionIdentifier());
                 }
             }
             

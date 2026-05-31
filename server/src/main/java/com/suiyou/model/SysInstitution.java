@@ -37,4 +37,8 @@ public class SysInstitution {
     
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "institution_type_id")
+    private SysInstitutionType institutionType;
 }

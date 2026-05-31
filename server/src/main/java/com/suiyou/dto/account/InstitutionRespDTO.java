@@ -28,4 +28,6 @@ public class InstitutionRespDTO {
     private String indexLetter;
     
     private Boolean isHot;
+
+    private InstitutionTypeRespDTO institutionType;
 }
