@@ -10,7 +10,7 @@ public interface SysInstitutionTypeService {
     /**
      * 获取所有机构类型
      */
-    List&lt;InstitutionTypeRespDTO&gt; getAllInstitutionTypes();
+    List<InstitutionTypeRespDTO> getAllInstitutionTypes();
 
     /**
      * 根据类型代码获取机构类型
@@ -20,5 +20,5 @@ public interface SysInstitutionTypeService {
     /**
      * 初始化机构类型
      */
-    void initInstitutionTypes(List&lt;InstitutionTypeInitDTO&gt; dtos);
+    void initInstitutionTypes(List<InstitutionTypeInitDTO> dtos);
 }

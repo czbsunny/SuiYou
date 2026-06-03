@@ -21,7 +21,7 @@ public class SysInstitutionTypeServiceImpl implements SysInstitutionTypeService 
     private SysInstitutionTypeRepository institutionTypeRepository;
 
     @Override
-    public List&lt;InstitutionTypeRespDTO&gt; getAllInstitutionTypes() {
+    public List<InstitutionTypeRespDTO> getAllInstitutionTypes() {
         return institutionTypeRepository.findAllByOrderBySortOrderAsc().stream()
                 .map(this::toInstitutionTypeRespDTO)
                 .collect(Collectors.toList());
@@ -36,7 +36,7 @@ public class SysInstitutionTypeServiceImpl implements SysInstitutionTypeService 
 
     @Override
     @Transactional
-    public void initInstitutionTypes(List&lt;InstitutionTypeInitDTO&gt; dtos) {
+    public void initInstitutionTypes(List<InstitutionTypeInitDTO> dtos) {
         log.info("开始初始化机构类型，共 {} 条", dtos.size());
         
         for (InstitutionTypeInitDTO dto : dtos) {

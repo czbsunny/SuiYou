@@ -38,9 +38,9 @@ public class InstitutionTypeDataLoader extends AbstractConfigLoader {
         }
 
         // 1. 读取配置
-        List&lt;InstitutionTypeInitDTO&gt; dtos = objectMapper.readValue(
+        List<InstitutionTypeInitDTO> dtos = objectMapper.readValue(
             jsonResource.getInputStream().readAllBytes(),
-            new TypeReference&lt;List&lt;InstitutionTypeInitDTO&gt;&gt;() {}
+            new TypeReference<List<InstitutionTypeInitDTO>>() {}
         );
 
         // 2. 初始化机构类型
