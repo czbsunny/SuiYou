@@ -1,144 +1,144 @@
 
-&lt;template&gt;
-  &lt;view class="add-account-page"&gt;
-    &lt;scroll-view scroll-y class="scroll-content"&gt;
-      &lt;view class="institution-info-card"&gt;
-        &lt;view class="institution-header"&gt;
-          &lt;view class="inst-icon"&gt;
-            &lt;text class="inst-icon-text"&gt;{{ institutionIcon }}&lt;/text&gt;
-          &lt;/view&gt;
-          &lt;view class="inst-details"&gt;
-            &lt;text class="inst-label"&gt;当前选择机构&lt;/text&gt;
-            &lt;text class="inst-name"&gt;{{ institutionName }}&lt;/text&gt;
-          &lt;/view&gt;
-          &lt;view class="change-btn" @tap="handleChangeInstitution"&gt;
-            &lt;text class="change-text"&gt;修改&lt;/text&gt;
-            &lt;text class="change-arrow"&gt;›&lt;/text&gt;
-          &lt;/view&gt;
-        &lt;/view&gt;
-      &lt;/view&gt;
+<template>
+  <view class="add-account-page">
+    <scroll-view scroll-y class="scroll-content">
+      <view class="institution-info-card">
+        <view class="institution-header">
+          <view class="inst-icon">
+            <text class="inst-icon-text">{{ institutionIcon }}</text>
+          </view>
+          <view class="inst-details">
+            <text class="inst-label">当前选择机构</text>
+            <text class="inst-name">{{ institutionName }}</text>
+          </view>
+          <view class="change-btn" @tap="handleChangeInstitution">
+            <text class="change-text">修改</text>
+            <text class="change-arrow">›</text>
+          </view>
+        </view>
+      </view>
 
-      &lt;view class="form-section"&gt;
-        &lt;view class="form-item"&gt;
-          &lt;text class="form-label"&gt;账户标识&lt;text class="required-mark"&gt;*&lt;/text&gt;&lt;/text&gt;
-          &lt;input 
+      <view class="form-section">
+        <view class="form-item">
+          <text class="form-label">账户标识<text class="required-mark">*</text></text>
+          <input 
             class="form-input" 
             v-model="accountForm.accountId" 
             placeholder="如卡号/手机号后四位"
-          /&gt;
-        &lt;/view&gt;
+          />
+        </view>
 
-        &lt;view class="form-item"&gt;
-          &lt;text class="form-label"&gt;账户名称&lt;text class="required-mark"&gt;*&lt;/text&gt;&lt;/text&gt;
-          &lt;input 
+        <view class="form-item">
+          <text class="form-label">账户名称<text class="required-mark">*</text></text>
+          <input 
             class="form-input" 
             v-model="accountForm.accountName" 
             placeholder="例如 招商银行工资卡"
-          /&gt;
-        &lt;/view&gt;
+          />
+        </view>
 
-        &lt;view class="form-item"&gt;
-          &lt;text class="form-label"&gt;账户用途 / 模板&lt;/text&gt;
-          &lt;picker 
+        <view class="form-item">
+          <text class="form-label">账户用途 / 模板</text>
+          <picker 
             mode="selector" 
             :range="accountTemplates" 
             range-key="name"
             @change="handleTemplateChange"
-          &gt;
-            &lt;view class="form-picker"&gt;
+          >
+            <view class="form-picker">
               {{ selectedTemplate || '储蓄卡 / 借记卡' }}
-              &lt;text class="picker-arrow"&gt;›&lt;/text&gt;
-            &lt;/view&gt;
-          &lt;/picker&gt;
-        &lt;/view&gt;
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
 
-        &lt;view class="visibility-section"&gt;
-          &lt;text class="form-label"&gt;可见范围&lt;/text&gt;
-          &lt;view class="visibility-options"&gt;
-            &lt;label class="visibility-option"&gt;
-              &lt;radio value="PRIVATE" :checked="accountForm.visibility === 'PRIVATE'" color="#006754" /&gt;
-              &lt;text class="option-text"&gt;仅自己可见&lt;/text&gt;
-            &lt;/label&gt;
-            &lt;label class="visibility-option"&gt;
-              &lt;radio value="FAMILY" :checked="accountForm.visibility === 'FAMILY'" color="#006754" /&gt;
-              &lt;text class="option-text"&gt;家庭成员可见&lt;/text&gt;
-            &lt;/label&gt;
-          &lt;/view&gt;
-        &lt;/view&gt;
+        <view class="visibility-section">
+          <text class="form-label">可见范围</text>
+          <view class="visibility-options">
+            <label class="visibility-option">
+              <radio value="PRIVATE" :checked="accountForm.visibility === 'PRIVATE'" color="#006754" />
+              <text class="option-text">仅自己可见</text>
+            </label>
+            <label class="visibility-option">
+              <radio value="FAMILY" :checked="accountForm.visibility === 'FAMILY'" color="#006754" />
+              <text class="option-text">家庭成员可见</text>
+            </label>
+          </view>
+        </view>
 
-        &lt;view class="networth-section"&gt;
-          &lt;view class="networth-info"&gt;
-            &lt;text class="networth-title"&gt;计入净值&lt;/text&gt;
-            &lt;text class="networth-desc"&gt;将此账户金额计入个人资产总额&lt;/text&gt;
-          &lt;/view&gt;
-          &lt;switch 
+        <view class="networth-section">
+          <view class="networth-info">
+            <text class="networth-title">计入净值</text>
+            <text class="networth-desc">将此账户金额计入个人资产总额</text>
+          </view>
+          <switch 
             :checked="accountForm.includeInNetworth" 
             @change="handleNetworthToggle"
             color="#006754"
-          /&gt;
-        &lt;/view&gt;
-      &lt;/view&gt;
+          />
+        </view>
+      </view>
 
-      &lt;view class="modules-section"&gt;
-        &lt;view class="section-header"&gt;
-          &lt;text class="section-icon"&gt;📊&lt;/text&gt;
-          &lt;text class="section-title"&gt;资产模块配置&lt;/text&gt;
-        &lt;/view&gt;
+      <view class="modules-section">
+        <view class="section-header">
+          <text class="section-icon">📊</text>
+          <text class="section-title">资产模块配置</text>
+        </view>
 
-        &lt;view v-if="requiredModules.length &gt; 0" class="module-group"&gt;
-          &lt;text class="group-label"&gt;必选模块&lt;/text&gt;
-          &lt;view class="module-list"&gt;
-            &lt;AssetModuleItem
+        <view v-if="requiredModules.length > 0" class="module-group">
+          <text class="group-label">必选模块</text>
+          <view class="module-list">
+            <AssetModuleItem
               v-for="module in requiredModules"
               :key="module.categoryCode || module.id"
               :module="module"
               selection-type="REQUIRED"
               :checked="true"
-            /&gt;
-          &lt;/view&gt;
-        &lt;/view&gt;
+            />
+          </view>
+        </view>
 
-        &lt;view v-if="defaultModules.length &gt; 0" class="module-group"&gt;
-          &lt;text class="group-label"&gt;默认模块&lt;/text&gt;
-          &lt;view class="module-list"&gt;
-            &lt;AssetModuleItem
+        <view v-if="defaultModules.length > 0" class="module-group">
+          <text class="group-label">默认模块</text>
+          <view class="module-list">
+            <AssetModuleItem
               v-for="module in defaultModules"
               :key="module.categoryCode || module.id"
               :module="module"
               selection-type="DEFAULT_SELECTED"
               :checked="getModuleChecked(module, 'DEFAULT_SELECTED')"
-              @toggle="(checked) =&gt; toggleModule(module, checked)"
-            /&gt;
-          &lt;/view&gt;
-        &lt;/view&gt;
+              @toggle="(checked) => toggleModule(module, checked)"
+            />
+          </view>
+        </view>
 
-        &lt;view v-if="optionalModules.length &gt; 0" class="module-group"&gt;
-          &lt;text class="group-label"&gt;可选模块&lt;/text&gt;
-          &lt;view class="module-list"&gt;
-            &lt;AssetModuleItem
+        <view v-if="optionalModules.length > 0" class="module-group">
+          <text class="group-label">可选模块</text>
+          <view class="module-list">
+            <AssetModuleItem
               v-for="module in optionalModules"
               :key="module.categoryCode || module.id"
               :module="module"
               selection-type="OPTIONAL"
               :checked="getModuleChecked(module, 'OPTIONAL')"
-              @toggle="(checked) =&gt; toggleModule(module, checked)"
-            /&gt;
-          &lt;/view&gt;
-        &lt;/view&gt;
-      &lt;/view&gt;
-    &lt;/scroll-view&gt;
+              @toggle="(checked) => toggleModule(module, checked)"
+            />
+          </view>
+        </view>
+      </view>
+    </scroll-view>
 
-    &lt;view class="bottom-bar"&gt;
-      &lt;view class="bottom-content"&gt;
-        &lt;button class="confirm-btn" @tap="handleConfirm" :disabled="!canSubmit"&gt;
-          &lt;text class="btn-text"&gt;确认添加&lt;/text&gt;
-        &lt;/button&gt;
-      &lt;/view&gt;
-    &lt;/view&gt;
-  &lt;/view&gt;
-&lt;/template&gt;
+    <view class="bottom-bar">
+      <view class="bottom-content">
+        <button class="confirm-btn" @tap="handleConfirm" :disabled="!canSubmit">
+          <text class="btn-text">确认添加</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</template>
 
-&lt;script setup&gt;
+<script setup>
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { getInstitutionDetail, getInstitutionCategories } from '@/api/modules/asset'
@@ -168,27 +168,27 @@ const selectedTemplate = ref('')
 const institutionModules = ref([])
 const selectedModules = ref([])
 
-const requiredModules = computed(() =&gt; institutionModules.value.filter(m =&gt; m.selectionType === 'REQUIRED'))
-const defaultModules = computed(() =&gt; institutionModules.value.filter(m =&gt; m.selectionType === 'DEFAULT_SELECTED'))
-const optionalModules = computed(() =&gt; institutionModules.value.filter(m =&gt; m.selectionType === 'OPTIONAL'))
+const requiredModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'REQUIRED'))
+const defaultModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'DEFAULT_SELECTED'))
+const optionalModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'OPTIONAL'))
 
-const institutionName = computed(() =&gt; {
+const institutionName = computed(() => {
   if (institution.value) {
     return institution.value.instName || institution.value.shortName || '未知机构'
   }
   return '招商银行'
 })
 
-const institutionIcon = computed(() =&gt; {
+const institutionIcon = computed(() => {
   const name = institutionName.value
   return name.charAt(0)
 })
 
-const canSubmit = computed(() =&gt; {
-  return accountForm.value.accountName.trim().length &gt; 0 &amp;&amp; accountForm.value.accountId.trim().length &gt; 0
+const canSubmit = computed(() => {
+  return accountForm.value.accountName.trim().length > 0 && accountForm.value.accountId.trim().length > 0
 })
 
-const getModuleChecked = (module, type) =&gt; {
+const getModuleChecked = (module, type) => {
   if (type === 'REQUIRED') return true
   const key = module.categoryCode || module.id
   if (selectedModules.value.includes(key)) {
@@ -197,7 +197,7 @@ const getModuleChecked = (module, type) =&gt; {
   return type === 'DEFAULT_SELECTED'
 }
 
-const toggleModule = (module, checked) =&gt; {
+const toggleModule = (module, checked) => {
   const key = module.categoryCode || module.id
   if (checked) {
     if (!selectedModules.value.includes(key)) {
@@ -205,26 +205,26 @@ const toggleModule = (module, checked) =&gt; {
     }
   } else {
     const index = selectedModules.value.indexOf(key)
-    if (index &gt; -1) {
+    if (index > -1) {
       selectedModules.value.splice(index, 1)
     }
   }
 }
 
-const handleChangeInstitution = () =&gt; {
+const handleChangeInstitution = () => {
   uni.navigateBack()
 }
 
-const handleTemplateChange = (e) =&gt; {
+const handleTemplateChange = (e) => {
   const index = e.detail.value
   selectedTemplate.value = accountTemplates.value[index].name
 }
 
-const handleNetworthToggle = (e) =&gt; {
+const handleNetworthToggle = (e) => {
   accountForm.value.includeInNetworth = e.detail.value
 }
 
-const handleConfirm = async () =&gt; {
+const handleConfirm = async () => {
   if (!canSubmit.value) {
     uni.showToast({
       title: '请填写完整信息',
@@ -235,12 +235,12 @@ const handleConfirm = async () =&gt; {
 
   submitting.value = true
   try {
-    await new Promise(resolve =&gt; setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 1000))
     uni.showToast({
       title: '添加成功',
       icon: 'success'
     })
-    setTimeout(() =&gt; {
+    setTimeout(() => {
       uni.navigateBack()
     }, 1500)
   } catch (error) {
@@ -253,13 +253,13 @@ const handleConfirm = async () =&gt; {
   }
 }
 
-const loadInstitution = async () =&gt; {
+const loadInstitution = async () => {
   if (!instCode.value) return
   
   loading.value = true
   try {
     const res = await getInstitutionDetail(instCode.value)
-    if (res &amp;&amp; res.data) {
+    if (res && res.data) {
       institution.value = res.data
     }
   } catch (error) {
@@ -269,7 +269,7 @@ const loadInstitution = async () =&gt; {
   }
 }
 
-const loadModules = async () =&gt; {
+const loadModules = async () => {
   if (!instCode.value) {
     loadMockModules()
     return
@@ -277,7 +277,7 @@ const loadModules = async () =&gt; {
 
   try {
     const res = await getInstitutionCategories(instCode.value)
-    if (res &amp;&amp; res.data) {
+    if (res && res.data) {
       institutionModules.value = res.data
       initDefaultModules()
     }
@@ -287,7 +287,7 @@ const loadModules = async () =&gt; {
   }
 }
 
-const loadMockModules = () =&gt; {
+const loadMockModules = () => {
   institutionModules.value = [
     { categoryCode: 'TRANSACTION', name: '收支流水', description: '该模块是此账户的基础模块', selectionType: 'REQUIRED' },
     { categoryCode: 'BALANCE', name: '余额', description: '实时账户可用金额统计', selectionType: 'DEFAULT_SELECTED' },
@@ -299,27 +299,27 @@ const loadMockModules = () =&gt; {
   initDefaultModules()
 }
 
-const initDefaultModules = () =&gt; {
+const initDefaultModules = () => {
   selectedModules.value = []
-  defaultModules.value.forEach(module =&gt; {
+  defaultModules.value.forEach(module => {
     const key = module.categoryCode || module.id
     selectedModules.value.push(key)
   })
 }
 
-onLoad((options) =&gt; {
+onLoad((options) => {
   if (options.instCode) {
     instCode.value = options.instCode
   }
 })
 
-onMounted(async () =&gt; {
+onMounted(async () => {
   await loadInstitution()
   await loadModules()
 })
-&lt;/script&gt;
+</script>
 
-&lt;style lang="scss" scoped&gt;
+<style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
 .add-account-page {
@@ -577,5 +577,5 @@ onMounted(async () =&gt; {
   font-weight: 700;
   color: $on-primary;
 }
-&lt;/style&gt;
+</style>
 

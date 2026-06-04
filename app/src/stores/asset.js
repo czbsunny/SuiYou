@@ -36,7 +36,8 @@ export const useAssetStore = defineStore('asset', {
     async fetchAssetList(params = {}) {
       this.loading = true
       try {
-        const result = await getAssetList(params)
+        const res = await getAssetList(params)
+        const result = res.data
         this.assetList = result.list || result
         this.total = result.total || this.assetList.length
         return this.assetList
@@ -50,7 +51,8 @@ export const useAssetStore = defineStore('asset', {
 
     async fetchAssetDetail(id) {
       try {
-        const detail = await getAssetDetail(id)
+        const res = await getAssetDetail(id)
+        const detail = res.data
         this.currentAsset = detail
         return detail
       } catch (error) {
@@ -61,7 +63,8 @@ export const useAssetStore = defineStore('asset', {
 
     async createAsset(data) {
       try {
-        const result = await createAsset(data)
+        const res = await createAsset(data)
+        const result = res.data
         await this.fetchAssetList()
         return result
       } catch (error) {
@@ -72,7 +75,8 @@ export const useAssetStore = defineStore('asset', {
 
     async updateAsset(id, data) {
       try {
-        const result = await updateAsset(id, data)
+        const res = await updateAsset(id, data)
+        const result = res.data
         await this.fetchAssetList()
         return result
       } catch (error) {
@@ -83,7 +87,8 @@ export const useAssetStore = defineStore('asset', {
 
     async deleteAsset(id) {
       try {
-        const result = await deleteAsset(id)
+        const res = await deleteAsset(id)
+        const result = res.data
         await this.fetchAssetList()
         return result
       } catch (error) {
@@ -94,7 +99,8 @@ export const useAssetStore = defineStore('asset', {
 
     async fetchCategories() {
       try {
-        const categories = await getAssetCategories()
+        const res = await getAssetCategories()
+        const categories = res.data
         this.categories = categories
         return categories
       } catch (error) {
@@ -105,7 +111,8 @@ export const useAssetStore = defineStore('asset', {
 
     async fetchInstitutions() {
       try {
-        const institutions = await getInstitutions()
+        const res = await getInstitutions()
+        const institutions = res.data
         this.institutions = institutions
         return institutions
       } catch (error) {
@@ -116,7 +123,8 @@ export const useAssetStore = defineStore('asset', {
 
     async fetchSummary() {
       try {
-        const summary = await getAssetSummary()
+        const res = await getAssetSummary()
+        const summary = res.data
         this.summary = summary
         return summary
       } catch (error) {
@@ -127,7 +135,8 @@ export const useAssetStore = defineStore('asset', {
 
     async fetchStructure() {
       try {
-        const structure = await getAssetStructure()
+        const res = await getAssetStructure()
+        const structure = res.data
         this.structure = structure
         return structure
       } catch (error) {

@@ -36,7 +36,8 @@ export const useGoalStore = defineStore('goal', {
     async fetchGoalList(params = {}) {
       this.loading = true
       try {
-        const result = await getGoalList(params)
+        const res = await getGoalList(params)
+        const result = res.data
         this.goalList = result.list || result
         this.total = result.total || this.goalList.length
         return this.goalList
@@ -50,7 +51,8 @@ export const useGoalStore = defineStore('goal', {
 
     async fetchGoalDetail(id) {
       try {
-        const detail = await getGoalDetail(id)
+        const res = await getGoalDetail(id)
+        const detail = res.data
         this.currentGoal = detail
         return detail
       } catch (error) {
@@ -61,7 +63,8 @@ export const useGoalStore = defineStore('goal', {
 
     async createGoal(data) {
       try {
-        const result = await createGoal(data)
+        const res = await createGoal(data)
+        const result = res.data
         await this.fetchGoalList()
         return result
       } catch (error) {
@@ -72,7 +75,8 @@ export const useGoalStore = defineStore('goal', {
 
     async updateGoal(id, data) {
       try {
-        const result = await updateGoal(id, data)
+        const res = await updateGoal(id, data)
+        const result = res.data
         await this.fetchGoalList()
         return result
       } catch (error) {
@@ -83,7 +87,8 @@ export const useGoalStore = defineStore('goal', {
 
     async deleteGoal(id) {
       try {
-        const result = await deleteGoal(id)
+        const res = await deleteGoal(id)
+        const result = res.data
         await this.fetchGoalList()
         return result
       } catch (error) {
@@ -94,7 +99,8 @@ export const useGoalStore = defineStore('goal', {
 
     async completeGoalAction(id) {
       try {
-        const result = await completeGoal(id)
+        const res = await completeGoal(id)
+        const result = res.data
         await this.fetchGoalList()
         return result
       } catch (error) {
@@ -105,7 +111,8 @@ export const useGoalStore = defineStore('goal', {
 
     async fetchCategories() {
       try {
-        const categories = await getGoalCategories()
+        const res = await getGoalCategories()
+        const categories = res.data
         this.categories = categories
         return categories
       } catch (error) {
@@ -116,7 +123,8 @@ export const useGoalStore = defineStore('goal', {
 
     async fetchTemplates() {
       try {
-        const templates = await getGoalTemplates()
+        const res = await getGoalTemplates()
+        const templates = res.data
         this.templates = templates
         return templates
       } catch (error) {
@@ -127,7 +135,8 @@ export const useGoalStore = defineStore('goal', {
 
     async fetchProgress(id) {
       try {
-        const progress = await getGoalProgress(id)
+        const res = await getGoalProgress(id)
+        const progress = res.data
         this.progress = progress
         return progress
       } catch (error) {

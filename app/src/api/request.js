@@ -1,128 +1,92 @@
+import { useAuthStore } from '@/stores/auth'
+
 const BASE_URL = process.env.NODE_ENV === 'development'
-  ? 'http://127.0.0.1:8000'
-  : 'https://api.suiyou.com'
+  ? 'http://localhost:8080'
+  : 'https://www.zhitouying.cn'
 
-const request = (options) => {
+const buildUrl = (url, params) => {
+  let fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`
+  if (params && Object.keys(params).length > 0) {
+    const queryString = Object.entries(params)
+      .filter(([_, v]) => v !== undefined && v !== null)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&')
+    if (queryString) {
+      fullUrl += (fullUrl.includes('?') ? '&' : '?') + queryString
+    }
+  }
+  return fullUrl
+}
+
+const getHeaders = (options, token) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.header
+  }
+  if (token && !options.skipAuth) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  return headers
+}
+
+const performRequest = (url, method, data, header) => {
   return new Promise((resolve, reject) => {
-    const token = uni.getStorageSync('token') || ''
-
     uni.request({
-      url: BASE_URL + options.url,
-      method: options.method || 'GET',
-      data: options.data,
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
-        ...options.header
-      },
-      success: (res) => {
-        if (res.statusCode === 200) {
-          if (res.data.code === 0 || res.data.success) {
-            resolve(res.data.data)
-          } else {
-            handleError(res.data, reject)
-          }
-        } else if (res.statusCode === 401) {
-          handleUnauthorized(reject)
-        } else if (res.statusCode === 403) {
-          handleForbidden(reject)
-        } else if (res.statusCode >= 500) {
-          handleServerError(res, reject)
-        } else {
-          reject(res.data || { message: '请求失败' })
-        }
-      },
-      fail: (err) => {
-        handleNetworkError(err, reject)
-      }
+      url,
+      method,
+      data,
+      header,
+      success: (res) => resolve(res),
+      fail: (err) => reject(err)
     })
   })
 }
 
-const handleError = (data, reject) => {
-  const message = data.message || data.msg || '请求失败'
-  uni.showToast({
-    title: message,
-    icon: 'none',
-    duration: 2000
-  })
-  reject({ code: data.code, message })
+export const request = async (options) => {
+  const authStore = useAuthStore()
+
+  if (!options.skipAuth && authStore.isLoggingIn) {
+    await authStore.loginPromise
+  }
+
+  const { url, method = 'GET', data, params, skipAuth } = options
+  const targetUrl = buildUrl(url, params)
+
+  const doRequest = async () => {
+    const headers = getHeaders(options, authStore.token)
+    return await performRequest(targetUrl, method, data, headers)
+  }
+
+  try {
+    let res = await doRequest()
+
+    if (res.statusCode === 401 && !skipAuth) {
+      console.log('Token失效，尝试静默登录...')
+      const success = await authStore.silentLogin()
+      
+      if (success) {
+        res = await doRequest()
+        if (res.statusCode !== 401) return res
+      }
+      
+      authStore.logout()
+      uni.showToast({ title: '登录异常请重新进入小程序', icon: 'none' })
+      throw new Error('Unauthorized')
+    }
+
+    return res
+  } catch (error) {
+    console.error('API请求错误:', error)
+    throw error
+  }
 }
 
-const handleUnauthorized = (reject) => {
-  uni.showToast({
-    title: '登录已过期，请重新登录',
-    icon: 'none',
-    duration: 2000
-  })
-  uni.removeStorageSync('token')
-  setTimeout(() => {
-    uni.reLaunch({ url: '/pages/profile/index' })
-  }, 2000)
-  reject({ code: 401, message: '未授权' })
-}
+export const get = (url, params = {}, options = {}) => request({ ...options, url, method: 'GET', params })
 
-const handleForbidden = (reject) => {
-  uni.showToast({
-    title: '没有权限访问该资源',
-    icon: 'none',
-    duration: 2000
-  })
-  reject({ code: 403, message: '禁止访问' })
-}
+export const post = (url, data, options = {}) => request({ ...options, url, method: 'POST', data })
 
-const handleServerError = (res, reject) => {
-  uni.showToast({
-    title: '服务器错误，请稍后重试',
-    icon: 'none',
-    duration: 2000
-  })
-  reject({ code: res.statusCode, message: '服务器错误' })
-}
+export const put = (url, data, options = {}) => request({ ...options, url, method: 'PUT', data })
 
-const handleNetworkError = (err, reject) => {
-  uni.showToast({
-    title: '网络连接失败，请检查网络',
-    icon: 'none',
-    duration: 2000
-  })
-  reject({ code: -1, message: '网络错误' })
-}
-
-export const get = (url, data, options = {}) => {
-  return request({
-    url,
-    method: 'GET',
-    data,
-    ...options
-  })
-}
-
-export const post = (url, data, options = {}) => {
-  return request({
-    url,
-    method: 'POST',
-    data,
-    ...options
-  })
-}
-
-export const put = (url, data, options = {}) => {
-  return request({
-    url,
-    method: 'PUT',
-    data,
-    ...options
-  })
-}
-
-export const del = (url, data, options = {}) => {
-  return request({
-    url,
-    method: 'DELETE',
-    data,
-    ...options
-  })
-}
+export const del = (url, options = {}) => request({ ...options, url, method: 'DELETE' })
 
 export default request

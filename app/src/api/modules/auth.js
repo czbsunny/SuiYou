@@ -21,7 +21,7 @@ export const updateUserInfo = (data) => {
 }
 
 export const wechatLogin = (code) => {
-  return post('/api/auth/wechat', { code })
+  return post('/api/auth/wechat-login', { code }, { skipAuth: true })
 }
 
 export const douyinLogin = (code) => {

@@ -1,30 +1,30 @@
 
-&lt;template&gt;
-  &lt;view class="asset-module-item" :class="{ 'required-module': isRequired, 'disabled-module': disabled }"&gt;
-    &lt;view class="module-content"&gt;
-      &lt;view class="module-icon" :class="iconClass"&gt;
-        &lt;text class="icon-letter"&gt;{{ iconLetter }}&lt;/text&gt;
-      &lt;/view&gt;
-      &lt;view class="module-info"&gt;
-        &lt;view class="name-row"&gt;
-          &lt;text class="module-name"&gt;{{ module.name || module.categoryCode }}&lt;/text&gt;
-          &lt;view v-if="isRequired" class="required-tag"&gt;必选&lt;/view&gt;
-          &lt;view v-else-if="isDefaultSelected" class="default-tag"&gt;默认&lt;/view&gt;
-          &lt;view v-else class="optional-tag"&gt;可选&lt;/view&gt;
-        &lt;/view&gt;
-        &lt;text class="module-desc"&gt;{{ module.description || '添加账户的资产模块' }}&lt;/text&gt;
-      &lt;/view&gt;
-    &lt;/view&gt;
-    &lt;view v-if="!isRequired" class="module-checkbox"&gt;
-      &lt;checkbox :checked="checked" @tap="handleToggle" :disabled="disabled" color="#006754" /&gt;
-    &lt;/view&gt;
-    &lt;view v-else class="lock-icon"&gt;
-      &lt;text class="lock-symbol"&gt;🔒&lt;/text&gt;
-    &lt;/view&gt;
-  &lt;/view&gt;
-&lt;/template&gt;
+<template>
+  <view class="asset-module-item" :class="{ 'required-module': isRequired, 'disabled-module': disabled }">
+    <view class="module-content">
+      <view class="module-icon" :class="iconClass">
+        <text class="icon-letter">{{ iconLetter }}</text>
+      </view>
+      <view class="module-info">
+        <view class="name-row">
+          <text class="module-name">{{ module.name || module.categoryCode }}</text>
+          <view v-if="isRequired" class="required-tag">必选</view>
+          <view v-else-if="isDefaultSelected" class="default-tag">默认</view>
+          <view v-else class="optional-tag">可选</view>
+        </view>
+        <text class="module-desc">{{ module.description || '添加账户的资产模块' }}</text>
+      </view>
+    </view>
+    <view v-if="!isRequired" class="module-checkbox">
+      <checkbox :checked="checked" @tap="handleToggle" :disabled="disabled" color="#006754" />
+    </view>
+    <view v-else class="lock-icon">
+      <text class="lock-symbol">🔒</text>
+    </view>
+  </view>
+</template>
 
-&lt;script setup&gt;
+<script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -48,15 +48,15 @@ const props = defineProps({
 
 const emit = defineEmits(['toggle'])
 
-const isRequired = computed(() =&gt; props.selectionType === 'REQUIRED')
-const isDefaultSelected = computed(() =&gt; props.selectionType === 'DEFAULT_SELECTED')
+const isRequired = computed(() => props.selectionType === 'REQUIRED')
+const isDefaultSelected = computed(() => props.selectionType === 'DEFAULT_SELECTED')
 
-const iconLetter = computed(() =&gt; {
+const iconLetter = computed(() => {
   const name = props.module.name || props.module.categoryCode || ''
   return name.charAt(0)
 })
 
-const iconClass = computed(() =&gt; {
+const iconClass = computed(() => {
   if (isRequired.value) {
     return 'required-icon'
   } else if (isDefaultSelected.value) {
@@ -65,15 +65,15 @@ const iconClass = computed(() =&gt; {
   return 'optional-icon'
 })
 
-const handleToggle = () =&gt; {
+const handleToggle = () => {
   if (isRequired.value || props.disabled) {
     return
   }
   emit('toggle', !props.checked)
 }
-&lt;/script&gt;
+</script>
 
-&lt;style lang="scss" scoped&gt;
+<style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
 .asset-module-item {
@@ -196,5 +196,5 @@ const handleToggle = () =&gt; {
   font-size: 32rpx;
   color: $outline-variant;
 }
-&lt;/style&gt;
+</style>
 

@@ -1,294 +1,403 @@
+<template>
+  <view class="search-page">
+    <!-- Header 部分 -->
+    <view class="header-section">
+      <view class="search-box">
+        <image src="/static/images/search.png" class="search-icon" />
+        <input 
+          class="search-input" 
+          v-model="searchQuery" 
+          placeholder="搜索机构或平台" 
+          placeholder-class="placeholder"
+        />
+        <view v-if="searchQuery" class="clear-btn" @tap="clearSearch">
+          <text class="clear-icon">×</text>
+        </view>
+      </view>
 
-&lt;template&gt;
-  &lt;view class="search-page"&gt;
-    &lt;scroll-view scroll-y class="scroll-content"&gt;
-      &lt;view class="search-section"&gt;
-        &lt;view class="search-box"&gt;
-          &lt;text class="search-icon"&gt;🔍&lt;/text&gt;
-          &lt;input 
-            class="search-input" 
-            v-model="searchQuery" 
-            placeholder="搜索机构或平台" 
-            placeholder-class="placeholder"
-          /&gt;
-        &lt;/view&gt;
-      &lt;/view&gt;
-
-      &lt;view class="tabs-section"&gt;
-        &lt;scroll-view scroll-x class="tabs-scroll" show-scrollbar="false"&gt;
-          &lt;view class="tabs-container"&gt;
-            &lt;view 
+      <view class="tabs-section" v-if="!searchQuery">
+        <scroll-view 
+          scroll-x 
+          class="tabs-scroll" 
+          :show-scrollbar="false" 
+          :enhanced="true"
+        >
+          <view class="tabs-container">
+            <view 
               v-for="tab in tabs" 
               :key="tab.code"
               class="tab-item"
               :class="{ active: activeTab === tab.code }"
               @tap="selectTab(tab.code)"
-            &gt;
-              &lt;text class="tab-text"&gt;{{ tab.name }}&lt;/text&gt;
-            &lt;/view&gt;
-          &lt;/view&gt;
-        &lt;/scroll-view&gt;
-      &lt;/view&gt;
+            >
+              <text class="tab-text">{{ tab.name }}</text>
+              <view class="tab-line" v-if="activeTab === tab.code"></view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
 
-      &lt;view class="institutions-section"&gt;
-        &lt;view class="section-header"&gt;
-          &lt;text class="section-title"&gt;{{ getSectionTitle() }}&lt;/text&gt;
-          &lt;text v-if="activeTab === 'HOT'" class="sort-link"&gt;全部 A-Z&lt;/text&gt;
-        &lt;/view&gt;
+    <scroll-view 
+      scroll-y 
+      class="scroll-content" 
+      :scroll-into-view="scrollIntoId" 
+      scroll-with-animation
+      @scroll="onListScroll"
+    >
 
-        &lt;view v-if="loading" class="loading-container"&gt;
-          &lt;text class="loading-text"&gt;加载中...&lt;/text&gt;
-        &lt;/view&gt;
-
-        &lt;view v-else-if="filteredInstitutions.length &gt; 0" class="institutions-list"&gt;
-          &lt;InstitutionCard
-            v-for="institution in filteredInstitutions"
-            :key="institution.instCode || institution.id"
-            :institution="institution"
-            :institution-type="getInstitutionType(institution)"
+      <!-- 机构列表区域 -->
+      <view class="institutions-section">
+        <!-- 搜索结果 -->
+        <view v-if="searchQuery && filteredInstitutions.length > 0" class="search-results">
+          <view 
+            v-for="institution in filteredInstitutions" 
+            :key="institution.instCode || institution.id" 
+            class="institution-item" 
             @click="selectInstitution(institution)"
-          /&gt;
-        &lt;/view&gt;
+          >
+            <view class="logo-wrapper">
+              <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+            </view>
+            <text class="institution-name">{{ institution.instName }}</text>
+          </view>
+        </view>
 
-        &lt;view v-else-if="!loading &amp;&amp; searchQuery" class="empty-state"&gt;
-          &lt;text class="empty-text"&gt;未找到相关机构&lt;/text&gt;
-        &lt;/view&gt;
+        <!-- 字母分组列表 -->
+        <view v-else-if="!searchQuery" id="scroll-content">
+          <view v-if="loading" class="loading-container">
+            <text class="loading-text">加载中...</text>
+          </view>
 
-        &lt;view v-else-if="!loading" class="empty-state"&gt;
-          &lt;text class="empty-text"&gt;暂无机构数据&lt;/text&gt;
-        &lt;/view&gt;
+          <view v-else>
+            <view 
+              v-for="group in groupedInstitutions" 
+              :key="group.indexLetter" 
+              :id="formatId(group.indexLetter)"
+              class="group-block"
+            >
+              <view class="group-title">{{ group.indexLetter === '热' ? '热门机构' : group.indexLetter }}</view>
+              <view v-for="institution in group.data" :key="institution.instCode || institution.id" class="institution-item" @click="selectInstitution(institution)">
+                <view class="logo-wrapper">
+                  <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+                </view>
+                <text class="institution-name">{{ institution.instName }}</text>
+              </view>
+            </view>
+            <view class="safe-bottom"></view>
+          </view>
+        </view>
 
-        &lt;view class="manual-add-card" @tap="handleManualAdd"&gt;
-          &lt;view class="manual-add-icon"&gt;
-            &lt;text class="plus-sign"&gt;+&lt;/text&gt;
-          &lt;/view&gt;
-          &lt;view class="manual-add-info"&gt;
-            &lt;text class="manual-add-title"&gt;手动添加其他机构&lt;/text&gt;
-            &lt;text class="manual-add-desc"&gt;未在列表中找到您的机构？&lt;/text&gt;
-          &lt;/view&gt;
-          &lt;text class="arrow-icon"&gt;›&lt;/text&gt;
-        &lt;/view&gt;
-      &lt;/view&gt;
-    &lt;/scroll-view&gt;
-  &lt;/view&gt;
-&lt;/template&gt;
+        <!-- 空状态 -->
+        <view v-if="!loading && searchQuery && filteredInstitutions.length === 0" class="empty-state">
+          <text class="empty-text">未找到相关机构</text>
+        </view>
 
-&lt;script setup&gt;
-import { ref, computed, onMounted } from 'vue'
+        <view v-else-if="!loading && !searchQuery && currentInstitutions.length === 0" class="empty-state">
+          <text class="empty-text">暂无机构数据</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 右侧索引条 -->
+    <view class="index-bar" v-if="!searchQuery && alphabet.length > 0">
+      <view 
+        v-for="letter in alphabet" 
+        :key="letter" 
+        class="index-item"
+        :class="{ 'active-letter': activeLetter === letter }"
+        @touchstart="scrollToLetter(letter)"
+      >
+        {{ letter }}
+      </view>
+    </view>
+  </view>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { getInstitutionTypes, getHotInstitutions, getInstitutionsByType, getAllInstitutions } from '@/api/modules/asset'
-import InstitutionCard from '@/components/accounts/InstitutionCard.vue'
 
 const searchQuery = ref('')
 const activeTab = ref('HOT')
 const loading = ref(false)
 const institutionTypes = ref([])
-const allInstitutions = ref([])
 const currentInstitutions = ref([])
+const scrollIntoId = ref('')
+const activeLetter = ref('热')
+const groupOffsets = ref([])
 
-const tabs = ref([
-  { code: 'HOT', name: '热门' },
-  { code: 'BANK', name: '银行' },
-  { code: 'PAYMENT', name: '支付' },
-  { code: 'SECURITY', name: '证券' },
-  { code: 'FUND_PLATFORM', name: '基金平台' },
-  { code: 'INSURANCE', name: '保险' },
-  { code: 'OTHER', name: '其他' }
-])
+const tabs = computed(() => {
+  const defaultTabs = [
+    { code: 'HOT', name: '热门' },
+    { code: 'ALL', name: '全部' }
+  ]
+  const typeTabs = Array.isArray(institutionTypes.value) ? institutionTypes.value.map(type => ({
+    code: type.typeCode,
+    name: type.typeName
+  })) : []
+  return [...defaultTabs, ...typeTabs]
+})
 
-const filteredInstitutions = computed(() =&gt; {
-  if (!searchQuery.value) {
-    return currentInstitutions.value
-  }
-  const query = searchQuery.value.toLowerCase()
-  return currentInstitutions.value.filter(inst =&gt; {
-    const name = (inst.instName || inst.shortName || '').toLowerCase()
-    const code = (inst.instCode || '').toLowerCase()
-    return name.includes(query) || code.includes(query)
+const formatImageUrl = (url) => {
+  if (!url) return ''
+  let formattedUrl = url.startsWith('/') ? url.substring(1) : url
+  return '/' + formattedUrl
+}
+
+const formatId = (letter) => letter === '热' ? 'letter-HOT' : `letter-${letter}`
+
+const filteredInstitutions = computed(() => {
+  const kw = searchQuery.value.trim().toLowerCase()
+  if (!kw) return []
+  return currentInstitutions.value.filter(item => {
+    const name = (item.instName || item.shortName || '').toLowerCase()
+    return name.includes(kw)
   })
 })
 
-const getSectionTitle = () =&gt; {
-  if (activeTab.value === 'HOT') {
-    return '常用金融机构'
-  }
-  const tab = tabs.value.find(t =&gt; t.code === activeTab.value)
-  return tab ? tab.name : '金融机构'
-}
+const groupedInstitutions = computed(() => {
+  const groups = {}
+  const hotList = []
+  currentInstitutions.value.forEach(item => {
+    if (item.isHot) hotList.push(item)
+    const letter = (item.indexLetter || '#').toUpperCase()
+    if (!groups[letter]) groups[letter] = []
+    groups[letter].push(item)
+  })
+  const result = Object.keys(groups).sort().map(key => ({ indexLetter: key, data: groups[key] }))
+  if (hotList.length > 0) result.unshift({ indexLetter: '热', data: hotList })
+  return result
+})
 
-const getInstitutionType = (institution) =&gt; {
-  const typeCode = institution.instType
-  if (!typeCode) return null
-  return institutionTypes.value.find(type =&gt; type.typeCode === typeCode)
-}
+const alphabet = computed(() => groupedInstitutions.value.map(g => g.indexLetter))
 
-const selectTab = async (tabCode) =&gt; {
+const selectTab = async (tabCode) => {
   activeTab.value = tabCode
+  activeLetter.value = '热'
   await loadInstitutions()
+  nextTick(() => { setTimeout(() => calculateOffsets(), 300) })
 }
 
-const selectInstitution = (institution) =&gt; {
+const selectInstitution = (institution) => {
   uni.navigateTo({
     url: `/pages/accounts/add-account?instCode=${institution.instCode}`
   })
 }
 
-const handleManualAdd = () =&gt; {
-  uni.showToast({
-    title: '手动添加功能开发中',
-    icon: 'none'
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+const scrollToLetter = (letter) => {
+  const targetId = formatId(letter)
+  scrollIntoId.value = ''
+  nextTick(() => {
+    scrollIntoId.value = targetId
+    activeLetter.value = letter
+    uni.vibrateShort()
   })
 }
 
-const loadInstitutionTypes = async () =&gt; {
-  try {
-    const res = await getInstitutionTypes()
-    if (res &amp;&amp; res.data) {
-      institutionTypes.value = res.data
+const calculateOffsets = () => {
+  const query = uni.createSelectorQuery()
+  query.selectAll('.group-block').boundingClientRect(rects => {
+    if (!rects.length) return
+    const baseTop = rects[0].top
+    groupOffsets.value = rects.map((rect, index) => ({
+      top: rect.top,
+      offset: rect.top - baseTop,
+      letter: alphabet.value[index]
+    }))
+  }).exec()
+}
+
+const onListScroll = (e) => {
+  if (!groupOffsets.value.length) return
+  const scrollTop = e.detail.scrollTop + 20
+  for (let i = groupOffsets.value.length - 1; i >= 0; i--) {
+    if (scrollTop >= groupOffsets.value[i].offset) {
+      if (activeLetter.value !== groupOffsets.value[i].letter) {
+        activeLetter.value = groupOffsets.value[i].letter
+      }
+      break
     }
-  } catch (error) {
-    console.error('加载机构类型失败:', error)
   }
 }
 
-const loadInstitutions = async () =&gt; {
+const loadInstitutionTypes = async () => {
+  try {
+    const res = await getInstitutionTypes()
+    if (res && res.data && Array.isArray(res.data)) {
+      institutionTypes.value = res.data
+    } else {
+      institutionTypes.value = []
+    }
+  } catch (error) {
+    console.error('加载机构类型失败:', error)
+    institutionTypes.value = []
+  }
+}
+
+const loadInstitutions = async () => {
   loading.value = true
   try {
     let res
     if (activeTab.value === 'HOT') {
       res = await getHotInstitutions()
-    } else if (activeTab.value === 'OTHER') {
+    } else if (activeTab.value === 'ALL') {
       res = await getAllInstitutions()
     } else {
       res = await getInstitutionsByType(activeTab.value)
     }
     
-    if (res &amp;&amp; res.data) {
+    if (res && res.data && Array.isArray(res.data)) {
       currentInstitutions.value = res.data
+    } else {
+      currentInstitutions.value = []
     }
   } catch (error) {
     console.error('加载机构列表失败:', error)
-    currentInstitutions.value = getMockInstitutions()
+    currentInstitutions.value = []
   } finally {
     loading.value = false
+    nextTick(() => { setTimeout(() => calculateOffsets(), 500) })
   }
 }
 
-const getMockInstitutions = () =&gt; {
-  return [
-    { instCode: 'ICBC', instName: '中国工商银行', shortName: '工行', instType: 'BANK', isHot: true },
-    { instCode: 'CCB', instName: '中国建设银行', shortName: '建行', instType: 'BANK', isHot: true },
-    { instCode: 'ABC', instName: '中国农业银行', shortName: '农行', instType: 'BANK', isHot: true },
-    { instCode: 'BOC', instName: '中国银行', shortName: '中行', instType: 'BANK', isHot: true },
-    { instCode: 'CMB', instName: '招商银行', shortName: '招行', instType: 'BANK', isHot: true },
-    { instCode: 'ALIPAY', instName: '支付宝', shortName: '支付宝', instType: 'PAYMENT', isHot: true },
-    { instCode: 'WECHAT', instName: '微信支付', shortName: '微信', instType: 'PAYMENT', isHot: true },
-    { instCode: 'CITIC', instName: '中信证券', shortName: '中信', instType: 'SECURITY', isHot: false }
-  ]
-}
-
-onMounted(async () =&gt; {
+onMounted(async () => {
   await loadInstitutionTypes()
   await loadInstitutions()
 })
-&lt;/script&gt;
+</script>
 
-&lt;style lang="scss" scoped&gt;
+<style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
-.search-page {
-  min-height: 100vh;
-  background: $background;
+.search-page { 
+  display: flex; 
+  flex-direction: column; 
+  height: 100vh; 
+  background-color: #f7f7f7; 
 }
 
-.scroll-content {
-  height: 100vh;
+.scroll-content { 
+  flex: 1; 
+  overflow: hidden; 
 }
 
-.search-section {
-  padding: 32rpx;
-}
+.header-section {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background-color: #fff;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
+  padding: $spacing-sm $spacing-base;
 
-.search-box {
-  display: flex;
-  align-items: center;
-  padding: 24rpx 32rpx;
-  background: $surface-container-low;
-  border-radius: 24rpx;
-  gap: 16rpx;
-}
+  .search-box { 
+    display: flex; 
+    align-items: center; 
+    background-color: #f3f4f6; 
+    padding: 0 24rpx; 
+    border-radius: 40rpx; 
+    height: 84rpx; 
 
-.search-icon {
-  font-size: 32rpx;
-}
+    .search-icon {
+      width: 40rpx;
+      height: 40rpx;
+      margin-right: 16rpx;
+      opacity: 0.3;
+    }
 
-.search-input {
-  flex: 1;
-  font-size: 28rpx;
-  color: $on-surface;
+    .search-input { 
+      flex: 1; 
+      font-size: 28rpx; 
+      color: #1e293b; 
+    }
+
+    .clear-btn {
+      width: 40rpx;
+      height: 40rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .clear-icon {
+        font-size: 36rpx;
+        color: #94a3b8;
+        font-weight: 300;
+      }
+    }
+  }
 }
 
 .placeholder {
   color: rgba(107, 114, 128, 0.6);
 }
 
+/* Tab 样式 */
 .tabs-section {
-  padding: 0 32rpx 32rpx;
-}
-
-.tabs-scroll {
   width: 100%;
+  margin-top: $spacing-sm;
+
+  .tabs-scroll { 
+    width: 100%; 
+    white-space: nowrap; 
+  }
+
+  .tabs-container { 
+    display: inline-flex; 
+    padding: 0 24rpx 0 8rpx;
+    height: 96rpx;
+    align-items: center;
+  }
+
+  .tab-item {
+    display: inline-block; 
+    padding: 0 18rpx;
+    position: relative;
+    height: 100%;
+    line-height: 96rpx;
+    
+    .tab-text {
+      font-size: 28rpx;
+      color: #94a3b8;
+      font-weight: 600;
+      white-space: nowrap; 
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    &.active {
+      .tab-text {
+        color: #2D7A68;
+        font-weight: 800;
+      }
+      .tab-line {
+        position: absolute;
+        bottom: 8rpx;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 32rpx;
+        height: 6rpx;
+        background-color: #2D7A68;
+        border-radius: 4rpx;
+      }
+    }
+  }
 }
 
-.tabs-container {
-  display: flex;
-  gap: 16rpx;
-  padding-right: 32rpx;
-}
-
-.tab-item {
-  flex-shrink: 0;
-  padding: 16rpx 32rpx;
-  border-radius: 999rpx;
-  background: $surface-container-high;
-  transition: all 0.2s;
-}
-
-.tab-item.active {
-  background: $primary;
-}
-
-.tab-text {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: $on-surface-variant;
-}
-
-.tab-item.active .tab-text {
-  color: $on-primary;
-  font-weight: 700;
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none;
+  background: transparent;
 }
 
 .institutions-section {
-  padding: 0 32rpx 64rpx;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
-.section-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: $on-surface-variant;
-}
-
-.sort-link {
-  font-size: 24rpx;
-  font-weight: 700;
-  color: $primary;
+  padding: 0 $spacing-xs;
 }
 
 .loading-container {
@@ -300,13 +409,59 @@ onMounted(async () =&gt; {
 
 .loading-text {
   font-size: 28rpx;
-  color: $outline;
+  color: #94a3b8;
 }
 
-.institutions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
+/* 分组块 */
+.group-block {
+  padding: 0 $spacing-sm;
+}
+
+.group-title {
+  padding: $spacing-sm $spacing-base; 
+  font-size: 22rpx; 
+  font-weight: 800; 
+  color: #94a3b8; 
+  background-color: #f8fafc; 
+  text-transform: uppercase; 
+  letter-spacing: 2rpx; 
+}
+
+/* 机构项 */
+.institution-item {
+  padding: $spacing-sm $spacing-base;
+  border-radius: $border-radius-base;
+  display:  flex; 
+  align-items:  center; 
+  background-color: #fff; 
+  border-bottom: 1rpx solid #f8fafc;
+}
+
+.logo-wrapper  { 
+  width: 76rpx; 
+  height: 76rpx; 
+  background-color: #f8fafc; 
+  border-radius: 20rpx; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  margin-right: 28rpx; 
+  overflow: hidden; 
+  border: 1rpx solid rgba(0,0,0,0.03); 
+}
+.institution-logo { 
+  width: 76rpx; 
+  height: 76rpx; 
+}
+.institution-name { 
+  font-size: 30rpx; 
+  color: #1e293b; 
+  font-weight: 600; 
+}
+
+/* 搜索结果 */
+.search-results {
+  background-color: #fff;
 }
 
 .empty-state {
@@ -318,58 +473,46 @@ onMounted(async () =&gt; {
 
 .empty-text {
   font-size: 28rpx;
-  color: $outline;
+  color: #94a3b8;
 }
 
-.manual-add-card {
-  margin-top: 48rpx;
-  display: flex;
+/* 索引条 */
+.index-bar {
+  position: fixed; 
+  right: 8rpx;
+  top: 50%;       
+  transform: translateY(-50%);
+  display: flex; 
+  flex-direction: column; 
   align-items: center;
-  padding: 32rpx;
-  background: #FFFFFF;
-  border-radius: 24rpx;
-  border: 2rpx dashed $outline-variant;
+  background-color: rgba(255,255,255,0.92);
+  border-radius: 30rpx;
+  padding: 20rpx 0; 
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1); 
+  z-index: 999; 
+  pointer-events: auto; 
+
+  .index-item { 
+    width: 44rpx; 
+    height: 44rpx; 
+    line-height: 44rpx; 
+    text-align: center; 
+    font-size: 18rpx; 
+    color: #64748b; 
+    font-weight: 800; 
+    margin: 2rpx 0; 
+    border-radius: 50%; 
+    transition: all 0.2s;
+
+    &.active-letter { 
+      background-color: #2D7A68; 
+      color: #ffffff; 
+      transform: scale(1.15); 
+    } 
+  }
 }
 
-.manual-add-icon {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 50%;
-  background: $surface-container;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 28rpx;
+.safe-bottom { 
+  height: 160rpx; 
 }
-
-.plus-sign {
-  font-size: 48rpx;
-  font-weight: 300;
-  color: $outline;
-}
-
-.manual-add-info {
-  flex: 1;
-}
-
-.manual-add-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: $on-surface;
-  display: block;
-}
-
-.manual-add-desc {
-  margin-top: 6rpx;
-  font-size: 22rpx;
-  color: $outline;
-  display: block;
-}
-
-.arrow-icon {
-  font-size: 48rpx;
-  font-weight: 300;
-  color: $outline-variant;
-}
-&lt;/style&gt;
-
+</style>

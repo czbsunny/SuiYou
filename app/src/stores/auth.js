@@ -1,63 +1,71 @@
 import { defineStore } from 'pinia'
-import { getUserInfo, logout as apiLogout } from '@/api/modules/auth'
+import { wechatLogin } from '@/api/modules/auth'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: uni.getStorageSync('token') || '',
-    userInfo: null,
-    isLoggedIn: false
+    token: uni.getStorageSync('token') || null,
+    userInfo: uni.getStorageSync('userInfo') || null,
+    isLoggingIn: false,
+    loginPromise: null,
   }),
-
+  
   getters: {
-    getToken: (state) => state.token,
-    getUserInfo: (state) => state.userInfo,
-    isAuthenticated: (state) => !!state.token
+    isLoggedIn: (state) => !!state.token,
+    displayUserInfo: (state) => state.userInfo || {}
   },
-
+  
   actions: {
-    setToken(token) {
+    async login() {
+      if (this.isLoggingIn) return this.loginPromise
+
+      this.isLoggingIn = true
+      this.loginPromise = (async () => {
+        try {
+          const loginRes = await uni.login({ provider: 'weixin' })
+          if (loginRes.errMsg !== 'login:ok' || !loginRes.code) throw new Error('微信登录失败')
+          console.log('微信登录成功，code:', loginRes.code)
+
+          const res = await wechatLogin(loginRes.code)
+          console.log('微信登录成功，res:', res)
+          const { token, user } = res.data || {}
+          if (token) {
+            this.setAuthData(token, user)
+            return true
+          }
+          return false
+        } catch (error) {
+          console.error('登录全链路失败:', error)
+          return false
+        } finally {
+          this.isLoggingIn = false
+          this.loginPromise = null
+        }
+      })()
+
+      return this.loginPromise
+    },
+
+    async silentLogin() {
+      return await this.login()
+    },
+
+    setAuthData(token, userInfo) {
       this.token = token
-      this.isLoggedIn = !!token
-      if (token) {
-        uni.setStorageSync('token', token)
-      } else {
-        uni.removeStorageSync('token')
-      }
+      this.userInfo = userInfo
+      uni.setStorageSync('token', token)
+      uni.setStorageSync('userInfo', userInfo)
     },
 
-    async fetchUserInfo() {
-      try {
-        const userInfo = await getUserInfo()
-        this.userInfo = userInfo
-        return userInfo
-      } catch (error) {
-        console.error('获取用户信息失败:', error)
-        throw error
-      }
+    updateUserInfo(userInfo) {
+      this.userInfo = userInfo
+      uni.setStorageSync('userInfo', userInfo)
     },
-
-    async login(token) {
-      this.setToken(token)
-      await this.fetchUserInfo()
-    },
-
-    async logout() {
-      try {
-        await apiLogout()
-      } catch (error) {
-        console.error('登出请求失败:', error)
-      } finally {
-        this.setToken('')
-        this.userInfo = null
-        this.isLoggedIn = false
-        uni.reLaunch({ url: '/pages/home/index' })
-      }
-    },
-
-    clearAuth() {
-      this.setToken('')
+    
+    logout() {
+      this.token = null
       this.userInfo = null
-      this.isLoggedIn = false
+      uni.removeStorageSync('token')
+      uni.removeStorageSync('userInfo')
     }
   }
 })

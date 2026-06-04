@@ -1,0 +1,7 @@
+- [x] Checkpoint 1: `getMockInstitutions` function has been removed
+- [x] Checkpoint 2: Mock data fallback in `loadInstitutions` catch block has been removed
+- [x] Checkpoint 3: `handleManualAdd` function has been removed
+- [x] Checkpoint 4: Manual add card has been removed from template
+- [x] Checkpoint 5: Manual add card styles have been removed
+- [x] Checkpoint 6: File compiles without errors
+- [x] Checkpoint 7: Page loads without console errors

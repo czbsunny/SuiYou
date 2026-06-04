@@ -1,27 +1,27 @@
 
-&lt;template&gt;
-  &lt;view class="institution-card" @click="handleClick"&gt;
-    &lt;view class="card-content"&gt;
-      &lt;view class="institution-icon" :class="iconClass"&gt;
-        &lt;text class="icon-text"&gt;{{ iconLetter }}&lt;/text&gt;
-      &lt;/view&gt;
-      &lt;view class="institution-info"&gt;
-        &lt;view class="name-row"&gt;
-          &lt;text class="institution-name"&gt;{{ institution.instName || institution.shortName }}&lt;/text&gt;
-          &lt;view v-if="institution.isHot" class="hot-tag"&gt;热门&lt;/view&gt;
-        &lt;/view&gt;
-        &lt;view v-if="institutionType" class="type-tag"&gt;
+<template>
+  <view class="institution-card" @click="handleClick">
+    <view class="card-content">
+      <view class="institution-icon" :class="iconClass">
+        <text class="icon-text">{{ iconLetter }}</text>
+      </view>
+      <view class="institution-info">
+        <view class="name-row">
+          <text class="institution-name">{{ institution.instName || institution.shortName }}</text>
+          <view v-if="institution.isHot" class="hot-tag">热门</view>
+        </view>
+        <view v-if="institutionType" class="type-tag">
           {{ institutionType.typeName }}
-        &lt;/view&gt;
-      &lt;/view&gt;
-    &lt;/view&gt;
-    &lt;view class="arrow"&gt;
-      &lt;text class="arrow-icon"&gt;›&lt;/text&gt;
-    &lt;/view&gt;
-  &lt;/view&gt;
-&lt;/template&gt;
+        </view>
+      </view>
+    </view>
+    <view class="arrow">
+      <text class="arrow-icon">›</text>
+    </view>
+  </view>
+</template>
 
-&lt;script setup&gt;
+<script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -37,12 +37,12 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 
-const iconLetter = computed(() =&gt; {
+const iconLetter = computed(() => {
   const name = props.institution.instName || props.institution.shortName || ''
   return name.charAt(0)
 })
 
-const iconClass = computed(() =&gt; {
+const iconClass = computed(() => {
   const typeCode = props.institution.instType || ''
   const typeClasses = {
     'BANK': 'bank-icon',
@@ -57,12 +57,12 @@ const iconClass = computed(() =&gt; {
   return typeClasses[typeCode] || 'default-icon'
 })
 
-const handleClick = () =&gt; {
+const handleClick = () => {
   emit('click', props.institution)
 }
-&lt;/script&gt;
+</script>
 
-&lt;style lang="scss" scoped&gt;
+<style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
 .institution-card {
@@ -75,7 +75,7 @@ const handleClick = () =&gt; {
   box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.04);
   transition: background 0.2s;
   
-  &amp;:active {
+  &:active {
     background: $surface-container-low;
   }
 }
@@ -184,5 +184,5 @@ const handleClick = () =&gt; {
   font-weight: 300;
   color: $outline-variant;
 }
-&lt;/style&gt;
+</style>
 
