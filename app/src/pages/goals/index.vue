@@ -20,8 +20,12 @@
         <view class="section-heading">
           <text class="section-title">愿望清单</text>
           <view class="heading-actions">
-            <text class="action-mark" @tap="toggleSort">filter</text>
-            <text class="action-plus" @tap="tapAction('创建新目标')">+</text>
+            <view class="sort-button" @tap="toggleSort">
+              <image src="/static/images/manage.png" class="sort-icon" mode="aspectFit" />
+            </view>
+            <view class="add-button" @tap="tapAction('创建新目标')">
+              <image src="/static/images/add.png" class="add-icon" mode="aspectFit" />
+            </view>
           </view>
         </view>
 
@@ -126,7 +130,7 @@ const tapAction = (label) => {
 }
 
 .content {
-  padding: 32rpx 32rpx 170rpx;
+  padding: $spacing-4 $spacing-4 170rpx;
 }
 
 .summary-card,
@@ -143,7 +147,7 @@ const tapAction = (label) => {
 .eyebrow,
 .label {
   color: $outline;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   font-weight: 800;
   letter-spacing: 1rpx;
 }
@@ -157,13 +161,13 @@ const tapAction = (label) => {
 
 .currency {
   color: $primary;
-  font-size: 44rpx;
+  font-size: $font-size-title-sm;
   font-weight: 900;
 }
 
 .hero-amount {
   font-family: $font-family-mono;
-  font-size: 54rpx;
+  font-size: $font-size-num-display;
   font-weight: 900;
   color: $on-surface;
 }
@@ -198,8 +202,8 @@ const tapAction = (label) => {
 }
 
 .section-heading {
-  margin-top: 64rpx;
-  margin-bottom: 32rpx;
+  margin-top: $section-margin;
+  margin-bottom: $stack-gap-md;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -207,30 +211,38 @@ const tapAction = (label) => {
 
 .section-title {
   color: $on-surface;
-  font-size: 44rpx;
+  font-size: $font-size-title-sm;
   font-weight: 900;
 }
 
 .heading-actions {
   display: flex;
   align-items: center;
-  gap: 34rpx;
-  color: $primary;
-  font-weight: 900;
+  gap: $stack-gap-sm;
+  color: $on-surface;
 }
 
-.action-mark {
-  font-size: 22rpx;
+.sort-button,
+.add-button {
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
 }
 
-.action-plus {
-  font-size: 42rpx;
+.sort-icon,
+.add-icon {
+  width: 36rpx;
+  height: 36rpx;
+  filter: brightness(0) saturate(100%);
 }
 
 .chips {
   display: flex;
-  gap: 16rpx;
-  margin-bottom: 34rpx;
+  gap: $stack-gap-sm;
+  margin-bottom: $stack-gap-md;
 }
 
 .chip {
@@ -252,17 +264,17 @@ const tapAction = (label) => {
 .goal-list {
   display: flex;
   flex-direction: column;
-  gap: 32rpx;
+  gap: $stack-gap-md;
 }
 
 .goal-card {
-  padding: 32rpx;
+  padding: $spacing-4;
 }
 
 .goal-head {
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: $spacing-3;
 }
 
 .round-icon {
@@ -285,7 +297,7 @@ const tapAction = (label) => {
 }
 
 .goal-title {
-  font-size: 32rpx;
+  font-size: $font-size-lg;
   font-weight: 900;
   color: $on-surface;
 }
@@ -293,7 +305,7 @@ const tapAction = (label) => {
 .goal-subtitle {
   margin-top: 4rpx;
   color: $on-surface-variant;
-  font-size: 26rpx;
+  font-size: $font-size-sm;
 }
 
 .badge {
@@ -322,9 +334,9 @@ const tapAction = (label) => {
 
 .saved,
 .target {
-  margin-top: 8rpx;
+  margin-top: $spacing-1;
   font-family: $font-family-mono;
-  font-size: 34rpx;
+  font-size: $font-size-xl;
   font-weight: 900;
 }
 
@@ -366,14 +378,14 @@ const tapAction = (label) => {
 
 .create-goal {
   height: 106rpx;
-  border-radius: 44rpx;
+  border-radius: $rounded-xl;
   border: 3rpx dashed rgba($outline, 0.45);
   color: $outline;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16rpx;
-  font-size: 26rpx;
+  gap: $stack-gap-sm;
+  font-size: $font-size-sm;
   font-weight: 800;
 }
 

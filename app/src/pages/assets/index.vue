@@ -34,8 +34,12 @@
         <view class="section-heading">
           <text class="section-title">账户列表</text>
           <view class="heading-actions">
-            <text>filter</text>
-            <text class="plus" @tap="handleAddAccount">+</text>
+            <view class="manage-button">
+              <image src="/static/images/manage.png" class="manage-icon" mode="aspectFit" />
+            </view>
+            <view class="add-button" @tap="handleAddAccount">
+              <image src="/static/images/add.png" class="add-icon" mode="aspectFit" />
+            </view>
           </view>
         </view>
 
@@ -141,7 +145,7 @@ const handleAddAccount = () => {
 }
 
 .content {
-  padding: 32rpx 32rpx 170rpx;
+  padding: $spacing-4 $spacing-4 170rpx;
 }
 
 .asset-hero {
@@ -153,7 +157,7 @@ const handleAddAccount = () => {
 
 .eyebrow {
   color: $outline;
-  font-size: 28rpx;
+  font-size: $font-size-body-sm;
   font-weight: 900;
   letter-spacing: 1rpx;
 }
@@ -167,14 +171,14 @@ const handleAddAccount = () => {
 
 .currency {
   color: $primary;
-  font-size: 48rpx;
+  font-size: $font-size-headline-md;
   font-weight: 900;
 }
 
 .hero-amount {
   color: $on-surface;
   font-family: $font-family-mono;
-  font-size: 58rpx;
+  font-size: $font-size-num-display;
   font-weight: 900;
 }
 
@@ -199,13 +203,13 @@ const handleAddAccount = () => {
   position: absolute;
   transform: translateX(-50%);
   color: $on-surface-variant;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   white-space: nowrap;
 }
 
 .section-heading {
-  margin-top: 64rpx;
-  margin-bottom: 32rpx;
+  margin-top: $section-margin;
+  margin-bottom: $stack-gap-md;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -213,38 +217,51 @@ const handleAddAccount = () => {
 
 .section-title {
   color: $on-surface;
-  font-size: 44rpx;
+  font-size: $font-size-title-sm;
   font-weight: 900;
 }
 
 .heading-actions {
-  color: $on-surface-variant;
+  color: $on-surface;
   display: flex;
-  gap: 32rpx;
+  gap: $stack-gap-sm;
   align-items: center;
-  font-size: 22rpx;
+  font-size: $font-size-xs;
   font-weight: 900;
 }
 
-.plus {
-  font-size: 42rpx;
+.manage-button,
+.add-button {
+  width: 52rpx;
+  height: 52rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+}
+
+.manage-icon,
+.add-icon {
+  width: 36rpx;
+  height: 36rpx;
+  filter: brightness(0) saturate(100%);
 }
 
 .account-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  gap: $spacing-3;
 }
 
 .account-card {
   min-height: 110rpx;
-  padding: 28rpx 32rpx;
-  border-radius: 26rpx;
-  background: #fff;
+  padding: $font-size-body-sm $spacing-4;
+  border-radius: $rounded-md;
+  background: $surface-container-lowest;
   box-shadow: $shadow-sm;
   display: flex;
   align-items: center;
-  gap: 28rpx;
+  gap: $font-size-body-sm;
 }
 
 .round-icon {
@@ -292,14 +309,14 @@ const handleAddAccount = () => {
 
 .account-name {
   color: $on-surface;
-  font-size: 30rpx;
+  font-size: $font-size-lg;
   font-weight: 900;
 }
 
 .account-type {
   margin-top: 4rpx;
   color: $on-surface-variant;
-  font-size: 26rpx;
+  font-size: $font-size-sm;
 }
 
 .account-money {
@@ -311,7 +328,7 @@ const handleAddAccount = () => {
 .balance {
   color: $on-surface;
   font-family: $font-family-mono;
-  font-size: 28rpx;
+  font-size: $font-size-body-sm;
   font-weight: 900;
 }
 
@@ -319,7 +336,7 @@ const handleAddAccount = () => {
   margin-top: 4rpx;
   color: $primary;
   font-family: $font-family-mono;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   font-weight: 800;
 }
 
