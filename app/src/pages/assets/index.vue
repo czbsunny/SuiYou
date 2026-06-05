@@ -149,7 +149,7 @@ const handleAddAccount = () => {
 }
 
 .asset-hero {
-  padding: 52rpx 46rpx 36rpx;
+  padding: $spacing-6 $spacing-5 $spacing-4;
   border-radius: 32rpx;
   background: #fff;
   box-shadow: $shadow-soft;
@@ -170,7 +170,7 @@ const handleAddAccount = () => {
 }
 
 .currency {
-  color: $primary;
+  color: $on-surface;
   font-size: $font-size-headline-md;
   font-weight: 900;
 }
@@ -185,7 +185,7 @@ const handleAddAccount = () => {
 .chart {
   position: relative;
   height: 140rpx;
-  margin-top: 38rpx;
+  margin-top: $spacing-5;
 }
 
 .chart-svg {
@@ -196,7 +196,7 @@ const handleAddAccount = () => {
 .chart-labels {
   position: relative;
   height: 40rpx;
-  margin-top: 6rpx;
+  margin-top: $spacing-1;
 }
 
 .chart-label {
@@ -271,7 +271,7 @@ const handleAddAccount = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20rpx;
+  font-size: $font-size-xs;
   font-weight: 900;
 }
 
@@ -314,7 +314,7 @@ const handleAddAccount = () => {
 }
 
 .account-type {
-  margin-top: 4rpx;
+  margin-top: $spacing-1;
   color: $on-surface-variant;
   font-size: $font-size-sm;
 }
@@ -333,7 +333,7 @@ const handleAddAccount = () => {
 }
 
 .change {
-  margin-top: 4rpx;
+  margin-top: $spacing-1;
   color: $primary;
   font-family: $font-family-mono;
   font-size: $font-size-xs;

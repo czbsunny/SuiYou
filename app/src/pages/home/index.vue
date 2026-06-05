@@ -87,95 +87,94 @@ const tapAction = (label) => {
 }
 
 .content {
-  padding: 32rpx 32rpx 160rpx;
+  padding: $spacing-4 $spacing-4 160rpx;
 }
 
 /* Hero Card */
 .hero-card {
-  padding: 64rpx;
-  border-radius: 48rpx;
-  background: $surface-container-lowest;
-  box-shadow: 0 8rpx 40rpx 0 rgba(0, 0, 0, 0.04);
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  border-radius: 32rpx;
+  background: #fff;
+  box-shadow: $shadow-soft;
 }
 
 .eyebrow {
   color: $outline;
-  font-size: 24rpx;
-  font-weight: 700;
-  letter-spacing: 2rpx;
+  font-size: $font-size-body-sm;
+  font-weight: 900;
+  letter-spacing: 1rpx;
 }
 
 .amount-row {
-  margin-top: 16rpx;
+  margin-top: 24rpx;
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
+  gap: 16rpx;
 }
 
 .currency {
-  color: $primary;
-  font-size: 44rpx;
-  font-weight: 600;
+  color: $on-surface;
+  font-size: $font-size-headline-md;
+  font-weight: 900;
 }
 
 .hero-amount {
   color: $on-surface;
   font-family: $font-family-mono;
-  font-size: 56rpx;
-  font-weight: 600;
-  letter-spacing: -2rpx;
+  font-size: $font-size-num-display;
+  font-weight: 900;
 }
 
 .growth-section {
-  margin-top: 64rpx;
+  margin-top: $section-margin;
 }
 
 .growth-label {
   color: $outline;
-  font-size: 28rpx;
+  font-size: $font-size-body-sm;
 }
 
 .growth-value {
-  margin-top: 8rpx;
+  margin-top: $spacing-1;
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
+  gap: $spacing-1;
 }
 
 .growth-amount {
   color: $secondary;
   font-family: $font-family-mono;
-  font-size: 32rpx;
+  font-size: $font-size-lg;
   font-weight: 600;
 }
 
 .growth-percent {
   color: rgba($secondary, 0.8);
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   font-weight: 700;
 }
 
 /* Quick Actions */
 .quick-actions {
-  margin-top: 48rpx;
+  margin-top: $stack-gap-lg;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 32rpx;
+  gap: $stack-gap-md;
 }
 
 .quick-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  gap: $stack-gap-sm;
 }
 
 .quick-icon {
   width: 112rpx;
   height: 112rpx;
-  border-radius: 32rpx;
+  border-radius: $rounded-lg;
   background: #fff;
-  box-shadow: 0 4rpx 12rpx 0 rgba(0, 0, 0, 0.03);
+  box-shadow: $shadow-sm;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -183,20 +182,20 @@ const tapAction = (label) => {
 
 .icon-text {
   color: $primary;
-  font-size: 36rpx;
+  font-size: $font-size-xl;
   font-weight: 600;
 }
 
 .quick-label {
   color: $on-surface-variant;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   font-weight: 700;
   letter-spacing: 0.5rpx;
 }
 
 /* Section Header */
 .section-header {
-  margin-top: 64rpx;
+  margin-top: $section-margin;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -204,31 +203,31 @@ const tapAction = (label) => {
 
 .section-title {
   color: $on-surface;
-  font-size: 44rpx;
+  font-size: $font-size-headline-md;
   font-weight: 600;
 }
 
 .section-link {
   color: $primary;
-  font-size: 28rpx;
+  font-size: $font-size-body-sm;
   font-weight: 500;
 }
 
 /* Transaction List */
 .transaction-list {
-  margin-top: 24rpx;
+  margin-top: $spacing-3;
   display: flex;
   flex-direction: column;
-  gap: 32rpx;
+  gap: $stack-gap-md;
 }
 
 .transaction-item {
-  padding: 32rpx;
-  border-radius: 32rpx;
+  padding: $spacing-4;
+  border-radius: $rounded-lg;
   background: $surface-container-lowest;
   display: flex;
   align-items: center;
-  gap: 32rpx;
+  gap: $stack-gap-md;
 }
 
 .transaction-icon {
@@ -257,14 +256,14 @@ const tapAction = (label) => {
 
 .transaction-title {
   color: $on-surface;
-  font-size: 30rpx;
+  font-size: $font-size-lg;
   font-weight: 600;
 }
 
 .transaction-subtitle {
-  margin-top: 6rpx;
+  margin-top: $spacing-1;
   color: $outline;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
 }
 
 .transaction-amount {
@@ -276,7 +275,7 @@ const tapAction = (label) => {
 .amount {
   color: $primary;
   font-family: $font-family-mono;
-  font-size: 30rpx;
+  font-size: $font-size-lg;
   font-weight: 600;
 }
 
@@ -285,9 +284,9 @@ const tapAction = (label) => {
 }
 
 .account {
-  margin-top: 6rpx;
+  margin-top: $spacing-1;
   color: $outline-variant;
-  font-size: 20rpx;
+  font-size: $font-size-xs;
   font-weight: 700;
 }
 </style>

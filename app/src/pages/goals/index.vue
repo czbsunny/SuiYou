@@ -133,35 +133,37 @@ const tapAction = (label) => {
   padding: $spacing-4 $spacing-4 170rpx;
 }
 
-.summary-card,
+.summary-card {
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  border-radius: 32rpx;
+  background: $surface-container-lowest;
+  box-shadow: $shadow-soft;
+}
+
 .goal-card {
   background: #fff;
   border-radius: 44rpx;
   box-shadow: $shadow-soft;
 }
 
-.summary-card {
-  padding: 48rpx;
-}
-
 .eyebrow,
 .label {
   color: $outline;
-  font-size: $font-size-xs;
-  font-weight: 800;
+  font-size: $font-size-body-sm;
+  font-weight: 900;
   letter-spacing: 1rpx;
 }
 
 .amount-row {
-  margin-top: 22rpx;
+  margin-top: 24rpx;
   display: flex;
   align-items: baseline;
-  gap: 16rpx;
+  gap: $stack-gap-sm;
 }
 
 .currency {
-  color: $primary;
-  font-size: $font-size-title-sm;
+  color: $on-surface;
+  font-size: $font-size-headline-md;
   font-weight: 900;
 }
 
@@ -173,10 +175,12 @@ const tapAction = (label) => {
 }
 
 .progress-head {
-  margin-top: 64rpx;
-  margin-bottom: 18rpx;
+  margin-top: $section-margin;
+  margin-bottom: $spacing-2;
   color: $outline;
-  font-size: 28rpx;
+  font-size: $font-size-body-sm;
+  font-weight: 900;
+  letter-spacing: 1rpx;
   display: flex;
   justify-content: space-between;
 }
@@ -189,7 +193,7 @@ const tapAction = (label) => {
 
 .progress-track {
   height: 12rpx;
-  border-radius: 999rpx;
+  border-radius: $rounded-full;
   background: $surface-container-low;
   overflow: hidden;
 }
@@ -197,7 +201,7 @@ const tapAction = (label) => {
 .progress-fill,
 .goal-fill {
   height: 100%;
-  border-radius: 999rpx;
+  border-radius: $rounded-full;
   background: $primary-container;
 }
 
@@ -269,6 +273,8 @@ const tapAction = (label) => {
 
 .goal-card {
   padding: $spacing-4;
+  border-radius: $rounded-xl;
+  box-shadow: $shadow-soft;
 }
 
 .goal-head {
@@ -283,7 +289,7 @@ const tapAction = (label) => {
   border-radius: 50%;
   background: $surface-container-low;
   color: $primary;
-  font-size: 22rpx;
+  font-size: $font-size-xs;
   font-weight: 900;
   display: flex;
   align-items: center;
@@ -303,22 +309,22 @@ const tapAction = (label) => {
 }
 
 .goal-subtitle {
-  margin-top: 4rpx;
+  margin-top: $spacing-1;
   color: $on-surface-variant;
   font-size: $font-size-sm;
 }
 
 .badge {
-  padding: 14rpx 24rpx;
-  border-radius: 999rpx;
+  padding: $spacing-2 $spacing-3;
+  border-radius: $rounded-full;
   background: rgba($primary, 0.12);
   color: $primary;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   font-weight: 900;
 }
 
 .goal-amounts {
-  margin-top: 36rpx;
+  margin-top: $spacing-5;
   display: flex;
   justify-content: space-between;
 }
@@ -351,8 +357,8 @@ const tapAction = (label) => {
 .goal-progress {
   position: relative;
   height: 22rpx;
-  margin-top: 20rpx;
-  border-radius: 999rpx;
+  margin-top: $spacing-3;
+  border-radius: $rounded-full;
   background: $surface-container-low;
   overflow: hidden;
 }
@@ -364,14 +370,14 @@ const tapAction = (label) => {
   top: -2rpx;
   text-align: center;
   color: #fff;
-  font-size: 20rpx;
+  font-size: $font-size-xs;
   font-weight: 900;
 }
 
 .date-row {
-  margin-top: 16rpx;
+  margin-top: $stack-gap-sm;
   color: $outline;
-  font-size: 24rpx;
+  font-size: $font-size-xs;
   display: flex;
   justify-content: space-between;
 }
@@ -390,6 +396,6 @@ const tapAction = (label) => {
 }
 
 .create-plus {
-  font-size: 34rpx;
+  font-size: $font-size-xl;
 }
 </style>
