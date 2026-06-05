@@ -13,7 +13,7 @@
 
         <view class="menu-list">
           <view v-for="item in menuItems" :key="item.label" class="menu-card" @tap="tapMenu(item.label)">
-            <view class="menu-icon">{{ item.icon }}</view>
+            <image :src="`/static/images/${item.icon}.png`" class="menu-icon" mode="aspectFit" />
             <text class="menu-label">{{ item.label }}</text>
             <text class="arrow">›</text>
           </view>
@@ -39,11 +39,11 @@ const roleText = computed(() => {
 })
 
 const menuItems = [
-  { label: '账户设置', icon: 'set' },
-  { label: '个人测评', icon: 'bar' },
-  { label: '账单导出', icon: 'doc' },
-  { label: '关于我们', icon: 'info' },
-  { label: '反馈意见', icon: 'chat' }
+  { label: '账户设置', icon: 'settings' },
+  { label: '个人测评', icon: 'assess' },
+  { label: '账单导出', icon: 'bill' },
+  { label: '关于我们', icon: 'about' },
+  { label: '反馈意见', icon: 'feedback' }
 ]
 
 const tapMenu = (label) => {
@@ -142,14 +142,10 @@ const tapMenu = (label) => {
 .menu-icon {
   width: 64rpx;
   height: 64rpx;
-  border-radius: 50%;
-  background: rgba($primary, 0.08);
-  color: $primary;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20rpx;
-  font-weight: 900;
+  filter: brightness(0) saturate(100%) invert(8%) sepia(4%) saturate(2240%) hue-rotate(120deg) brightness(100%) contrast(89%);
 }
 
 .menu-label {
