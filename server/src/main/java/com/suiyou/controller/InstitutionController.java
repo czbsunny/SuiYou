@@ -1,6 +1,7 @@
 
 package com.suiyou.controller;
 
+import com.suiyou.dto.account.InstitutionModuleRespDTO;
 import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.service.SysAssetConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +43,14 @@ public class InstitutionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(institution, HttpStatus.OK);
+    }
+
+    @GetMapping("/{instCode}/modules")
+    public ResponseEntity<InstitutionModuleRespDTO> getInstitutionModules(@PathVariable String instCode) {
+        InstitutionModuleRespDTO modules = assetConfigService.getInstitutionModules(instCode);
+        if (modules == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(modules, HttpStatus.OK);
     }
 }

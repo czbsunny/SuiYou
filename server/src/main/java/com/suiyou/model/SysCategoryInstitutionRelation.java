@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
     },
     indexes = {
         @Index(name = "idx_cat_inst_cat", columnList = "category_code"),
-        @Index(name = "idx_cat_inst_inst", columnList = "inst_code")
+        @Index(name = "idx_cat_inst_inst", columnList = "inst_code"),
+        @Index(name = "idx_cat_inst_relation_type", columnList = "relation_type")
     }
 )
 public class SysCategoryInstitutionRelation {
@@ -29,6 +30,9 @@ public class SysCategoryInstitutionRelation {
     // 修改点2：这里存 String 类型的 InstCode
     @Column(name = "inst_code", nullable = false, length = 32)
     private String instCode;
+
+    @Column(name = "relation_type", nullable = false, length = 20)
+    private String relationType;
 
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime default CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;

@@ -3,6 +3,7 @@ package com.suiyou.service.impl;
 
 import com.suiyou.dto.CategoryRespDTO;
 import com.suiyou.dto.account.AssetCategoryRespDTO;
+import com.suiyou.dto.account.InstitutionModuleRespDTO;
 import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.InstitutionTypeRespDTO;
 import com.suiyou.dto.account.CategoryInitDTO;
@@ -31,6 +32,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -182,6 +184,50 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
                 .instCode(entity.getInstCode())
                 .build();
     }
+
+    @Override
+    public InstitutionModuleRespDTO getInstitutionModules(String instCode) {
+        SysInstitution institution = institutionRepository.findByInstCode(instCode);
+        if (institution == null) {
+            return InstitutionModuleRespDTO.builder().build();
+        }
+
+        Map<String, AssetCategoryRespDTO> categoryMap = assetCategoryRepository.findAll().stream()
+            .collect(Collectors.toMap(SysAssetCategory::getCategoryCode, this::toAssetCategoryRespDTO));
+
+        List<SysCategoryInstitutionRelation> relations = categoryInstitutionRelationRepository.findByInstCode(instCode);
+
+        List<AssetCategoryRespDTO> requiredList = new ArrayList<>();
+        List<AssetCategoryRespDTO> defaultList = new ArrayList<>();
+        List<AssetCategoryRespDTO> optionalList = new ArrayList<>();
+
+        for (SysCategoryInstitutionRelation relation : relations) {
+            AssetCategoryRespDTO categoryDTO = categoryMap.get(relation.getCategoryCode());
+            if (categoryDTO != null) {
+                switch (relation.getRelationType()) {
+                    case "REQUIRED":
+                        requiredList.add(categoryDTO);
+                        break;
+                    case "DEFAULT":
+                        defaultList.add(categoryDTO);
+                        break;
+                    case "OPTIONAL":
+                        optionalList.add(categoryDTO);
+                        break;
+                }
+            }
+        }
+
+        requiredList.sort(Comparator.comparingInt(AssetCategoryRespDTO::getSortOrder));
+        defaultList.sort(Comparator.comparingInt(AssetCategoryRespDTO::getSortOrder));
+        optionalList.sort(Comparator.comparingInt(AssetCategoryRespDTO::getSortOrder));
+
+        return InstitutionModuleRespDTO.builder()
+                .required(requiredList)
+                .defaultList(defaultList)
+                .optional(optionalList)
+                .build();
+    }
     
     @Override
     public List<CategoryRespDTO> getTransferCategoryTree() {
@@ -292,76 +338,91 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
     }
 
     @Override
+    @Transactional
     public void initCategoryInstitutionRelations(RelationRuleConfigDTO config) {
         log.info("正在同步 [资产分类与机构关联关系] 数据...");
 
-        Map<String, List<String>> specialRuleMap = new HashMap<>();
-        if (config.getSpecialCases() != null) {
-            specialRuleMap = config.getSpecialCases().stream()
-                .collect(Collectors.toMap(
-                    RelationRuleConfigDTO.SpecialCaseDTO::getInstCode,
-                    RelationRuleConfigDTO.SpecialCaseDTO::getCategories,
-                    (v1, v2) -> v1
+        Map<String, Set<String>> categoryRules = new HashMap<>();
+        if (config.getCategoryRules() != null) {
+            categoryRules = config.getCategoryRules().entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream()
+                    .map(instCode -> new AbstractMap.SimpleEntry<>(instCode, entry.getKey())))
+                .collect(Collectors.groupingBy(
+                    Map.Entry::getKey,
+                    Collectors.mapping(Map.Entry::getValue, Collectors.toSet())
                 ));
         }
 
-        Map<String, Set<String>> categoryRules = config.getCategoryRules().entrySet().stream()
-            .flatMap(entry -> entry.getValue().stream()
-                .map(instCode -> new AbstractMap.SimpleEntry<>(instCode, entry.getKey())))
-            .collect(Collectors.groupingBy(
-                Map.Entry::getKey,
-                Collectors.mapping(Map.Entry::getValue, Collectors.toSet())
-            ));
-
         List<SysInstitution> allInstitutions = institutionRepository.findAll();
-        Set<String> existingRelations = categoryInstitutionRelationRepository.findAll().stream()
-                .map(r -> r.getInstCode() + "#" + r.getCategoryCode())
-                .collect(Collectors.toSet());
+        
+        categoryInstitutionRelationRepository.deleteAllInBatch();
 
+        Set<String> addedRelations = new HashSet<>();
         List<SysCategoryInstitutionRelation> entitiesToSave = new ArrayList<>();
 
         for (SysInstitution institution : allInstitutions) {
-            Set<String> targetCategories = new HashSet<>();
+            RelationRuleConfigDTO.ModuleRuleDTO instRule = config.getInstRules() != null ? config.getInstRules().get(institution.getInstCode()) : null;
+            RelationRuleConfigDTO.ModuleRuleDTO typeRule = config.getTypeRules() != null ? config.getTypeRules().get(institution.getInstType()) : null;
 
-            if (config.getDefaultRules() != null && config.getDefaultRules().containsKey(institution.getInstType())) {
-                targetCategories.addAll(config.getDefaultRules().get(institution.getInstType()));
+            RelationRuleConfigDTO.ModuleRuleDTO effectiveRule = instRule != null ? instRule : typeRule;
+
+            if (effectiveRule != null) {
+                if (effectiveRule.getRequired() != null) {
+                    for (String categoryCode : effectiveRule.getRequired()) {
+                        String key = institution.getInstCode() + "#" + categoryCode;
+                        if (!addedRelations.contains(key)) {
+                            entitiesToSave.add(createRelation(institution.getInstCode(), categoryCode, "REQUIRED"));
+                            addedRelations.add(key);
+                        }
+                    }
+                }
+
+                if (effectiveRule.getDefaultList() != null) {
+                    for (String categoryCode : effectiveRule.getDefaultList()) {
+                        String key = institution.getInstCode() + "#" + categoryCode;
+                        if (!addedRelations.contains(key)) {
+                            entitiesToSave.add(createRelation(institution.getInstCode(), categoryCode, "DEFAULT"));
+                            addedRelations.add(key);
+                        }
+                    }
+                }
+
+                if (effectiveRule.getOptional() != null) {
+                    for (String categoryCode : effectiveRule.getOptional()) {
+                        String key = institution.getInstCode() + "#" + categoryCode;
+                        if (!addedRelations.contains(key)) {
+                            entitiesToSave.add(createRelation(institution.getInstCode(), categoryCode, "OPTIONAL"));
+                            addedRelations.add(key);
+                        }
+                    }
+                }
             }
 
             if (categoryRules.containsKey(institution.getInstCode())) {
-                targetCategories.addAll(categoryRules.get(institution.getInstCode()));
-            }
-
-            if (specialRuleMap.containsKey(institution.getInstCode())) {
-                targetCategories.addAll(specialRuleMap.get(institution.getInstCode()));
-            }
-
-            for (String categoryCode : targetCategories) {
-                String uniqueKey = institution.getInstCode() + "#" + categoryCode;
-                
-                if (!existingRelations.contains(uniqueKey)) {
-                    SysCategoryInstitutionRelation relation = new SysCategoryInstitutionRelation();
-                    relation.setInstCode(institution.getInstCode());
-                    relation.setCategoryCode(categoryCode);
-                    entitiesToSave.add(relation);
-                    existingRelations.add(uniqueKey);
+                for (String categoryCode : categoryRules.get(institution.getInstCode())) {
+                    String key = institution.getInstCode() + "#" + categoryCode;
+                    if (!addedRelations.contains(key)) {
+                        entitiesToSave.add(createRelation(institution.getInstCode(), categoryCode, "OPTIONAL"));
+                        addedRelations.add(key);
+                    }
                 }
             }
         }
 
         if (!entitiesToSave.isEmpty()) {
             categoryInstitutionRelationRepository.saveAll(entitiesToSave);
-            log.info("关联关系同步完成，新增关联 {} 条。", entitiesToSave.size());
+            log.info("关联关系同步完成，共保存 {} 条。", entitiesToSave.size());
         } else {
-            log.info("关联关系已是最新，无需更新。");
+            log.info("没有关联关系需要保存。");
         }
+    }
 
-        List<SysCategoryInstitutionRelation> sortedRelations = categoryInstitutionRelationRepository.findAll(
-            Sort.by(Sort.Direction.ASC, "instCode", "categoryCode")
-        );
-        StringBuilder sb = new StringBuilder();
-        for (SysCategoryInstitutionRelation r : sortedRelations) {
-            sb.append(r.getInstCode()).append(r.getCategoryCode());
-        }
+    private SysCategoryInstitutionRelation createRelation(String instCode, String categoryCode, String relationType) {
+        SysCategoryInstitutionRelation relation = new SysCategoryInstitutionRelation();
+        relation.setInstCode(instCode);
+        relation.setCategoryCode(categoryCode);
+        relation.setRelationType(relationType);
+        return relation;
     }
 
     private SysAssetCategory processAssetCategory(CategoryInitDTO dto, String parentCode) {

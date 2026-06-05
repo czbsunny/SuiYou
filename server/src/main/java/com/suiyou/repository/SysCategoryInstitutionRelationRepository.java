@@ -8,15 +8,17 @@ import java.util.List;
 
 @Repository
 public interface SysCategoryInstitutionRelationRepository extends JpaRepository<SysCategoryInstitutionRelation, Long> {
-    // 根据机构编码查询关联的分类
     List<SysCategoryInstitutionRelation> findByInstCode(String instCode);
     
-    // 根据分类编码查询关联的机构
     List<SysCategoryInstitutionRelation> findByCategoryCode(String categoryCode);
     
-    // 根据机构编码和分类编码查询关联关系
     boolean existsByInstCodeAndCategoryCode(String instCode, String categoryCode);
     
-    // 根据分类编码列表批量删除
     void deleteByCategoryCodeIn(List<String> categoryCodes);
+    
+    List<SysCategoryInstitutionRelation> findByInstCodeAndRelationType(String instCode, String relationType);
+    
+    List<SysCategoryInstitutionRelation> findByInstCodeOrderByRelationType(String instCode);
+    
+    void deleteAllByInstCode(String instCode);
 }
