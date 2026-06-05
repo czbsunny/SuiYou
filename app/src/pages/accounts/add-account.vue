@@ -5,7 +5,7 @@
       <view class="institution-info-card">
         <view class="institution-header">
           <view class="inst-icon">
-            <text class="inst-icon-text">{{ institutionIcon }}</text>
+            <image :src="formatLogoUrl(institution?.logoUrl)" class="inst-icon-img" mode="aspectFit" />
           </view>
           <view class="inst-details">
             <text class="inst-label">当前选择机构</text>
@@ -13,7 +13,7 @@
           </view>
           <view class="change-btn" @tap="handleChangeInstitution">
             <text class="change-text">修改</text>
-            <text class="change-arrow">›</text>
+            <image src="/static/images/chevron_right.png" class="change-arrow" mode="aspectFit" />
           </view>
         </view>
       </view>
@@ -47,7 +47,7 @@
           >
             <view class="form-picker">
               {{ selectedTemplate || '储蓄卡 / 借记卡' }}
-              <text class="picker-arrow">›</text>
+              <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
             </view>
           </picker>
         </view>
@@ -55,14 +55,18 @@
         <view class="visibility-section">
           <text class="form-label">可见范围</text>
           <view class="visibility-options">
-            <label class="visibility-option">
-              <radio value="PRIVATE" :checked="accountForm.visibility === 'PRIVATE'" color="#006754" />
+            <view class="visibility-option" @tap="accountForm.visibility = 'PRIVATE'">
+              <view class="radio-wrap">
+                <view class="custom-radio" :class="{ checked: accountForm.visibility === 'PRIVATE' }"></view>
+              </view>
               <text class="option-text">仅自己可见</text>
-            </label>
-            <label class="visibility-option">
-              <radio value="FAMILY" :checked="accountForm.visibility === 'FAMILY'" color="#006754" />
+            </view>
+            <view class="visibility-option" @tap="accountForm.visibility = 'FAMILY'">
+              <view class="radio-wrap">
+                <view class="custom-radio" :class="{ checked: accountForm.visibility === 'FAMILY' }"></view>
+              </view>
               <text class="option-text">家庭成员可见</text>
-            </label>
+            </view>
           </view>
         </view>
 
@@ -71,58 +75,101 @@
             <text class="networth-title">计入净值</text>
             <text class="networth-desc">将此账户金额计入个人资产总额</text>
           </view>
-          <switch 
-            :checked="accountForm.includeInNetworth" 
-            @change="handleNetworthToggle"
-            color="#006754"
-          />
+          <view 
+            class="switch-wrap" 
+            :class="{ checked: accountForm.includeInNetworth }"
+            @tap="handleNetworthToggle"
+          >
+            <view class="switch-thumb"></view>
+          </view>
         </view>
       </view>
 
       <view class="modules-section">
         <view class="section-header">
-          <text class="section-icon">📊</text>
+          <image src="/static/images/grid_view.png" class="section-icon" mode="aspectFit" />
           <text class="section-title">资产模块配置</text>
         </view>
 
         <view v-if="requiredModules.length > 0" class="module-group">
           <text class="group-label">必选模块</text>
           <view class="module-list">
-            <AssetModuleItem
-              v-for="module in requiredModules"
+            <view 
+              v-for="module in requiredModules" 
               :key="module.categoryCode || module.id"
-              :module="module"
-              selection-type="REQUIRED"
-              :checked="true"
-            />
+              class="module-card required-card"
+            >
+              <view class="module-icon-wrap primary-bg">
+                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
+              </view>
+              <view class="module-info">
+                <view class="module-name-row">
+                  <text class="module-name">{{ module.name }}</text>
+                  <view class="module-tag required-tag">必选</view>
+                </view>
+                <text class="module-desc">{{ module.description }}</text>
+              </view>
+              <image src="/static/images/lock.png" class="module-lock" mode="aspectFit" />
+            </view>
           </view>
         </view>
 
         <view v-if="defaultModules.length > 0" class="module-group">
           <text class="group-label">默认模块</text>
           <view class="module-list">
-            <AssetModuleItem
-              v-for="module in defaultModules"
+            <view 
+              v-for="module in defaultModules" 
               :key="module.categoryCode || module.id"
-              :module="module"
-              selection-type="DEFAULT_SELECTED"
-              :checked="getModuleChecked(module, 'DEFAULT_SELECTED')"
-              @toggle="(checked) => toggleModule(module, checked)"
-            />
+              class="module-card"
+              @tap="toggleModule(module, !getModuleChecked(module, 'DEFAULT_SELECTED'))"
+            >
+              <view class="module-icon-wrap" :class="module.iconBgClass">
+                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
+              </view>
+              <view class="module-info">
+                <view class="module-name-row">
+                  <text class="module-name">{{ module.name }}</text>
+                  <view class="module-tag default-tag">默认</view>
+                </view>
+                <text class="module-desc">{{ module.description }}</text>
+              </view>
+              <view 
+                class="module-checkbox" 
+                :class="{ checked: getModuleChecked(module, 'DEFAULT_SELECTED') }"
+              >
+                <view v-if="getModuleChecked(module, 'DEFAULT_SELECTED')" class="check-icon">✓</view>
+              </view>
+            </view>
           </view>
         </view>
 
         <view v-if="optionalModules.length > 0" class="module-group">
           <text class="group-label">可选模块</text>
           <view class="module-list">
-            <AssetModuleItem
-              v-for="module in optionalModules"
+            <view 
+              v-for="module in optionalModules" 
               :key="module.categoryCode || module.id"
-              :module="module"
-              selection-type="OPTIONAL"
-              :checked="getModuleChecked(module, 'OPTIONAL')"
-              @toggle="(checked) => toggleModule(module, checked)"
-            />
+              class="module-card"
+              :class="{ disabled: module.disabled }"
+              @tap="!module.disabled && toggleModule(module, !getModuleChecked(module, 'OPTIONAL'))"
+            >
+              <view class="module-icon-wrap default-bg">
+                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
+              </view>
+              <view class="module-info">
+                <view class="module-name-row">
+                  <text class="module-name">{{ module.name }}</text>
+                  <view class="module-tag optional-tag">可选</view>
+                </view>
+                <text class="module-desc">{{ module.description }}</text>
+              </view>
+              <view 
+                class="module-checkbox" 
+                :class="{ checked: getModuleChecked(module, 'OPTIONAL') }"
+              >
+                <view v-if="getModuleChecked(module, 'OPTIONAL')" class="check-icon">✓</view>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -179,10 +226,11 @@ const institutionName = computed(() => {
   return '招商银行'
 })
 
-const institutionIcon = computed(() => {
-  const name = institutionName.value
-  return name.charAt(0)
-})
+const formatLogoUrl = (url) => {
+  if (!url) return ''
+  let formattedUrl = url.startsWith('/') ? url.substring(1) : url
+  return '/' + formattedUrl
+}
 
 const canSubmit = computed(() => {
   return accountForm.value.accountName.trim().length > 0 && accountForm.value.accountId.trim().length > 0
@@ -220,8 +268,8 @@ const handleTemplateChange = (e) => {
   selectedTemplate.value = accountTemplates.value[index].name
 }
 
-const handleNetworthToggle = (e) => {
-  accountForm.value.includeInNetworth = e.detail.value
+const handleNetworthToggle = () => {
+  accountForm.value.includeInNetworth = !accountForm.value.includeInNetworth
 }
 
 const handleConfirm = async () => {
@@ -270,31 +318,17 @@ const loadInstitution = async () => {
 }
 
 const loadModules = async () => {
-  if (!instCode.value) {
-    loadMockModules()
-    return
-  }
-
-  try {
-    const res = await getInstitutionCategories(instCode.value)
-    if (res && res.data) {
-      institutionModules.value = res.data
-      initDefaultModules()
-    }
-  } catch (error) {
-    console.error('加载机构模块失败:', error)
-    loadMockModules()
-  }
+  loadMockModules()
 }
 
 const loadMockModules = () => {
   institutionModules.value = [
-    { categoryCode: 'TRANSACTION', name: '收支流水', description: '该模块是此账户的基础模块', selectionType: 'REQUIRED' },
-    { categoryCode: 'BALANCE', name: '余额', description: '实时账户可用金额统计', selectionType: 'DEFAULT_SELECTED' },
-    { categoryCode: 'CURRENT', name: '活期', description: '灵活存取的闲置资金', selectionType: 'DEFAULT_SELECTED' },
-    { categoryCode: 'TIME_DEPOSIT', name: '定存', description: '定期存款利息监控', selectionType: 'OPTIONAL' },
-    { categoryCode: 'FINANCING', name: '理财', description: '银行理财产品净值同步', selectionType: 'OPTIONAL' },
-    { categoryCode: 'INSTALLMENT', name: '分期', description: '信用卡或账单分期管理', selectionType: 'OPTIONAL' }
+    { categoryCode: 'TRANSACTION', name: '收支流水', description: '该模块是此账户的基础模块', selectionType: 'REQUIRED', iconUrl: '/static/images/bill.png' },
+    { categoryCode: 'BALANCE', name: '余额', description: '实时账户可用金额统计', selectionType: 'DEFAULT_SELECTED', iconUrl: '/static/images/analytics.png', iconBgClass: 'tertiary-bg' },
+    { categoryCode: 'CURRENT', name: '活期', description: '灵活存取的闲置资金', selectionType: 'DEFAULT_SELECTED', iconUrl: '/static/images/savings.png', iconBgClass: 'secondary-bg' },
+    { categoryCode: 'TIME_DEPOSIT', name: '定存', description: '定期存款利息监控', selectionType: 'OPTIONAL', iconUrl: '/static/images/budget.png' },
+    { categoryCode: 'FINANCING', name: '理财', description: '银行理财产品净值同步', selectionType: 'OPTIONAL', iconUrl: '/static/images/manage.png' },
+    { categoryCode: 'INSTALLMENT', name: '分期', description: '信用卡或账单分期管理', selectionType: 'OPTIONAL', iconUrl: '/static/images/add.png', disabled: true }
   ]
   initDefaultModules()
 }
@@ -355,10 +389,10 @@ onMounted(async () => {
   margin-right: 24rpx;
 }
 
-.inst-icon-text {
-  font-size: 32rpx;
-  font-weight: 700;
-  color: $primary;
+.inst-icon-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
 }
 
 .inst-details {
@@ -390,21 +424,21 @@ onMounted(async () => {
 .change-text {
   font-size: 26rpx;
   font-weight: 700;
-  color: $primary;
+  color: #1F1F1F;
 }
 
 .change-arrow {
-  font-size: 32rpx;
-  font-weight: 300;
-  color: $primary;
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.8;
 }
 
 .form-section {
-  padding: 0 32rpx 32rpx;
   background: #FFFFFF;
   border-radius: 32rpx;
   margin: 0 32rpx;
   padding: 48rpx;
+  box-shadow: $shadow-soft;
 }
 
 .form-item {
@@ -414,9 +448,11 @@ onMounted(async () => {
 .form-label {
   display: block;
   font-size: 24rpx;
-  font-weight: 700;
+  font-weight: 600;
   color: $outline;
   margin-bottom: 16rpx;
+  padding-left: 8rpx;
+  letter-spacing: 2rpx;
 }
 
 .required-mark {
@@ -426,29 +462,43 @@ onMounted(async () => {
 
 .form-input {
   width: 100%;
-  padding: 28rpx 32rpx;
+  height: 84rpx;
+  padding: 0 32rpx;
   background: $surface-container-low;
-  border-radius: 24rpx;
+  border: none;
+  border-radius: 999rpx;
   font-size: 28rpx;
   color: $on-surface;
   box-sizing: border-box;
+  outline: none;
+  transition: box-shadow $transition-base;
+  line-height: 84rpx;
+
+  &:focus {
+    box-shadow: inset 0 0 0 4rpx rgba($primary, 0.2);
+  }
+
+  &:placeholder {
+    color: $outline-variant;
+  }
 }
 
 .form-picker {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 28rpx 32rpx;
+  height: 84rpx;
+  padding: 0 32rpx;
   background: $surface-container-low;
-  border-radius: 24rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   color: $on-surface;
 }
 
 .picker-arrow {
-  font-size: 32rpx;
-  color: $outline;
-  font-weight: 300;
+  width: 40rpx;
+  height: 40rpx;
+  opacity: 0.6;
 }
 
 .visibility-section {
@@ -457,17 +507,52 @@ onMounted(async () => {
 
 .visibility-options {
   display: flex;
-  gap: 48rpx;
+  gap: 80rpx;
 }
 
 .visibility-option {
   display: flex;
   align-items: center;
   gap: 12rpx;
+  cursor: pointer;
+}
+
+.radio-wrap {
+  width: 32rpx;
+  height: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-radio {
+  width: 32rpx;
+  height: 32rpx;
+  border: 3rpx solid $outline;
+  border-radius: 50%;
+  position: relative;
+  transition: all $transition-base;
+
+  &.checked {
+    border-color: $primary;
+    background: $primary;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12rpx;
+      height: 12rpx;
+      background: #FFFFFF;
+      border-radius: 50%;
+    }
+  }
 }
 
 .option-text {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: $on-surface;
 }
 
@@ -486,16 +571,45 @@ onMounted(async () => {
 
 .networth-title {
   font-size: 28rpx;
-  font-weight: 700;
+  font-weight: 600;
   color: $on-surface;
   display: block;
 }
 
 .networth-desc {
-  margin-top: 6rpx;
+  margin-top: 4rpx;
   font-size: 24rpx;
   color: $outline;
   display: block;
+}
+
+.switch-wrap {
+  position: relative;
+  width: 88rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  background: $outline-variant;
+  cursor: pointer;
+  transition: background $transition-base;
+
+  &.checked {
+    background: $primary;
+  }
+
+  .switch-thumb {
+    position: absolute;
+    top: 4rpx;
+    left: 4rpx;
+    width: 40rpx;
+    height: 40rpx;
+    border-radius: 50%;
+    background: #FFFFFF;
+    transition: transform $transition-base;
+  }
+
+  &.checked .switch-thumb {
+    transform: translateX(40rpx);
+  }
 }
 
 .modules-section {
@@ -510,11 +624,12 @@ onMounted(async () => {
 }
 
 .section-icon {
-  font-size: 32rpx;
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .section-title {
-  font-size: 26rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: $on-surface;
 }
@@ -540,36 +655,164 @@ onMounted(async () => {
   gap: 16rpx;
 }
 
+.module-card {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: #FFFFFF;
+  border-radius: 32rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &.required-card {
+    background: $surface-container-low;
+    border: 1rpx solid rgba($outline-variant, 0.3);
+  }
+
+  &.disabled {
+    opacity: 0.7;
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.module-icon-wrap {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+
+  &.primary-bg {
+    background: rgba($primary, 0.1);
+  }
+
+  &.secondary-bg {
+    background: rgba($secondary, 0.1);
+  }
+
+  &.tertiary-bg {
+    background: rgba($tertiary-container, 0.3);
+  }
+
+  &.default-bg {
+    background: $surface-container;
+  }
+}
+
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.module-info {
+  flex: 1;
+}
+
+.module-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.module-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $on-surface;
+}
+
+.module-tag {
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+
+  &.required-tag {
+    background: rgba($outline-variant, 0.3);
+    color: $outline;
+  }
+
+  &.default-tag {
+    background: rgba($primary, 0.1);
+    color: $primary;
+  }
+
+  &.optional-tag {
+    background: $surface-container;
+    color: $outline;
+  }
+}
+
+.module-desc {
+  font-size: 24rpx;
+  color: $outline;
+}
+
+.module-lock {
+  width: 48rpx;
+  height: 48rpx;
+  opacity: 0.6;
+}
+
+.module-checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border: 3rpx solid $outline-variant;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &.checked {
+    background: $primary;
+    border-color: $primary;
+
+    .check-icon {
+      color: #FFFFFF;
+      font-size: 24rpx;
+      font-weight: 700;
+    }
+  }
+}
+
 .bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 32rpx;
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  background: linear-gradient(to top, $background 70%, transparent 100%);
+  padding: $spacing-4 $spacing-4;
+  background: $surface-container-lowest;
   z-index: 100;
 }
 
 .bottom-content {
-  max-width: 640rpx;
+  max-width: 720rpx;
   margin: 0 auto;
 }
 
 .confirm-btn {
   width: 100%;
-  padding: 32rpx;
-  background: $primary;
+  padding: 20rpx;
+  background-color: $primary !important;
   border-radius: 999rpx;
   border: none;
-  box-shadow: 0 8rpx 32rpx rgba(0, 103, 84, 0.2);
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .confirm-btn[disabled] {
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 .btn-text {

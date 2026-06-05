@@ -58,8 +58,10 @@
               </view>
             </view>
 
-            <view class="goal-progress">
-              <view class="goal-fill" :style="{ width: `${goal.progress}%` }"></view>
+            <view class="goal-progress-row">
+              <view class="goal-progress">
+                <view class="goal-fill" :style="{ width: `${goal.progress}%` }"></view>
+              </view>
               <text class="goal-percent">{{ goal.progress }}%</text>
             </view>
             <view class="date-row">
@@ -354,23 +356,28 @@ const tapAction = (label) => {
   color: $on-surface;
 }
 
-.goal-progress {
-  position: relative;
-  height: 22rpx;
+.goal-progress-row {
   margin-top: $spacing-3;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.goal-progress {
+  flex: 1;
+  height: 22rpx;
   border-radius: $rounded-full;
   background: $surface-container-low;
   overflow: hidden;
 }
 
 .goal-percent {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -2rpx;
-  text-align: center;
-  color: #fff;
-  font-size: $font-size-xs;
+  flex-shrink: 0;
+  width: 80rpx;
+  text-align: right;
+  color: $primary;
+  font-family: $font-family-mono;
+  font-size: $font-size-sm;
   font-weight: 900;
 }
 

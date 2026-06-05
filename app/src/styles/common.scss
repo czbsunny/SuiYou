@@ -325,7 +325,7 @@ page {
 .empty-state {
   @include flex-column;
   align-items: center;
-  padding: $spacing-xl * 2;
+  padding: $spacing-5 * 2;
   color: $text-color-placeholder;
 
   &__image {
@@ -345,7 +345,7 @@ page {
 // --------------------------------------------
 .loading {
   @include flex-center;
-  padding: $spacing-xl;
+  padding: $spacing-5;
 
   &__spinner {
     width: 60rpx;

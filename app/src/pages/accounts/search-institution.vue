@@ -3,7 +3,7 @@
     <!-- Header 部分 -->
     <view class="header-section">
       <view class="search-box">
-        <image src="/static/images/search.png" class="search-icon" />
+        <image src="/static/images/search.png" class="search-icon" mode="aspectFit" />
         <input 
           class="search-input" 
           v-model="searchQuery" 
@@ -31,7 +31,6 @@
               @tap="selectTab(tab.code)"
             >
               <text class="tab-text">{{ tab.name }}</text>
-              <view class="tab-line" v-if="activeTab === tab.code"></view>
             </view>
           </view>
         </scroll-view>
@@ -53,13 +52,22 @@
           <view 
             v-for="institution in filteredInstitutions" 
             :key="institution.instCode || institution.id" 
-            class="institution-item" 
+            class="institution-card" 
             @click="selectInstitution(institution)"
           >
-            <view class="logo-wrapper">
-              <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+            <view class="card-left">
+              <view class="logo-wrapper" :class="getLogoBgClass(institution)">
+                <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+              </view>
+              <view class="institution-info">
+                <view class="institution-name-row">
+                  <text class="institution-name">{{ institution.instName }}</text>
+                  <text v-if="institution.isHot" class="hot-tag">热门</text>
+                </view>
+                <text class="type-tag">{{ institution.institutionType?.typeName || '机构类型' }}</text>
+              </view>
             </view>
-            <text class="institution-name">{{ institution.instName }}</text>
+            <image src="/static/images/chevron_right.png" class="arrow-icon" mode="aspectFit" />
           </view>
         </view>
 
@@ -70,20 +78,27 @@
           </view>
 
           <view v-else>
-            <view 
-              v-for="group in groupedInstitutions" 
-              :key="group.indexLetter" 
-              :id="formatId(group.indexLetter)"
-              class="group-block"
-            >
-              <view class="group-title">{{ group.indexLetter === '热' ? '热门机构' : group.indexLetter }}</view>
-              <view v-for="institution in group.data" :key="institution.instCode || institution.id" class="institution-item" @click="selectInstitution(institution)">
-                <view class="logo-wrapper">
-                  <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+            <view v-for="group in groupedInstitutions" :key="group.indexLetter" :id="formatId(group.indexLetter)" class="group-block">
+              <view class="group-header">
+                <text class="group-title">{{ group.indexLetter === '热' ? '常用' : group.indexLetter }}</text>
+              </view>
+              <view v-for="institution in group.data" :key="institution.instCode || institution.id" class="institution-card" @click="selectInstitution(institution)">
+                <view class="card-left">
+                  <view class="logo-wrapper" :class="getLogoBgClass(institution)">
+                    <image :src="formatImageUrl(institution.logoUrl)" class="institution-logo" mode="aspectFit" />
+                  </view>
+                  <view class="institution-info">
+                    <view class="institution-name-row">
+                      <text class="institution-name">{{ institution.instName }}</text>
+                      <text v-if="institution.isHot" class="hot-tag">热门</text>
+                    </view>
+                    <text class="type-tag">{{ institution.institutionType?.typeName || '机构类型' }}</text>
+                  </view>
                 </view>
-                <text class="institution-name">{{ institution.instName }}</text>
+                <image src="/static/images/chevron_right.png" class="arrow-icon" mode="aspectFit" />
               </view>
             </view>
+            
             <view class="safe-bottom"></view>
           </view>
         </view>
@@ -171,6 +186,20 @@ const groupedInstitutions = computed(() => {
 })
 
 const alphabet = computed(() => groupedInstitutions.value.map(g => g.indexLetter))
+
+const getLogoBgClass = () => ''
+
+const getTypeName = (typeCode) => {
+  const typeMap = {
+    'BK': '银行',
+    'PY': '支付',
+    'ZQ': '证券',
+    'JJ': '基金平台',
+    'BX': '保险',
+    'OTHER': '其他'
+  }
+  return typeMap[typeCode] || typeCode || '其他'
+}
 
 const selectTab = async (tabCode) => {
   activeTab.value = tabCode
@@ -278,7 +307,7 @@ onMounted(async () => {
   display: flex; 
   flex-direction: column; 
   height: 100vh; 
-  background-color: #f7f7f7; 
+  background-color: #FAF9F6; 
 }
 
 .scroll-content { 
@@ -290,29 +319,29 @@ onMounted(async () => {
   position: sticky;
   top: 0;
   z-index: 200;
-  background-color: #fff;
-  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);
-  padding: $spacing-sm $spacing-base;
+  background-color: #FAF9F6;
+  padding: $spacing-2 $spacing-3;
 
   .search-box { 
     display: flex; 
     align-items: center; 
-    background-color: #f3f4f6; 
-    padding: 0 24rpx; 
-    border-radius: 40rpx; 
-    height: 84rpx; 
+    background-color: #F4F3F1; 
+    padding: 0 $spacing-3; 
+    border-radius: 48rpx; 
+    height: 96rpx; 
 
     .search-icon {
       width: 40rpx;
       height: 40rpx;
-      margin-right: 16rpx;
-      opacity: 0.3;
+      margin-right: $spacing-1;
+      opacity: 0.6;
     }
 
     .search-input { 
       flex: 1; 
       font-size: 28rpx; 
-      color: #1e293b; 
+      color: #1A1C1A; 
+      background-color: transparent;
     }
 
     .clear-btn {
@@ -324,7 +353,7 @@ onMounted(async () => {
 
       .clear-icon {
         font-size: 36rpx;
-        color: #94a3b8;
+        color: #6F7975;
         font-weight: 300;
       }
     }
@@ -338,7 +367,7 @@ onMounted(async () => {
 /* Tab 样式 */
 .tabs-section {
   width: 100%;
-  margin-top: $spacing-sm;
+  margin-top: $spacing-2;
 
   .tabs-scroll { 
     width: 100%; 
@@ -347,21 +376,20 @@ onMounted(async () => {
 
   .tabs-container { 
     display: inline-flex; 
-    padding: 0 24rpx 0 8rpx;
-    height: 96rpx;
-    align-items: center;
+    padding: 0 $spacing-1;
+    gap: $spacing-1;
   }
 
   .tab-item {
-    display: inline-block; 
-    padding: 0 18rpx;
-    position: relative;
-    height: 100%;
-    line-height: 96rpx;
+    display: inline-flex; 
+    padding: 0 $spacing-4;
+    height: 72rpx;
+    align-items: center;
+    border-radius: 100rpx;
+    transition: all 0.3s ease;
     
     .tab-text {
-      font-size: 28rpx;
-      color: #94a3b8;
+      font-size: 26rpx;
       font-weight: 600;
       white-space: nowrap; 
       display: block;
@@ -369,19 +397,20 @@ onMounted(async () => {
     }
     
     &.active {
+      background-color: #006754;
       .tab-text {
-        color: #2D7A68;
-        font-weight: 800;
+        color: #FFFFFF;
+        font-weight: 700;
       }
-      .tab-line {
-        position: absolute;
-        bottom: 8rpx;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 32rpx;
-        height: 6rpx;
-        background-color: #2D7A68;
-        border-radius: 4rpx;
+    }
+    
+    &:not(.active) {
+      background-color: #E9E8E5;
+      .tab-text {
+        color: #3F4945;
+      }
+      &:active {
+        background-color: #E3E2E0;
       }
     }
   }
@@ -397,7 +426,7 @@ onMounted(async () => {
 }
 
 .institutions-section {
-  padding: 0 $spacing-xs;
+  padding: $spacing-1 $spacing-3;
 }
 
 .loading-container {
@@ -414,54 +443,131 @@ onMounted(async () => {
 
 /* 分组块 */
 .group-block {
-  padding: 0 $spacing-sm;
+  margin-top: $spacing-2;
 }
 
-.group-title {
-  padding: $spacing-sm $spacing-base; 
-  font-size: 22rpx; 
-  font-weight: 800; 
-  color: #94a3b8; 
-  background-color: #f8fafc; 
-  text-transform: uppercase; 
-  letter-spacing: 2rpx; 
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-2;
+  
+  .group-title {
+    font-size: 24rpx; 
+    font-weight: 700; 
+    color: #3F4945; 
+  }
+  
+  .group-more {
+    font-size: 22rpx;
+    font-weight: 600;
+    color: #006754;
+  }
 }
 
-/* 机构项 */
-.institution-item {
-  padding: $spacing-sm $spacing-base;
-  border-radius: $border-radius-base;
-  display:  flex; 
-  align-items:  center; 
-  background-color: #fff; 
-  border-bottom: 1rpx solid #f8fafc;
-}
-
-.logo-wrapper  { 
-  width: 76rpx; 
-  height: 76rpx; 
-  background-color: #f8fafc; 
-  border-radius: 20rpx; 
+/* 机构卡片 */
+.institution-card {
   display: flex; 
   align-items: center; 
-  justify-content: center; 
-  margin-right: 28rpx; 
-  overflow: hidden; 
-  border: 1rpx solid rgba(0,0,0,0.03); 
-}
-.institution-logo { 
-  width: 76rpx; 
-  height: 76rpx; 
-}
-.institution-name { 
-  font-size: 30rpx; 
-  color: #1e293b; 
-  font-weight: 600; 
+  justify-content: space-between;
+  background-color: #FFFFFF; 
+    border-radius: 40rpx;
+    padding: $spacing-3;
+    margin-bottom: $spacing-2;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+  
+  &:active {
+    background-color: #F4F3F1;
+  }
+  
+  .card-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  
+  .logo-wrapper {
+    width: 88rpx; 
+    height: 88rpx; 
+    border-radius: 100rpx; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-right: $spacing-3; 
+    overflow: hidden;
+    
+    &.logo-red {
+      background-color: #FEE2E2;
+    }
+    &.logo-green {
+      background-color: #DCFCE7;
+    }
+    &.logo-orange {
+      background-color: #FFEDD5;
+    }
+    &.logo-purple {
+      background-color: #F3E8FF;
+    }
+    &.logo-blue {
+      background-color: #DBEAFE;
+    }
+    &.logo-gray {
+      background-color: #F4F3F1;
+    }
+  }
+  
+  .institution-logo { 
+    width: 88rpx; 
+    height: 88rpx; 
+  }
+  
+  .institution-info {
+    flex: 1;
+    
+    .institution-name-row {
+      display: flex;
+      align-items: center;
+      gap: $spacing-1;
+    }
+    
+    .institution-name { 
+      font-size: 30rpx; 
+      color: #1A1C1A; 
+      font-weight: 600; 
+    }
+    
+    .hot-tag {
+      font-size: 20rpx;
+      font-weight: 700;
+      color: #BA1A1A;
+      background-color: #FFDAD6;
+      padding: 4rpx 12rpx;
+      border-radius: 8rpx;
+    }
+    
+    .type-tag {
+      font-size: 22rpx;
+      color: #3F4945;
+      background-color: #F4F3F1;
+      padding: 6rpx 16rpx;
+      border-radius: 100rpx;
+      margin-top: $spacing-1;
+      display: inline-block;
+    }
+    
+  }
+  
+  .arrow-icon {
+    width: 40rpx;
+    height: 40rpx;
+    margin-left: $spacing-2;
+    opacity: 0.6;
+  }
 }
 
 /* 搜索结果 */
 .search-results {
-  background-color: #fff;
+  background-color: transparent;
 }
 
 .empty-state {
@@ -479,34 +585,33 @@ onMounted(async () => {
 /* 索引条 */
 .index-bar {
   position: fixed; 
-  right: 8rpx;
+  right: $spacing-1;
   top: 50%;       
   transform: translateY(-50%);
   display: flex; 
   flex-direction: column; 
   align-items: center;
   background-color: rgba(255,255,255,0.92);
-  border-radius: 30rpx;
-  padding: 20rpx 0; 
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1); 
+  border-radius: 100rpx;
+  padding: $spacing-2 0; 
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.08); 
   z-index: 999; 
   pointer-events: auto; 
 
   .index-item { 
-    width: 44rpx; 
-    height: 44rpx; 
-    line-height: 44rpx; 
+    width: 56rpx; 
+    height: 56rpx; 
+    line-height: 56rpx; 
     text-align: center; 
-    font-size: 18rpx; 
-    color: #64748b; 
-    font-weight: 800; 
-    margin: 2rpx 0; 
+    font-size: 22rpx; 
+    color: #6F7975; 
+    font-weight: 600; 
     border-radius: 50%; 
     transition: all 0.2s;
 
     &.active-letter { 
-      background-color: #2D7A68; 
-      color: #ffffff; 
+      background-color: #006754; 
+      color: #FFFFFF; 
       transform: scale(1.15); 
     } 
   }

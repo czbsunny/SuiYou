@@ -13,7 +13,9 @@
 
         <view class="menu-list">
           <view v-for="item in menuItems" :key="item.label" class="menu-card" @tap="tapMenu(item.label)">
-            <image :src="`/static/images/${item.icon}.png`" class="menu-icon" mode="aspectFit" />
+            <view class="menu-icon-wrap">
+              <image :src="`/static/images/${item.icon}.png`" class="menu-icon" mode="aspectFit" />
+            </view>
             <text class="menu-label">{{ item.label }}</text>
             <text class="arrow">›</text>
           </view>
@@ -139,13 +141,19 @@ const tapMenu = (label) => {
   gap: 24rpx;
 }
 
-.menu-icon {
-  width: 64rpx;
-  height: 64rpx;
+.menu-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(0, 103, 84, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: brightness(0) saturate(100%) invert(8%) sepia(4%) saturate(2240%) hue-rotate(120deg) brightness(100%) contrast(89%);
+}
+
+.menu-icon {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .menu-label {

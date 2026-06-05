@@ -1,7 +1,0 @@
-- [x] Checkpoint 1: 机构 logo 图标已从 web 端拷贝到 app 端
-- [x] Checkpoint 2: 搜索机构页面已添加字母索引条
-- [x] Checkpoint 3: 列表按字母分组展示
-- [x] Checkpoint 4: 点击索引条字母能滚动到对应分组
-- [x] Checkpoint 5: 滚动列表时索引条高亮当前字母
-- [x] Checkpoint 6: 机构列表显示 logo
-- [x] Checkpoint 7: 所有文件编译无错误
