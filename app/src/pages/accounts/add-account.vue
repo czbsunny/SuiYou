@@ -188,8 +188,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getInstitutionDetail, getInstitutionCategories } from '@/api/modules/asset'
-import AssetModuleItem from '@/components/accounts/AssetModuleItem.vue'
+import { getInstitutionDetail, getInstitutionModules } from '@/api/modules/asset'
 
 const instCode = ref('')
 const institution = ref(null)
@@ -223,7 +222,7 @@ const institutionName = computed(() => {
   if (institution.value) {
     return institution.value.instName || institution.value.shortName || '未知机构'
   }
-  return '招商银行'
+  return '未知机构'
 })
 
 const formatLogoUrl = (url) => {
@@ -318,19 +317,29 @@ const loadInstitution = async () => {
 }
 
 const loadModules = async () => {
-  loadMockModules()
-}
-
-const loadMockModules = () => {
-  institutionModules.value = [
-    { categoryCode: 'TRANSACTION', name: '收支流水', description: '该模块是此账户的基础模块', selectionType: 'REQUIRED', iconUrl: '/static/images/bill.png' },
-    { categoryCode: 'BALANCE', name: '余额', description: '实时账户可用金额统计', selectionType: 'DEFAULT_SELECTED', iconUrl: '/static/images/analytics.png', iconBgClass: 'tertiary-bg' },
-    { categoryCode: 'CURRENT', name: '活期', description: '灵活存取的闲置资金', selectionType: 'DEFAULT_SELECTED', iconUrl: '/static/images/savings.png', iconBgClass: 'secondary-bg' },
-    { categoryCode: 'TIME_DEPOSIT', name: '定存', description: '定期存款利息监控', selectionType: 'OPTIONAL', iconUrl: '/static/images/budget.png' },
-    { categoryCode: 'FINANCING', name: '理财', description: '银行理财产品净值同步', selectionType: 'OPTIONAL', iconUrl: '/static/images/manage.png' },
-    { categoryCode: 'INSTALLMENT', name: '分期', description: '信用卡或账单分期管理', selectionType: 'OPTIONAL', iconUrl: '/static/images/add.png', disabled: true }
-  ]
-  initDefaultModules()
+  if (!instCode.value) return
+  
+  try {
+    const res = await getInstitutionModules(instCode.value)
+    if (res && res.data) {
+      const { required, defaultList, optional } = res.data
+      
+      const transformedModules = [
+        ...(required || []).map(module => ({ ...module, selectionType: 'REQUIRED' })),
+        ...(defaultList || []).map(module => ({ ...module, selectionType: 'DEFAULT_SELECTED' })),
+        ...(optional || []).map(module => ({ ...module, selectionType: 'OPTIONAL' }))
+      ]
+      
+      institutionModules.value = transformedModules
+      initDefaultModules()
+    }
+  } catch (error) {
+    console.error('加载机构模块失败:', error)
+    uni.showToast({
+      title: '加载模块失败',
+      icon: 'none'
+    })
+  }
 }
 
 const initDefaultModules = () => {

@@ -72,6 +72,6 @@ export const getInstitutionDetail = (instCode) => {
   return get(`/api/institutions/${instCode}`)
 }
 
-export const getInstitutionCategories = (instCode) => {
-  return get(`/api/institutions/${instCode}/categories`)
+export const getInstitutionModules = (instCode) => {
+  return get(`/api/institutions/${instCode}/modules`)
 }
