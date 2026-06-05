@@ -22,7 +22,7 @@
         <view class="quick-actions">
           <view v-for="action in quickActions" :key="action.label" class="quick-item" @tap="tapAction(action.label)">
             <view class="quick-icon">
-              <text class="icon-text">{{ action.icon }}</text>
+              <image class="icon-image" :src="`/static/images/${action.icon}.png`" mode="aspectFit" />
             </view>
             <text class="quick-label">{{ action.label }}</text>
           </view>
@@ -56,10 +56,10 @@
 
 <script setup>
 const quickActions = [
-  { label: '预算', icon: 'B' },
-  { label: '记账', icon: '+' },
-  { label: '存钱', icon: '$' },
-  { label: '报告', icon: 'R' }
+  { label: '预算', icon: 'budget' },
+  { label: '记账', icon: 'booking' },
+  { label: '存钱', icon: 'savings' },
+  { label: '报告', icon: 'analytics' }
 ]
 
 const transactions = [
@@ -180,10 +180,9 @@ const tapAction = (label) => {
   justify-content: center;
 }
 
-.icon-text {
-  color: $primary;
-  font-size: $font-size-xl;
-  font-weight: 600;
+.icon-image {
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .quick-label {
