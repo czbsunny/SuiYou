@@ -60,9 +60,6 @@ $tertiary-container: #8b6e3a;
 $tertiary-fixed: #ffdeaa;
 $tertiary-fixed-dim: #e6c185;
 
-// 兼容旧变量名
-$primary-color: $primary;
-
 // --------------------------------------------
 // Semantic Colors (语义色) - 基于中国市场习惯
 // --------------------------------------------
@@ -92,10 +89,6 @@ $surface-container-low: #f4f3f1;
 $surface-container: #efeeeb;
 $surface-container-high: #e9e8e5;
 $surface-container-highest: #e3e2e0;
-
-// 背景色变体（兼容旧代码）
-$background-white: $surface-container-lowest;
-$background-gray: $surface-container-low;
 
 // --------------------------------------------
 // Text Colors (文字颜色) - 来自设计文件
@@ -155,12 +148,8 @@ $rounded-sm: 8rpx;
 $rounded-md: 24rpx;        // 大圆角，用于卡片
 $rounded-lg: 32rpx;        // 2rem = 32px
 $rounded-xl: 48rpx;        // 3rem = 48px
+$rounded-half: 50%;
 $rounded-full: 9999px;
-
-// 兼容旧变量名
-$border-radius-base: $rounded-default;
-$border-radius-sm: $rounded-sm;
-$border-radius-lg: $rounded-md;
 
 // ========================================
 // 阴影系统 (Shadows) - 来自设计文件

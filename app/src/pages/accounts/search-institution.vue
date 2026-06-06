@@ -327,7 +327,7 @@ onMounted(async () => {
     align-items: center; 
     background-color: #F4F3F1; 
     padding: 0 $spacing-3; 
-    border-radius: 48rpx; 
+    border-radius: $rounded-xl; 
     height: 96rpx; 
 
     .search-icon {
@@ -385,7 +385,7 @@ onMounted(async () => {
     padding: 0 $spacing-4;
     height: 72rpx;
     align-items: center;
-    border-radius: 100rpx;
+    border-radius: $rounded-full;
     transition: all 0.3s ease;
     
     .tab-text {
@@ -471,9 +471,9 @@ onMounted(async () => {
   align-items: center; 
   justify-content: space-between;
   background-color: #FFFFFF; 
-    border-radius: 40rpx;
-    padding: $spacing-3;
-    margin-bottom: $spacing-2;
+  border-radius: $rounded-lg;
+  padding: $spacing-3;
+  margin-bottom: $spacing-2;
   box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
   
   &:active {
@@ -489,7 +489,7 @@ onMounted(async () => {
   .logo-wrapper {
     width: 88rpx; 
     height: 88rpx; 
-    border-radius: 100rpx; 
+    border-radius: $rounded-full; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -542,7 +542,7 @@ onMounted(async () => {
       color: #BA1A1A;
       background-color: #FFDAD6;
       padding: 4rpx 12rpx;
-      border-radius: 8rpx;
+      border-radius: $rounded-sm;
     }
     
     .type-tag {
@@ -550,7 +550,7 @@ onMounted(async () => {
       color: #3F4945;
       background-color: #F4F3F1;
       padding: 6rpx 16rpx;
-      border-radius: 100rpx;
+      border-radius: $rounded-full;
       margin-top: $spacing-1;
       display: inline-block;
     }
@@ -592,7 +592,7 @@ onMounted(async () => {
   flex-direction: column; 
   align-items: center;
   background-color: rgba(255,255,255,0.92);
-  border-radius: 100rpx;
+  border-radius: $rounded-full;
   padding: $spacing-2 0; 
   box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.08); 
   z-index: 999; 
@@ -606,13 +606,12 @@ onMounted(async () => {
     font-size: 22rpx; 
     color: #6F7975; 
     font-weight: 600; 
-    border-radius: 50%; 
+    border-radius: $rounded-half; 
     transition: all 0.2s;
 
     &.active-letter { 
       background-color: #006754; 
-      color: #FFFFFF; 
-      transform: scale(1.15); 
+      color: #FFFFFF;  
     } 
   }
 }

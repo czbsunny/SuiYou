@@ -3,16 +3,17 @@ package com.suiyou.controller;
 import com.suiyou.dto.account.AccountModuleDTO;
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.dto.account.BatchUpdateAccountsDTO;
-import jakarta.validation.Valid;
+import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.dto.account.AccountRespDTO;
+import com.suiyou.model.Account;
 import com.suiyou.service.AccountModuleService;
 import com.suiyou.service.AccountService;
+import com.suiyou.security.SecurityUtils;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,57 +32,63 @@ import java.util.Map;
 public class AccountController {
     @Autowired
     private AccountService accountService;
-    
+
     @Autowired
     private AccountModuleService accountModuleService;
-    
-    @GetMapping
-    public ResponseEntity<?> getAccounts(@RequestParam(required = false) String institution) {
+
+    @PostMapping
+    public ResponseEntity<?> createAccount(@Valid @RequestBody CreateAccountDTO createAccountDTO) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务获取当前用户的所有账户
+            Long userId = SecurityUtils.getCurrentUserId();
+            Account created = accountService.createAccount(createAccountDTO, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "id", created.getId(),
+                "message", "账户添加成功"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "error", "账户添加失败",
+                "message", e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAccounts(@RequestParam(required = false) String instCode) {
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
             List<AccountRespDTO> accounts;
-            if (institution != null && !institution.isEmpty()) {
-                accounts = accountService.getAccountsByUserIdAndInstitution(userId, institution);
+            if (instCode != null && !instCode.isEmpty()) {
+                accounts = accountService.getAccountsByUserIdAndInstCode(userId, instCode);
             } else {
                 accounts = accountService.getAccountsByUserId(userId);
             }
-            
-            // 返回成功响应
             return ResponseEntity.ok(Map.of(
                 "accounts", accounts,
                 "count", accounts.size()
             ));
         } catch (Exception e) {
-            // 返回错误响应
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "error", "获取资产账户失败",
                 "message", e.getMessage()
             ));
         }
     }
-    
+
     @GetMapping("/{accountId}")
     public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
+            Long userId = SecurityUtils.getCurrentUserId();
             AccountRespDTO accountRespDTO = accountService.getAccountById(accountId);
             if (accountRespDTO.getOwnerId() != userId) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
                     "error", "您没有权限访问此资产账户"
                 ));
             }
-            
-            // 返回成功响应
             return ResponseEntity.ok(Map.of(
                 "account", accountRespDTO
             ));
         } catch (Exception e) {
-            // 返回错误响应
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "error", "获取资产账户失败",
                 "message", e.getMessage()
@@ -89,51 +96,27 @@ public class AccountController {
         }
     }
 
-    /**
-     * 获取当前登录用户的ID
-     */
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("用户未登录");
-        }
-        try {
-            return Long.parseLong(authentication.getName());
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("无法从认证信息中获取用户ID");
-        }
-    }
-
     @PutMapping
     public ResponseEntity<?> updateAccount(@RequestBody UpdateAccountDTO updateAccountDTO) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务修改账户
+            Long userId = SecurityUtils.getCurrentUserId();
             AccountRespDTO updatedAccount = accountService.updateAccount(updateAccountDTO, userId);
-            
-            // 返回修改成功的响应
             return ResponseEntity.ok(Map.of(
                 "id", updatedAccount.getId(),
                 "message", "账户修改成功"
             ));
         } catch (Exception e) {
-            // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "账户修改失败",
                 "message", e.getMessage()
             ));
         }
     }
-    
+
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateAccountStatus(@PathVariable Long id, @RequestBody Map<String, Integer> statusRequest) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 获取状态值
+            Long userId = SecurityUtils.getCurrentUserId();
             Integer status = statusRequest.get("status");
             if (status == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
@@ -141,52 +124,40 @@ public class AccountController {
                     "message", "缺少状态参数"
                 ));
             }
-            
-            // 调用服务更新账户状态
             accountService.updateAccountStatus(id, status, userId);
-            
-            // 返回操作成功的响应
             String statusText = status == 1 ? "恢复" : "归档";
             return ResponseEntity.ok(Map.of(
                 "id", id,
                 "message", "账户已" + statusText
             ));
         } catch (Exception e) {
-            // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "更新账户状态失败",
                 "message", e.getMessage()
             ));
         }
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
-            
-            // 调用服务删除账户
+            Long userId = SecurityUtils.getCurrentUserId();
             accountService.deleteAccount(id, userId);
-            
-            // 返回删除成功的响应
             return ResponseEntity.ok(Map.of(
                 "id", id,
                 "message", "账户删除成功"
             ));
         } catch (Exception e) {
-            // 返回错误响应
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "账户删除失败",
                 "message", e.getMessage()
             ));
         }
     }
-    
+
     @PutMapping("/sync")
     public ResponseEntity<?> batchUpdateAccounts(@Valid @RequestBody BatchUpdateAccountsDTO batchUpdateDTO) {
-        Long userId = getCurrentUserId();
-        
+        Long userId = SecurityUtils.getCurrentUserId();
         try {
             accountService.batchUpdateAccounts(userId, batchUpdateDTO.getActiveAccountIds(), batchUpdateDTO.getArchivedAccountIds());
             return ResponseEntity.ok(Map.of(
@@ -200,13 +171,12 @@ public class AccountController {
             ));
         }
     }
-    
+
     @PostMapping("/{accountId}/modules")
     public ResponseEntity<?> addAccountModule(@PathVariable Long accountId, @Valid @RequestBody AccountModuleDTO moduleDTO) {
         try {
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             accountModuleService.addModule(accountId, moduleDTO.getAssetType(), moduleDTO.getModuleName(), userId);
-            
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "资产模块添加成功"
@@ -218,13 +188,12 @@ public class AccountController {
             ));
         }
     }
-    
+
     @DeleteMapping("/{accountId}/modules/{moduleId}")
     public ResponseEntity<?> removeAccountModule(@PathVariable Long accountId, @PathVariable Long moduleId) {
         try {
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             accountModuleService.removeModule(accountId, moduleId, userId);
-            
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "资产模块删除成功"
@@ -236,13 +205,12 @@ public class AccountController {
             ));
         }
     }
-    
+
     @GetMapping("/{accountId}/modules")
     public ResponseEntity<?> getAccountModules(@PathVariable Long accountId) {
         try {
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             List<AccountModuleRespDTO> modules = accountModuleService.getModulesByAccountId(accountId, userId);
-            
             return ResponseEntity.ok(Map.of(
                 "modules", modules,
                 "count", modules.size()

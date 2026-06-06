@@ -16,11 +16,11 @@ public class AssetRespDTO {
     private String subCategory;
     private String name;
 
-    private String institution;
-    private String institutionIdentifier;
+    private String instCode;
+    private String accountNo;
     private String accountName;
     private Long accountId;
-    
+
     private Long moduleId;
     private String moduleName;
     private String assetType;
@@ -37,8 +37,8 @@ public class AssetRespDTO {
 
     public static AssetRespDTO fromEntity(Asset asset) {
         AssetRespDTO dto = new AssetRespDTO();
-        dto.setInstitution(asset.getAccountModule().getAccount().getInstitution());
-        dto.setInstitutionIdentifier(asset.getAccountModule().getAccount().getInstitutionIdentifier());
+        dto.setInstCode(asset.getAccountModule().getAccount().getInstCode());
+        dto.setAccountNo(asset.getAccountModule().getAccount().getAccountNo());
         dto.setAccountName(asset.getAccountModule().getAccount().getAccountName());
         dto.setAccountId(asset.getAccountModule().getAccount().getId());
         dto.setModuleId(asset.getAccountModule().getId());

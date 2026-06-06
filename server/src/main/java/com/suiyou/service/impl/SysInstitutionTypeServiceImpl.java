@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.suiyou.model.enums.AccountType;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,10 @@ public class SysInstitutionTypeServiceImpl implements SysInstitutionTypeService 
     }
 
     private InstitutionTypeRespDTO toInstitutionTypeRespDTO(SysInstitutionType entity) {
+        List<String> accountTypes = AccountType.getByInstitutionType(entity.getTypeCode())
+                .stream()
+                .map(at -> at.name() + ":" + at.getDescription())
+                .collect(Collectors.toList());
         return InstitutionTypeRespDTO.builder()
                 .id(entity.getId())
                 .typeCode(entity.getTypeCode())
@@ -67,6 +73,7 @@ public class SysInstitutionTypeServiceImpl implements SysInstitutionTypeService 
                 .sortOrder(entity.getSortOrder())
                 .iconUrl(entity.getIconUrl())
                 .themeColor(entity.getThemeColor())
+                .accountTypes(accountTypes)
                 .build();
     }
 }

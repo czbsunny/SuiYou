@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class FamilyServiceImpl implements FamilyService {
 
@@ -28,17 +26,16 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    public List<Family> getFamiliesByUserId(Long userId) {
-        return familyRepository.findByCreatorIdAndStatus(userId, 1);
+    public Family getFamilyByUserId(Long userId) {
+        return familyRepository.findByCreatorId(userId);
     }
 
     @Override
-    public Family getFirstActiveFamilyByUserId(Long userId) {
-        List<Family> families = familyRepository.findByCreatorIdAndStatus(userId, 1);
-        if (families != null && !families.isEmpty()) {
-            return families.get(0);
-        }
-        return null;
+    @Transactional
+    public Family ensureFamily(Long creatorId) {
+        Family family = familyRepository.findByCreatorId(creatorId);
+        if (family != null) return family;
+        return createFamily(creatorId, "我的家庭", "CNY");
     }
 
     @Override
@@ -46,4 +43,3 @@ public class FamilyServiceImpl implements FamilyService {
         return familyRepository.findByIdAndStatus(familyId, 1);
     }
 }
-

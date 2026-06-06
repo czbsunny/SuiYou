@@ -1,4 +1,4 @@
-package com.suiyou.service.impl;
+﻿package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.model.Account;
@@ -30,22 +30,16 @@ public class AccountModuleServiceImpl implements AccountModuleService {
                 .orElseThrow(() -> new IllegalArgumentException("账户不存在"));
         
         if (!account.getOwnerId().equals(userId)) {
-            throw new IllegalArgumentException("无权操作该账户");
+            throw new IllegalArgumentException("您没有权限操作该账户");
         }
         
         if (account.getDeleted()) {
             throw new IllegalArgumentException("账户已被删除");
         }
         
-        AssetType type;
-        try {
-            type = AssetType.valueOf(assetType.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("无效的资产类型");
-        }
-        
+        AssetType type = AssetType.valueOf(assetType.toUpperCase());
         if (accountModuleRepository.existsByAccountIdAndAssetType(accountId, type)) {
-            throw new IllegalArgumentException("该账户已存在此资产类型模块");
+            throw new IllegalArgumentException("该资产类型已存在");
         }
         
         AccountModule module = new AccountModule();
@@ -64,7 +58,7 @@ public class AccountModuleServiceImpl implements AccountModuleService {
                 .orElseThrow(() -> new IllegalArgumentException("账户不存在"));
         
         if (!account.getOwnerId().equals(userId)) {
-            throw new IllegalArgumentException("无权操作该账户");
+            throw new IllegalArgumentException("您没有权限操作该账户");
         }
         
         if (account.getDeleted()) {
@@ -72,7 +66,7 @@ public class AccountModuleServiceImpl implements AccountModuleService {
         }
         
         AccountModule module = accountModuleRepository.findByIdAndAccountId(moduleId, accountId)
-                .orElseThrow(() -> new IllegalArgumentException("资产模块不存在"));
+                .orElseThrow(() -> new IllegalArgumentException("模块不存在"));
         
         accountModuleRepository.delete(module);
         return true;
@@ -84,7 +78,7 @@ public class AccountModuleServiceImpl implements AccountModuleService {
                 .orElseThrow(() -> new IllegalArgumentException("账户不存在"));
         
         if (!account.getOwnerId().equals(userId)) {
-            throw new IllegalArgumentException("无权操作该账户");
+            throw new IllegalArgumentException("您没有权限操作该账户");
         }
         
         if (account.getDeleted()) {
@@ -100,6 +94,6 @@ public class AccountModuleServiceImpl implements AccountModuleService {
     @Override
     public AccountModule getModuleById(Long id) {
         return accountModuleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("资产模块不存在"));
+                .orElseThrow(() -> new IllegalArgumentException("模块不存在"));
     }
 }

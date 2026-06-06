@@ -1,4 +1,4 @@
-import { get, post } from '../request'
+import { get, post, put, del } from '../request'
 
 export const getAssetList = (params) => {
   return get('/api/assets', params)
@@ -29,19 +29,43 @@ export const getInstitutions = () => {
 }
 
 export const getAccountList = (params) => {
-  return get('/api/assets/accounts', params)
+  return get('/api/accounts', params)
+}
+
+export const getAccountById = (id) => {
+  return get(`/api/accounts/${id}`)
 }
 
 export const createAccount = (data) => {
-  return post('/api/assets/accounts', data)
+  return post('/api/accounts', data)
 }
 
-export const updateAccount = (id, data) => {
-  return post(`/api/assets/accounts/${id}`, data)
+export const updateAccount = (data) => {
+  return put('/api/accounts', data)
+}
+
+export const updateAccountStatus = (id, status) => {
+  return put(`/api/accounts/${id}/status`, { status })
 }
 
 export const deleteAccount = (id) => {
-  return post(`/api/assets/accounts/${id}/delete`)
+  return del(`/api/accounts/${id}`)
+}
+
+export const batchUpdateAccounts = (data) => {
+  return put('/api/accounts/sync', data)
+}
+
+export const addAccountModule = (accountId, data) => {
+  return post(`/api/accounts/${accountId}/modules`, data)
+}
+
+export const removeAccountModule = (accountId, moduleId) => {
+  return del(`/api/accounts/${accountId}/modules/${moduleId}`)
+}
+
+export const getAccountModules = (accountId) => {
+  return get(`/api/accounts/${accountId}/modules`)
 }
 
 export const getAssetSummary = () => {
@@ -74,4 +98,8 @@ export const getInstitutionDetail = (instCode) => {
 
 export const getInstitutionModules = (instCode) => {
   return get(`/api/institutions/${instCode}/modules`)
+}
+
+export const getAccountTypes = (instCode) => {
+  return get(`/api/institutions/${instCode}/account-types`)
 }

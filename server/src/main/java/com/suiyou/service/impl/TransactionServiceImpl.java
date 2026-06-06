@@ -49,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Transaction createTransaction(Long userId, TransactionCreateRespDTO req) {
-        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        Family family = familyService.getFamilyByUserId(userId);
 
         // 1. 构建交易实体
         Transaction trans = new Transaction();
@@ -176,7 +176,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<TransactionRespDTO> queryTransactions(Long userId, TransactionQueryRespDTO query, Pageable pageable) {
-        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        Family family = familyService.getFamilyByUserId(userId);
         if (Objects.isNull(family)) {
             throw new IllegalArgumentException("用户未关联任何家庭");
         }
@@ -241,8 +241,8 @@ public class TransactionServiceImpl implements TransactionService {
                 log.info("sourceAsset: {}", sourceAsset);
                 if (sourceAsset != null && sourceAsset.getAccountModule() != null && sourceAsset.getAccountModule().getAccount() != null) {
                     dto.setSourceAccountName(sourceAsset.getAccountModule().getAccount().getAccountName());
-                    dto.setSourceAccountInstitution(sourceAsset.getAccountModule().getAccount().getInstitution());
-                    dto.setSourceAccountIdentifier(sourceAsset.getAccountModule().getAccount().getInstitutionIdentifier());
+                    dto.setSourceAccountInstitution(sourceAsset.getAccountModule().getAccount().getInstCode());
+                    dto.setSourceAccountIdentifier(sourceAsset.getAccountModule().getAccount().getAccountNo());
                 }
             }
             
@@ -251,8 +251,8 @@ public class TransactionServiceImpl implements TransactionService {
                 Asset targetAsset = assetRepository.findByIdWithAccountModule(transaction.getTargetAssetId()).orElse(null);
                 if (targetAsset != null && targetAsset.getAccountModule() != null && targetAsset.getAccountModule().getAccount() != null) {
                     dto.setTargetAccountName(targetAsset.getAccountModule().getAccount().getAccountName());
-                    dto.setTargetAccountInstitution(targetAsset.getAccountModule().getAccount().getInstitution());
-                    dto.setTargetAccountIdentifier(targetAsset.getAccountModule().getAccount().getInstitutionIdentifier());
+                    dto.setTargetAccountInstitution(targetAsset.getAccountModule().getAccount().getInstCode());
+                    dto.setTargetAccountIdentifier(targetAsset.getAccountModule().getAccount().getAccountNo());
                 }
             }
             
@@ -262,7 +262,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Map<String, Object>> getMonthlyIncomeExpenseTotal(Long userId) {
-        Family family = familyService.getFirstActiveFamilyByUserId(userId);
+        Family family = familyService.getFamilyByUserId(userId);
         if (Objects.isNull(family)) {
             throw new IllegalArgumentException("用户未关联任何家庭");
         }

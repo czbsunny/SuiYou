@@ -20,12 +20,27 @@
 
       <view class="form-section">
         <view class="form-item">
-          <text class="form-label">账户标识<text class="required-mark">*</text></text>
+          <text class="form-label">账号 / 卡号<text class="required-mark">*</text></text>
           <input 
             class="form-input" 
-            v-model="accountForm.accountId" 
+            v-model="accountForm.accountNo" 
             placeholder="如卡号/手机号后四位"
           />
+        </view>
+
+        <view v-if="showAccountTypePicker" class="form-item">
+          <text class="form-label">账户类型<text class="required-mark">*</text></text>
+          <picker 
+            mode="selector" 
+            :range="accountTypeOptions" 
+            range-key="name"
+            @change="handleAccountTypeChange"
+          >
+            <view class="form-picker">
+              {{ selectedAccountTypeName || '请选择' }}
+              <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
+            </view>
+          </picker>
         </view>
 
         <view class="form-item">
@@ -35,21 +50,6 @@
             v-model="accountForm.accountName" 
             placeholder="例如 招商银行工资卡"
           />
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">账户用途 / 模板</text>
-          <picker 
-            mode="selector" 
-            :range="accountTemplates" 
-            range-key="name"
-            @change="handleTemplateChange"
-          >
-            <view class="form-picker">
-              {{ selectedTemplate || '储蓄卡 / 借记卡' }}
-              <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
-            </view>
-          </picker>
         </view>
 
         <view class="visibility-section">
@@ -177,8 +177,8 @@
 
     <view class="bottom-bar">
       <view class="bottom-content">
-        <button class="confirm-btn" @tap="handleConfirm" :disabled="!canSubmit">
-          <text class="btn-text">确认添加</text>
+        <button class="confirm-btn" @tap="handleConfirm" :disabled="!canSubmit || submitting">
+          <text class="btn-text">{{ submitting ? '提交中...' : '确认添加' }}</text>
         </button>
       </view>
     </view>
@@ -188,28 +188,23 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getInstitutionDetail, getInstitutionModules } from '@/api/modules/asset'
+import { getInstitutionDetail, getInstitutionModules, createAccount, getAccountTypes } from '@/api/modules/asset'
 
 const instCode = ref('')
 const institution = ref(null)
 const loading = ref(false)
 const submitting = ref(false)
 
+const accountTypesRaw = ref([])
+const selectedAccountType = ref('')
+const accountTypePickerIndex = ref(0)
+
 const accountForm = ref({
-  accountId: '',
+  accountNo: '',
   accountName: '',
   visibility: 'PRIVATE',
   includeInNetworth: true
 })
-
-const accountTemplates = ref([
-  { id: 'DEBIT', name: '储蓄卡 / 借记卡' },
-  { id: 'CREDIT', name: '信用卡' },
-  { id: 'LOAN', name: '贷款账户' },
-  { id: 'WALLET', name: '支付钱包' },
-  { id: 'SECURITY', name: '证券账户' }
-])
-const selectedTemplate = ref('')
 
 const institutionModules = ref([])
 const selectedModules = ref([])
@@ -217,6 +212,20 @@ const selectedModules = ref([])
 const requiredModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'REQUIRED'))
 const defaultModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'DEFAULT_SELECTED'))
 const optionalModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'OPTIONAL'))
+
+const accountTypeOptions = computed(() => {
+  return accountTypesRaw.value.map(raw => {
+    const [code, name] = raw.split(':')
+    return { code, name: name || code }
+  })
+})
+
+const showAccountTypePicker = computed(() => accountTypeOptions.value.length > 1)
+
+const selectedAccountTypeName = computed(() => {
+  const found = accountTypeOptions.value.find(o => o.code === selectedAccountType.value)
+  return found ? found.name : ''
+})
 
 const institutionName = computed(() => {
   if (institution.value) {
@@ -232,7 +241,9 @@ const formatLogoUrl = (url) => {
 }
 
 const canSubmit = computed(() => {
-  return accountForm.value.accountName.trim().length > 0 && accountForm.value.accountId.trim().length > 0
+  return accountForm.value.accountName.trim().length > 0
+      && accountForm.value.accountNo.trim().length > 0
+      && selectedAccountType.value.length > 0
 })
 
 const getModuleChecked = (module, type) => {
@@ -262,9 +273,10 @@ const handleChangeInstitution = () => {
   uni.navigateBack()
 }
 
-const handleTemplateChange = (e) => {
-  const index = e.detail.value
-  selectedTemplate.value = accountTemplates.value[index].name
+const handleAccountTypeChange = (e) => {
+  const index = Number(e.detail.value)
+  accountTypePickerIndex.value = index
+  selectedAccountType.value = accountTypeOptions.value[index].code
 }
 
 const handleNetworthToggle = () => {
@@ -273,28 +285,48 @@ const handleNetworthToggle = () => {
 
 const handleConfirm = async () => {
   if (!canSubmit.value) {
-    uni.showToast({
-      title: '请填写完整信息',
-      icon: 'none'
-    })
+    uni.showToast({ title: '请填写完整信息', icon: 'none' })
     return
   }
 
   submitting.value = true
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    uni.showToast({
-      title: '添加成功',
-      icon: 'success'
+    const selectedModules = [
+      ...requiredModules.value.map(m => ({ assetType: m.groupType, moduleName: m.name })),
+      ...defaultModules.value
+        .filter(m => getModuleChecked(m, 'DEFAULT_SELECTED'))
+        .map(m => ({ assetType: m.groupType, moduleName: m.name })),
+      ...optionalModules.value
+        .filter(m => getModuleChecked(m, 'OPTIONAL'))
+        .map(m => ({ assetType: m.groupType, moduleName: m.name }))
+    ]
+
+    const resp = await createAccount({
+      instCode: instCode.value,
+      accountNo: accountForm.value.accountNo,
+      accountType: selectedAccountType.value,
+      accountName: accountForm.value.accountName,
+      includeInNetWorth: accountForm.value.includeInNetworth,
+      modules: selectedModules
     })
-    setTimeout(() => {
-      uni.navigateBack()
-    }, 1500)
+
+    const statusCode = resp?.statusCode ?? resp?.data?.code
+    const ok = statusCode === 200 || statusCode === undefined
+
+    if (ok) {
+      uni.showToast({ title: '添加成功', icon: 'success' })
+      setTimeout(() => {
+        uni.navigateBack()
+      }, 1200)
+    } else {
+      uni.showToast({
+        title: (resp?.data?.message) || '添加失败',
+        icon: 'none'
+      })
+    }
   } catch (error) {
-    uni.showToast({
-      title: '添加失败',
-      icon: 'none'
-    })
+    console.error('添加账户失败:', error)
+    uni.showToast({ title: '添加失败，请稍后重试', icon: 'none' })
   } finally {
     submitting.value = false
   }
@@ -305,12 +337,38 @@ const loadInstitution = async () => {
   
   loading.value = true
   try {
+    let loadedTypes = null
+    try {
+      const typeRes = await getAccountTypes(instCode.value)
+      if (typeRes && typeRes.data && Array.isArray(typeRes.data) && typeRes.data.length > 0) {
+        loadedTypes = typeRes.data
+      }
+    } catch (e) {
+      console.warn('加载账户类型独立接口失败，尝试 fallback:', e)
+    }
+
     const res = await getInstitutionDetail(instCode.value)
     if (res && res.data) {
       institution.value = res.data
+
+      if (loadedTypes && loadedTypes.length > 0) {
+        accountTypesRaw.value = loadedTypes
+      } else {
+        const raw = res.data.institutionType?.accountTypes || []
+        accountTypesRaw.value = raw
+      }
+
+      if (accountTypeOptions.value.length === 1) {
+        selectedAccountType.value = accountTypeOptions.value[0].code
+      } else if (accountTypeOptions.value.length > 1) {
+        selectedAccountType.value = accountTypeOptions.value[0].code
+      } else {
+        uni.showToast({ title: '该机构暂无可选账户类型', icon: 'none' })
+      }
     }
   } catch (error) {
     console.error('加载机构信息失败:', error)
+    uni.showToast({ title: '加载机构信息失败', icon: 'none' })
   } finally {
     loading.value = false
   }
@@ -335,10 +393,7 @@ const loadModules = async () => {
     }
   } catch (error) {
     console.error('加载机构模块失败:', error)
-    uni.showToast({
-      title: '加载模块失败',
-      icon: 'none'
-    })
+    uni.showToast({ title: '加载模块失败', icon: 'none' })
   }
 }
 
@@ -381,16 +436,16 @@ onMounted(async () => {
 .institution-header {
   display: flex;
   align-items: center;
-  padding: 32rpx;
+  padding: $spacing-4;
   background: #FFFFFF;
-  border-radius: 32rpx;
+  border-radius: $rounded-lg;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
 }
 
 .inst-icon {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 50%;
+  border-radius: $rounded-half;
   background: $surface-container;
   display: flex;
   align-items: center;
@@ -401,7 +456,7 @@ onMounted(async () => {
 .inst-icon-img {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 16rpx;
+  border-radius: $rounded-default;
 }
 
 .inst-details {
@@ -444,7 +499,7 @@ onMounted(async () => {
 
 .form-section {
   background: #FFFFFF;
-  border-radius: 32rpx;
+  border-radius: $spacing-4;
   margin: 0 32rpx;
   padding: 48rpx;
   box-shadow: $shadow-soft;
@@ -475,7 +530,7 @@ onMounted(async () => {
   padding: 0 32rpx;
   background: $surface-container-low;
   border: none;
-  border-radius: 999rpx;
+  border-radius: $rounded-full;
   font-size: 28rpx;
   color: $on-surface;
   box-sizing: border-box;
@@ -487,7 +542,7 @@ onMounted(async () => {
     box-shadow: inset 0 0 0 4rpx rgba($primary, 0.2);
   }
 
-  &:placeholder {
+  &::placeholder {
     color: $outline-variant;
   }
 }
@@ -499,7 +554,7 @@ onMounted(async () => {
   height: 84rpx;
   padding: 0 32rpx;
   background: $surface-container-low;
-  border-radius: 999rpx;
+  border-radius: $rounded-full;
   font-size: 28rpx;
   color: $on-surface;
 }
@@ -538,7 +593,7 @@ onMounted(async () => {
   width: 32rpx;
   height: 32rpx;
   border: 3rpx solid $outline;
-  border-radius: 50%;
+  border-radius: $rounded-half;
   position: relative;
   transition: all $transition-base;
 
@@ -555,7 +610,7 @@ onMounted(async () => {
       width: 12rpx;
       height: 12rpx;
       background: #FFFFFF;
-      border-radius: 50%;
+      border-radius: $rounded-half;
     }
   }
 }
@@ -596,7 +651,7 @@ onMounted(async () => {
   position: relative;
   width: 88rpx;
   height: 48rpx;
-  border-radius: 24rpx;
+  border-radius: $rounded-md;
   background: $outline-variant;
   cursor: pointer;
   transition: background $transition-base;
@@ -611,7 +666,7 @@ onMounted(async () => {
     left: 4rpx;
     width: 40rpx;
     height: 40rpx;
-    border-radius: 50%;
+    border-radius: $rounded-half;
     background: #FFFFFF;
     transition: transform $transition-base;
   }
@@ -669,7 +724,7 @@ onMounted(async () => {
   align-items: center;
   padding: 24rpx;
   background: #FFFFFF;
-  border-radius: 32rpx;
+  border-radius: $rounded-lg;
   box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.02);
   cursor: pointer;
   transition: all $transition-base;
@@ -691,7 +746,7 @@ onMounted(async () => {
 .module-icon-wrap {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 24rpx;
+  border-radius: $rounded-md;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -737,7 +792,7 @@ onMounted(async () => {
 
 .module-tag {
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: $rounded-sm;
   font-size: 20rpx;
   font-weight: 600;
 
@@ -772,7 +827,7 @@ onMounted(async () => {
   width: 40rpx;
   height: 40rpx;
   border: 3rpx solid $outline-variant;
-  border-radius: 50%;
+  border-radius: $rounded-half;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -809,7 +864,7 @@ onMounted(async () => {
   width: 100%;
   padding: 20rpx;
   background-color: $primary !important;
-  border-radius: 999rpx;
+  border-radius: $rounded-full;
   border: none;
   display: flex;
   justify-content: center;
@@ -818,10 +873,10 @@ onMounted(async () => {
   &:active {
     transform: scale(0.98);
   }
-}
 
-.confirm-btn[disabled] {
-  opacity: 0.6;
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 
 .btn-text {
@@ -830,4 +885,3 @@ onMounted(async () => {
   color: $on-primary;
 }
 </style>
-

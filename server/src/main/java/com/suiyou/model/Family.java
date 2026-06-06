@@ -15,7 +15,7 @@ public class Family {
     @Column(nullable = false)
     private String name;
     
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Long creatorId;
     
     @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")

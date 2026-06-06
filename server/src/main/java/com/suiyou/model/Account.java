@@ -21,20 +21,20 @@ public class Account {
     @Column(nullable = false, columnDefinition = "varchar(20) default 'PRIVATE'")
     private String visibleScope = "PRIVATE";
 
-    @Column(nullable = false)
-    private String institution;
-    
-    @Column(nullable = false)
-    private String institutionIdentifier;
+    @Column(name = "inst_code", nullable = false, length = 32)
+    private String instCode;
+
+    @Column(name = "account_no", nullable = false, length = 64)
+    private String accountNo;
+
+    @Column(name = "account_type", nullable = false, length = 32, columnDefinition = "varchar(32) default 'DEBIT_CARD'")
+    private String accountType = "DEBIT_CARD";
     
     private String accountName;
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Boolean includeInNetWorth = true;
 
-    @Column(nullable = false, columnDefinition = "varchar(20) default '#1F2937'")
-    private String themeColor = "#1F2937";
-    
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
 

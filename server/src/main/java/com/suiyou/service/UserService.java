@@ -102,6 +102,7 @@ public class UserService {
         // 更新登录信息
         user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
+        familyService.ensureFamily(user.getId());
 
         // 生成token - 使用手机号作为subject，用户ID作为额外信息
         String token = jwtTokenProvider.generateToken(user.getPhoneNumber(), user.getId());
@@ -178,11 +179,7 @@ public class UserService {
         user.setLastLoginTime(LocalDateTime.now());
         User savedUser = userRepository.save(user);
 
-        // 如果是新用户，自动创建家庭
-        if (!userOptional.isPresent()) {
-            String familyName = savedUser.getUsername() + "的家庭";
-            familyService.createFamily(savedUser.getId(), familyName, "CNY");
-        }
+        familyService.ensureFamily(savedUser.getId());
 
         // 生成token - 使用手机号作为subject，用户ID作为额外信息
         String token = jwtTokenProvider.generateToken(user.getPhoneNumber(), user.getId());

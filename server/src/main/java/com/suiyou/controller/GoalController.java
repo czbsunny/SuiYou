@@ -3,12 +3,11 @@ package com.suiyou.controller;
 import com.suiyou.dto.goal.CreateGoalDTO;
 import com.suiyou.dto.goal.GoalRespDTO;
 import com.suiyou.service.GoalService;
+import com.suiyou.security.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +20,10 @@ public class GoalController {
     @Autowired
     private GoalService goalService;
 
-    // 获取用户的所有目标
     @GetMapping
     public ResponseEntity<?> getUserGoals() {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             List<GoalRespDTO> goals = goalService.getUserGoals(userId);
             return ResponseEntity.ok(Map.of(
                 "goals", goals,
@@ -40,12 +37,10 @@ public class GoalController {
         }
     }
 
-    // 获取单个目标详情
     @GetMapping("/{id}")
     public ResponseEntity<?> getGoalById(@PathVariable Long id) {
         try {
-            // 从Security上下文中获取用户ID
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             GoalRespDTO goal = goalService.getGoalById(id, userId);
             return ResponseEntity.ok(Map.of(
                 "goal", goal
@@ -58,13 +53,11 @@ public class GoalController {
         }
     }
 
-    // 创建新目标
     @PostMapping
     public ResponseEntity<?> createGoal(@Valid @RequestBody CreateGoalDTO goalDTO) {
         try {
-            Long userId = getCurrentUserId();
-            
-            GoalRespDTO goalRespDTO  = goalService.createGoal(goalDTO, userId);
+            Long userId = SecurityUtils.getCurrentUserId();
+            GoalRespDTO goalRespDTO = goalService.createGoal(goalDTO, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "message", "目标创建成功",
                 "goal", goalRespDTO
@@ -77,11 +70,10 @@ public class GoalController {
         }
     }
 
-    // 删除目标
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteGoal(@PathVariable Long id) {
         try {
-            Long userId = getCurrentUserId();
+            Long userId = SecurityUtils.getCurrentUserId();
             goalService.deleteGoal(id, userId);
             return ResponseEntity.ok(Map.of(
                 "message", "目标删除成功"
@@ -91,21 +83,6 @@ public class GoalController {
                 "error", "目标删除失败",
                 "message", e.getMessage()
             ));
-        }
-    }
-
-    /**
-     * 获取当前登录用户的ID
-     */
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("用户未登录");
-        }
-        try {
-            return Long.parseLong(authentication.getName());
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("无法从认证信息中获取用户ID");
         }
     }
 }

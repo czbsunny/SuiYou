@@ -20,7 +20,7 @@ public class UpdateAssetDTO {
 
     private Long accountId; // 关联的账户ID
 
-    private String institution; // 机构代码
+    private String instCode; // 机构代码
 
-    private String institutionIdentifier; // 机构唯一标识
+    private String accountNo; // 账号/卡号
 }

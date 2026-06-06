@@ -53,4 +53,13 @@ public class InstitutionController {
         }
         return new ResponseEntity<>(modules, HttpStatus.OK);
     }
+
+    @GetMapping("/{instCode}/account-types")
+    public ResponseEntity<List<String>> getAccountTypes(@PathVariable String instCode) {
+        List<String> types = assetConfigService.getAccountTypesByInstCode(instCode);
+        if (types == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(types, HttpStatus.OK);
+    }
 }

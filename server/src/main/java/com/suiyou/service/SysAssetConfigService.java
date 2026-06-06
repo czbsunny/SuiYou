@@ -1,4 +1,3 @@
-
 package com.suiyou.service;
 
 import com.suiyou.dto.CategoryRespDTO;
@@ -13,6 +12,7 @@ import com.suiyou.dto.account.CategoryInstitutionRelationRespDTO;
 import java.util.List;
 
 public interface SysAssetConfigService {
+    List<String> getAccountTypesByInstCode(String instCode);
     List<AssetCategoryRespDTO> getAssetCategoryTree();
     List<InstitutionRespDTO> getAllInstitutions();
     List<InstitutionRespDTO> getInstitutionsByType(String typeCode);

@@ -20,6 +20,7 @@ import com.suiyou.model.SysCategoryInstitutionRelation;
 import com.suiyou.model.SysInstitution;
 import com.suiyou.model.SysCategory;
 import com.suiyou.model.SysInstitutionType;
+import com.suiyou.model.enums.AccountType;
 import com.suiyou.service.SysAssetConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -58,6 +59,21 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
 
     @Autowired
     private SysInstitutionTypeRepository institutionTypeRepository;
+
+    @Override
+    public List<String> getAccountTypesByInstCode(String instCode) {
+        SysInstitution institution = institutionRepository.findByInstCode(instCode);
+        if (institution == null) {
+            return null;
+        }
+        String instType = institution.getInstType();
+        if (instType == null || instType.trim().isEmpty()) {
+            return List.of();
+        }
+        return AccountType.getByInstitutionType(instType).stream()
+                .map(at -> at.name() + ":" + at.getDescription())
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<AssetCategoryRespDTO> getAssetCategoryTree() {
@@ -138,24 +154,32 @@ public class SysAssetConfigServiceImpl implements SysAssetConfigService {
         return toInstitutionRespDTO(entity);
     }
 
+    private InstitutionTypeRespDTO toInstitutionTypeRespDTO(SysInstitutionType type) {
+        List<String> accountTypes = AccountType.getByInstitutionType(type.getTypeCode())
+                .stream()
+                .map(at -> at.name() + ":" + at.getDescription())
+                .collect(Collectors.toList());
+        return InstitutionTypeRespDTO.builder()
+                .id(type.getId())
+                .typeCode(type.getTypeCode())
+                .typeName(type.getTypeName())
+                .description(type.getDescription())
+                .sortOrder(type.getSortOrder())
+                .iconUrl(type.getIconUrl())
+                .themeColor(type.getThemeColor())
+                .accountTypes(accountTypes)
+                .build();
+    }
+
     private InstitutionRespDTO toInstitutionRespDTO(SysInstitution entity) {
         InstitutionTypeRespDTO typeDto = null;
         if (entity.getInstType() != null) {
             Optional<SysInstitutionType> typeOpt = institutionTypeRepository.findByTypeCode(entity.getInstType());
             if (typeOpt.isPresent()) {
-                SysInstitutionType type = typeOpt.get();
-                typeDto = InstitutionTypeRespDTO.builder()
-                        .id(type.getId())
-                        .typeCode(type.getTypeCode())
-                        .typeName(type.getTypeName())
-                        .description(type.getDescription())
-                        .sortOrder(type.getSortOrder())
-                        .iconUrl(type.getIconUrl())
-                        .themeColor(type.getThemeColor())
-                        .build();
+                typeDto = toInstitutionTypeRespDTO(typeOpt.get());
             }
         }
-        
+
         return InstitutionRespDTO.builder()
                 .id(entity.getId())
                 .instCode(entity.getInstCode())

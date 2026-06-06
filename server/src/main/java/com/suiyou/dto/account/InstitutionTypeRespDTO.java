@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class InstitutionTypeRespDTO {
     private Integer sortOrder;
     private String iconUrl;
     private String themeColor;
+    private List<String> accountTypes;
 }

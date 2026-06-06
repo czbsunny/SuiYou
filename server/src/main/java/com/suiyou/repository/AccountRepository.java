@@ -11,31 +11,26 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-    // 根据用户ID和状态查询账户（未删除的）
+
     List<Account> findByOwnerIdAndStatusAndDeletedFalse(Long ownerId, Integer status);
 
-    // 根据机构代码和机构唯一标识查询账户（未删除的）
-    Account findByInstitutionAndInstitutionIdentifierAndDeletedFalse(String institution, String institutionIdentifier);
+    Account findByInstCodeAndAccountNoAndDeletedFalse(String instCode, String accountNo);
 
-    // 根据用户ID、机构代码和机构唯一标识查询账户（未删除的）
-    Account findByOwnerIdAndInstitutionAndInstitutionIdentifierAndDeletedFalse(Long ownerId, String institution, String institutionIdentifier);
+    Account findByOwnerIdAndInstCodeAndAccountTypeAndAccountNoAndDeletedFalse(
+            Long ownerId, String instCode, String accountType, String accountNo);
 
-    // 根据用户ID和状态查询账户（包括已删除的）
+    Account findByOwnerIdAndInstCodeAndAccountNoAndDeletedFalse(Long ownerId, String instCode, String accountNo);
+
     List<Account> findByOwnerIdAndStatus(Long ownerId, Integer status);
 
-    // 根据用户ID查询所有未删除的账户（包括不同状态的）
     List<Account> findByOwnerIdAndDeletedFalse(Long ownerId);
 
-    // 根据机构代码和机构唯一标识查询账户（包括已删除的）
-    Account findByInstitutionAndInstitutionIdentifier(String institution, String institutionIdentifier);
+    Account findByInstCodeAndAccountNo(String instCode, String accountNo);
 
-    // 根据用户ID、机构代码和机构唯一标识查询账户（包括已删除的）
-    Account findByOwnerIdAndInstitutionAndInstitutionIdentifier(Long ownerId, String institution, String institutionIdentifier);
-    
-    // 根据用户ID和机构查询账户（未删除的）
-    List<Account> findByOwnerIdAndInstitutionAndDeletedFalse(Long ownerId, String institution);
+    Account findByOwnerIdAndInstCodeAndAccountNo(Long ownerId, String instCode, String accountNo);
 
-    // 获取用户活跃账户的最大排序值
+    List<Account> findByOwnerIdAndInstCodeAndDeletedFalse(Long ownerId, String instCode);
+
     @Query("SELECT MAX(a.sortOrder) FROM Account a WHERE a.ownerId = :ownerId AND a.status = :status AND a.deleted = false")
     Integer findMaxSortOrderByOwnerIdAndStatusAndDeletedFalse(@Param("ownerId") Long ownerId, @Param("status") Integer status);
 }
