@@ -7,7 +7,7 @@ import lombok.Data;
 public class WechatLoginDTO {
     @NotBlank(message = "微信登录凭证不能为空")
     private String code;
-    
+
     private String nickname;
     private String avatar;
     private Integer gender;

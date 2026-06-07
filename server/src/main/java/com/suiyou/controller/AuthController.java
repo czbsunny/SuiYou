@@ -16,7 +16,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    // 用户注册
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         try {
@@ -31,7 +30,6 @@ public class AuthController {
         }
     }
 
-    // 用户登录
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
@@ -45,7 +43,6 @@ public class AuthController {
         }
     }
 
-    // 微信登录
     @PostMapping("/wechat-login")
     public ResponseEntity<?> wechatLogin(@Valid @RequestBody WechatLoginDTO wechatLoginDTO) {
         try {
@@ -60,8 +57,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
-    // 获取当前用户信息（需要认证）
+
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestAttribute("userId") Long userId) {
         return userService.getUserById(userId)
@@ -78,16 +74,12 @@ public class AuthController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 修改用户信息（需要认证）
     @PutMapping("/me")
     public ResponseEntity<?> updateUserInfo(@RequestAttribute("userId") Long userId, @Valid @RequestBody UpdateUserInfoDTO updateUserInfoDTO) {
         return userService.getUserById(userId)
                 .map(user -> {
-                    // 更新用户昵称
                     user.setUsername(updateUserInfoDTO.getUsername());
-                    // 保存更新
                     User updatedUser = userService.updateUser(user);
-                    // 构建响应
                     LoginResponseDTO.UserInfoDTO userInfo = new LoginResponseDTO.UserInfoDTO();
                     userInfo.setId(updatedUser.getId());
                     userInfo.setPhoneNumber(updatedUser.getPhoneNumber());

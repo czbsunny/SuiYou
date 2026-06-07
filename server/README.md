@@ -1,33 +1,45 @@
-# server（Java 17 最小示例服务）
+# SuiYou Server (v2)
 
-这是一个使用 Java 17 + Spring Boot 的示例服务，包含微信小程序登录/注册与手机号登录（仅登陆，不提供手机号注册）。
+极简后端服务，第一阶段仅提供鉴权（注册 / 登录 / 微信登录 / JWT / 用户信息），其他业务模块后续逐步迁入。
 
-构建与运行：
+## 技术栈
+
+- Java 17
+- Spring Boot 3.2.0
+- Spring Security + JWT (jjwt 0.11.5)
+- Spring Data JPA + MySQL
+- Lombok / Validation
+
+## 运行
 
 ```bash
-cd server
-# 使用 Maven 构建
-mvn package
-# 运行
-java -jar target/server-1.0.0.jar
+./build.sh
+./start.sh
 ```
 
-接口说明（示例）：
+Windows:
 
-- `POST /auth/wx-login`：微信小程序登录与注册接口（若 openid 不存在则自动注册）。请求体示例：
-
-```json
-{ "code": "小程序登录时获取的 code", "nickname":"昵称", "avatar":"头像url" }
+```bat
+build.bat
+start.bat
 ```
 
-- `POST /auth/phone-login`：手机号登录（只允许已存在的手机号登录，不支持注册）。请求体示例：
+默认端口 8080，context-path `/api`。
 
-```json
-{ "phone": "13800000000" }
+## 健康检查
+
+```bash
+curl http://localhost:8080/api/health
 ```
 
-说明与配置：
+## 鉴权接口
 
-- `server/src/main/resources/application.properties` 包含 `wechat.appid` 与 `wechat.secret` 配置；如果未配置或 `wechat.mock=true`（默认），服务器会返回一个模拟 `openid`，方便本地开发与微信公众平台审核。若要对接真是微信服务，请填入 `appid` 与 `secret` 并将 `wechat.mock` 设为 `false`。
+| Method | Path | 说明 | 鉴权 |
+|--------|------|------|------|
+| POST | /api/auth/register | 手机号注册 | 否 |
+| POST | /api/auth/login | 手机号密码登录 | 否 |
+| POST | /api/auth/wechat-login | 微信小程序登录 | 否 |
+| GET  | /api/auth/me | 当前用户信息 | 是 |
+| PUT  | /api/auth/me | 更新昵称 | 是 |
 
-数据存储：示例使用内存仓库（仅用于演示）。生产环境应替换为数据库实现并加入鉴权（JWT/Redis 会话等）、验证码、HTTPS、日志和安全校验。
+Bearer Token 放在 `Authorization: Bearer <jwt>`。

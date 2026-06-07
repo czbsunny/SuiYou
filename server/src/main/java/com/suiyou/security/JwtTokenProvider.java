@@ -17,16 +17,14 @@ public class JwtTokenProvider {
 
     @Value("${app.jwtExpirationInMs:86400000}")
     private int jwtExpirationInMs;
-    
+
     @Value("${app.jwtSecret:SuiYouSecretKeyForJWTTokenGenerationAndValidationMustBeAtLeast64Characters!}")
     private String jwtSecret;
-    
-    // 使用配置的密钥创建HS512算法密钥
+
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    // 生成token
     public String generateToken(String phoneNumber, Long userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
@@ -43,7 +41,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // 从token中获取用户名
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -54,7 +51,6 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    // 从token中获取用户ID
     public Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -65,7 +61,6 @@ public class JwtTokenProvider {
         return claims.get("userId", Long.class);
     }
 
-    // 验证token有效性
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -74,7 +69,6 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            // token无效
             return false;
         }
     }

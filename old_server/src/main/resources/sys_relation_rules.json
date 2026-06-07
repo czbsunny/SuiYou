@@ -1,0 +1,88 @@
+{
+  "typeRules": {
+    "BANK": {
+      "required": ["DEBIT_CARD"],
+      "default": ["CASH_PLUS", "TIME_DEPOSIT"],
+      "optional": ["BANK_PRODUCT", "CREDIT_CARD", "MORTGAGE", "CONSUMER_LOAN", "MEDICAL_INSURANCE", "PENSION_ACCOUNT"]
+    },
+    "INTERNET_BANK": {
+      "required": ["DEBIT_CARD"],
+      "default": ["TIME_DEPOSIT"],
+      "optional": ["BANK_PRODUCT", "CONSUMER_LOAN"]
+    },
+    "FOREIGN_BANK": {
+      "required": ["DEBIT_CARD"],
+      "default": ["TIME_DEPOSIT"],
+      "optional": ["BANK_PRODUCT", "CREDIT_CARD", "MORTGAGE"]
+    },
+    "SECURITY": {
+      "required": [],
+      "default": ["STOCK", "FUND"],
+      "optional": ["PRIVATE_FUND", "PORTFOLIO"]
+    },
+    "FUND_PLATFORM": {
+      "required": [],
+      "default": ["FUND"],
+      "optional": ["PORTFOLIO"]
+    },
+    "INSURANCE": {
+      "required": [],
+      "default": ["SAVING_INSURANCE"],
+      "optional": []
+    },
+    "PAYMENT": {
+      "required": [],
+      "default": [],
+      "optional": ["BALANCE", "CHANGE", "YUEBAO", "MINIFUND", "FUND", "WALLET"]
+    },
+    "FINTECH": {
+      "required": [],
+      "default": [],
+      "optional": ["CONSUMER_LOAN", "INTERNET_CREDIT"]
+    }
+  },
+  "instRules": {
+    "ALIPAY": {
+      "required": ["BALANCE"],
+      "default": ["YUEBAO"],
+      "optional": ["XIAOHEBAO", "FUND", "GOLD_ACCUMULATION"]
+    },
+    "WECHAT": {
+      "required": ["CHANGE"],
+      "default": ["MINIFUND"],
+      "optional": ["FUND", "GOLD_ACCUMULATION"]
+    },
+    "MEITUAN": {
+      "required": [],
+      "default": [],
+      "optional": ["CONSUMER_LOAN", "WALLET"]
+    },
+    "DOUYIN": {
+      "required": [],
+      "default": [],
+      "optional": ["WALLET"]
+    },
+    "JDFINANCE": {
+      "required": [],
+      "default": [],
+      "optional": ["CONSUMER_LOAN", "GOLD_ACCUMULATION"]
+    },
+    "DUXIAOMAN": {
+      "required": [],
+      "default": [],
+      "optional": ["INTERNET_CREDIT"]
+    },
+    "360SHUKE": {
+      "required": [],
+      "default": [],
+      "optional": ["INTERNET_CREDIT"]
+    }
+  },
+  "categoryRules": {
+    "HOUSING_FUND": ["ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC", "CMB", "CITIC_BANK", "SPDB", "CIB", "BOB", "BOS"],
+    "PRIVATE_PENSION": ["ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC", "CMB", "CITIC_BANK", "SPDB", "CIB", "CMBC", "CEB", "HXB", "CGB", "PAB", "CZB", "CBHB", "HFB", "BOB", "BOS", "JSB", "NBCB", "NJCB"],
+    "GOLD_ACCUMULATION": ["ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC", "CMB", "SPDB", "CIB", "PAB", "ALIPAY", "WECHAT", "JDFINANCE"],
+    "INTERNET_CREDIT": ["ALIPAY", "WECHAT", "JDFINANCE", "DOUYIN", "MEITUAN", "360SHUKE", "DUXIAOMAN"],
+    "WALLET": ["DOUYIN", "MEITUAN"]
+  }
+}

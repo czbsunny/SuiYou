@@ -21,12 +21,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("用户不存在: " + phoneNumber));
-        
-        // 检查用户是否已删除
+
         if (user.getIsDeleted() != null && user.getIsDeleted() == 1) {
             throw new UsernameNotFoundException("用户已被删除: " + phoneNumber);
         }
-        
+
         return new org.springframework.security.core.userdetails.User(
                 user.getPhoneNumber(),
                 user.getPasswordHash(),

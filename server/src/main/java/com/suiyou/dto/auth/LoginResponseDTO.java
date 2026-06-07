@@ -6,7 +6,7 @@ import lombok.Data;
 public class LoginResponseDTO {
     private String token;
     private UserInfoDTO user;
-    
+
     @Data
     public static class UserInfoDTO {
         private Long id;

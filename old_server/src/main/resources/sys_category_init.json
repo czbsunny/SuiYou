@@ -1,0 +1,155 @@
+[
+  {
+    "categoryCode": "CATERING",
+    "name": "食品餐饮",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/catering.png",
+    "sortOrder": 10,
+    "children": [
+      { "categoryCode": "BREAKFAST", "name": "早餐", "iconUrl": "/static/transfers/breakfast.png", "sortOrder": 1, "description": "早餐" },
+      { "categoryCode": "LUNCH", "name": "午餐", "iconUrl": "/static/transfers/lunch.png", "sortOrder": 2, "description": "中餐" },
+      { "categoryCode": "DINNER", "name": "晚餐", "iconUrl": "/static/transfers/dinner.png", "sortOrder": 3, "description": "晚餐" },
+      { "categoryCode": "NIGHT_SNACK", "name": "宵夜", "iconUrl": "/static/transfers/nightsnack.png", "sortOrder": 4, "description": "宵夜" },
+      { "categoryCode": "BEVERAGES", "name": "酒水", "iconUrl": "/static/transfers/beverages.png", "sortOrder": 5, "description": "酒水" },
+      { "categoryCode": "DRINK", "name": "奶茶", "iconUrl": "/static/transfers/drink‌.png", "sortOrder": 6, "description": "奶茶" },
+      { "categoryCode": "SNACK", "name": "零食", "iconUrl": "/static/transfers/snack.png", "sortOrder": 7, "description": "零食" },
+      { "categoryCode": "FRUIT", "name": "水果", "iconUrl": "/static/transfers/fruit.png", "sortOrder": 8, "description": "水果" },
+      { "categoryCode": "MILK", "name": "牛奶", "iconUrl": "/static/transfers/milk.png", "sortOrder": 9, "description": "牛奶" }
+    ]
+  },
+  {
+    "categoryCode": "SHOPPING",
+    "name": "购物消费",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/shopping.png",
+    "sortOrder": 20,
+    "children": [
+      { "categoryCode": "MAKEUP", "name": "个护美妆", "iconUrl": "/static/transfers/makeup‌.png", "sortOrder": 1, "description": "个护美妆" },
+      { "categoryCode": "HOUSEHOLD", "name": "日常家居", "iconUrl": "/static/transfers/household.png", "sortOrder": 2, "description": "日常家居" },
+      { "categoryCode": "MOBILE", "name": "手机数码", "iconUrl": "/static/transfers/mobile.png", "sortOrder": 3, "description": "手机数码" },
+      { "categoryCode": "TOPUP", "name": "充值订阅", "iconUrl": "/static/transfers/topup.png", "sortOrder": 4, "description": "充值订阅" },
+      { "categoryCode": "APPLIANCES", "name": "家用电器", "iconUrl": "/static/transfers/appliances.png", "sortOrder": 5, "description": "家用电器" },
+      { "categoryCode": "BABY", "name": "母婴玩具", "iconUrl": "/static/transfers/baby.png", "sortOrder": 6, "description": "母婴玩具" },
+      { "categoryCode": "CLOTHES", "name": "服饰", "iconUrl": "/static/transfers/clothes‌.png", "sortOrder": 7, "description": "衣服裤袜" },
+      { "categoryCode": "PET", "name": "宠物用品", "iconUrl": "/static/transfers/pet.png", "sortOrder": 8, "description": "宠物用品" },
+      { "categoryCode": "DECORATION", "name": "装修装饰", "iconUrl": "/static/transfers/decoration.png", "sortOrder": 9,"description": "装修装饰" }
+    ]
+  },
+
+  {
+    "categoryCode": "transportation",
+    "name": "出行交通",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/transportation.png",
+    "sortOrder": 30,
+    "children": [
+      { "categoryCode": "TAXI", "name": "打车", "iconUrl": "/static/transfers/taxi.png", "sortOrder": 1, "description": "打车" },
+      { "categoryCode": "BUS", "name": "公共交通", "iconUrl": "/static/transfers/bus.png", "sortOrder": 2, "description": "公交地铁" },
+      { "categoryCode": "TRAIN", "name": "火车高铁", "iconUrl": "/static/transfers/train.png", "sortOrder": 3, "description": "火车高铁" },
+      { "categoryCode": "AIRPLANE", "name": "飞机", "iconUrl": "/static/transfers/airplane.png", "sortOrder": 4, "description": "飞机" },
+      { "categoryCode": "OIL", "name": "加油充电", "iconUrl": "/static/transfers/oil.png", "sortOrder": 5, "description": "加油充电" },
+      { "categoryCode": "PARKING", "name": "停车费", "iconUrl": "/static/transfers/parking.png", "sortOrder": 6, "description": "停车费" },
+      { "categoryCode": "MAINTENANCE", "name": "保养修车", "iconUrl": "/static/transfers/maintenance.png", "sortOrder": 7, "description": "保养修车" },
+      { "categoryCode": "CAR_LOAN", "name": "车贷", "iconUrl": "/static/transfers/car_loan.png", "sortOrder": 8, "description": "车贷" },
+      { "categoryCode": "INSURANCE", "name": "车险", "iconUrl": "/static/transfers/insurance.png", "sortOrder": 9, "description": "车险" }
+    ]
+  },
+  {
+    "categoryCode": "RECREATION",
+    "name": "休闲娱乐",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/recreation.png",
+    "sortOrder": 40, 
+    "children": [
+      { "categoryCode": "TRAVEL", "name": "旅游度假", "iconUrl": "/static/transfers/travel.png", "sortOrder": 1, "description": "旅游" },
+      { "categoryCode": "FILM", "name": "电影唱歌", "iconUrl": "/static/transfers/film.png", "sortOrder": 2, "description": "电影" },
+      { "categoryCode": "PENSION_ACCOUNT", "name": "足浴按摩", "iconUrl": "/static/transfers/massage.png", "sortOrder": 3, "description": "足浴按摩" },
+      { "categoryCode": "CONCERT", "name": "演出表演", "iconUrl": "/static/transfers/concert.png", "sortOrder": 4, "description": "演出表演" },
+      { "categoryCode": "HAIRDRESSING", "name": "理发造型", "iconUrl": "/static/transfers/hairdressing.png", "sortOrder": 5, "description": "理发造型" }
+    ]
+  },
+  {
+    "categoryCode": "DOMESTICITY",
+    "name": "居家生活",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/domesticity.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "HYDRO_POWER", "name": "水电", "iconUrl": "/static/transfers/hydropower.png", "sortOrder": 1, "description": "水电" },
+      { "categoryCode": "GAS", "name": "燃气", "iconUrl": "/static/transfers/gas.png", "sortOrder": 2, "description": "燃气" },
+      { "categoryCode": "RENT", "name": "房租", "iconUrl": "/static/transfers/rent.png", "sortOrder": 3, "description": "房租" },
+      { "categoryCode": "PROPERTY", "name": "物业费", "iconUrl": "/static/transfers/property.png", "sortOrder": 4, "description": "物业费" },
+      { "categoryCode": "HOUSE_LOAN", "name": "房贷", "iconUrl": "/static/transfers/house_loan.png", "sortOrder": 5, "description": "房贷" },
+      { "categoryCode": "HOUSEKEEPING", "name": "家政清洁", "iconUrl": "/static/transfers/housekeeping.png", "sortOrder": 6, "description": "家政清洁" }
+    ]
+  },
+  {
+    "categoryCode": "SOCIALIZE",
+    "name": "人情往来",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/socialize.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "GIFT", "name": "礼物", "iconUrl": "/static/transfers/gift.png", "sortOrder": 1, "description": "礼物" },
+      { "categoryCode": "MONETARY_GIFT", "name": "礼金", "iconUrl": "/static/transfers/monetarygift.png", "sortOrder": 3, "description": "礼金" },
+      { "categoryCode": "COURIER", "name": "过节送礼", "iconUrl": "/static/transfers/courier.png", "sortOrder": 99, "description": "过节送礼" },
+      { "categoryCode": "RETIREMENT", "name": "孝敬长辈", "iconUrl": "/static/transfers/retirement.png", "sortOrder": 5, "description": "孝敬长辈" },
+      { "categoryCode": "RED_ENVELOPE", "name": "红包", "iconUrl": "/static/transfers/redenvelope.png", "sortOrder": 2, "description": "红包" },
+      { "categoryCode": "TRANSFER", "name": "转账", "iconUrl": "/static/transfers/transfer.png", "sortOrder": 4, "description": "转账" }
+    ]
+  },
+  {
+    "categoryCode": "HEALTHCARE",
+    "name": "健康医疗",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/healthcare.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "MEDICAL", "name": "医疗", "iconUrl": "/static/transfers/medical.png", "sortOrder": 1, "description": "医疗" },
+      { "categoryCode": "MEDICINE", "name": "医药", "iconUrl": "/static/transfers/medicine.png", "sortOrder": 2, "description": "医药" },
+      { "categoryCode": "SUPPLEMENT", "name": "保健品", "iconUrl": "/static/transfers/supplement.png", "sortOrder": 3, "description": "保健品" },
+      { "categoryCode": "CHECKUP", "name": "体检", "iconUrl": "/static/transfers/checkup.png", "sortOrder": 4, "description": "体检" }
+    ]
+  },
+  {
+    "categoryCode": "EDUCATION",
+    "name": "教育",
+    "groupType": "EXPENSE",
+    "iconUrl": "/static/transfers/education.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "TUITION", "name": "学费", "iconUrl": "/static/transfers/tuition.png", "sortOrder": 1, "description": "学费" },
+      { "categoryCode": "STATIONERY", "name": "文具资料", "iconUrl": "/static/transfers/stationery.png", "sortOrder": 2, "description": "文具资料" },
+      { "categoryCode": "TRAINING", "name": "培训费", "iconUrl": "/static/transfers/training.png", "sortOrder": 3, "description": "培训费" },
+      { "categoryCode": "EXAMINATION", "name": "考证费", "iconUrl": "/static/transfers/examination.png", "sortOrder": 4, "description": "考证费" }
+    ]
+  },
+  {
+    "categoryCode": "JOB_INCOME",
+    "name": "职业报酬",
+    "groupType": "INCOME",
+    "iconUrl": "/static/transfers/job.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "SALARY", "name": "工资", "iconUrl": "/static/transfers/salary.png", "sortOrder": 1, "description": "工资" },
+      { "categoryCode": "BONUS", "name": "奖金", "iconUrl": "/static/transfers/bonus.png", "sortOrder": 2, "description": "奖金" },
+      { "categoryCode": "OVERTIME", "name": "加班费", "iconUrl": "/static/transfers/overtime.png", "sortOrder": 3, "description": "加班费" },
+      { "categoryCode": "BYWORK", "name": "副业", "iconUrl": "/static/transfers/bywork.png", "sortOrder": 4, "description": "副业" },
+      { "categoryCode": "SIDEHUSTLE", "name": "兼职", "iconUrl": "/static/transfers/sidehustle.png", "sortOrder": 4, "description": "兼职" }
+    ]
+  },
+  {
+    "categoryCode": "OTHER_INCOME",
+    "name": "其他收入",
+    "groupType": "INCOME",
+    "iconUrl": "/static/transfers/otherincome.png",
+    "sortOrder": 50,
+    "children": [
+      { "categoryCode": "R_RENT", "name": "租金", "iconUrl": "/static/transfers/rent.png", "sortOrder": 1, "description": "租金" },
+      { "categoryCode": "R_RED_ENVELOPE", "name": "红包", "iconUrl": "/static/transfers/redenvelope.png", "sortOrder": 1, "description": "红包" },
+      { "categoryCode": "R_MONETARY_GIFT", "name": "礼金", "iconUrl": "/static/transfers/monetarygift.png", "sortOrder": 4, "description": "礼金" },
+      { "categoryCode": "R_MEDIA_INCOME", "name": "自媒体", "iconUrl": "/static/transfers/media.png", "sortOrder": 2, "description": "自媒体" },
+      { "categoryCode": "R_ROYALTY", "name": "版权费", "iconUrl": "/static/transfers/royalty.png", "sortOrder": 3, "description": "版权费" }
+    ]
+  }
+]

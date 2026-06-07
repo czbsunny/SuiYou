@@ -27,82 +27,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // 获取请求路径
         String requestPath = request.getRequestURI();
 
-        // 如果是无需认证的路径，直接跳过JWT验证
         if (isPublicPath(requestPath)) {
             filterChain.doFilter(request, response);
             return;
         }
-        
+
         try {
-            // 从请求头中获取token
             String token = getJwtFromRequest(request);
 
-            // 如果token为空
             if (token == null) {
                 logger.warn("JWT token is missing for path: {}", requestPath);
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token is missing");
                 return;
             }
 
-            // 验证token
             if (jwtTokenProvider.validateToken(token)) {
-                // 获取用户ID
                 Long userId = jwtTokenProvider.getUserIdFromJWT(token);
-                String username = jwtTokenProvider.getUsernameFromJWT(token);
-                
-                // 将用户ID设置到请求属性中
+
                 request.setAttribute("userId", userId);
 
-                // 创建认证对象
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userId.toString(), null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // 设置认证信息到Spring Security上下文
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                
-                // 继续过滤器链
+
                 filterChain.doFilter(request, response);
             } else {
-                // token无效
                 logger.warn("JWT token is invalid for path: {}", requestPath);
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token is invalid");
             }
         } catch (Exception ex) {
-            // 如果token验证失败
             logger.error("JWT token validation failed: {}", ex.getMessage(), ex);
             SecurityContextHolder.clearContext();
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token authentication failed: " + ex.getMessage());
         }
     }
-    
-    // 发送JSON格式的错误响应
+
     private void sendErrorResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
         response.setStatus(statusCode);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        
+
         String jsonResponse = String.format("{\"error\":\"%s\",\"status\":%d}", message, statusCode);
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();
     }
-    
-    // 检查路径是否为无需认证的公开路径
+
     private boolean isPublicPath(String requestPath) {
-        return requestPath.equals("/api/auth/register") || 
-               requestPath.equals("/api/auth/login") || 
-               requestPath.equals("/api/auth/wechat-login") ||
-               requestPath.equals("/api/config/manifest") ||
-               requestPath.equals("/api/config/fetch") ||
-               requestPath.equals("/api/health");
+        return requestPath.startsWith("/api/auth/")
+                || requestPath.equals("/api/health")
+                || requestPath.equals("/health");
     }
 
-    // 从请求头中提取token
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 

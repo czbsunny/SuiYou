@@ -13,12 +13,12 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**") // 只对 /api/ 接口生效
-                        .allowedOrigins("https://www.zhitouying.cn") // H5 前端域名
+                registry.addMapping("/api/**")
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("Authorization", "Content-Type", "Accept")
                         .allowCredentials(true)
-                        .maxAge(3600); // 缓存预检请求 1 小时
+                        .maxAge(3600);
             }
         };
     }
