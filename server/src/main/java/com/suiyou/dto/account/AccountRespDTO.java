@@ -7,15 +7,17 @@ import java.util.List;
 
 import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.model.Account;
+import com.suiyou.model.enums.AccountType;
 
 @Data
 public class AccountRespDTO {
     private Long id;
     private Long ownerId;
     private Long familyId;
-    private String instCode;
+    private InstitutionRespDTO institution;
     private String accountNo;
     private String accountType;
+    private String accountTypeName;
     private String accountName;
     private Integer status;
     private String visibleScope;
@@ -32,10 +34,14 @@ public class AccountRespDTO {
         dto.setId(account.getId());
         dto.setOwnerId(account.getOwnerId());
         dto.setFamilyId(account.getFamilyId());
-        dto.setInstCode(account.getInstCode());
         dto.setAccountNo(account.getAccountNo());
         dto.setAccountType(account.getAccountType());
         dto.setAccountName(account.getAccountName());
+        try {
+            dto.setAccountTypeName(AccountType.valueOf(account.getAccountType()).getDescription());
+        } catch (IllegalArgumentException e) {
+            dto.setAccountTypeName(account.getAccountType());
+        }
         dto.setStatus(account.getStatus());
         dto.setVisibleScope(account.getVisibleScope());
         dto.setIncludeInNetWorth(account.getIncludeInNetWorth());

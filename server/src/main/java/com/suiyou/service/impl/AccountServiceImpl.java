@@ -1,8 +1,9 @@
-package com.suiyou.service.impl;
+﻿package com.suiyou.service.impl;
 
-import com.suiyou.dto.account.AccountModuleCreateDTO;
+import com.suiyou.dto.account.AccountModuleDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.InstitutionRespDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.dto.asset.AssetRespDTO;
 import com.suiyou.model.Account;
@@ -97,13 +98,13 @@ public class AccountServiceImpl implements AccountService {
 
         Account saved = accountRepository.save(account);
 
-        List<AccountModuleCreateDTO> modules = createAccountDTO.getModules();
+        List<AccountModuleDTO> modules = createAccountDTO.getModules();
         if (modules != null && !modules.isEmpty()) {
-            for (AccountModuleCreateDTO m : modules) {
+            for (AccountModuleDTO m : modules) {
                 AccountModule module = new AccountModule();
                 module.setAccount(saved);
                 try {
-                    module.setAssetType(AssetType.valueOf(m.getAssetType()));
+                    module.setAssetType(AssetType.fromCategoryCode(m.getAssetType()));
                 } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("无效的资产类型: " + m.getAssetType());
                 }
@@ -127,6 +128,7 @@ public class AccountServiceImpl implements AccountService {
         return accounts.stream()
                 .map(account -> {
                     AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    fillInstitution(dto, account.getInstCode());
                     List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
                     dto.setAssets(assets.stream()
                             .map(AssetRespDTO::fromEntity)
@@ -142,6 +144,7 @@ public class AccountServiceImpl implements AccountService {
         return accounts.stream()
                 .map(account -> {
                     AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+                    fillInstitution(dto, account.getInstCode());
                     List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
                     dto.setAssets(assets.stream()
                             .map(AssetRespDTO::fromEntity)
@@ -158,6 +161,9 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
         AccountRespDTO dto = AccountRespDTO.fromEntity(account);
+        if (account != null) {
+            fillInstitution(dto, account.getInstCode());
+        }
         List<Asset> assets = assetRepository.findByAccountModule_AccountIdAndStatus(account.getId(), 1);
         dto.setAssets(assets.stream()
                 .map(AssetRespDTO::fromEntity)
@@ -200,7 +206,9 @@ public class AccountServiceImpl implements AccountService {
         }
 
         Account updatedAccount = accountRepository.save(account);
-        return AccountRespDTO.fromEntity(updatedAccount);
+        AccountRespDTO dto = AccountRespDTO.fromEntity(updatedAccount);
+        fillInstitution(dto, updatedAccount.getInstCode());
+        return dto;
     }
 
     @Override
@@ -294,6 +302,7 @@ public class AccountServiceImpl implements AccountService {
                 if (!account.getOwnerId().equals(userId)) {
                     throw new IllegalArgumentException("无权操作该账户: " + accountId);
                 }
+
                 if (account.getDeleted()) {
                     throw new IllegalArgumentException("账户已被删除: " + accountId);
                 }
@@ -307,4 +316,25 @@ public class AccountServiceImpl implements AccountService {
             }
         }
     }
+
+    private void fillInstitution(AccountRespDTO dto, String instCode) {
+        if (instCode == null || instCode.isBlank()) {
+            return;
+        }
+        SysInstitution inst = institutionRepository.findByInstCode(instCode);
+        if (inst != null) {
+            dto.setInstitution(InstitutionRespDTO.builder()
+                    .id(inst.getId())
+                    .instCode(inst.getInstCode())
+                    .instName(inst.getInstName())
+                    .shortName(inst.getShortName())
+                    .instType(inst.getInstType())
+                    .logoUrl(inst.getLogoUrl())
+                    .themeColor(inst.getThemeColor())
+                    .indexLetter(inst.getIndexLetter())
+                    .isHot(inst.getIsHot())
+                    .build());
+        }
+    }
 }
+

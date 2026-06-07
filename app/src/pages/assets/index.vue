@@ -1,12 +1,12 @@
 <template>
   <view class="page">
-    <scroll-view scroll-y class="scroll">
+    <scroll-view scroll-y class="scroll" @refresherrefresh="onRefresh" :refresher-enabled="true" :refresher-triggered="refreshing">
       <view class="content">
         <view class="asset-hero">
           <text class="eyebrow">家庭资产净值</text>
           <view class="amount-row">
             <text class="currency">¥</text>
-            <text class="hero-amount">12,480,500.00</text>
+            <text class="hero-amount">{{ formatNumber(totalNetWorth) }}</text>
           </view>
           <view class="chart">
             <svg class="chart-svg" viewBox="0 0 400 140" preserveAspectRatio="none">
@@ -43,19 +43,27 @@
           </view>
         </view>
 
-        <view class="account-list">
-          <view v-for="account in accounts" :key="account.name" class="account-card">
-            <view class="round-icon" :class="account.tone">{{ account.icon }}</view>
+        <view v-if="loading" class="loading-wrap">
+          <text class="loading-text">加载中...</text>
+        </view>
+        <view v-else-if="accounts.length === 0" class="empty-wrap">
+          <text class="empty-text">暂无账户，点击右上角 + 添加</text>
+        </view>
+        <view v-else class="account-list">
+          <view v-for="account in accounts" :key="account.id" class="account-card" @tap="handleAccountTap(account)">
+            <view class="account-logo-wrap" :style="account.logoBgStyle">
+              <image v-if="account.logoUrl" :src="account.logoUrl" mode="aspectFit" class="account-logo" />
+              <text v-else class="account-logo-placeholder">{{ account.logoLabel }}</text>
+            </view>
             <view class="account-info">
-              <text class="account-name">{{ account.name }}</text>
-              <text class="account-type">{{ account.type }}</text>
+              <text class="account-name">{{ account.line1 }}</text>
+              <text class="account-type">{{ account.line2 }}</text>
             </view>
             <view class="account-money">
-              <text class="balance">{{ account.balance }}</text>
-              <text v-if="account.change" class="change" :class="{ positive: account.change.startsWith('+') }">
-                {{ account.change }}
+              <text class="balance">{{ formatSignedNumber(account.balance) }}</text>
+              <text v-if="account.changeText" class="change" :class="{ positive: account.changePositive }">
+                {{ account.changeText }}
               </text>
-              <text v-else class="change neutral">--</text>
             </view>
           </view>
         </view>
@@ -65,7 +73,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import { getAccountList } from '@/api/modules/asset'
+
+const loading = ref(false)
+const refreshing = ref(false)
+const accounts = ref([])
 
 const getMonthLabel = (date) => {
   const month = date.getMonth() + 1
@@ -111,18 +125,117 @@ const chartDots = computed(() => {
   ]
 })
 
-const accounts = [
-  { name: '招商银行 (私行)', type: '储蓄账户 ·· 8842', balance: '¥2,450,000.00', change: '-¥12,400.00', icon: 'bank', tone: 'primary' },
-  { name: '中信证券', type: '美股/港股投资', balance: '¥4,120,500.00', change: '-¥29,700.50', icon: 'sec', tone: 'cream' },
-  { name: '上海静安府', type: '固定资产 (评估值)', balance: '¥3,744,150.00', change: '', icon: 'apt', tone: 'default' },
-  { name: '微信支付', type: '个人零钱', balance: '¥12,500.00', change: '+¥240.00', icon: 'pay', tone: 'primary' },
-  { name: '支付宝', type: '余额宝/余额', balance: '¥45,800.00', change: '+¥1,120.00', icon: 'wal', tone: 'blue' },
-  { name: '抖音支付', type: '抖音钱包', balance: '¥3,200.00', change: '-¥45.00', icon: 'dy', tone: 'default' },
-  { name: '中国建设银行信用卡', type: '账单日: 15日', balance: '-¥8,450.00', change: '已入账', icon: 'card', tone: 'red' }
-]
+const LIABILITY_TYPES = new Set([
+  'CREDIT_CARD', 'INTERNET_CREDIT', 'CONSUMER_LOAN',
+  'MORTGAGE', 'CAR_LOAN', 'PAYABLE'
+])
 
-const notify = () => {
-  uni.showToast({ title: '暂无新通知', icon: 'none' })
+const computeBalance = (account) => {
+  const assets = account.assets || []
+  let sum = 0
+  for (const a of assets) {
+    const v = Number(a.totalBalance || 0)
+    if (!isNaN(v)) sum += v
+  }
+  return sum
+}
+
+const computeChange = (_account) => 0
+
+const formatNumber = (value) => {
+  if (value === null || value === undefined || isNaN(Number(value))) return '0.00'
+  const num = Number(value)
+  return num.toLocaleString('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
+const formatSignedNumber = (value) => {
+  const num = Number(value || 0)
+  if (num < 0) return `-¥${formatNumber(Math.abs(num))}`
+  return `¥${formatNumber(num)}`
+}
+
+const totalNetWorth = computed(() => {
+  let sum = 0
+  for (const a of accounts.value) {
+    if (!a.includeInNetWorth) continue
+    const bal = Number(a.balance || 0)
+    if (!isNaN(bal)) sum += bal
+  }
+  return sum
+})
+
+const mapAccount = (account) => {
+  const institution = account.institution || {}
+  const instType = institution.instType
+  const shortName = institution.shortName || institution.instName || ''
+  const line1 = instType === 'BANK' && account.accountTypeName
+    ? `${shortName} · ${account.accountTypeName}`
+    : shortName
+  const line2 = [account.accountName, account.accountNo]
+    .filter(Boolean)
+    .join(' · ')
+
+  const balance = computeBalance(account)
+  const change = computeChange(account)
+  const assetTypes = (account.assets || []).map(a => a.assetType).filter(Boolean)
+  const mainAssetType = assetTypes[0] || account.accountType
+  const isLiability = LIABILITY_TYPES.has(mainAssetType) || balance < 0
+
+  const themeColor = institution.themeColor
+  const logoBgStyle = themeColor
+    ? { background: themeColor }
+    : {}
+
+  const logoLabel = (shortName || account.accountName || '账').charAt(0)
+
+  return {
+    id: account.id,
+    accountName: account.accountName,
+    accountTypeName: account.accountTypeName,
+    institution,
+    logoUrl: institution.logoUrl || '',
+    logoLabel,
+    logoBgStyle,
+    line1,
+    line2,
+    balance,
+    change,
+    changeText: change !== 0 ? (change > 0 ? `+¥${formatNumber(change)}` : `-¥${formatNumber(Math.abs(change))}`) : '',
+    changePositive: change > 0,
+    includeInNetWorth: account.includeInNetWorth !== false && !isLiability
+  }
+}
+
+const loadAccounts = async () => {
+  loading.value = true
+  try {
+    const resp = await getAccountList()
+    const list = resp?.data?.accounts || resp?.accounts || []
+    accounts.value = list.map(mapAccount)
+
+    accounts.value.sort((a, b) => {
+      if (a.includeInNetWorth && !b.includeInNetWorth) return -1
+      if (!a.includeInNetWorth && b.includeInNetWorth) return 1
+      return Math.abs(b.balance) - Math.abs(a.balance)
+    })
+  } catch (error) {
+    console.error('加载账户列表失败:', error)
+    uni.showToast({ title: '加载账户失败', icon: 'none' })
+  } finally {
+    loading.value = false
+  }
+}
+
+const onRefresh = async () => {
+  refreshing.value = true
+  try {
+    await loadAccounts()
+  } finally {
+    refreshing.value = false
+  }
 }
 
 const handleAddAccount = () => {
@@ -130,6 +243,14 @@ const handleAddAccount = () => {
     url: '/pages/accounts/search-institution'
   })
 }
+
+const handleAccountTap = (account) => {
+  uni.showToast({ title: `${account.line1} · 开发中`, icon: 'none' })
+}
+
+onShow(() => {
+  loadAccounts()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -247,6 +368,19 @@ const handleAddAccount = () => {
   filter: brightness(0) saturate(100%);
 }
 
+.loading-wrap,
+.empty-wrap {
+  padding: 80rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
+.loading-text,
+.empty-text {
+  color: $on-surface-variant;
+  font-size: $font-size-body-sm;
+}
+
 .account-list {
   display: flex;
   flex-direction: column;
@@ -261,43 +395,31 @@ const handleAddAccount = () => {
   box-shadow: $shadow-sm;
   display: flex;
   align-items: center;
-  gap: $font-size-body-sm;
+  gap: $spacing-3;
 }
 
-.round-icon {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
+.account-logo-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 20rpx;
+  background: $surface-container-low;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: $font-size-xs;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.account-logo {
+  width: 88rpx;
+  height: 88rpx;
+}
+
+.account-logo-placeholder {
+  color: rgba(#000, 0.55);
+  font-size: $font-size-headline-md;
   font-weight: 900;
-}
-
-.primary {
-  background: rgba($primary, 0.1);
-  color: $primary;
-}
-
-.cream {
-  background: #f3f0ea;
-  color: $tertiary;
-}
-
-.default {
-  background: $surface-container-low;
-  color: $on-surface-variant;
-}
-
-.blue {
-  background: #eaf1ff;
-  color: #2366e8;
-}
-
-.red {
-  background: rgba($profit, 0.09);
-  color: $profit;
+  line-height: 1;
 }
 
 .account-info {
@@ -305,24 +427,32 @@ const handleAddAccount = () => {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  overflow: hidden;
 }
 
 .account-name {
   color: $on-surface;
   font-size: $font-size-lg;
   font-weight: 900;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .account-type {
   margin-top: $spacing-1;
   color: $on-surface-variant;
   font-size: $font-size-sm;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .account-money {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .balance {

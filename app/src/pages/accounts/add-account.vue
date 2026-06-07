@@ -292,14 +292,14 @@ const handleConfirm = async () => {
   submitting.value = true
   try {
     const selectedModules = [
-      ...requiredModules.value.map(m => ({ assetType: m.groupType, moduleName: m.name })),
+      ...requiredModules.value.map(m => ({ assetType: m.categoryCode, moduleName: m.name })),
       ...defaultModules.value
         .filter(m => getModuleChecked(m, 'DEFAULT_SELECTED'))
-        .map(m => ({ assetType: m.groupType, moduleName: m.name })),
+        .map(m => ({ assetType: m.categoryCode, moduleName: m.name })),
       ...optionalModules.value
         .filter(m => getModuleChecked(m, 'OPTIONAL'))
-        .map(m => ({ assetType: m.groupType, moduleName: m.name }))
-    ]
+        .map(m => ({ assetType: m.categoryCode, moduleName: m.name }))
+    ].filter(m => m.assetType)
 
     const resp = await createAccount({
       instCode: instCode.value,
@@ -316,7 +316,7 @@ const handleConfirm = async () => {
     if (ok) {
       uni.showToast({ title: '添加成功', icon: 'success' })
       setTimeout(() => {
-        uni.navigateBack()
+        uni.switchTab({ url: '/pages/assets/index' })
       }, 1200)
     } else {
       uni.showToast({

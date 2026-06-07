@@ -19,5 +19,5 @@ public class CreateAccountDTO {
 
     private Boolean includeInNetWorth = true;
 
-    private List<AccountModuleCreateDTO> modules;
+    private List<AccountModuleDTO> modules;
 }
