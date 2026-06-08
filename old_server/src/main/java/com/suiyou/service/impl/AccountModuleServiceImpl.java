@@ -1,4 +1,4 @@
-﻿package com.suiyou.service.impl;
+package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.model.Account;
