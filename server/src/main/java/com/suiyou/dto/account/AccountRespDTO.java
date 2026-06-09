@@ -14,10 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class AccountRespDTO {
     private Long id;
-    private String instCode;
     private String accountNo;
-    private String accountType;
     private String accountName;
+    private String accountType;    
+    private String accountTypeName;
+    private String instCode;
+    private String instType;
+    private String instTypeName;
     private Boolean includeInNetWorth;
     private List<AccountModuleRespDTO> modules;
     private LocalDateTime createdAt;

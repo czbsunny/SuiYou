@@ -27,10 +27,11 @@ public class Account {
     @Column(name = "account_no", nullable = false, length = 64)
     private String accountNo;
 
+    @Column(name = "account_name", nullable = false, length = 64)
+    private String accountName;
+
     @Column(name = "account_type", nullable = false, length = 32, columnDefinition = "varchar(32) default 'DEBIT_CARD'")
     private String accountType = "DEBIT_CARD";
-    
-    private String accountName;
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Boolean includeInNetWorth = true;
@@ -44,6 +45,12 @@ public class Account {
     @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
     private Boolean deleted = false;
     
+    @Column(nullable = false, columnDefinition = "decimal(18,4) default 0.0000")
+    private Double amount = 0.00;
+    
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")
+    private String currency = "CNY";
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
