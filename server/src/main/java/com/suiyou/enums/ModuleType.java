@@ -12,25 +12,25 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum ModuleType {
 
-    CURRENT("CURRENT", "活期", 1, "/images/module/current.png"),
+    CURRENT("CURRENT", "活期", 1, "/static/assets/modules/current.png"),
 
-    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/images/module/current-plus.png"),
+    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/static/assets/modules/current-plus.png"),
 
-    BANK_PRODUCT("BANK_PRODUCT", "银行理财", 3, "/images/module/bank-product.png"),
+    BANK_PRODUCT("BANK_PRODUCT", "银行理财", 3, "/static/assets/modules/bank-product.png"),
 
-    TIME_DEPOSIT("TIME_DEPOSIT", "定存", 4, "/images/module/time-deposit.png"),
+    TIME_DEPOSIT("TIME_DEPOSIT", "定存", 4, "/static/assets/modules/time-deposit.png"),
 
-    FUND("FUND", "基金", 5, "/images/module/fund.png"),
+    FUND("FUND", "基金", 5, "/static/assets/modules/fund.png"),
 
-    STOCK("STOCK", "股票", 6, "/images/module/stock.png"),
+    STOCK("STOCK", "股票", 6, "/static/assets/modules/stock.png"),
 
-    GOLD("GOLD", "黄金", 7, "/images/module/gold.png"),
+    GOLD("GOLD", "黄金", 7, "/static/assets/modules/gold.png"),
 
-    LOAN("LOAN", "贷款", 8, "/images/module/loan.png"),
+    LOAN("LOAN", "贷款", 8, "/static/assets/modules/loan.png"),
 
-    CREDIT("CREDIT", "信用卡", 9, "/images/module/credit.png"),
+    CREDIT("CREDIT", "信用卡", 9, "/static/assets/modules/credit.png"),
 
-    INSURANCE("INSURANCE", "保险", 10, "/images/module/insurance.png");
+    INSURANCE("INSURANCE", "保险", 10, "/static/assets/modules/insurance.png");
 
     private final String code;
     private final String name;

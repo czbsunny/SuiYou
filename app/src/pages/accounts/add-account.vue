@@ -180,8 +180,8 @@ const accountForm = ref({
 const institutionModules = ref([])
 const selectedModules = ref([])
 
-const requiredModules = computed(() => institutionModules.value.filter(m => m.required))
-const optionalModules = computed(() => institutionModules.value.filter(m => !m.required))
+const requiredModules = computed(() => institutionModules.value.filter(m => m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
+const optionalModules = computed(() => institutionModules.value.filter(m => !m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
 
 const accountTypeOptions = computed(() => {
   return accountTypesRaw.value.map(item => {

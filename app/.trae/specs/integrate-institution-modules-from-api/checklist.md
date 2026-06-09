@@ -1,0 +1,9 @@
+- [x] 验证不再调用 `loadMockModules()` 函数
+- [x] 验证调用了 `getInstitutionModules(instCode)` API
+- [x] 验证 API 返回的 required 模块正确显示在「必选模块」分组
+- [x] 验证 API 返回的 defaultList 模块正确显示在「默认模块」分组
+- [x] 验证 API 返回的 optional 模块正确显示在「可选模块」分组
+- [x] 验证 API 失败时显示错误提示
+- [x] 验证模块选择/取消功能正常工作
+- [x] 验证必选模块不能取消选择
+- [x] 验证页面 UI 样式与之前保持一致

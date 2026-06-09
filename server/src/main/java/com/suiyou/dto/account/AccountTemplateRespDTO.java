@@ -15,4 +15,5 @@ public class AccountTemplateRespDTO {
     private Boolean required;
     private Boolean enabled;
     private Integer sortOrder;
+    private String iconUrl;
 }
