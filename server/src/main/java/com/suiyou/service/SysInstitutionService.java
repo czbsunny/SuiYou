@@ -1,19 +1,19 @@
 package com.suiyou.service;
 
-import com.suiyou.dto.account.InstitutionModuleRespDTO;
-import com.suiyou.dto.account.InstitutionRespDTO;
-import com.suiyou.dto.account.InstitutionTypeRespDTO;
+import com.suiyou.dto.account.AccountTemplateRespDTO;
+import com.suiyou.dto.account.InstRespDTO;
+import com.suiyou.dto.account.InstTypeRespDTO;
 
 import java.util.List;
 
 public interface SysInstitutionService {
-    List<InstitutionRespDTO> getAllInstitutions();
-    List<InstitutionRespDTO> getInstitutionsByType(String typeCode);
-    List<InstitutionRespDTO> getHotInstitutions();
-    InstitutionRespDTO getInstitutionByCode(String instCode);
-    InstitutionModuleRespDTO getInstitutionModules(String instCode);
-    List<String> getAccountTypesByInstCode(String instCode);
+    List<InstRespDTO> getAllInstitutions();
+    List<InstRespDTO> getInstitutionsByType(String typeCode);
+    List<InstRespDTO> getHotInstitutions();
+    InstRespDTO getInstitutionByCode(String instCode);
     
-    List<InstitutionTypeRespDTO> getAllInstitutionTypes();
-    InstitutionTypeRespDTO getInstitutionTypeByCode(String typeCode);
+    List<InstTypeRespDTO> getAllInstitutionTypes();
+    InstTypeRespDTO getInstitutionTypeByCode(String typeCode);
+    
+    List<AccountTemplateRespDTO> getAccountTemplates(String instCode, String accountType);
 }

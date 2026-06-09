@@ -192,18 +192,6 @@ const alphabet = computed(() => groupedInstitutions.value.map(g => g.indexLetter
 
 const getLogoBgClass = () => ''
 
-const getTypeName = (typeCode) => {
-  const typeMap = {
-    'BK': '银行',
-    'PY': '支付',
-    'ZQ': '证券',
-    'JJ': '基金平台',
-    'BX': '保险',
-    'OTHER': '其他'
-  }
-  return typeMap[typeCode] || typeCode || '其他'
-}
-
 const selectTab = async (tabCode) => {
   activeTab.value = tabCode
   activeLetter.value = '热'

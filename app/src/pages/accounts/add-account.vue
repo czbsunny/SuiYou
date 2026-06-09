@@ -28,6 +28,15 @@
           />
         </view>
 
+        <view class="form-item">
+          <text class="form-label">账户名称<text class="required-mark">*</text></text>
+          <input 
+            class="form-input" 
+            v-model="accountForm.accountName" 
+            placeholder="例如 招商银行工资卡"
+          />
+        </view>
+
         <view v-if="showAccountTypePicker" class="form-item">
           <text class="form-label">账户类型<text class="required-mark">*</text></text>
           <picker 
@@ -41,15 +50,6 @@
               <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
             </view>
           </picker>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label">账户名称<text class="required-mark">*</text></text>
-          <input 
-            class="form-input" 
-            v-model="accountForm.accountName" 
-            placeholder="例如 招商银行工资卡"
-          />
         </view>
 
         <view class="visibility-section">
@@ -96,78 +96,49 @@
           <view class="module-list">
             <view 
               v-for="module in requiredModules" 
-              :key="module.categoryCode || module.id"
+              :key="module.moduleType"
               class="module-card required-card"
             >
               <view class="module-icon-wrap primary-bg">
-                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
+                <image :src="module.iconUrl || '/static/images/default_icon.png'" class="module-icon" mode="aspectFit" />
               </view>
               <view class="module-info">
                 <view class="module-name-row">
-                  <text class="module-name">{{ module.name }}</text>
+                  <text class="module-name">{{ module.moduleName }}</text>
                   <view class="module-tag required-tag">必选</view>
                 </view>
-                <text class="module-desc">{{ module.description }}</text>
               </view>
               <image src="/static/images/lock.png" class="module-lock" mode="aspectFit" />
             </view>
           </view>
         </view>
 
-        <view v-if="defaultModules.length > 0" class="module-group">
-          <text class="group-label">默认模块</text>
-          <view class="module-list">
-            <view 
-              v-for="module in defaultModules" 
-              :key="module.categoryCode || module.id"
-              class="module-card"
-              @tap="toggleModule(module, !getModuleChecked(module, 'DEFAULT_SELECTED'))"
-            >
-              <view class="module-icon-wrap" :class="module.iconBgClass">
-                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
-              </view>
-              <view class="module-info">
-                <view class="module-name-row">
-                  <text class="module-name">{{ module.name }}</text>
-                  <view class="module-tag default-tag">默认</view>
-                </view>
-                <text class="module-desc">{{ module.description }}</text>
-              </view>
-              <view 
-                class="module-checkbox" 
-                :class="{ checked: getModuleChecked(module, 'DEFAULT_SELECTED') }"
-              >
-                <view v-if="getModuleChecked(module, 'DEFAULT_SELECTED')" class="check-icon">✓</view>
-              </view>
-            </view>
-          </view>
-        </view>
+        
 
         <view v-if="optionalModules.length > 0" class="module-group">
           <text class="group-label">可选模块</text>
           <view class="module-list">
             <view 
               v-for="module in optionalModules" 
-              :key="module.categoryCode || module.id"
+              :key="module.moduleType"
               class="module-card"
-              :class="{ disabled: module.disabled }"
-              @tap="!module.disabled && toggleModule(module, !getModuleChecked(module, 'OPTIONAL'))"
+              :class="{ disabled: !module.enabled }"
+              @tap="module.enabled && toggleModule(module, !getModuleChecked(module))"
             >
               <view class="module-icon-wrap default-bg">
-                <image :src="module.iconUrl" class="module-icon" mode="aspectFit" />
+                <image :src="module.iconUrl || '/static/images/default_icon.png'" class="module-icon" mode="aspectFit" />
               </view>
               <view class="module-info">
                 <view class="module-name-row">
-                  <text class="module-name">{{ module.name }}</text>
+                  <text class="module-name">{{ module.moduleName }}</text>
                   <view class="module-tag optional-tag">可选</view>
                 </view>
-                <text class="module-desc">{{ module.description }}</text>
               </view>
               <view 
                 class="module-checkbox" 
-                :class="{ checked: getModuleChecked(module, 'OPTIONAL') }"
+                :class="{ checked: getModuleChecked(module) }"
               >
-                <view v-if="getModuleChecked(module, 'OPTIONAL')" class="check-icon">✓</view>
+                <view v-if="getModuleChecked(module)" class="check-icon">✓</view>
               </view>
             </view>
           </view>
@@ -188,7 +159,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getInstitutionDetail, getInstitutionModules, createAccount, getAccountTypes } from '@/api/modules/asset'
+import { getInstitutionDetail, getAccountModules, createAccount } from '@/api/modules/asset'
 
 const instCode = ref('')
 const institution = ref(null)
@@ -209,14 +180,12 @@ const accountForm = ref({
 const institutionModules = ref([])
 const selectedModules = ref([])
 
-const requiredModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'REQUIRED'))
-const defaultModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'DEFAULT_SELECTED'))
-const optionalModules = computed(() => institutionModules.value.filter(m => m.selectionType === 'OPTIONAL'))
+const requiredModules = computed(() => institutionModules.value.filter(m => m.required))
+const optionalModules = computed(() => institutionModules.value.filter(m => !m.required))
 
 const accountTypeOptions = computed(() => {
-  return accountTypesRaw.value.map(raw => {
-    const [code, name] = raw.split(':')
-    return { code, name: name || code }
+  return accountTypesRaw.value.map(item => {
+    return { code: item.accountType, name: item.accountTypeName || item.accountType }
   })
 })
 
@@ -246,17 +215,14 @@ const canSubmit = computed(() => {
       && selectedAccountType.value.length > 0
 })
 
-const getModuleChecked = (module, type) => {
-  if (type === 'REQUIRED') return true
-  const key = module.categoryCode || module.id
-  if (selectedModules.value.includes(key)) {
-    return true
-  }
-  return type === 'DEFAULT_SELECTED'
+const getModuleChecked = (module) => {
+  if (module.required) return true
+  const key = module.moduleType || module.id
+  return selectedModules.value.includes(key)
 }
 
 const toggleModule = (module, checked) => {
-  const key = module.categoryCode || module.id
+  const key = module.moduleType || module.id
   if (checked) {
     if (!selectedModules.value.includes(key)) {
       selectedModules.value.push(key)
@@ -277,6 +243,7 @@ const handleAccountTypeChange = (e) => {
   const index = Number(e.detail.value)
   accountTypePickerIndex.value = index
   selectedAccountType.value = accountTypeOptions.value[index].code
+  loadModules()
 }
 
 const handleNetworthToggle = () => {
@@ -292,13 +259,10 @@ const handleConfirm = async () => {
   submitting.value = true
   try {
     const selectedModules = [
-      ...requiredModules.value.map(m => ({ assetType: m.categoryCode, moduleName: m.name })),
-      ...defaultModules.value
-        .filter(m => getModuleChecked(m, 'DEFAULT_SELECTED'))
-        .map(m => ({ assetType: m.categoryCode, moduleName: m.name })),
+      ...requiredModules.value.map(m => ({ assetType: m.moduleType, moduleName: m.moduleName })),
       ...optionalModules.value
-        .filter(m => getModuleChecked(m, 'OPTIONAL'))
-        .map(m => ({ assetType: m.categoryCode, moduleName: m.name }))
+        .filter(m => getModuleChecked(m))
+        .map(m => ({ assetType: m.moduleType, moduleName: m.moduleName }))
     ].filter(m => m.assetType)
 
     const resp = await createAccount({
@@ -337,30 +301,15 @@ const loadInstitution = async () => {
   
   loading.value = true
   try {
-    let loadedTypes = null
-    try {
-      const typeRes = await getAccountTypes(instCode.value)
-      if (typeRes && typeRes.data && Array.isArray(typeRes.data) && typeRes.data.length > 0) {
-        loadedTypes = typeRes.data
-      }
-    } catch (e) {
-      console.warn('加载账户类型独立接口失败，尝试 fallback:', e)
-    }
-
     const res = await getInstitutionDetail(instCode.value)
+    console.log('loadInstitution', res)
     if (res && res.data) {
       institution.value = res.data
+      
+      const raw = res.data.accountTypes || []
+      accountTypesRaw.value = raw
 
-      if (loadedTypes && loadedTypes.length > 0) {
-        accountTypesRaw.value = loadedTypes
-      } else {
-        const raw = res.data.institutionType?.accountTypes || []
-        accountTypesRaw.value = raw
-      }
-
-      if (accountTypeOptions.value.length === 1) {
-        selectedAccountType.value = accountTypeOptions.value[0].code
-      } else if (accountTypeOptions.value.length > 1) {
+      if (accountTypeOptions.value.length >= 1) {
         selectedAccountType.value = accountTypeOptions.value[0].code
       } else {
         uni.showToast({ title: '该机构暂无可选账户类型', icon: 'none' })
@@ -375,34 +324,20 @@ const loadInstitution = async () => {
 }
 
 const loadModules = async () => {
-  if (!instCode.value) return
+  if (!instCode.value || !selectedAccountType.value) return
   
   try {
-    const res = await getInstitutionModules(instCode.value)
+    const res = await getAccountModules(instCode.value, selectedAccountType.value)
     if (res && res.data) {
-      const { required, defaultList, optional } = res.data
-      
-      const transformedModules = [
-        ...(required || []).map(module => ({ ...module, selectionType: 'REQUIRED' })),
-        ...(defaultList || []).map(module => ({ ...module, selectionType: 'DEFAULT_SELECTED' })),
-        ...(optional || []).map(module => ({ ...module, selectionType: 'OPTIONAL' }))
-      ]
-      
-      institutionModules.value = transformedModules
-      initDefaultModules()
+      institutionModules.value = res.data
+      selectedModules.value = res.data
+        .filter(m => !m.required && m.enabled)
+        .map(m => m.moduleType)
     }
   } catch (error) {
-    console.error('加载机构模块失败:', error)
+    console.error('加载账户模块失败:', error)
     uni.showToast({ title: '加载模块失败', icon: 'none' })
   }
-}
-
-const initDefaultModules = () => {
-  selectedModules.value = []
-  defaultModules.value.forEach(module => {
-    const key = module.categoryCode || module.id
-    selectedModules.value.push(key)
-  })
 }
 
 onLoad((options) => {

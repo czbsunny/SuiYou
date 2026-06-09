@@ -64,10 +64,6 @@ export const removeAccountModule = (accountId, moduleId) => {
   return del(`/api/accounts/${accountId}/modules/${moduleId}`)
 }
 
-export const getAccountModules = (accountId) => {
-  return get(`/api/accounts/${accountId}/modules`)
-}
-
 export const getAssetSummary = () => {
   return get('/api/assets/summary')
 }
@@ -97,10 +93,6 @@ export const getInstitutionDetail = (instCode) => {
   return get(`/api/inst/${instCode}`)
 }
 
-export const getInstitutionModules = (instCode) => {
-  return get(`/api/inst/${instCode}/modules`)
-}
-
-export const getAccountTypes = (instCode) => {
-  return get(`/api/inst/${instCode}/account-types`)
+export const getAccountModules = (instCode, accountType) => {
+  return get(`/api/inst/${instCode}/account-types/${accountType}/modules`)
 }

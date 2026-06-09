@@ -5,18 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstitutionTypeRespDTO {
-    private Long id;
+public class InstTypeRespDTO {
     private String typeCode;
     private String typeName;
-    private String description;
-    private Integer sortOrder;
-    private String themeColor;
-    private List<String> accountTypes;
 }
