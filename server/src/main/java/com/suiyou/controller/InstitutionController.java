@@ -21,14 +21,14 @@ public class InstitutionController {
     @Autowired
     private SysInstitutionService institutionService;
 
-    @GetMapping("")
-    public ResponseEntity<List<InstitutionRespDTO>> getAllInstitutions() {
-        return new ResponseEntity<>(institutionService.getAllInstitutions(), HttpStatus.OK);
+    @GetMapping("/types")
+    public ResponseEntity<List<InstitutionTypeRespDTO>> getAllInstitutionTypes() {
+        return new ResponseEntity<>(institutionService.getAllInstitutionTypes(), HttpStatus.OK);
     }
 
-    @GetMapping("/type/{typeCode}")
-    public ResponseEntity<List<InstitutionRespDTO>> getInstitutionsByType(@PathVariable String typeCode) {
-        return new ResponseEntity<>(institutionService.getInstitutionsByType(typeCode), HttpStatus.OK);
+    @GetMapping("/all")
+    public ResponseEntity<List<InstitutionRespDTO>> getAllInstitutions() {
+        return new ResponseEntity<>(institutionService.getAllInstitutions(), HttpStatus.OK);
     }
 
     @GetMapping("/hot")
@@ -36,6 +36,12 @@ public class InstitutionController {
         return new ResponseEntity<>(institutionService.getHotInstitutions(), HttpStatus.OK);
     }
 
+    @GetMapping("/type/{typeCode}")
+    public ResponseEntity<List<InstitutionRespDTO>> getInstitutionsByType(@PathVariable String typeCode) {
+        return new ResponseEntity<>(institutionService.getInstitutionsByType(typeCode), HttpStatus.OK);
+    }
+
+    
     @GetMapping("/{instCode}")
     public ResponseEntity<InstitutionRespDTO> getInstitutionByCode(@PathVariable String instCode) {
         InstitutionRespDTO institution = institutionService.getInstitutionByCode(instCode);
@@ -63,10 +69,7 @@ public class InstitutionController {
         return new ResponseEntity<>(types, HttpStatus.OK);
     }
 
-    @GetMapping("/types")
-    public ResponseEntity<List<InstitutionTypeRespDTO>> getAllInstitutionTypes() {
-        return new ResponseEntity<>(institutionService.getAllInstitutionTypes(), HttpStatus.OK);
-    }
+
 
     @GetMapping("/types/{typeCode}")
     public ResponseEntity<InstitutionTypeRespDTO> getInstitutionTypeByCode(@PathVariable String typeCode) {

@@ -77,29 +77,30 @@ export const getAssetStructure = () => {
 }
 
 export const getInstitutionTypes = () => {
-  return get('/api/institution-types')
+  return get('/api/inst/types')
 }
 
 export const getAllInstitutions = () => {
-  return get('/api/institutions')
-}
-
-export const getInstitutionsByType = (typeCode) => {
-  return get(`/api/institutions/type/${typeCode}`)
+  return get('/api/inst/all')
 }
 
 export const getHotInstitutions = () => {
-  return get('/api/institutions/hot')
+  return get('/api/inst/hot')
 }
 
+export const getInstitutionsByType = (typeCode) => {
+  return get(`/api/inst/type/${typeCode}`)
+}
+
+
 export const getInstitutionDetail = (instCode) => {
-  return get(`/api/institutions/${instCode}`)
+  return get(`/api/inst/${instCode}`)
 }
 
 export const getInstitutionModules = (instCode) => {
-  return get(`/api/institutions/${instCode}/modules`)
+  return get(`/api/inst/${instCode}/modules`)
 }
 
 export const getAccountTypes = (instCode) => {
-  return get(`/api/institutions/${instCode}/account-types`)
+  return get(`/api/inst/${instCode}/account-types`)
 }

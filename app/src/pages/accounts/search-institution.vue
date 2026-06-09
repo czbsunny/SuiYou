@@ -175,10 +175,13 @@ const groupedInstitutions = computed(() => {
   const groups = {}
   const hotList = []
   currentInstitutions.value.forEach(item => {
-    if (item.isHot) hotList.push(item)
-    const letter = (item.indexLetter || '#').toUpperCase()
-    if (!groups[letter]) groups[letter] = []
-    groups[letter].push(item)
+    if (item.isHot) {
+      hotList.push(item)
+    } else {
+      const letter = (item.indexLetter || '#').toUpperCase()
+      if (!groups[letter]) groups[letter] = []
+      groups[letter].push(item)
+    }
   })
   const result = Object.keys(groups).sort().map(key => ({ indexLetter: key, data: groups[key] }))
   if (hotList.length > 0) result.unshift({ indexLetter: '热', data: hotList })

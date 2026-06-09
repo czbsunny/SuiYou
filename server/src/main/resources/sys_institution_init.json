@@ -51,7 +51,7 @@
   { "instCode": "CITI", "instName": "花旗银行(中国)", "shortName": "花旗银行", "instType": "BANK", "sortOrder": 204, "logoUrl": "/static/inst/citi.png" },
   { "instCode": "DBS", "instName": "星展银行(中国)", "shortName": "星展银行", "instType": "BANK", "sortOrder": 205, "logoUrl": "/static/inst/dbs.png" },
 
-  { "instCode": "RCC", "instName": "农村信用社/农商行", "shortName": "农信社", "instType": "BANK", "themeColor": "#009174", "sortOrder": 300, "logoUrl": "/static/inst/rcc.png" },
+  { "instCode": "RCC", "instName": "农村信用社/农商行", "shortName": "农信社", "instType": "BANK", "sortOrder": 300, "logoUrl": "/static/inst/rcc.png" },
 
   { "instCode": "CITIC", "instName": "中信证券", "shortName": "中信证券", "instType": "SECURITY", "sortOrder": 1001, "logoUrl": "/static/inst/citic.png", "isHot": true },
   { "instCode": "GTJA", "instName": "国泰君安证券", "shortName": "国泰君安", "instType": "SECURITY", "sortOrder": 1002, "logoUrl": "/static/inst/gtja.png", "isHot": true },
@@ -204,7 +204,7 @@
   { "instCode": "CASH_WALLET", "instName": "现金钱包", "shortName": "现金钱包", "instType": "INDIVIDUAL", "sortOrder": 4004, "logoUrl": "/static/inst/cash_wallet.png" },
   { "instCode": "HOUSING", "instName": "住房", "shortName": "房产", "instType": "INDIVIDUAL", "sortOrder": 4005, "logoUrl": "/static/inst/housing.png" },
   { "instCode": "CAR", "instName": "车辆", "shortName": "车辆", "instType": "INDIVIDUAL", "sortOrder": 4006, "logoUrl": "/static/inst/car.png" },
-  { "instCode": "ELECTRONIC_PRODUCT", "instName": "电子产品", "instType": "INDIVIDUAL", "sortOrder": 4007, "logoUrl": "/static/inst/electronic_product.png" },
+  { "instCode": "DEVICE", "instName": "电子产品", "shortName": "电子产品", "instType": "INDIVIDUAL", "sortOrder": 4007, "logoUrl": "/static/inst/electronic_product.png" },
   { "instCode": "RECEIVABLE", "instName": "应收款", "shortName": "应收", "instType": "INDIVIDUAL", "sortOrder": 4008, "logoUrl": "/static/inst/receivable.png" },
   { "instCode": "PAYABLE", "instName": "应付款", "shortName": "应付", "instType": "INDIVIDUAL", "sortOrder": 4009, "logoUrl": "/static/inst/payable.png" }
 ]
