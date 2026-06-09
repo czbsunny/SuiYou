@@ -8,9 +8,8 @@ import java.util.List;
 
 @Repository
 public interface SysAccountTemplateRepository extends JpaRepository<SysAccountTemplate, Long> {
-    List<SysAccountTemplate> findByInstCode(String instCode);
     List<SysAccountTemplate> findByInstCodeAndAccountType(String instCode, String accountType);
-    List<SysAccountTemplate> findByInstCodeAndEnabledTrue(String instCode);
-    List<SysAccountTemplate> findByInstCodeAndAccountTypeAndEnabledTrue(String instCode, String accountType);
+    SysAccountTemplate findByInstCodeAndAccountTypeAndModuleType(String instCode, String accountType, String moduleType);
+
     void deleteByInstCode(String instCode);
 }

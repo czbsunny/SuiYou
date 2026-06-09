@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface AccountModuleRepository extends JpaRepository<AccountModule, Long> {
-    List<AccountModule> findByAccountId(Long accountId);
-    List<AccountModule> findByAccountIdAndStatus(Long accountId, Integer status);
+    List<AccountModule> findByAccountIdAndEnabled(String accountId, Integer isEnabled);
 }

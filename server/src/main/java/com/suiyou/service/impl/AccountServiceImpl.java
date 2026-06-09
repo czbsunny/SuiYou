@@ -7,8 +7,10 @@ import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.enums.ModuleType;
 import com.suiyou.model.Account;
 import com.suiyou.model.AccountModule;
+import com.suiyou.model.SysAccountTemplate;
 import com.suiyou.repository.AccountModuleRepository;
 import com.suiyou.repository.AccountRepository;
+import com.suiyou.repository.SysAccountTemplateRepository;
 import com.suiyou.security.SecurityUtils;
 import com.suiyou.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountModuleRepository accountModuleRepository;
+
+    @Autowired
+    private SysAccountTemplateRepository sysAccountTemplateRepository;
 
     @Override
     public List<AccountRespDTO> getAccountsByOwnerId(Long ownerId) {
@@ -65,13 +70,17 @@ public class AccountServiceImpl implements AccountService {
                 module.setModuleType(moduleDTO.getModuleType());
                 module.setModuleName(moduleDTO.getModuleName());
 
-                ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
-                if (moduleType != null) {
+                SysAccountTemplate template = sysAccountTemplateRepository.findByInstCodeAndAccountTypeAndModuleType(dto.getInstCode(), dto.getAccountType(), moduleDTO.getModuleType());
+                if (template != null) {
+                    module.setIconUrl(template.getIconUrl());
+                    module.setCanPay(template.getCanPay() ? 1 : 0);
+                } else {
+                    ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
+                    if (moduleType == null) {
+                        throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
+                    }
                     module.setIconUrl(moduleType.getIconUrl());
                     module.setCanPay(moduleType.isCanPay() ? 1 : 0);
-                } else {
-                    module.setIconUrl("/static/assets/modules/default.png");
-                    module.setCanPay(0);
                 }
                 module.setSortOrder(sortOrder++);
                 modules.add(module);
@@ -83,7 +92,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private AccountRespDTO toAccountRespDTO(Account account) {
-        List<AccountModule> modules = accountModuleRepository.findByAccountId(account.getId());
+        List<AccountModule> modules = accountModuleRepository.findByAccountIdAndEnabled(String.valueOf(account.getId()), 1);
         List<AccountModuleRespDTO> moduleDTOs = modules.stream()
                 .map(this::toAccountModuleRespDTO)
                 .collect(Collectors.toList());

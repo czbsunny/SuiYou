@@ -262,8 +262,8 @@ const handleConfirm = async () => {
       ...requiredModules.value.map(m => ({ assetType: m.moduleType, moduleName: m.moduleName })),
       ...optionalModules.value
         .filter(m => getModuleChecked(m))
-        .map(m => ({ assetType: m.moduleType, moduleName: m.moduleName }))
-    ].filter(m => m.assetType)
+        .map(m => ({ moduleType: m.moduleType, moduleName: m.moduleName }))
+    ].filter(m => m.moduleType)
 
     const resp = await createAccount({
       instCode: instCode.value,
@@ -274,10 +274,7 @@ const handleConfirm = async () => {
       modules: selectedModules
     })
 
-    const statusCode = resp?.statusCode ?? resp?.data?.code
-    const ok = statusCode === 200 || statusCode === undefined
-
-    if (ok) {
+    if (resp?.statusCode === 200 || resp?.statusCode === 201) {
       uni.showToast({ title: '添加成功', icon: 'success' })
       setTimeout(() => {
         uni.switchTab({ url: '/pages/assets/index' })

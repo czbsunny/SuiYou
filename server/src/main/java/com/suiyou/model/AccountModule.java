@@ -32,8 +32,8 @@ public class AccountModule {
     @Column(name = "sort_order", columnDefinition = "int default 0")
     private Integer sortOrder = 0;
     
-    @Column(name = "is_enabled", nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Integer isEnabled = 1;
+    @Column(name = "enabled", nullable = false, columnDefinition = "tinyint(1) default 1")
+    private Integer enabled = 1;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
