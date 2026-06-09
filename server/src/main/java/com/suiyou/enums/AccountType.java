@@ -5,7 +5,9 @@ import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -13,33 +15,36 @@ import java.util.stream.Collectors;
 public enum AccountType {
 
     DEBIT_CARD("DEBIT_CARD", "借记卡", 1,
-            List.of(InstType.BANK, InstType.INTERNET_BANK, InstType.FOREIGN_BANK)),
+            InstType.BANK),
 
     CREDIT_CARD("CREDIT_CARD", "信用卡", 2,
-            List.of(InstType.BANK, InstType.INTERNET_BANK, InstType.FOREIGN_BANK)),
+            InstType.BANK),
 
     PERSONAL_PENSION("PERSONAL_PENSION", "个人养老金", 3,
-            List.of(InstType.BANK)),
+            InstType.BANK),
 
     SECURITY("SECURITY", "证券", 4,
-            List.of(InstType.SECURITY)),
+            InstType.SECURITY),
 
     INSURANCE("INSURANCE", "保险", 5,
-            List.of(InstType.INSURANCE)),
+            InstType.INSURANCE),
 
-    PAYMENT("PAYMENT", "支付", 6,
-            List.of(InstType.PAYMENT)),
+    FINTECH("FINTECH", "互金平台", 6,
+            InstType.FINTECH),
 
-    FINTECH("FINTECH", "金融科技", 7,
-            List.of(InstType.FINTECH)),
+    INDIVIDUAL("INDIVIDUAL", "独立账户", 7,
+            InstType.INDIVIDUAL);
 
-    FUND_PLATFORM("FUND_PLATFORM", "基金平台", 8,
-            List.of(InstType.FUND_PLATFORM));
+    private static final Set<String> PERSONAL_PENSION_SUPPORTED_BANKS = new HashSet<>(Arrays.asList(
+            "ICBC", "CCB", "ABC", "BOC", "BOCOM", "PSBC",
+            "CMB", "CNCB", "CEB", "HXB", "CMBC", "SPDB", "CIB", "PAB", "CGB",
+            "CZB", "HFB", "CBHB", "BOB", "BOS", "JSB", "NBCB", "NJCB"
+    ));
 
     private final String code;
     private final String name;
     private final int order;
-    private final List<InstType> supportedInstTypes;
+    private final InstType instType;
 
     public static AccountType ofCode(String code) {
         if (code == null) {
@@ -52,19 +57,6 @@ public enum AccountType {
         }
     }
 
-    public static List<AccountType> all() {
-        return Arrays.stream(values())
-                .sorted(Comparator.comparingInt(AccountType::getOrder))
-                .collect(Collectors.toList());
-    }
-
-    public static List<AccountType> getByInstitutionType(String typeCode) {
-        InstType instType = InstType.ofCode(typeCode);
-        return Arrays.stream(values())
-                .filter(e -> e.supportedInstTypes.contains(instType))
-                .collect(Collectors.toList());
-    }
-
     public static boolean isValid(String name) {
         try {
             valueOf(name);
@@ -75,6 +67,31 @@ public enum AccountType {
     }
 
     public boolean supportsInstitution(InstType instType) {
-        return supportedInstTypes.contains(instType);
+        return instType.equals(this.instType);
+    }
+
+    public boolean supportsInstitution(String instCode) {
+        if (instCode == null) {
+            return false;
+        }
+
+        if (this == PERSONAL_PENSION) {
+            return PERSONAL_PENSION_SUPPORTED_BANKS.contains(instCode);
+        }
+        
+        if (!InstType.isValid(instCode)) {
+            return false;
+        }
+        InstType instType = InstType.ofCode(instCode);
+        
+        return instType.equals(this.instType);
+    }
+
+    public static boolean isPersonalPensionSupported(String instCode) {
+        return instCode != null && PERSONAL_PENSION_SUPPORTED_BANKS.contains(instCode);
+    }
+
+    public static Set<String> getPersonalPensionSupportedBanks() {
+        return PERSONAL_PENSION_SUPPORTED_BANKS;
     }
 }
