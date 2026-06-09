@@ -123,6 +123,7 @@ public class SysInstitutionServiceImpl implements SysInstitutionService {
                 .map(t -> AccountTemplateRespDTO.builder()
                         .moduleType(t.getModuleType())
                         .moduleName(t.getModuleName())
+                        .iconUrl(t.getIconUrl())
                         .required(t.getRequired())
                         .enabled(t.getEnabled())
                         .sortOrder(t.getSortOrder())
