@@ -25,6 +25,9 @@ public class SysAccountTemplate {
     
     @Column(name = "icon_url", length = 255)
     private String iconUrl;
+
+    @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean canPay = false;
     
     @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
     private Boolean required = false;

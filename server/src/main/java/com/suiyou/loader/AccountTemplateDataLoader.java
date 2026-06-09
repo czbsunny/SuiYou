@@ -99,7 +99,8 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
             template.setEnabled(enabled != null ? enabled : true);
             template.setIconUrl(iconUrl != null ? iconUrl : moduleTypeEnum.getIconUrl());
             template.setSortOrder(moduleTypeEnum.getOrder());
-            
+            template.setCanPay(moduleTypeEnum.isCanPay());
+
             templateMap.put(key, template);
         }
 
@@ -124,7 +125,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
                     continue;
                 }
                 if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType.getCode(), moduleType.getName(), moduleType.getIconUrl(), true, true, moduleType.getOrder()));
+                    templates.add(createTemplate(instCode, accountType, moduleType, true, true));
                 }
             }
         }
@@ -138,7 +139,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
                     continue;
                 }
                 if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType.getCode(), moduleType.getName(), moduleType.getIconUrl(), false, true, moduleType.getOrder()));
+                    templates.add(createTemplate(instCode, accountType, moduleType, false, true));
                 }
             }
         }
@@ -152,7 +153,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
                     continue;
                 }
                 if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType.getCode(), moduleType.getName(), moduleType.getIconUrl(), false, false, moduleType.getOrder()));
+                    templates.add(createTemplate(instCode, accountType, moduleType, false, false));
                 }
             }
         }
@@ -164,18 +165,17 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
         return templates.stream().anyMatch(t -> t.getModuleType().equals(moduleType));
     }
     
-    private SysAccountTemplate createTemplate(String instCode, String accountType, String moduleType, 
-                                              String moduleName, String iconUrl,
-                                              boolean required, boolean enabled, int sortOrder) {
+    private SysAccountTemplate createTemplate(String instCode, String accountType, ModuleType moduleTypeEnum, boolean required, boolean enabled) {
         SysAccountTemplate template = new SysAccountTemplate();
         template.setInstCode(instCode);
         template.setAccountType(accountType);
-        template.setModuleType(moduleType);
-        template.setModuleName(moduleName);
-        template.setIconUrl(iconUrl);
+        template.setModuleType(moduleTypeEnum.getCode());
+        template.setModuleName(moduleTypeEnum.getName());
+        template.setIconUrl(moduleTypeEnum.getIconUrl());
+        template.setCanPay(moduleTypeEnum.isCanPay());
         template.setRequired(required);
         template.setEnabled(enabled);
-        template.setSortOrder(sortOrder);
+        template.setSortOrder(moduleTypeEnum.getOrder());
         return template;
     }
 }

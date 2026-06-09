@@ -24,11 +24,6 @@
       "required": ["INSURANCE"],
       "default": [],
       "optional": []
-    },
-    "FINTECH": {
-      "required": ["CURRENT"],
-      "default": [],
-      "optional": []
     }
   },
   "instModuleRules": [

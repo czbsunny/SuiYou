@@ -23,22 +23,22 @@ public class InstitutionController {
 
     @GetMapping("/types")
     public ResponseEntity<List<InstTypeRespDTO>> getAllInstitutionTypes() {
-        return new ResponseEntity<>(institutionService.getAllInstitutionTypes(), HttpStatus.OK);
+        return ResponseEntity.ok(institutionService.getAllInstitutionTypes());
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<InstRespDTO>> getAllInstitutions() {
-        return new ResponseEntity<>(institutionService.getAllInstitutions(), HttpStatus.OK);
+        return ResponseEntity.ok(institutionService.getAllInstitutions());
     }
 
     @GetMapping("/hot")
     public ResponseEntity<List<InstRespDTO>> getHotInstitutions() {
-        return new ResponseEntity<>(institutionService.getHotInstitutions(), HttpStatus.OK);
+        return ResponseEntity.ok(institutionService.getHotInstitutions());
     }
 
     @GetMapping("/type/{typeCode}")
     public ResponseEntity<List<InstRespDTO>> getInstitutionsByType(@PathVariable String typeCode) {
-        return new ResponseEntity<>(institutionService.getInstitutionsByType(typeCode), HttpStatus.OK);
+        return ResponseEntity.ok(institutionService.getInstitutionsByType(typeCode));
     }
 
     @GetMapping("/{instCode}")
@@ -47,7 +47,7 @@ public class InstitutionController {
         if (institution == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(institution, HttpStatus.OK);
+        return ResponseEntity.ok(institution);
     }
 
     @GetMapping("/{instCode}/account-types/{accountType}/modules")
@@ -55,6 +55,6 @@ public class InstitutionController {
             @PathVariable String instCode, 
             @PathVariable String accountType) {
         List<AccountTemplateRespDTO> templates = institutionService.getAccountTemplates(instCode, accountType);
-        return new ResponseEntity<>(templates, HttpStatus.OK);
+        return ResponseEntity.ok(templates);
     }
 }
