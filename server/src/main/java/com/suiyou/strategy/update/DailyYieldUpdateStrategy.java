@@ -19,7 +19,7 @@ public class DailyYieldUpdateStrategy implements AssetUpdateStrategy {
     public Asset update(Asset asset, UpdateContext updateContext) {
         BigDecimal dailyYield = updateContext.getDailyYield() != null ? updateContext.getDailyYield() : BigDecimal.ZERO;
         
-        BigDecimal dailyEarning = asset.getTotalBalance().multiply(dailyYield).divide(new BigDecimal("10000"), 4, BigDecimal.ROUND_HALF_UP);
+        BigDecimal dailyEarning = asset.getTotalBalance().multiply(dailyYield).divide(new BigDecimal("10000"), 8, BigDecimal.ROUND_HALF_UP);
         BigDecimal newTotalBalance = asset.getTotalBalance().add(dailyEarning);
         
         asset.setTotalBalance(newTotalBalance);

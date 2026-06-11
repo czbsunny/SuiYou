@@ -34,13 +34,13 @@ public class Asset {
     @Column(nullable = false)
     private String name;
     
-    @Column(name = "total_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
+    @Column(name = "total_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
     private BigDecimal totalBalance = BigDecimal.ZERO;
     
-    @Column(name = "frozen_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
+    @Column(name = "frozen_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
     private BigDecimal frozenBalance = BigDecimal.ZERO;
     
-    @Column(name = "available_balance", nullable = false, columnDefinition = "decimal(18,2) default '0.00'", precision = 18, scale = 2)
+    @Column(name = "available_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
     private BigDecimal availableBalance = BigDecimal.ZERO;
     
     @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")

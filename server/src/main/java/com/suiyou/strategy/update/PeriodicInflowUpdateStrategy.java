@@ -26,7 +26,7 @@ public class PeriodicInflowUpdateStrategy implements AssetUpdateStrategy {
             interest = asset.getTotalBalance()
                     .multiply(annualRate)
                     .multiply(new BigDecimal(days))
-                    .divide(new BigDecimal("365"), 4, BigDecimal.ROUND_HALF_UP);
+                    .divide(new BigDecimal("365"), 8, BigDecimal.ROUND_HALF_UP);
         }
         
         BigDecimal newTotalBalance = asset.getTotalBalance().add(inflowAmount).add(interest);
