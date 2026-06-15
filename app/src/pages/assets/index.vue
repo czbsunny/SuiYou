@@ -244,8 +244,24 @@ const handleAddAccount = () => {
   })
 }
 
+const getDetailPagePath = (account) => {
+  const instName = (account.line1 || '').toLowerCase()
+  if (instName.includes('支付宝') || instName.includes('alipay')) {
+    return '/pages/accounts/detail-alipay/index'
+  }
+  if (instName.includes('微信') || instName.includes('wechat') || instName.includes('weixin')) {
+    return '/pages/accounts/detail-wechat/index'
+  }
+  return '/pages/accounts/detail-bank/index'
+}
+
 const handleAccountTap = (account) => {
-  uni.showToast({ title: `${account.line1} · 开发中`, icon: 'none' })
+  const institutionName = encodeURIComponent(account.line1 || '账户详情')
+  const balance = account.balance || 0
+  const pagePath = getDetailPagePath(account)
+  uni.navigateTo({
+    url: `${pagePath}?institutionName=${institutionName}&balance=${balance}`
+  })
 }
 
 onShow(() => {

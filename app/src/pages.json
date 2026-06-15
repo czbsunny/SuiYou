@@ -48,6 +48,70 @@
         "navigationBarTitleText": "账户信息",
         "backgroundColor": "#FAF9F6"
       }
+    },
+    {
+      "path": "pages/accounts/detail-bank/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "银行详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/detail-alipay/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "支付宝",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/detail-wechat/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "微信钱包",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/detail-securities/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "证券账户",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/transaction-query/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "交易查询",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/transfer/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "转账",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/stock-buy/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "股票买入",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/accounts/stock-sell/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "交易中心",
+        "backgroundColor": "#FAF9F6"
+      }
     }
   ],
   "globalStyle": {
