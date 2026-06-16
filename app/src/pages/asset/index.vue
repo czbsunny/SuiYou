@@ -240,19 +240,22 @@ const onRefresh = async () => {
 
 const handleAddAccount = () => {
   uni.navigateTo({
-    url: '/pages/accounts/search-institution'
+    url: '/pages/asset/account/search'
   })
 }
 
 const getDetailPagePath = (account) => {
   const instName = (account.line1 || '').toLowerCase()
   if (instName.includes('支付宝') || instName.includes('alipay')) {
-    return '/pages/accounts/detail-alipay/index'
+    return '/pages/asset/account/alipay'
   }
   if (instName.includes('微信') || instName.includes('wechat') || instName.includes('weixin')) {
-    return '/pages/accounts/detail-wechat/index'
+    return '/pages/asset/account/wechat'
   }
-  return '/pages/accounts/detail-bank/index'
+  if (instName.includes('证券') || instName.includes('security')) {
+    return '/pages/asset/account/security'
+  }
+  return '/pages/asset/account/bank'
 }
 
 const handleAccountTap = (account) => {

@@ -165,22 +165,16 @@ const handleNotification = () => {
 }
 
 const handleAction = (actionId) => {
-  const actionNames = {
-    buy: '买入',
-    sell: '卖出',
-    transfer: '转账',
-    query: '查询'
-  }
   const paths = {
-    buy: '/pages/accounts/stock-buy/index',
-    sell: '/pages/accounts/stock-sell/index',
-    transfer: '/pages/accounts/transfer/index',
-    query: '/pages/accounts/transaction-query/index'
+    buy: '/pages/trade/stock?type=buy',
+    sell: '/pages/trade/stock?type=sell',
+    transfer: '/pages/trade/transfer',
+    query: '/pages/trade/query'
   }
   if (paths[actionId]) {
     uni.navigateTo({ url: paths[actionId] })
   } else {
-    uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
+    uni.showToast({ title: '功能开发中', icon: 'none' })
   }
 }
 
@@ -191,8 +185,8 @@ const handleAssetTap = (asset) => {
 const navigateTo = (page) => {
   const paths = {
     home: '/pages/home/index',
-    goals: '/pages/goals/index',
-    assets: '/pages/assets/index',
+    goals: '/pages/goal/index',
+    assets: '/pages/asset/index',
     profile: '/pages/profile/index'
   }
   uni.switchTab({ url: paths[page] })

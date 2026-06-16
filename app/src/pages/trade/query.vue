@@ -2,7 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
         <view class="top-bar">
           <view class="top-bar-left">
             <view class="back-btn" @tap="handleBack">
@@ -17,7 +16,6 @@
           </view>
         </view>
 
-        <!-- Tab Navigation -->
         <view class="tabs">
           <view 
             v-for="(tab, index) in tabs" 
@@ -30,7 +28,6 @@
           </view>
         </view>
 
-        <!-- Transaction List -->
         <view class="transaction-section">
           <view class="section-header">
             <text class="section-title">今日明细</text>
@@ -81,6 +78,25 @@
         </view>
       </view>
     </scroll-view>
+
+    <view class="bottom-nav">
+      <view class="nav-item" @tap="navigateTo('buy')">
+        <text class="nav-icon">add_chart</text>
+        <text class="nav-label">买入</text>
+      </view>
+      <view class="nav-item" @tap="navigateTo('sell')">
+        <text class="nav-icon">sell</text>
+        <text class="nav-label">卖出</text>
+      </view>
+      <view class="nav-item" @tap="navigateTo('transfer')">
+        <text class="nav-icon">swap_horiz</text>
+        <text class="nav-label">转账</text>
+      </view>
+      <view class="nav-item active">
+        <text class="nav-icon" style="font-variation-settings: 'FILL' 1;">history_edu</text>
+        <text class="nav-label">查询</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -156,6 +172,17 @@ const handleBack = () => {
 const handleCalendar = () => {
   uni.showToast({ title: '选择日期', icon: 'none' })
 }
+
+const navigateTo = (page) => {
+  const paths = {
+    buy: '/pages/trade/stock?type=buy',
+    sell: '/pages/trade/stock?type=sell',
+    transfer: '/pages/trade/transfer'
+  }
+  if (paths[page]) {
+    uni.navigateTo({ url: paths[page] })
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -171,7 +198,7 @@ const handleCalendar = () => {
 }
 
 .content {
-  padding-bottom: 120rpx;
+  padding-bottom: 180rpx;
 }
 
 .top-bar {
@@ -438,5 +465,44 @@ const handleCalendar = () => {
   &.text-loss {
     color: $primary;
   }
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: $surface-container-lowest;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+  border-radius: $rounded-lg $rounded-lg 0 0;
+  padding: $spacing-3 $spacing-4;
+  padding-bottom: calc(#{$spacing-3} + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  color: $on-surface-variant;
+  
+  &.active {
+    color: $primary;
+  }
+}
+
+.nav-icon {
+  font-family: 'Material Symbols Outlined';
+  font-size: 44rpx;
+}
+
+.nav-label {
+  font-family: $font-family-mono;
+  font-size: 20rpx;
+  font-weight: $font-weight-bold;
 }
 </style>

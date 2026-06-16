@@ -1,4 +1,5 @@
-{"pages": [
+{
+  "pages": [
     {
       "path": "pages/home/index",
       "style": {
@@ -9,7 +10,7 @@
       }
     },
     {
-      "path": "pages/goals/index",
+      "path": "pages/goal/index",
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "目标",
@@ -17,7 +18,7 @@
       }
     },
     {
-      "path": "pages/assets/index",
+      "path": "pages/asset/index",
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "资产",
@@ -34,7 +35,7 @@
       }
     },
     {
-      "path": "pages/accounts/search-institution",
+      "path": "pages/asset/account/search",
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "添加账户",
@@ -42,7 +43,7 @@
       }
     },
     {
-      "path": "pages/accounts/add-account",
+      "path": "pages/asset/account/add",
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "账户信息",
@@ -50,7 +51,7 @@
       }
     },
     {
-      "path": "pages/accounts/detail-bank/index",
+      "path": "pages/asset/account/bank",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "银行详情",
@@ -58,7 +59,7 @@
       }
     },
     {
-      "path": "pages/accounts/detail-alipay/index",
+      "path": "pages/asset/account/alipay",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "支付宝",
@@ -66,7 +67,7 @@
       }
     },
     {
-      "path": "pages/accounts/detail-wechat/index",
+      "path": "pages/asset/account/wechat",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "微信钱包",
@@ -74,7 +75,7 @@
       }
     },
     {
-      "path": "pages/accounts/detail-securities/index",
+      "path": "pages/asset/account/security",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "证券账户",
@@ -82,15 +83,15 @@
       }
     },
     {
-      "path": "pages/accounts/transaction-query/index",
+      "path": "pages/trade/stock",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "交易查询",
+        "navigationBarTitleText": "股票交易",
         "backgroundColor": "#FAF9F6"
       }
     },
     {
-      "path": "pages/accounts/transfer/index",
+      "path": "pages/trade/transfer",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "转账",
@@ -98,18 +99,10 @@
       }
     },
     {
-      "path": "pages/accounts/stock-buy/index",
+      "path": "pages/trade/query",
       "style": {
         "navigationStyle": "custom",
-        "navigationBarTitleText": "股票买入",
-        "backgroundColor": "#FAF9F6"
-      }
-    },
-    {
-      "path": "pages/accounts/stock-sell/index",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "交易中心",
+        "navigationBarTitleText": "交易查询",
         "backgroundColor": "#FAF9F6"
       }
     }
@@ -133,13 +126,13 @@
         "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
-        "pagePath": "pages/goals/index",
+        "pagePath": "pages/goal/index",
         "text": "目标",
         "iconPath": "static/tabbar/goals.png",
         "selectedIconPath": "static/tabbar/goals-active.png"
       },
       {
-        "pagePath": "pages/assets/index",
+        "pagePath": "pages/asset/index",
         "text": "资产",
         "iconPath": "static/tabbar/assets.png",
         "selectedIconPath": "static/tabbar/assets-active.png"

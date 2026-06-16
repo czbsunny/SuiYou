@@ -119,7 +119,7 @@ const quickActions = ref([
 ])
 
 const assetList = ref([
-  { id: '1', icon: 'savings', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray' },
+  { id: '1', icon: 'savings', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray', bgColor: '#EFF6FF', iconColor: '#2563EB' },
   { id: '2', icon: 'temp_preferences_custom', name: '余额宝', desc: '收益稳健', amount: '256,000.00', subText: '+2.15%', subClass: 'text-secondary', bgColor: '#EFF6FF', iconColor: '#2563EB' },
   { id: '3', icon: 'credit_card', name: '花呗', desc: '下月应还', amount: '-1,240.50', subText: '10月账单', subClass: 'text-gray', bgColor: '#FFF7ED', iconColor: '#EA580C' },
   { id: '4', icon: 'request_quote', name: '借呗', desc: '额度可用', amount: '50,000.00', subText: '免息中', subClass: 'text-primary', bgColor: '#EEF2FF', iconColor: '#4F46E5' },

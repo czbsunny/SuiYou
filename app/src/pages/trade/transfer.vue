@@ -2,7 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
         <view class="top-bar">
           <view class="top-bar-left">
             <view class="back-btn" @tap="handleBack">
@@ -17,7 +16,6 @@
           </view>
         </view>
 
-        <!-- Segment Picker -->
         <view class="segment-container">
           <view class="segment-bg">
             <view 
@@ -41,7 +39,6 @@
           </view>
         </view>
 
-        <!-- Flow Visualizer -->
         <view class="flow-section">
           <view class="flow-item">
             <view class="flow-icon-wrap" :class="isIn ? 'bg-normal' : 'bg-active'">
@@ -60,7 +57,6 @@
           </view>
         </view>
 
-        <!-- Bank Card Section -->
         <view class="card-section">
           <view class="card-header">
             <text class="card-label">{{ isIn ? '选择银行卡' : '银行账户' }}</text>
@@ -76,7 +72,6 @@
           </view>
         </view>
 
-        <!-- Amount Input Section -->
         <view class="amount-section">
           <view class="amount-header">
             <text class="amount-label">转账金额</text>
@@ -99,7 +94,6 @@
           </view>
         </view>
 
-        <!-- Action Button -->
         <view class="action-section">
           <view class="action-btn" @tap="handleTransfer">
             <text class="action-text">确认{{ isIn ? '转入' : '转出' }}</text>
@@ -108,7 +102,6 @@
       </view>
     </scroll-view>
 
-    <!-- Bottom Navigation -->
     <view class="bottom-nav">
       <view class="nav-item" @tap="navigateTo('buy')">
         <text class="nav-icon">add_chart</text>
@@ -154,7 +147,7 @@ const handleBack = () => {
 }
 
 const handleHistory = () => {
-  uni.navigateTo({ url: '/pages/accounts/transaction-query/index' })
+  uni.navigateTo({ url: '/pages/trade/query' })
 }
 
 const handleTransfer = () => {
@@ -167,9 +160,9 @@ const handleTransfer = () => {
 
 const navigateTo = (page) => {
   const paths = {
-    buy: '/pages/accounts/stock-buy/index',
-    sell: '/pages/accounts/stock-sell/index',
-    query: '/pages/accounts/transaction-query/index'
+    buy: '/pages/trade/stock?type=buy',
+    sell: '/pages/trade/stock?type=sell',
+    query: '/pages/trade/query'
   }
   if (paths[page]) {
     uni.navigateTo({ url: paths[page] })

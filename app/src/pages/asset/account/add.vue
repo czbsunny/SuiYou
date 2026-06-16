@@ -1,4 +1,3 @@
-
 <template>
   <view class="add-account-page">
     <scroll-view scroll-y class="scroll-content">
@@ -277,7 +276,7 @@ const handleConfirm = async () => {
     if (resp?.statusCode === 200 || resp?.statusCode === 201) {
       uni.showToast({ title: '添加成功', icon: 'success' })
       setTimeout(() => {
-        uni.switchTab({ url: '/pages/assets/index' })
+        uni.switchTab({ url: '/pages/asset/index' })
       }, 1200)
     } else {
       uni.showToast({

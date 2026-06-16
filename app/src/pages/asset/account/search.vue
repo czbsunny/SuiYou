@@ -201,7 +201,7 @@ const selectTab = async (tabCode) => {
 
 const selectInstitution = (institution) => {
   uni.navigateTo({
-    url: `/pages/accounts/add-account?instCode=${institution.instCode}`
+    url: `/pages/asset/account/add?instCode=${institution.instCode}`
   })
 }
 
