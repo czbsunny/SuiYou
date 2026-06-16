@@ -18,6 +18,14 @@
       }
     },
     {
+      "path": "pages/goal/saving",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "存钱计划",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
       "path": "pages/asset/index",
       "style": {
         "navigationStyle": "default",
@@ -31,6 +39,38 @@
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "我的",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/bill/budget",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "预算",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/bill/record",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "记账",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/bill/detail",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "明细",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/report/monthly",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "月度报告",
         "backgroundColor": "#FAF9F6"
       }
     },

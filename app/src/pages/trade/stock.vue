@@ -211,7 +211,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onLoad } from 'vue'
+import { ref, computed } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 
 const isBuy = ref(true)
 const price = ref('22.10')
