@@ -70,7 +70,18 @@ const transactions = [
 ]
 
 const tapAction = (label) => {
-  uni.showToast({ title: label, icon: 'none' })
+  const pageMap = {
+    '预算': '/pages/bill/budget',
+    '记账': '/pages/bill/record',
+    '存钱': '/pages/goal/saving',
+    '报告': '/pages/report/monthly'
+  }
+  const url = pageMap[label]
+  if (url) {
+    uni.navigateTo({ url })
+  } else {
+    uni.showToast({ title: label, icon: 'none' })
+  }
 }
 </script>
 

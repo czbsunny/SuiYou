@@ -71,6 +71,12 @@ $error-color: #ba1a1a;   // 错误色
 $warning-color: #FF9800;
 $info-color: #2196F3;
 
+$color-income:   #10B981; // 收入、申购、存入 (Green)
+$color-expense:  #F97316; // 支出、消费 (Orange)
+$color-transfer: #8B5CF6; // 跨机构转账、调拨 (Purple)
+$color-profit:   #F59E0B; // 更新收益、分红 (Amber/Gold)
+$color-liquid:   #3B82F6; // 赎回、提现、校准 (Blue)
+
 // 设计文件中定义的语义颜色别名
 $profit-red: $profit;
 $loss-green: $loss;

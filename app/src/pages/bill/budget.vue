@@ -2,27 +2,18 @@
   <view class="page budget-page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
-        <view class="header">
-          <view class="header-left">
-            <view class="avatar-wrapper">
-              <image class="avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqKq5tUkPQkoSKNvzT1erP0x7TnHty8Cs_Ugc8DCrKOGvz9rVFw5JQmclcUqnSDHtTjF5P0dQUmRZaen-2qEZFF0FwJt1EJ4CWsXuX5MRUj1tg97WnRkPUnRDHPhOin-T8tW9SEMc3_0_PTozZf5BvsfZ9nIy7snPOIxrv9SUjXITqebHEfWZtc3bNqFEaWAPUyrS8KShoWkJsf6iBoE44XQIUWmhDrVkpzvzWd7hC29l3AhshPjPtw_IBB34EcBKnMPqjHw_Zkgun" mode="aspectFill" />
-            </view>
-            <text class="app-name">Stewardship</text>
-          </view>
-          <text class="header-title">预算</text>
-          <view class="header-right">
-            <view class="notification-btn" @tap="handleNotification">
-              <text class="icon">notifications</text>
-            </view>
-          </view>
-        </view>
-
-        <!-- Portfolio Hero / Total Budget Ring -->
         <view class="hero-card">
           <view class="ring-container">
             <view class="ring-wrapper">
-              <canvas canvas-id="progressRing" class="progress-ring" id="progressRing"></canvas>
+              <qiun-data-charts
+                type="ring"
+                :chartData="ringChartData"
+                :opts="ringChartOpts"
+                canvasId="budgetRing"
+                :inScrollView="false"
+                :resscale="false"
+              />
+              <!-- 中心文字区域：添加 pointer-events: none 避免阻挡图表层级 -->
               <view class="ring-center">
                 <text class="ring-label">剩余可用</text>
                 <view class="ring-amount">
@@ -50,7 +41,7 @@
           <view class="section-header">
             <text class="section-title">支出分类</text>
             <view class="settings-btn" @tap="handleSettings">
-              <text class="icon">settings</text>
+              <text class="icon-text">设置</text>
             </view>
           </view>
 
@@ -58,7 +49,7 @@
             <view v-for="item in categories" :key="item.name" class="category-card">
               <view class="category-header">
                 <view class="category-icon-wrapper" :class="item.colorClass">
-                  <text class="category-icon">{{ item.icon }}</text>
+                  <text class="category-icon-text">{{ item.iconText }}</text>
                 </view>
                 <view class="category-info">
                   <text class="category-name">{{ item.name }}</text>
@@ -77,36 +68,16 @@
         </view>
       </view>
     </scroll-view>
-
-    <!-- Bottom Navigation Bar -->
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <text class="nav-label">首页</text>
-      </view>
-      <view class="nav-item active" @tap="navigateTo('goal')">
-        <text class="nav-icon">target</text>
-        <text class="nav-label">目标</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('asset')">
-        <text class="nav-icon">account_balance_wallet</text>
-        <text class="nav-label">资产</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('profile')">
-        <text class="nav-icon">person</text>
-        <text class="nav-label">我的</text>
-      </view>
-    </view>
   </view>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const categories = ref([
   {
     name: '餐饮美食',
-    icon: 'restaurant',
+    iconText: '餐饮',
     amount: '4,800',
     limit: '6,000',
     progress: 80,
@@ -116,7 +87,7 @@ const categories = ref([
   },
   {
     name: '交通出行',
-    icon: 'directions_car',
+    iconText: '交通',
     amount: '1,650',
     limit: '2,500',
     progress: 66,
@@ -126,7 +97,7 @@ const categories = ref([
   },
   {
     name: '购物消费',
-    icon: 'shopping_bag',
+    iconText: '购物',
     amount: '3,230',
     limit: '3,000',
     progress: 100,
@@ -136,7 +107,7 @@ const categories = ref([
   },
   {
     name: '居住物业',
-    icon: 'home_work',
+    iconText: '居住',
     amount: '12,500',
     limit: '20,000',
     progress: 62.5,
@@ -146,51 +117,55 @@ const categories = ref([
   }
 ])
 
-const handleNotification = () => {
-  uni.showToast({ title: '通知', icon: 'none' })
-}
+// 环形图数据
+const ringChartData = ref({
+  series: [{
+    data: [
+      { value: 32520, name: '已使用' },
+      { value: 12480, name: '剩余' }
+    ]
+  }]
+})
+
+// 图表配置 - 隐藏所有标签，只保留圆环
+const ringChartOpts = ref({
+  color: ['#006754', '#e3e2e0'],
+  padding: [0, 0, 0, 0],
+  legend: {
+    show: false
+  },
+  tooltip: {
+    show: false
+  },
+  title: {
+    name: "" 
+  },
+  subtitle: {
+    name: "" 
+  },
+  series: {
+    dataLabel: false,
+    label: {
+      show: false
+    },
+    labelLine: {
+      show: false
+    }
+  },
+  extra: {
+    ring: {
+      ringWidth: 14,
+      activeOpacity: 1,
+      activeRadius: 0,
+      offsetAngle: -90,
+      customRadius: 75,
+      labelWidth: 0
+    }
+  }
+})
 
 const handleSettings = () => {
   uni.showToast({ title: '设置', icon: 'none' })
-}
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    goal: '/pages/goal/index',
-    asset: '/pages/asset/index',
-    profile: '/pages/profile/index'
-  }
-  uni.navigateTo({ url: pages[page] })
-}
-
-onMounted(() => {
-  drawProgressRing()
-})
-
-const drawProgressRing = () => {
-  const ctx = uni.createCanvasContext('progressRing')
-  const centerX = 100
-  const centerY = 100
-  const radius = 80
-  const lineWidth = 8
-  const progress = 0.72
-  const circumference = 2 * Math.PI * radius
-
-  ctx.setStrokeStyle('#e3e2e0')
-  ctx.setLineWidth(lineWidth)
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-  ctx.stroke()
-
-  ctx.setStrokeStyle('#006754')
-  ctx.setLineWidth(lineWidth)
-  ctx.setLineCap('round')
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + progress * 2 * Math.PI)
-  ctx.stroke()
-
-  ctx.draw()
 }
 </script>
 
@@ -211,74 +186,6 @@ const drawProgressRing = () => {
   padding: 0 $container-padding;
 }
 
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-3 $container-padding;
-  background: rgba($background, 0.8);
-  backdrop-filter: blur(20rpx);
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: $stack-gap-sm;
-}
-
-.avatar-wrapper {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $rounded-full;
-  border: 4rpx solid #C5A36A;
-  overflow: hidden;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-
-.app-name {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.header-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.notification-btn,
-.settings-btn {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: $rounded-full;
-  background: $surface-container-low;
-}
-
-.icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
-}
-
 .hero-card {
   margin-top: $stack-gap-md;
   padding: $spacing-6;
@@ -296,11 +203,12 @@ const drawProgressRing = () => {
   position: relative;
   width: 320rpx;
   height: 320rpx;
-}
-
-.progress-ring {
-  width: 100%;
-  height: 100%;
+  
+  /* 确保图表容器撑满父级 */
+  :deep(.chartsbox) {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 .ring-center {
@@ -310,6 +218,8 @@ const drawProgressRing = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  z-index: 10;
+  pointer-events: none; /* 穿透点击事件，防止遮挡图表交互 */
 }
 
 .ring-label {
@@ -326,14 +236,14 @@ const drawProgressRing = () => {
 }
 
 .currency {
-  font-size: $font-size-display-lg;
+  font-size: $font-size-headline-md;
   font-weight: $font-weight-bold;
   color: $primary;
 }
 
 .amount-num {
   font-family: $font-family-mono;
-  font-size: $font-size-display-lg;
+  font-size: $font-size-headline-md;
   font-weight: $font-weight-semibold;
   color: $primary;
 }
@@ -424,22 +334,22 @@ const drawProgressRing = () => {
 
   &.primary {
     background: rgba($primary-container, 0.1);
-    .category-icon {
+    .category-icon-text {
       color: $primary;
     }
   }
 
   &.secondary {
     background: rgba($secondary-container, 0.1);
-    .category-icon {
+    .category-icon-text {
       color: $secondary;
     }
   }
 }
 
-.category-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
+.category-icon-text {
+  font-size: $font-size-body-sm;
+  font-weight: $font-weight-semibold;
 }
 
 .category-info {
@@ -501,46 +411,5 @@ const drawProgressRing = () => {
   &.secondary {
     background: $secondary;
   }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc($spacing-3 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-xl $rounded-xl 0 0;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-2 $spacing-4;
-  color: $outline;
-  transition: all 0.2s;
-
-  &.active {
-    background: $primary-container;
-    border-radius: $rounded-full;
-    color: $on-primary-container;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-}
-
-.nav-label {
-  margin-top: 4rpx;
-  font-size: $font-size-label-caps;
-  font-weight: $font-weight-bold;
 }
 </style>
