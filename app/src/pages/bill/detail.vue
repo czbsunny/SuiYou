@@ -1,47 +1,38 @@
 <template>
   <view class="page detail-page">
-    <!-- Header -->
-    <view class="header">
-      <view class="back-btn" @tap="handleBack">
-        <text class="icon">arrow_back</text>
-      </view>
-      <text class="header-title">明细</text>
-      <view class="more-btn" @tap="handleMore">
-        <text class="icon">more_horiz</text>
-      </view>
-    </view>
-
-    <!-- Controls Row -->
-    <view class="controls-row">
-      <view class="date-btn" @tap="handleDate">
-        <text class="date-text">2024年5月</text>
-        <text class="icon">expand_more</text>
-      </view>
-      <view class="filter-btn" @tap="handleFilter">
-        <text class="icon">filter_list</text>
-        <text class="filter-text">筛选</text>
-      </view>
-    </view>
-
-    <!-- Summary Cards -->
-    <view class="summary-cards">
-      <view class="summary-card expense">
-        <text class="summary-label">本月支出</text>
-        <view class="summary-amount">
-          <text class="currency">¥</text>
-          <text class="amount">12,480.00</text>
+    <!-- Fixed Header Area -->
+    <view class="fixed-header">
+      <!-- Controls Row -->
+      <view class="controls-row">
+        <view class="date-btn" @tap="handleDate">
+          <text class="date-text">2024年5月</text>
+          <text class="icon-text">下拉</text>
+        </view>
+        <view class="filter-btn" @tap="handleFilter">
+          <text class="filter-text">筛选</text>
         </view>
       </view>
-      <view class="summary-card income">
-        <text class="summary-label">本月收入</text>
-        <view class="summary-amount">
-          <text class="currency">¥</text>
-          <text class="amount">42,000.00</text>
+
+      <!-- Summary Cards -->
+      <view class="summary-cards">
+        <view class="summary-card expense">
+          <text class="summary-label">本月支出</text>
+          <view class="summary-amount">
+            <text class="currency">¥</text>
+            <text class="amount">12,480.00</text>
+          </view>
+        </view>
+        <view class="summary-card income">
+          <text class="summary-label">本月收入</text>
+          <view class="summary-amount">
+            <text class="currency">¥</text>
+            <text class="amount">42,000.00</text>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- Transaction List -->
+    <!-- Transaction List - Only scrollable area -->
     <scroll-view scroll-y class="scroll">
       <view class="content">
         <!-- Today Group -->
@@ -59,7 +50,7 @@
           <view class="group-content">
             <view v-for="item in todayTransactions" :key="item.id" class="transaction-item" @tap="handleTransaction(item)">
               <view class="item-icon" :class="{ income: item.type === 'income' }">
-                <text>{{ item.icon }}</text>
+                <text>{{ item.iconText }}</text>
               </view>
               <view class="item-info">
                 <text class="item-title">{{ item.title }}</text>
@@ -85,7 +76,7 @@
           <view class="group-content">
             <view v-for="item in yesterdayTransactions" :key="item.id" class="transaction-item" @tap="handleTransaction(item)">
               <view class="item-icon" :class="{ income: item.type === 'income' }">
-                <text>{{ item.icon }}</text>
+                <text>{{ item.iconText }}</text>
               </view>
               <view class="item-info">
                 <text class="item-title">{{ item.title }}</text>
@@ -110,7 +101,7 @@
           <view class="group-content">
             <view v-for="item in may19Transactions" :key="item.id" class="transaction-item" @tap="handleTransaction(item)">
               <view class="item-icon" :class="{ income: item.type === 'income' }">
-                <text>{{ item.icon }}</text>
+                <text>{{ item.iconText }}</text>
               </view>
               <view class="item-info">
                 <text class="item-title">{{ item.title }}</text>
@@ -122,51 +113,23 @@
         </view>
       </view>
     </scroll-view>
-
-    <!-- Bottom Navigation -->
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <text class="nav-label">首页</text>
-      </view>
-      <view class="nav-item active" @tap="navigateTo('detail')">
-        <text class="nav-icon" :class="{ filled: true }">list_alt</text>
-        <text class="nav-label">明细</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('trend')">
-        <text class="nav-icon">trending_up</text>
-        <text class="nav-label">趋势</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('profile')">
-        <text class="nav-icon">person</text>
-        <text class="nav-label">我的</text>
-      </view>
-    </view>
   </view>
 </template>
 
 <script setup>
 const todayTransactions = [
-  { id: 1, title: '餐饮 · 午餐', time: '12:30', amount: '-88.00', icon: 'restaurant', type: 'expense' },
-  { id: 2, title: '出行 · 网约车', time: '08:45', amount: '-68.00', icon: 'local_taxi', type: 'expense' }
+  { id: 1, title: '餐饮 · 午餐', time: '12:30', amount: '-88.00', iconText: '餐', type: 'expense' },
+  { id: 2, title: '出行 · 网约车', time: '08:45', amount: '-68.00', iconText: '车', type: 'expense' }
 ]
 
 const yesterdayTransactions = [
-  { id: 3, title: '薪资 · 月度发放', time: '10:00', amount: '+30,000.00', icon: 'payments', type: 'income' },
-  { id: 4, title: '购物 · Apple Store', time: '15:20', amount: '-420.00', icon: 'shopping_bag', type: 'expense' }
+  { id: 3, title: '薪资 · 月度发放', time: '10:00', amount: '+30,000.00', iconText: '薪', type: 'income' },
+  { id: 4, title: '购物 · Apple Store', time: '15:20', amount: '-420.00', iconText: '购', type: 'expense' }
 ]
 
 const may19Transactions = [
-  { id: 5, title: '住房 · 物业管理费', time: '14:00', amount: '-1,200.00', icon: 'home', type: 'expense' }
+  { id: 5, title: '住房 · 物业管理费', time: '14:00', amount: '-1,200.00', iconText: '房', type: 'expense' }
 ]
-
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleMore = () => {
-  uni.showToast({ title: '更多选项', icon: 'none' })
-}
 
 const handleDate = () => {
   uni.showToast({ title: '选择日期', icon: 'none' })
@@ -179,18 +142,6 @@ const handleFilter = () => {
 const handleTransaction = (item) => {
   uni.showToast({ title: item.title, icon: 'none' })
 }
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    detail: '/pages/bill/detail',
-    trend: '/pages/home/index',
-    profile: '/pages/profile/index'
-  }
-  if (pages[page] !== '/pages/bill/detail') {
-    uni.navigateTo({ url: pages[page] })
-  }
-}
 </script>
 
 <style lang="scss" scoped>
@@ -199,44 +150,15 @@ const navigateTo = (page) => {
 .page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: 140rpx;
 }
 
-.header {
-  position: fixed;
+.fixed-header {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-2 $container-padding;
-  padding-top: calc($spacing-2 + env(safe-area-inset-top));
-  background: rgba($background, 0.8);
-  backdrop-filter: blur(20rpx);
+  z-index: 10;
+  background: $background;
+  padding-bottom: $spacing-4;
   border-bottom: 1rpx solid $surface-container-low;
-}
-
-.back-btn,
-.more-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $on-surface;
-}
-
-.header-title {
-  font-size: 34rpx;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
 }
 
 .controls-row {
@@ -244,7 +166,7 @@ const navigateTo = (page) => {
   align-items: center;
   justify-content: space-between;
   padding: $spacing-4 $container-padding;
-  padding-top: calc($spacing-4 + env(safe-area-inset-top) + 88rpx);
+  padding-top: calc($spacing-4 + env(safe-area-inset-top));
 }
 
 .date-btn {
@@ -260,6 +182,11 @@ const navigateTo = (page) => {
   font-size: 30rpx;
   font-weight: $font-weight-semibold;
   color: $on-surface;
+}
+
+.icon-text {
+  font-size: 24rpx;
+  color: $outline;
 }
 
 .filter-btn {
@@ -325,7 +252,7 @@ const navigateTo = (page) => {
 }
 
 .scroll {
-  height: calc(100vh - 420rpx - env(safe-area-inset-top));
+  height: calc(100vh - 280rpx - env(safe-area-inset-top));
 }
 
 .content {
@@ -439,48 +366,5 @@ const navigateTo = (page) => {
   &.income {
     color: $secondary;
   }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-2 $spacing-4;
-  padding-bottom: calc($spacing-2 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  border-top: 1rpx solid $surface-container-low;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-1;
-  color: $outline;
-  transition: color 0.2s;
-  flex: 1;
-
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 52rpx;
-
-  &.filled {
-    font-variation-settings: 'FILL' 1;
-  }
-}
-
-.nav-label {
-  margin-top: 2rpx;
-  font-size: 20rpx;
-  font-weight: $font-weight-medium;
 }
 </style>

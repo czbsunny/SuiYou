@@ -1,20 +1,5 @@
 <template>
   <view class="page monthly-page">
-    <!-- Top Navigation -->
-    <view class="header">
-      <view class="header-left">
-        <view class="avatar-wrapper">
-          <image class="avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtxIxXHWyj6PICSMR8udWlj9hKnfewS60jxToDS-Ygu87EOQ2k6vDwuleuWs20xh2NCK-P16spP3nL7ZHfg3rniz4IPW5VVrf-sgL6YXJsm5bhVCpngjC89SyNtKr959pCao5Bynu78F0JbvzwPFJyd_Lt-RcTafyApwIBXOl8fSMf5qDYARk7RLlDgPz1iITQVkAix0O0kyYEivBdKvHayOPjUelAtEKuWKtPknUh-ebDdkkmwV2fXDuu2D--Nl9eI963wnwtHxNa" mode="aspectFill" />
-        </view>
-        <text class="app-name">Stewardship</text>
-      </view>
-      <view class="header-right">
-        <view class="notification-btn" @tap="handleNotification">
-          <text class="icon">notifications</text>
-        </view>
-      </view>
-    </view>
-
     <scroll-view scroll-y class="scroll">
       <view class="content">
         <!-- Date Header -->
@@ -93,7 +78,7 @@
         <view class="section-card">
           <view class="section-header">
             <text class="section-title">投资收益</text>
-            <text class="icon">trending_up</text>
+            <text class="icon-text">[趋势]</text>
           </view>
 
           <view class="investment-summary">
@@ -135,7 +120,7 @@
             <view class="account-list">
               <view v-for="account in topAccounts" :key="account.name" class="account-item">
                 <view class="account-icon">
-                  <text class="icon">{{ account.icon }}</text>
+                  <text class="icon-text">[图表]</text>
                 </view>
                 <view class="account-info">
                   <text class="account-name">{{ account.name }}</text>
@@ -163,32 +148,10 @@
         </view>
       </view>
     </scroll-view>
-
-    <!-- Bottom Navigation -->
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <text class="nav-label">首页</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('goal')">
-        <text class="nav-icon">target</text>
-        <text class="nav-label">目标</text>
-      </view>
-      <view class="nav-item active" @tap="navigateTo('asset')">
-        <text class="nav-icon" style="font-variation-settings: 'FILL' 1">account_balance_wallet</text>
-        <text class="nav-label">资产</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('profile')">
-        <text class="nav-icon">person</text>
-        <text class="nav-label">我的</text>
-      </view>
-    </view>
   </view>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-
 const doughnutData = [
   { name: '居住', percent: '40%', color: '#006754' },
   { name: '教育', percent: '24%', color: '#8b6e3a' },
@@ -221,56 +184,6 @@ const topAccounts = [
   { name: '招商证券 A 股', type: '股票投资', amount: '+¥8,400', change: '+12.4%', icon: 'show_chart' },
   { name: '腾讯理财通', type: '中高风险基金', amount: '+¥2,150', change: '+4.2%', icon: 'analytics' }
 ]
-
-const handleNotification = () => {
-  uni.showToast({ title: '通知', icon: 'none' })
-}
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    goal: '/pages/goal/index',
-    asset: '/pages/asset/index',
-    profile: '/pages/profile/index'
-  }
-  uni.navigateTo({ url: pages[page] })
-}
-
-onMounted(() => {
-  drawDoughnut()
-})
-
-const drawDoughnut = () => {
-  const ctx = uni.createCanvasContext('doughnutChart')
-  const centerX = 60
-  const centerY = 60
-  const radius = 40
-  const lineWidth = 12
-
-  ctx.setStrokeStyle('#e9e8e5')
-  ctx.setLineWidth(lineWidth)
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-  ctx.stroke()
-
-  const colors = ['#006754', '#8b6e3a', '#b7102a', '#bec9c4']
-  const percentages = [0.4, 0.24, 0.2, 0.16]
-  let offset = -Math.PI / 2
-
-  percentages.forEach((percent, index) => {
-    ctx.setStrokeStyle(colors[index])
-    ctx.setLineWidth(lineWidth)
-    ctx.setLineCap('round')
-    ctx.beginPath()
-    const startAngle = offset
-    const endAngle = offset + percent * 2 * Math.PI
-    ctx.arc(centerX, centerY, radius, startAngle, endAngle)
-    ctx.stroke()
-    offset = endAngle
-  })
-
-  ctx.draw()
-}
 </script>
 
 <style lang="scss" scoped>
@@ -279,7 +192,6 @@ const drawDoughnut = () => {
 .page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: 140rpx;
 }
 
 .scroll {
@@ -288,58 +200,6 @@ const drawDoughnut = () => {
 
 .content {
   padding: $spacing-4 $container-padding;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-3 $container-padding;
-  background: $background;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: $stack-gap-sm;
-}
-
-.avatar-wrapper {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $rounded-full;
-  border: 2rpx solid rgba($primary-container, 0.2);
-  overflow: hidden;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-
-.app-name {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.notification-btn {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
 }
 
 .date-header {
@@ -821,44 +681,5 @@ const drawDoughnut = () => {
   }
 }
 
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc($spacing-3 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-xl $rounded-xl 0 0;
-}
 
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-2 $spacing-4;
-  color: $outline;
-  transition: all 0.2s;
-
-  &.active {
-    background: $primary;
-    border-radius: $rounded-full;
-    color: $on-primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-}
-
-.nav-label {
-  margin-top: 4rpx;
-  font-size: $font-size-label-caps;
-  font-weight: $font-weight-bold;
-}
 </style>

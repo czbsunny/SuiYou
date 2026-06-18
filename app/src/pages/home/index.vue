@@ -74,7 +74,8 @@ const tapAction = (label) => {
     '预算': '/pages/bill/budget',
     '记账': '/pages/bill/record',
     '存钱': '/pages/goal/saving',
-    '报告': '/pages/report/monthly'
+    '报告': '/pages/report/monthly',
+    '查看全部': '/pages/bill/detail'
   }
   const url = pageMap[label]
   if (url) {
