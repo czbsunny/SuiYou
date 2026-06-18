@@ -2,30 +2,12 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="back-btn" @tap="handleBack">
-              <text class="icon-arrow">arrow_back</text>
-            </view>
-            <text class="page-title">{{ accountData.institutionName }}</text>
-          </view>
-          <view class="top-bar-right">
-            <view class="notification-btn" @tap="handleNotification">
-              <text class="icon-notification">notifications</text>
-            </view>
-            <view class="avatar-wrap">
-              <image class="avatar" :src="accountData.avatarUrl" mode="aspectFill" />
-            </view>
-          </view>
-        </view>
-
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
           <view class="card-header">
             <text class="card-label">{{ accountData.balanceLabel }}</text>
             <view class="visibility-btn" @tap="toggleVisibility">
-              <text class="icon-visibility">{{ isVisible ? 'visibility' : 'visibility_off' }}</text>
+              <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
             </view>
           </view>
           <view class="balance-row">
@@ -84,33 +66,13 @@
                 <view class="asset-amount-wrap">
                   <text class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</text>
                 </view>
-                <text class="icon-chevron">chevron_right</text>
+                <text class="icon-chevron">›</text>
               </view>
             </view>
           </view>
         </view>
       </view>
     </scroll-view>
-
-    <!-- Bottom Navigation -->
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <text class="nav-label">首页</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('goals')">
-        <text class="nav-icon">track_changes</text>
-        <text class="nav-label">目标</text>
-      </view>
-      <view class="nav-item active">
-        <text class="nav-icon" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</text>
-        <text class="nav-label">资产</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('profile')">
-        <text class="nav-icon">person</text>
-        <text class="nav-label">我的</text>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -134,15 +96,15 @@ const accountData = ref({
 })
 
 const quickActions = ref([
-  { id: 'buy', icon: 'add_circle', label: '买入', bgClass: 'bg-secondary', iconClass: 'text-secondary' },
-  { id: 'sell', icon: 'do_not_disturb_on', label: '卖出', bgClass: 'bg-primary', iconClass: 'text-primary' },
-  { id: 'transfer', icon: 'sync_alt', label: '转账', bgClass: 'bg-gray', iconClass: 'text-gray' },
-  { id: 'query', icon: 'search', label: '查询', bgClass: 'bg-gray', iconClass: 'text-gray' }
+  { id: 'buy', icon: '买', label: '买入', bgClass: 'bg-secondary', iconClass: 'text-secondary' },
+  { id: 'sell', icon: '卖', label: '卖出', bgClass: 'bg-primary', iconClass: 'text-primary' },
+  { id: 'transfer', icon: '转', label: '转账', bgClass: 'bg-gray', iconClass: 'text-gray' },
+  { id: 'query', icon: '查', label: '查询', bgClass: 'bg-gray', iconClass: 'text-gray' }
 ])
 
 const assetList = ref([
-  { id: '1', icon: 'show_chart', name: '股票', amount: '¥3,250,000.00', bgColor: 'rgba(183, 16, 42, 0.1)', iconColor: '#b7102a' },
-  { id: '2', icon: 'finance', name: '基金', amount: '¥742,050.00', bgColor: 'rgba(0, 103, 84, 0.1)', iconColor: '#006754' }
+  { id: '1', icon: '股', name: '股票', amount: '¥3,250,000.00', bgColor: 'rgba(183, 16, 42, 0.1)', iconColor: '#b7102a' },
+  { id: '2', icon: '基', name: '基金', amount: '¥742,050.00', bgColor: 'rgba(0, 103, 84, 0.1)', iconColor: '#006754' }
 ])
 
 const formattedBalance = computed(() => {
@@ -154,14 +116,6 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleNotification = () => {
-  uni.showToast({ title: '暂无新通知', icon: 'none' })
 }
 
 const handleAction = (actionId) => {
@@ -180,16 +134,6 @@ const handleAction = (actionId) => {
 
 const handleAssetTap = (asset) => {
   uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
-}
-
-const navigateTo = (page) => {
-  const paths = {
-    home: '/pages/home/index',
-    goals: '/pages/goal/index',
-    assets: '/pages/asset/index',
-    profile: '/pages/profile/index'
-  }
-  uni.switchTab({ url: paths[page] })
 }
 
 onLoad((options) => {
@@ -215,79 +159,8 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 180rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $background;
-  padding: 60rpx $spacing-4 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: $surface-container-low;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-arrow {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $on-surface;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.notification-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-notification {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $on-surface-variant;
-}
-
-.avatar-wrap {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  overflow: hidden;
-  background: $outline-variant;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
+  padding-bottom: 40rpx;
+  padding-top: $spacing-4;
 }
 
 .wealth-card {
@@ -512,44 +385,5 @@ onLoad((options) => {
   font-family: 'Material Symbols Outlined';
   font-size: 28rpx;
   color: $outline-variant;
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg $rounded-lg 0 0;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc(#{$spacing-3} + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-  color: $on-surface-variant;
-
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-}
-
-.nav-label {
-  font-family: $font-family-mono;
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
 }
 </style>

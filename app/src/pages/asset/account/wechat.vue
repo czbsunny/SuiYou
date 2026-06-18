@@ -2,28 +2,13 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="avatar-wrap">
-              <image class="avatar" :src="accountData.avatarUrl" mode="aspectFill" />
-            </view>
-            <span class="page-title">{{ accountData.institutionName }}</span>
-          </view>
-          <view class="top-bar-right">
-            <button class="notification-btn" @tap="handleNotification">
-              <text class="icon-notification">notifications</text>
-            </button>
-          </view>
-        </view>
-
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
           <view class="card-header">
             <view class="label-row">
               <span class="card-label">{{ accountData.balanceLabel }}</span>
               <view class="visibility-btn" @tap="toggleVisibility">
-                <text class="icon-visibility">{{ isVisible ? 'visibility' : 'visibility_off' }}</text>
+                <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
               </view>
             </view>
           </view>
@@ -36,7 +21,7 @@
               <p class="stat-label">{{ accountData.yesterdayLabel }}</p>
               <div class="stat-value-row">
                 <span class="stat-value font-mono text-secondary">{{ isVisible ? accountData.yesterdayChange : '****' }}</span>
-                <text class="icon-trend" style="font-variation-settings: 'FILL' 1;">trending_up</text>
+                <text class="icon-trend">↑</text>
               </div>
             </view>
             <view class="stat-item">
@@ -66,7 +51,7 @@
           <view class="section-header">
             <span class="section-title">资产列表</span>
             <view class="add-btn" @tap="handleAddAsset">
-              <text class="icon-add">add</text>
+              <text class="icon-add">+</text>
             </view>
           </view>
           <view class="asset-list">
@@ -85,7 +70,7 @@
               </view>
               <view class="asset-right">
                 <span class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</span>
-                <text class="icon-chevron">chevron_right</text>
+                <text class="icon-chevron">›</text>
               </view>
             </view>
           </view>
@@ -113,18 +98,18 @@ const accountData = ref({
 })
 
 const quickActions = ref([
-  { id: 'withdraw', icon: 'account_balance', label: '提现' },
-  { id: 'recharge', icon: 'add_card', label: '充值' },
-  { id: 'wealth', icon: 'monitoring', label: '理财' },
-  { id: 'statement', icon: 'receipt_long', label: '账单' }
+  { id: 'withdraw', icon: '提', label: '提现' },
+  { id: 'recharge', icon: '充', label: '充值' },
+  { id: 'wealth', icon: '理', label: '理财' },
+  { id: 'statement', icon: '账', label: '账单' }
 ])
 
 const assetList = ref([
-  { id: '1', icon: 'account_balance_wallet', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C' },
-  { id: '2', icon: 'savings', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a' },
-  { id: '3', icon: 'show_chart', name: '基金', desc: '长期稳健增值', amount: '500,000.00', bgColor: '#ECFDF5', iconColor: '#006754' },
-  { id: '4', icon: 'monetization_on', name: '黄金', desc: '实物黄金', amount: '100,000.00', bgColor: '#FFFBEB', iconColor: '#705624' },
-  { id: '5', icon: 'handshake', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488' }
+  { id: '1', icon: '零', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C' },
+  { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a' },
+  { id: '3', icon: '基', name: '基金', desc: '长期稳健增值', amount: '500,000.00', bgColor: '#ECFDF5', iconColor: '#006754' },
+  { id: '4', icon: '金', name: '黄金', desc: '实物黄金', amount: '100,000.00', bgColor: '#FFFBEB', iconColor: '#705624' },
+  { id: '5', icon: '微', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488' }
 ])
 
 const formattedBalance = computed(() => {
@@ -136,14 +121,6 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleNotification = () => {
-  uni.showToast({ title: '暂无新通知', icon: 'none' })
 }
 
 const handleAction = (actionId) => {
@@ -187,67 +164,8 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 180rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $background;
-  padding: 60rpx $spacing-5 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.avatar-wrap {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  border: 4rpx solid rgba($primary, 0.2);
-  overflow: hidden;
-  background: $surface-container-high;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.notification-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-.icon-notification {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $primary;
+  padding-bottom: 40rpx;
+  padding-top: $spacing-4;
 }
 
 .wealth-card {

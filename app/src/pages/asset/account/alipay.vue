@@ -2,28 +2,13 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="avatar-wrap">
-              <image class="avatar" :src="accountData.avatarUrl" mode="aspectFill" />
-            </view>
-            <text class="page-title">{{ accountData.institutionName }}</text>
-          </view>
-          <view class="top-bar-right">
-            <view class="notification-btn" @tap="handleNotification">
-              <text class="icon-notification">notifications</text>
-            </view>
-          </view>
-        </view>
-
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
           <view class="card-header">
             <view class="label-row">
               <text class="card-label">{{ accountData.balanceLabel }}</text>
               <view class="visibility-btn" @tap="toggleVisibility">
-                <text class="icon-visibility">{{ isVisible ? 'visibility' : 'visibility_off' }}</text>
+                <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
               </view>
             </view>
           </view>
@@ -63,7 +48,7 @@
           <view class="section-header">
             <text class="section-title">资产列表</text>
             <view class="add-btn" @tap="handleAddAsset">
-              <text class="icon-add">add</text>
+              <text class="icon-add">+</text>
             </view>
           </view>
           <view class="asset-list">
@@ -112,21 +97,21 @@ const accountData = ref({
 })
 
 const quickActions = ref([
-  { id: 'withdraw', icon: 'account_balance_wallet', label: '提现', bgClass: 'bg-blue', iconClass: 'text-blue-600' },
-  { id: 'recharge', icon: 'add_card', label: '充值', bgClass: 'bg-orange', iconClass: 'text-orange-600' },
-  { id: 'wealth', icon: 'trending_up', label: '理财', bgClass: 'bg-green', iconClass: 'text-green-600' },
-  { id: 'statement', icon: 'receipt_long', label: '收支', bgClass: 'bg-purple', iconClass: 'text-purple-600' }
+  { id: 'withdraw', icon: '提', label: '提现', bgClass: 'bg-blue', iconClass: 'text-blue-600' },
+  { id: 'recharge', icon: '充', label: '充值', bgClass: 'bg-orange', iconClass: 'text-orange-600' },
+  { id: 'wealth', icon: '理', label: '理财', bgClass: 'bg-green', iconClass: 'text-green-600' },
+  { id: 'statement', icon: '收', label: '收支', bgClass: 'bg-purple', iconClass: 'text-purple-600' }
 ])
 
 const assetList = ref([
-  { id: '1', icon: 'savings', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray', bgColor: '#EFF6FF', iconColor: '#2563EB' },
-  { id: '2', icon: 'temp_preferences_custom', name: '余额宝', desc: '收益稳健', amount: '256,000.00', subText: '+2.15%', subClass: 'text-secondary', bgColor: '#EFF6FF', iconColor: '#2563EB' },
-  { id: '3', icon: 'credit_card', name: '花呗', desc: '下月应还', amount: '-1,240.50', subText: '10月账单', subClass: 'text-gray', bgColor: '#FFF7ED', iconColor: '#EA580C' },
-  { id: '4', icon: 'request_quote', name: '借呗', desc: '额度可用', amount: '50,000.00', subText: '免息中', subClass: 'text-primary', bgColor: '#EEF2FF', iconColor: '#4F46E5' },
-  { id: '5', icon: 'account_balance', name: '余利宝', desc: '企业理财', amount: '142,500.00', subText: '稳健经营', subClass: 'text-gray', bgColor: '#ECFDF5', iconColor: '#059669' },
-  { id: '6', icon: 'redeem', name: '小荷包', desc: '共同攒钱', amount: '2,500.00', subText: '攒钱计划', subClass: 'text-pink', bgColor: '#FDF2F8', iconColor: '#DB2777' },
-  { id: '7', icon: 'query_stats', name: '基金', desc: '持有3支', amount: '382,000.00', subText: '+15.2%', subClass: 'text-secondary', bgColor: '#F5F3FF', iconColor: '#7C3AED' },
-  { id: '8', icon: 'monetization_on', name: '黄金', desc: '实物黄金', amount: '15,000.00', subText: '32g', subClass: 'text-gray', bgColor: '#FFFBEB', iconColor: '#D97706' }
+  { id: '1', icon: '余', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray', bgColor: '#EFF6FF', iconColor: '#2563EB' },
+  { id: '2', icon: '宝', name: '余额宝', desc: '收益稳健', amount: '256,000.00', subText: '+2.15%', subClass: 'text-secondary', bgColor: '#EFF6FF', iconColor: '#2563EB' },
+  { id: '3', icon: '花', name: '花呗', desc: '下月应还', amount: '-1,240.50', subText: '10月账单', subClass: 'text-gray', bgColor: '#FFF7ED', iconColor: '#EA580C' },
+  { id: '4', icon: '借', name: '借呗', desc: '额度可用', amount: '50,000.00', subText: '免息中', subClass: 'text-primary', bgColor: '#EEF2FF', iconColor: '#4F46E5' },
+  { id: '5', icon: '利', name: '余利宝', desc: '企业理财', amount: '142,500.00', subText: '稳健经营', subClass: 'text-gray', bgColor: '#ECFDF5', iconColor: '#059669' },
+  { id: '6', icon: '荷', name: '小荷包', desc: '共同攒钱', amount: '2,500.00', subText: '攒钱计划', subClass: 'text-pink', bgColor: '#FDF2F8', iconColor: '#DB2777' },
+  { id: '7', icon: '基', name: '基金', desc: '持有3支', amount: '382,000.00', subText: '+15.2%', subClass: 'text-secondary', bgColor: '#F5F3FF', iconColor: '#7C3AED' },
+  { id: '8', icon: '金', name: '黄金', desc: '实物黄金', amount: '15,000.00', subText: '32g', subClass: 'text-gray', bgColor: '#FFFBEB', iconColor: '#D97706' }
 ])
 
 const formattedBalance = computed(() => {
@@ -138,14 +123,6 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleNotification = () => {
-  uni.showToast({ title: '暂无新通知', icon: 'none' })
 }
 
 const handleAction = (actionId) => {
@@ -189,64 +166,8 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 180rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $background;
-  padding: 60rpx $spacing-4 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.avatar-wrap {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  border: 4rpx solid $tertiary-fixed;
-  overflow: hidden;
-  background: $surface-container-high;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.notification-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-notification {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $on-surface;
+  padding-bottom: 40rpx;
+  padding-top: $spacing-4;
 }
 
 .wealth-card {

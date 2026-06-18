@@ -93,7 +93,7 @@
     {
       "path": "pages/asset/account/bank",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "银行详情",
         "backgroundColor": "#FAF9F6"
       }
@@ -101,7 +101,7 @@
     {
       "path": "pages/asset/account/alipay",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "支付宝",
         "backgroundColor": "#FAF9F6"
       }
@@ -109,7 +109,7 @@
     {
       "path": "pages/asset/account/wechat",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "微信钱包",
         "backgroundColor": "#FAF9F6"
       }
@@ -117,7 +117,7 @@
     {
       "path": "pages/asset/account/security",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "证券账户",
         "backgroundColor": "#FAF9F6"
       }
@@ -125,7 +125,7 @@
     {
       "path": "pages/trade/stock",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "股票交易",
         "backgroundColor": "#FAF9F6"
       }
@@ -133,7 +133,7 @@
     {
       "path": "pages/trade/transfer",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "转账",
         "backgroundColor": "#FAF9F6"
       }
@@ -141,7 +141,7 @@
     {
       "path": "pages/trade/query",
       "style": {
-        "navigationStyle": "custom",
+        "navigationStyle": "default",
         "navigationBarTitleText": "交易查询",
         "backgroundColor": "#FAF9F6"
       }

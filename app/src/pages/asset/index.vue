@@ -213,7 +213,8 @@ const loadAccounts = async () => {
   loading.value = true
   try {
     const resp = await getAccountList()
-    const list = resp?.data?.accounts || resp?.accounts || []
+    console.log('加载账户列表响应:', resp)
+    const list = resp?.data || []
     accounts.value = list.map(mapAccount)
 
     accounts.value.sort((a, b) => {
