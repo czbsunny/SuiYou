@@ -2,20 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="back-btn" @tap="handleBack">
-              <text class="icon-arrow">arrow_back</text>
-            </view>
-            <text class="page-title">交易查询</text>
-          </view>
-          <view class="top-bar-right">
-            <view class="calendar-btn" @tap="handleCalendar">
-              <text class="icon-calendar">calendar_today</text>
-            </view>
-          </view>
-        </view>
-
         <view class="tabs">
           <view 
             v-for="(tab, index) in tabs" 
@@ -78,25 +64,6 @@
         </view>
       </view>
     </scroll-view>
-
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('buy')">
-        <text class="nav-icon">add_chart</text>
-        <text class="nav-label">买入</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('sell')">
-        <text class="nav-icon">sell</text>
-        <text class="nav-label">卖出</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('transfer')">
-        <text class="nav-icon">swap_horiz</text>
-        <text class="nav-label">转账</text>
-      </view>
-      <view class="nav-item active">
-        <text class="nav-icon" style="font-variation-settings: 'FILL' 1;">history_edu</text>
-        <text class="nav-label">查询</text>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -165,14 +132,6 @@ const transactionCount = computed(() => {
   return transactions.value.length.toString().padStart(2, '0')
 })
 
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleCalendar = () => {
-  uni.showToast({ title: '选择日期', icon: 'none' })
-}
-
 const navigateTo = (page) => {
   const paths = {
     buy: '/pages/trade/stock?type=buy',
@@ -198,65 +157,7 @@ const navigateTo = (page) => {
 }
 
 .content {
-  padding-bottom: 180rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $background;
-  padding: 60rpx $spacing-4 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: $surface-container-low;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-arrow {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-semibold;
-  color: $primary;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-}
-
-.calendar-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-calendar {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $on-surface-variant;
+  padding-bottom: $spacing-4;
 }
 
 .tabs {
@@ -465,44 +366,5 @@ const navigateTo = (page) => {
   &.text-loss {
     color: $primary;
   }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg $rounded-lg 0 0;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc(#{$spacing-3} + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-}
-
-.nav-label {
-  font-family: $font-family-mono;
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
 }
 </style>

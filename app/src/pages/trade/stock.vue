@@ -2,19 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Top App Bar -->
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="back-btn" @tap="handleBack">
-              <text class="icon-arrow">arrow_back</text>
-            </view>
-            <text class="page-title">{{ isBuy ? '股票买入' : '股票卖出' }}</text>
-          </view>
-          <view class="top-bar-right">
-            <text class="page-subtitle">交易中心</text>
-          </view>
-        </view>
-
         <!-- Stock Selector Card (Sell Mode) -->
         <view v-if="!isBuy" class="stock-card">
           <text class="card-label">已持仓股票</text>
@@ -42,7 +29,7 @@
             <view v-if="isBuy" class="section">
               <text class="section-label">选择证券</text>
               <view class="search-box" @tap="handleSearch">
-                <text class="search-icon">search</text>
+                <text class="search-icon">搜索</text>
                 <text class="search-placeholder">输入代码/首字母</text>
                 <view class="fav-badge">
                   <text class="fav-text">自选</text>
@@ -64,7 +51,7 @@
               </view>
               <view class="price-input-wrap">
                 <view class="price-btn" @tap="adjustPrice(isBuy ? -0.01 : -0.1)">
-                  <text class="price-icon">remove_circle_outline</text>
+                  <text class="price-icon">减</text>
                 </view>
                 <input 
                   class="price-input" 
@@ -72,7 +59,7 @@
                   v-model="price"
                 />
                 <view class="price-btn" @tap="adjustPrice(isBuy ? 0.01 : 0.1)">
-                  <text class="price-icon">add_circle_outline</text>
+                  <text class="price-icon">加</text>
                 </view>
               </view>
             </view>
@@ -116,11 +103,11 @@
               </view>
               <view class="summary-tips">
                 <view class="tip-item">
-                  <text class="tip-icon">info</text>
+                  <text class="tip-icon">i</text>
                   <text class="tip-text">手续费约: ¥12.50</text>
                 </view>
                 <view class="tip-item">
-                  <text class="tip-icon">timer</text>
+                  <text class="tip-icon">钟</text>
                   <text class="tip-text">T+1 资金到账</text>
                 </view>
               </view>
@@ -129,7 +116,7 @@
             <!-- Action Button -->
             <view class="action-btn" :class="isBuy ? 'buy-btn' : 'sell-btn'" @tap="handleAction">
               <text class="action-text">{{ isBuy ? '立即买入' : '卖出' }}</text>
-              <text v-if="!isBuy" class="action-icon">sell</text>
+              <text v-if="!isBuy" class="action-icon">卖</text>
             </view>
           </view>
 
@@ -187,26 +174,6 @@
         </view>
       </view>
     </scroll-view>
-
-    <!-- Bottom Navigation -->
-    <view class="bottom-nav">
-      <view class="nav-item" :class="{ active: isBuy }" @tap="switchMode(true)">
-        <text class="nav-icon" :style="{ fontVariationSettings: isBuy ? '\'FILL\' 1' : '' }">add_chart</text>
-        <text class="nav-label">买入</text>
-      </view>
-      <view class="nav-item" :class="{ active: !isBuy }" @tap="switchMode(false)">
-        <text class="nav-icon" :style="{ fontVariationSettings: !isBuy ? '\'FILL\' 1' : '' }">sell</text>
-        <text class="nav-label">卖出</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('transfer')">
-        <text class="nav-icon">swap_horiz</text>
-        <text class="nav-label">转账</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('query')">
-        <text class="nav-icon">history_edu</text>
-        <text class="nav-label">查询</text>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -343,10 +310,6 @@ const switchMode = (buy) => {
   quantity.value = ''
 }
 
-const handleBack = () => {
-  uni.navigateBack()
-}
-
 const handleSearch = () => {
   uni.showToast({ title: '搜索功能开发中', icon: 'none' })
 }
@@ -392,57 +355,7 @@ const navigateTo = (page) => {
 }
 
 .content {
-  padding-bottom: 200rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $surface;
-  padding: 60rpx $spacing-4 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: $surface-container-low;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-arrow {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-}
-
-.page-subtitle {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
+  padding-bottom: $spacing-4;
 }
 
 .stock-card {
@@ -936,44 +849,5 @@ const navigateTo = (page) => {
   font-size: $font-size-body-sm;
   font-weight: $font-weight-bold;
   color: $on-surface;
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg $rounded-lg 0 0;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc(#{$spacing-3} + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-}
-
-.nav-label {
-  font-family: $font-family-mono;
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
 }
 </style>

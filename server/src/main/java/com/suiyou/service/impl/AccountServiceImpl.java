@@ -4,13 +4,17 @@ import com.suiyou.dto.account.AccountModuleDTO;
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.enums.AccountType;
+import com.suiyou.enums.InstType;
 import com.suiyou.enums.ModuleType;
 import com.suiyou.model.Account;
 import com.suiyou.model.AccountModule;
 import com.suiyou.model.SysAccountTemplate;
+import com.suiyou.model.SysInstitution;
 import com.suiyou.repository.AccountModuleRepository;
 import com.suiyou.repository.AccountRepository;
 import com.suiyou.repository.SysAccountTemplateRepository;
+import com.suiyou.repository.SysInstitutionRepository;
 import com.suiyou.security.SecurityUtils;
 import com.suiyou.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +39,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private SysAccountTemplateRepository sysAccountTemplateRepository;
+
+    @Autowired
+    private SysInstitutionRepository sysInstitutionRepository;
 
     @Override
     public List<AccountRespDTO> getAccountsByOwnerId(Long ownerId) {
@@ -97,11 +104,29 @@ public class AccountServiceImpl implements AccountService {
                 .map(this::toAccountModuleRespDTO)
                 .collect(Collectors.toList());
 
+        SysInstitution institution = sysInstitutionRepository.findByInstCode(account.getInstCode());
+        String instType = null;
+        String instTypeName = null;
+        if (institution != null) {
+            instType = institution.getInstType();
+            InstType instTypeEnum = InstType.ofCode(instType);
+            instTypeName = instTypeEnum != null ? instTypeEnum.getName() : null;
+        }
+
+        String accountTypeName = null;
+        AccountType accountTypeEnum = AccountType.ofCode(account.getAccountType());
+        if (accountTypeEnum != null) {
+            accountTypeName = accountTypeEnum.getName();
+        }
+
         return AccountRespDTO.builder()
                 .id(account.getId())
                 .instCode(account.getInstCode())
+                .instType(instType)
+                .instTypeName(instTypeName)
                 .accountNo(account.getAccountNo())
                 .accountType(account.getAccountType())
+                .accountTypeName(accountTypeName)
                 .accountName(account.getAccountName())
                 .includeInNetWorth(account.getIncludeInNetWorth())
                 .modules(moduleDTOs)

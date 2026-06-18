@@ -51,19 +51,15 @@
         </view>
         <view v-else class="account-list">
           <view v-for="account in accounts" :key="account.id" class="account-card" @tap="handleAccountTap(account)">
-            <view class="account-logo-wrap" :style="account.logoBgStyle">
-              <image v-if="account.logoUrl" :src="account.logoUrl" mode="aspectFit" class="account-logo" />
-              <text v-else class="account-logo-placeholder">{{ account.logoLabel }}</text>
+            <view class="account-logo-wrap">
+              <text class="account-logo-placeholder">{{ (account.instCode || account.accountName || '账').charAt(0) }}</text>
             </view>
             <view class="account-info">
-              <text class="account-name">{{ account.line1 }}</text>
-              <text class="account-type">{{ account.line2 }}</text>
+              <text class="account-name">{{ account.accountTypeName || account.instTypeName }}</text>
+              <text class="account-type">{{ account.accountName }} · {{ account.accountNo }}</text>
             </view>
             <view class="account-money">
-              <text class="balance">{{ formatSignedNumber(account.balance) }}</text>
-              <text v-if="account.changeText" class="change" :class="{ positive: account.changePositive }">
-                {{ account.changeText }}
-              </text>
+              <text class="balance">¥--</text>
             </view>
           </view>
         </view>
@@ -125,23 +121,6 @@ const chartDots = computed(() => {
   ]
 })
 
-const LIABILITY_TYPES = new Set([
-  'CREDIT_CARD', 'INTERNET_CREDIT', 'CONSUMER_LOAN',
-  'MORTGAGE', 'CAR_LOAN', 'PAYABLE'
-])
-
-const computeBalance = (account) => {
-  const assets = account.assets || []
-  let sum = 0
-  for (const a of assets) {
-    const v = Number(a.totalBalance || 0)
-    if (!isNaN(v)) sum += v
-  }
-  return sum
-}
-
-const computeChange = (_account) => 0
-
 const formatNumber = (value) => {
   if (value === null || value === undefined || isNaN(Number(value))) return '0.00'
   const num = Number(value)
@@ -151,77 +130,16 @@ const formatNumber = (value) => {
   })
 }
 
-const formatSignedNumber = (value) => {
-  const num = Number(value || 0)
-  if (num < 0) return `-¥${formatNumber(Math.abs(num))}`
-  return `¥${formatNumber(num)}`
-}
-
 const totalNetWorth = computed(() => {
-  let sum = 0
-  for (const a of accounts.value) {
-    if (!a.includeInNetWorth) continue
-    const bal = Number(a.balance || 0)
-    if (!isNaN(bal)) sum += bal
-  }
-  return sum
+  return '--'
 })
-
-const mapAccount = (account) => {
-  const institution = account.institution || {}
-  const instType = institution.instType
-  const shortName = institution.shortName || institution.instName || ''
-  const line1 = instType === 'BANK' && account.accountTypeName
-    ? `${shortName} · ${account.accountTypeName}`
-    : shortName
-  const line2 = [account.accountName, account.accountNo]
-    .filter(Boolean)
-    .join(' · ')
-
-  const balance = computeBalance(account)
-  const change = computeChange(account)
-  const assetTypes = (account.assets || []).map(a => a.assetType).filter(Boolean)
-  const mainAssetType = assetTypes[0] || account.accountType
-  const isLiability = LIABILITY_TYPES.has(mainAssetType) || balance < 0
-
-  const themeColor = institution.themeColor
-  const logoBgStyle = themeColor
-    ? { background: themeColor }
-    : {}
-
-  const logoLabel = (shortName || account.accountName || '账').charAt(0)
-
-  return {
-    id: account.id,
-    accountName: account.accountName,
-    accountTypeName: account.accountTypeName,
-    institution,
-    logoUrl: institution.logoUrl || '',
-    logoLabel,
-    logoBgStyle,
-    line1,
-    line2,
-    balance,
-    change,
-    changeText: change !== 0 ? (change > 0 ? `+¥${formatNumber(change)}` : `-¥${formatNumber(Math.abs(change))}`) : '',
-    changePositive: change > 0,
-    includeInNetWorth: account.includeInNetWorth !== false && !isLiability
-  }
-}
 
 const loadAccounts = async () => {
   loading.value = true
   try {
     const resp = await getAccountList()
     console.log('加载账户列表响应:', resp)
-    const list = resp?.data || []
-    accounts.value = list.map(mapAccount)
-
-    accounts.value.sort((a, b) => {
-      if (a.includeInNetWorth && !b.includeInNetWorth) return -1
-      if (!a.includeInNetWorth && b.includeInNetWorth) return 1
-      return Math.abs(b.balance) - Math.abs(a.balance)
-    })
+    accounts.value = resp?.data || []
   } catch (error) {
     console.error('加载账户列表失败:', error)
     uni.showToast({ title: '加载账户失败', icon: 'none' })
@@ -245,27 +163,40 @@ const handleAddAccount = () => {
   })
 }
 
-const getDetailPagePath = (account) => {
-  const instName = (account.line1 || '').toLowerCase()
-  if (instName.includes('支付宝') || instName.includes('alipay')) {
-    return '/pages/asset/account/alipay'
-  }
-  if (instName.includes('微信') || instName.includes('wechat') || instName.includes('weixin')) {
-    return '/pages/asset/account/wechat'
-  }
-  if (instName.includes('证券') || instName.includes('security')) {
-    return '/pages/asset/account/security'
-  }
-  return '/pages/asset/account/bank'
-}
-
 const handleAccountTap = (account) => {
-  const institutionName = encodeURIComponent(account.line1 || '账户详情')
-  const balance = account.balance || 0
-  const pagePath = getDetailPagePath(account)
-  uni.navigateTo({
-    url: `${pagePath}?institutionName=${institutionName}&balance=${balance}`
-  })
+  console.log('点击账户:', account)
+  let pagePath = null
+  switch (account.instType) {
+    case 'SECURITY':
+      pagePath = '/pages/asset/account/security'
+      break
+    case 'BANK':
+      pagePath = '/pages/asset/account/bank'
+      break
+    case 'FINTECH':
+      switch (account.instCode) {
+        case 'ALIPAY':
+          pagePath = '/pages/asset/account/alipay'
+          break
+        case 'WECHAT':
+          pagePath = '/pages/asset/account/wechat'
+          break
+        default:
+          break
+      }
+      break
+    default:
+      break
+  }
+
+  if (pagePath) {
+    const institutionName = encodeURIComponent(account.accountName || account.instCode || '账户详情')
+    uni.navigateTo({
+      url: `${pagePath}?institutionName=${institutionName}&instCode=${account.instCode}`
+    })
+  } else {
+    uni.showToast({ title: '该账户类型开发中', icon: 'none' })
+  }
 }
 
 onShow(() => {

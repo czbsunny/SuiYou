@@ -2,20 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <view class="top-bar">
-          <view class="top-bar-left">
-            <view class="back-btn" @tap="handleBack">
-              <text class="icon-arrow">arrow_back</text>
-            </view>
-            <text class="page-title">转账</text>
-          </view>
-          <view class="top-bar-right">
-            <view class="history-btn" @tap="handleHistory">
-              <text class="history-text">交易记录</text>
-            </view>
-          </view>
-        </view>
-
         <view class="segment-container">
           <view class="segment-bg">
             <view 
@@ -42,16 +28,16 @@
         <view class="flow-section">
           <view class="flow-item">
             <view class="flow-icon-wrap" :class="isIn ? 'bg-normal' : 'bg-active'">
-              <text class="flow-icon" :class="isIn ? 'text-primary' : 'text-on-primary'">{{ isIn ? 'account_balance' : 'show_chart' }}</text>
+              <text class="flow-icon" :class="isIn ? 'text-primary' : 'text-on-primary'">{{ isIn ? '银行' : '证券' }}</text>
             </view>
             <text class="flow-label" :class="{ active: !isIn }">{{ isIn ? '银行账户' : '证券账户' }}</text>
           </view>
           <view class="flow-arrow">
-            <text class="arrow-icon" :style="{ transform: isIn ? 'rotate(0deg)' : 'rotate(180deg)' }">trending_flat</text>
+            <text class="arrow-icon" :style="{ transform: isIn ? 'rotate(0deg)' : 'rotate(180deg)' }">→</text>
           </view>
           <view class="flow-item">
             <view class="flow-icon-wrap" :class="isIn ? 'bg-active' : 'bg-normal'">
-              <text class="flow-icon" :class="isIn ? 'text-on-primary' : 'text-primary'">{{ isIn ? 'show_chart' : 'account_balance' }}</text>
+              <text class="flow-icon" :class="isIn ? 'text-on-primary' : 'text-primary'">{{ isIn ? '证券' : '银行' }}</text>
             </view>
             <text class="flow-label" :class="{ active: isIn }">{{ isIn ? '证券账户' : '银行账户' }}</text>
           </view>
@@ -68,7 +54,7 @@
               <text class="bank-name">{{ bankName }}</text>
               <text class="bank-number">{{ bankNumber }}</text>
             </view>
-            <text v-if="isIn" class="chevron-icon">chevron_right</text>
+            <text v-if="isIn" class="chevron-icon">></text>
           </view>
         </view>
 
@@ -101,25 +87,6 @@
         </view>
       </view>
     </scroll-view>
-
-    <view class="bottom-nav">
-      <view class="nav-item" @tap="navigateTo('buy')">
-        <text class="nav-icon">add_chart</text>
-        <text class="nav-label">买入</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('sell')">
-        <text class="nav-icon">sell</text>
-        <text class="nav-label">卖出</text>
-      </view>
-      <view class="nav-item active">
-        <text class="nav-icon" style="font-variation-settings: 'FILL' 1;">swap_horiz</text>
-        <text class="nav-label">转账</text>
-      </view>
-      <view class="nav-item" @tap="navigateTo('query')">
-        <text class="nav-icon">history_edu</text>
-        <text class="nav-label">查询</text>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -140,14 +107,6 @@ const switchSegment = (index) => {
 
 const fillAll = () => {
   amount.value = '2480000.00'
-}
-
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleHistory = () => {
-  uni.navigateTo({ url: '/pages/trade/query' })
 }
 
 const handleTransfer = () => {
@@ -183,61 +142,7 @@ const navigateTo = (page) => {
 }
 
 .content {
-  padding-bottom: 200rpx;
-}
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: $surface;
-  padding: 60rpx $spacing-4 $spacing-4;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  background: $surface-container-low;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-arrow {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-}
-
-.history-btn {
-  padding: $spacing-2 $spacing-4;
-}
-
-.history-text {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
+  padding-bottom: $spacing-4;
 }
 
 .segment-container {
@@ -515,45 +420,6 @@ const navigateTo = (page) => {
 
 .action-text {
   font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg $rounded-lg 0 0;
-  padding: $spacing-3 $spacing-4;
-  padding-bottom: calc(#{$spacing-3} + env(safe-area-inset-bottom));
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-}
-
-.nav-label {
-  font-family: $font-family-mono;
-  font-size: 20rpx;
   font-weight: $font-weight-bold;
 }
 </style>
