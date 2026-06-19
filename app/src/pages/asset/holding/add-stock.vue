@@ -10,7 +10,7 @@
               手动输入
             </h2>
             <button class="ocr-btn" @tap="handleOCR">
-              <text class="icon-camera">photo_camera</text>
+              <image src="/static/images/photo_camera.png" class="icon-camera" />
               <span class="ocr-text">图片识别持仓</span>
             </button>
           </div>
@@ -19,25 +19,29 @@
             <!-- Stock Selection -->
             <view class="form-item">
               <label class="form-label">股票名称</label>
-              <button class="select-trigger" @tap="handleSelectStock">
-                <span class="select-placeholder">点击搜索股票名称或代码...</span>
-                <text class="icon-search">search</text>
-              </button>
+              <view class="select-trigger" @tap="handleSelectStock">
+                <view v-if="selectedStock" class="select-content">
+                  <text class="select-primary">{{ selectedStock.name }}</text>
+                  <text class="select-secondary font-mono">{{ selectedStock.code }}</text>
+                </view>
+                <text v-else class="select-placeholder">点击搜索股票名称或代码...</text>
+                <image src="/static/images/search.png" class="icon-search" />
+              </view>
             </view>
 
             <!-- Input Grid -->
-            <div class="input-grid">
+            <view class="input-grid">
               <view class="form-item">
                 <label class="form-label">成本价</label>
-                <div class="input-wrap">
+                <view class="input-wrap">
                   <input 
                     class="form-input font-mono" 
                     type="digit" 
                     placeholder="0.00"
                     v-model="formData.cost"
                   />
-                  <span class="input-suffix">CNY</span>
-                </div>
+                  <text class="input-suffix">CNY</text>
+                </view>
               </view>
               <view class="form-item">
                 <label class="form-label">持仓股数</label>
@@ -48,7 +52,7 @@
                   v-model="formData.quantity"
                 />
               </view>
-            </div>
+            </view>
 
             <!-- Holding Days -->
             <view class="form-item">
@@ -64,7 +68,7 @@
 
           <!-- Add to List Button -->
           <button class="add-list-btn" @tap="handleAddToList">
-            <text class="icon-add-circle">add_circle</text>
+            <image src="/static/images/add.png" class="icon-add-circle" />
             <span class="btn-text">加入待添加列表</span>
           </button>
         </section>
@@ -111,13 +115,17 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, getCurrentInstance } from 'vue'
+
+const instance = getCurrentInstance()
 
 const formData = reactive({
   cost: '',
   quantity: '',
   days: ''
 })
+
+const selectedStock = ref(null)
 
 const pendingList = ref([
   {
@@ -146,7 +154,15 @@ const handleSelectStock = () => {
   })
 }
 
+instance.proxy.onStockSelected = (item) => {
+  selectedStock.value = item
+}
+
 const handleAddToList = () => {
+  if (!selectedStock.value) {
+    uni.showToast({ title: '请先选择股票', icon: 'none' })
+    return
+  }
   if (!formData.cost || !formData.quantity) {
     uni.showToast({ title: '请输入成本价和股数', icon: 'none' })
     return
@@ -154,13 +170,14 @@ const handleAddToList = () => {
   
   const newItem = {
     id: Date.now().toString(),
-    name: '股票名称',
-    code: '待搜索',
+    name: selectedStock.value.name,
+    code: selectedStock.value.code,
     cost: parseFloat(formData.cost).toFixed(2),
     quantity: parseInt(formData.quantity).toLocaleString()
   }
   
   pendingList.value.push(newItem)
+  selectedStock.value = null
   formData.cost = ''
   formData.quantity = ''
   formData.days = ''
@@ -214,6 +231,8 @@ const handleDelete = (id) => {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 .title-line {
@@ -226,22 +245,23 @@ const handleDelete = (id) => {
 .ocr-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-1;
   background: rgba($primary-container, 0.3);
-  color: $on-primary-container;
-  padding: $spacing-2 $spacing-3;
+  color: $primary;
   border-radius: $rounded-full;
+  margin-left: auto;
 }
 
 .icon-camera {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
-  font-variation-settings: 'FILL' 1;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .ocr-text {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
+  color: $primary;
 }
 
 .form-content {
@@ -270,26 +290,46 @@ const handleDelete = (id) => {
   justify-content: space-between;
   align-items: center;
   background: rgba($surface-container-low, 0.6);
-  padding: $spacing-3;
+  padding: $spacing-2 $spacing-3;
   border-radius: $rounded-lg;
+  min-height: 72rpx;
+  box-sizing: border-box;
+}
+
+.select-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.select-primary {
+  font-size: $font-size-body-sm;
+  font-weight: $font-weight-semibold;
+  color: $on-surface;
+}
+
+.select-secondary {
+  font-size: $font-size-xs;
+  color: $outline;
 }
 
 .select-placeholder {
   font-size: $font-size-body-sm;
-  font-weight: $font-weight-semibold;
-  color: $on-surface-variant;
+  font-weight: $font-weight-regular;
+  color: $outline;
+  flex: 1;
 }
 
 .icon-search {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $outline;
+  height: 40rpx;
+  width: 40rpx;
 }
 
 .input-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
+  gap: $spacing-5;
 }
 
 .input-wrap {
@@ -298,12 +338,15 @@ const handleDelete = (id) => {
 
 .form-input {
   width: 100%;
+  height: 72rpx;
+  line-height: 72rpx;
   background: rgba($surface-container-low, 0.6);
   border: none;
-  padding: $spacing-3;
+  padding: 0 $spacing-3;
   border-radius: $rounded-lg;
   font-size: $font-size-body-sm;
   color: $on-surface;
+  box-sizing: border-box;
   
   &::placeholder {
     color: $outline-variant;
@@ -337,12 +380,12 @@ const handleDelete = (id) => {
 }
 
 .icon-add-circle {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
+  height: 40rpx;
+  width: 40rpx;
 }
 
 .btn-text {
-  font-size: $font-size-body-sm;
+  font-size: $font-size-title-sm;
   font-weight: $font-weight-bold;
 }
 

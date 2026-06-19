@@ -10,7 +10,7 @@
               手动输入
             </h2>
             <button class="ocr-btn" @tap="handleOCR">
-              <text class="icon-camera">photo_camera</text>
+              <image src="/static/images/photo_camera.png" class="icon-camera" />
               <span class="ocr-text">图片识别持仓</span>
             </button>
           </div>
@@ -19,17 +19,18 @@
             <!-- Fund Selection -->
             <view class="form-item">
               <label class="form-label">基金名称</label>
-              <button class="select-trigger" @tap="handleSelectFund">
-                <div class="select-content">
-                  <span class="select-primary">招商中证500指数增强</span>
-                  <span class="select-secondary font-mono">004192</span>
-                </div>
-                <text class="icon-arrow">chevron_right</text>
-              </button>
+              <view class="select-trigger" @tap="handleSelectFund">
+                <view v-if="selectedFund" class="select-content">
+                  <text class="select-primary">{{ selectedFund.name }}</text>
+                  <text class="select-secondary font-mono">{{ selectedFund.code }}</text>
+                </view>
+                <text v-else class="select-placeholder">点击搜索基金名称或代码...</text>
+                <image src="/static/images/search.png" class="icon-search" />
+              </view>
             </view>
 
             <!-- Input Grid -->
-            <div class="input-grid">
+            <view class="input-grid">
               <view class="form-item">
                 <label class="form-label">持有金额 (元)</label>
                 <input 
@@ -48,7 +49,7 @@
                   v-model="formData.profit"
                 />
               </view>
-            </div>
+            </view>
 
             <view class="form-item">
               <label class="form-label">持有天数</label>
@@ -62,7 +63,7 @@
           </div>
 
           <button class="add-list-btn" @tap="handleAddToList">
-            <text class="icon-add-circle">add_circle</text>
+            <image src="/static/images/add.png" class="icon-add-circle" />
             <span class="btn-text">加入待添加列表</span>
           </button>
         </section>
@@ -111,13 +112,17 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, getCurrentInstance } from 'vue'
+
+const instance = getCurrentInstance()
 
 const formData = reactive({
   amount: '',
   profit: '',
   days: ''
 })
+
+const selectedFund = ref(null)
 
 const pendingList = ref([
   {
@@ -142,11 +147,19 @@ const handleOCR = () => {
 
 const handleSelectFund = () => {
   uni.navigateTo({
-    url: '/pages/asset/holding/search'
+    url: '/pages/asset/holding/search?type=fund'
   })
 }
 
+instance.proxy.onFundSelected = (item) => {
+  selectedFund.value = item
+}
+
 const handleAddToList = () => {
+  if (!selectedFund.value) {
+    uni.showToast({ title: '请先选择基金', icon: 'none' })
+    return
+  }
   if (!formData.amount) {
     uni.showToast({ title: '请输入持有金额', icon: 'none' })
     return
@@ -154,8 +167,8 @@ const handleAddToList = () => {
   
   const newItem = {
     id: Date.now().toString(),
-    name: '招商中证500指数增强',
-    code: '004192',
+    name: selectedFund.value.name,
+    code: selectedFund.value.code,
     amount: parseFloat(formData.amount).toLocaleString('zh-CN', { 
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
@@ -164,6 +177,7 @@ const handleAddToList = () => {
   }
   
   pendingList.value.push(newItem)
+  selectedFund.value = null
   formData.amount = ''
   formData.profit = ''
   formData.days = ''
@@ -217,6 +231,8 @@ const handleDelete = (id) => {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 .title-line {
@@ -229,22 +245,23 @@ const handleDelete = (id) => {
 .ocr-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-1;
   background: rgba($primary-container, 0.3);
-  color: $on-primary-container;
-  padding: $spacing-2 $spacing-3;
+  color: $primary;
   border-radius: $rounded-full;
+  margin-left: auto;
 }
 
 .icon-camera {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
-  font-variation-settings: 'FILL' 1;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .ocr-text {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
+  color: $primary;
 }
 
 .form-content {
@@ -273,13 +290,17 @@ const handleDelete = (id) => {
   justify-content: space-between;
   align-items: center;
   background: rgba($surface-container-low, 0.6);
-  padding: $spacing-3;
+  padding: $spacing-2 $spacing-3;
   border-radius: $rounded-lg;
+  min-height: 72rpx;
+  box-sizing: border-box;
 }
 
 .select-content {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow: hidden;
 }
 
 .select-primary {
@@ -293,25 +314,35 @@ const handleDelete = (id) => {
   color: $outline;
 }
 
-.icon-arrow {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
+.select-placeholder {
+  font-size: $font-size-body-sm;
   color: $outline;
+  flex: 1;
+}
+
+.icon-search {
+  width: 32rpx;
+  height: 32rpx;
+  flex-shrink: 0;
 }
 
 .input-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
+  gap: $spacing-5;
 }
 
 .form-input {
+  height: 72rpx;
+  line-height: 72rpx;
   background: rgba($surface-container-low, 0.6);
   border: none;
-  padding: $spacing-3;
+  padding: 0 $spacing-3;
   border-radius: $rounded-lg;
   font-size: $font-size-body-sm;
   color: $on-surface;
+  box-sizing: border-box;
+  width: 100%;
   
   &::placeholder {
     color: $outline-variant;
@@ -335,12 +366,12 @@ const handleDelete = (id) => {
 }
 
 .icon-add-circle {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
+  height: 40rpx;
+  width: 40rpx;
 }
 
 .btn-text {
-  font-size: $font-size-body-sm;
+  font-size: $font-size-title-sm;
   font-weight: $font-weight-bold;
 }
 

@@ -27,7 +27,7 @@
             <span class="count-badge">2只</span>
           </div>
           <button class="add-btn" @tap="handleAddFund">
-            <text class="icon-add">add</text>
+            <image src="/static/images/add.png" class="icon-add" />
             <span class="add-text">添加基金</span>
           </button>
         </div>
@@ -201,12 +201,14 @@ const handleFundTap = (fund) => {
   display: flex;
   align-items: center;
   gap: $spacing-2;
+  flex: 1;
 }
 
 .section-title {
   font-size: $font-size-title-sm;
   font-weight: $font-weight-bold;
   color: $on-surface;
+  line-height: 40rpx;
 }
 
 .count-badge {
@@ -221,20 +223,26 @@ const handleFundTap = (fund) => {
 .add-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-1;
   background: $primary;
   color: $on-primary;
   border-radius: $rounded-full;
+  padding: $spacing-2 $spacing-4;
+  height: 56rpx;
+  line-height: 1;
+  margin-left: auto;
 }
 
 .icon-add {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
+  height: 24rpx;
+  width: 24rpx;
 }
 
 .add-text {
   font-size: $font-size-body-sm;
   font-weight: $font-weight-semibold;
+  line-height: 1;
 }
 
 .holding-list {

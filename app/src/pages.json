@@ -177,6 +177,14 @@
         "navigationBarTitleText": "添加基金",
         "backgroundColor": "#FAF9F6"
       }
+    },
+    {
+      "path": "pages/asset/holding/search",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "搜索",
+        "backgroundColor": "#FAF9F6"
+      }
     }
   ],
   "globalStyle": {
