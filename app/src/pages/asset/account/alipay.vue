@@ -20,7 +20,6 @@
               <text class="stat-label">{{ accountData.yesterdayLabel }}</text>
               <text class="stat-value font-mono text-secondary">{{ isVisible ? accountData.yesterdayChange : '****' }}</text>
             </view>
-            <view class="stat-divider"></view>
             <view class="stat-item">
               <text class="stat-label">{{ accountData.totalLabel }}</text>
               <text class="stat-value font-mono text-secondary">{{ isVisible ? accountData.totalChange : '****' }}</text>
@@ -166,15 +165,13 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 40rpx;
-  padding-top: $spacing-4;
+  padding: $spacing-4 $spacing-4 170rpx;
 }
 
 .wealth-card {
-  margin: $spacing-4;
-  padding: $spacing-6;
-  background: $surface-container-lowest;
-  border-radius: $rounded-lg;
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  background: #fff;
+  border-radius: 32rpx;
   box-shadow: $shadow-soft;
 }
 
@@ -225,8 +222,8 @@ onLoad((options) => {
 
 .stats-grid {
   display: flex;
+  gap: $spacing-5;
   padding-top: $spacing-6;
-  border-top: 2rpx solid $surface-container;
 }
 
 .stat-item {
@@ -243,12 +240,6 @@ onLoad((options) => {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
-}
-
-.stat-divider {
-  width: 2rpx;
-  background: $outline-variant;
-  margin: 0 $spacing-5;
 }
 
 .text-secondary {
@@ -330,15 +321,14 @@ onLoad((options) => {
 }
 
 .section {
-  padding: $spacing-4;
-  margin-top: $spacing-8;
+  margin-top: $spacing-6;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-4;
+  margin-bottom: $spacing-3;
 }
 
 .section-title {

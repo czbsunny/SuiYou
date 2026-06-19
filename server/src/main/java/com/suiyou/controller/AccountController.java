@@ -1,5 +1,6 @@
 package com.suiyou.controller;
 
+import com.suiyou.dto.account.AccountListItemRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.security.SecurityUtils;
@@ -19,9 +20,9 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping
-    public ResponseEntity<List<AccountRespDTO>> getAccounts() {
+    public ResponseEntity<List<AccountListItemRespDTO>> getAccounts() {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<AccountRespDTO> accounts = accountService.getAccountsByOwnerId(userId);
+        List<AccountListItemRespDTO> accounts = accountService.getAccountsByOwnerId(userId);
         return ResponseEntity.ok(accounts);
     }
 

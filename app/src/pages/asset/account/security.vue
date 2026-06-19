@@ -159,15 +159,13 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 40rpx;
-  padding-top: $spacing-4;
+  padding: $spacing-4 $spacing-4 170rpx;
 }
 
 .wealth-card {
-  margin: $spacing-4;
-  padding: $spacing-6;
-  background: $surface-container-lowest;
-  border-radius: $rounded-lg;
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  background: #fff;
+  border-radius: 32rpx;
   box-shadow: $shadow-soft;
 }
 
@@ -215,10 +213,8 @@ onLoad((options) => {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-6;
+  gap: $spacing-5;
   margin-top: $spacing-6;
-  padding-top: $spacing-6;
-  border-top: 2rpx solid $surface-container;
 }
 
 .stat-item {
@@ -255,7 +251,6 @@ onLoad((options) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $spacing-4;
-  padding: 0 $spacing-4;
   margin-top: $spacing-6;
 }
 
@@ -308,7 +303,6 @@ onLoad((options) => {
 }
 
 .section {
-  padding: $spacing-4;
   margin-top: $spacing-8;
 }
 
@@ -316,7 +310,7 @@ onLoad((options) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-4;
+  margin-bottom: $spacing-3;
 }
 
 .section-title {

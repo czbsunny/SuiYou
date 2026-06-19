@@ -52,14 +52,21 @@
         <view v-else class="account-list">
           <view v-for="account in accounts" :key="account.id" class="account-card" @tap="handleAccountTap(account)">
             <view class="account-logo-wrap">
-              <text class="account-logo-placeholder">{{ (account.instCode || account.accountName || '账').charAt(0) }}</text>
-            </view>
+              <image :src="account.logoUrl" class="account-logo" mode="aspectFit"/>
+               </view>
             <view class="account-info">
-              <text class="account-name">{{ account.accountTypeName || account.instTypeName }}</text>
-              <text class="account-type">{{ account.accountName }} · {{ account.accountNo }}</text>
+              <view class="account-title">
+                <text class="account-name">{{ account.instName || '未知机构' }}</text>
+                <text class="account-dot">·</text>
+                <text class="account-type-tag">{{ account.accountTypeName || account.instTypeName || '' }}</text>
+              </view>
+              <view class="account-sub">
+                <text class="account-sub-name">{{ account.accountName }}</text>
+                <text class="account-sub-no">{{ account.accountNo }}</text>
+              </view>
             </view>
             <view class="account-money">
-              <text class="balance">¥--</text>
+              <text class="balance">¥{{ formatNumber(account.amount) }}</text>
             </view>
           </view>
         </view>
@@ -190,9 +197,10 @@ const handleAccountTap = (account) => {
   }
 
   if (pagePath) {
-    const institutionName = encodeURIComponent(account.accountName || account.instCode || '账户详情')
+    const institutionName = encodeURIComponent(account.instName || account.accountName || account.instCode || '账户详情')
+    const accountId = account.id
     uni.navigateTo({
-      url: `${pagePath}?institutionName=${institutionName}&instCode=${account.instCode}`
+      url: `${pagePath}?institutionName=${institutionName}&instCode=${account.instCode}&accountId=${accountId}`
     })
   } else {
     uni.showToast({ title: '该账户类型开发中', icon: 'none' })
@@ -390,13 +398,48 @@ onShow(() => {
   text-overflow: ellipsis;
 }
 
-.account-type {
-  margin-top: $spacing-1;
+.account-title {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.account-dot {
+  color: $on-surface-variant;
+  font-size: $font-size-sm;
+  flex-shrink: 0;
+}
+
+.account-type-tag {
   color: $on-surface-variant;
   font-size: $font-size-sm;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.account-sub {
+  margin-top: $spacing-1;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  overflow: hidden;
+}
+
+.account-sub-name {
+  color: $on-surface-variant;
+  font-size: $font-size-sm;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.account-sub-no {
+  color: $on-surface-variant;
+  font-size: $font-size-sm;
+  flex-shrink: 0;
 }
 
 .account-money {

@@ -1,5 +1,6 @@
 package com.suiyou.service.impl;
 
+import com.suiyou.dto.account.AccountListItemRespDTO;
 import com.suiyou.dto.account.AccountModuleDTO;
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
@@ -44,10 +45,10 @@ public class AccountServiceImpl implements AccountService {
     private SysInstitutionRepository sysInstitutionRepository;
 
     @Override
-    public List<AccountRespDTO> getAccountsByOwnerId(Long ownerId) {
+    public List<AccountListItemRespDTO> getAccountsByOwnerId(Long ownerId) {
         List<Account> accounts = accountRepository.findByOwnerId(ownerId);
         return accounts.stream()
-                .map(this::toAccountRespDTO)
+                .map(this::toAccountListItemRespDTO)
                 .collect(Collectors.toList());
     }
 
@@ -96,6 +97,40 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return toAccountRespDTO(savedAccount);
+    }
+
+    private AccountListItemRespDTO toAccountListItemRespDTO(Account account) {
+        SysInstitution institution = sysInstitutionRepository.findByInstCode(account.getInstCode());
+        String instType = null;
+        String instTypeName = null;
+        String instName = null;
+        String logoUrl = null;
+        if (institution != null) {
+            instType = institution.getInstType();
+            instName = institution.getInstName();
+            logoUrl = institution.getLogoUrl();
+            InstType instTypeEnum = InstType.ofCode(instType);
+            instTypeName = instTypeEnum != null ? instTypeEnum.getName() : null;
+        }
+
+        String accountTypeName = null;
+        AccountType accountTypeEnum = AccountType.ofCode(account.getAccountType());
+        if (accountTypeEnum != null) {
+            accountTypeName = accountTypeEnum.getName();
+        }
+
+        return AccountListItemRespDTO.builder()
+                .id(account.getId())
+                .accountName(account.getAccountName())
+                .accountNo(account.getAccountNo())
+                .accountTypeName(accountTypeName)
+                .amount(account.getAmount())
+                .instCode(account.getInstCode())
+                .instType(instType)
+                .instTypeName(instTypeName)
+                .instName(instName)
+                .logoUrl(logoUrl)
+                .build();
     }
 
     private AccountRespDTO toAccountRespDTO(Account account) {

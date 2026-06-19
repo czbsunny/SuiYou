@@ -164,16 +164,14 @@ onLoad((options) => {
 }
 
 .content {
-  padding-bottom: 40rpx;
-  padding-top: $spacing-4;
+  padding: $spacing-4 $spacing-4 170rpx;
 }
 
 .wealth-card {
-  margin: $spacing-4;
-  padding: $spacing-6;
-  background: $surface-container-lowest;
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  background: #fff;
   border-radius: 32rpx;
-  box-shadow: 0 4px 20px 0 rgba(0,0,0,0.04);
+  box-shadow: $shadow-soft;
 }
 
 .card-header {
@@ -234,8 +232,6 @@ onLoad((options) => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $spacing-5;
-  padding-top: $spacing-6;
-  border-top: 2rpx solid $surface-container;
 }
 
 .stat-item {
@@ -313,8 +309,7 @@ onLoad((options) => {
 }
 
 .section {
-  padding: $spacing-4;
-  margin-top: $spacing-8;
+  margin-top: $spacing-6;
 }
 
 .section-header {
