@@ -145,6 +145,38 @@
         "navigationBarTitleText": "交易查询",
         "backgroundColor": "#FAF9F6"
       }
+    },
+    {
+      "path": "pages/asset/holding/stock",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "股票持仓",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/fund",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "基金",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/add-stock",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "录入股票",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/add-fund",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "添加基金",
+        "backgroundColor": "#FAF9F6"
+      }
     }
   ],
   "globalStyle": {

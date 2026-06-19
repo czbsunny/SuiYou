@@ -11,7 +11,9 @@
             </view>
           </view>
           <view class="balance-row">
-            <text class="balance-amount font-mono">¥{{ isVisible ? formattedBalance : '****' }}</text>
+            <text class="balance-amount">
+              <text class="currency-symbol">¥</text><text class="balance-value font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            </text>
           </view>
           <view class="stats-grid">
             <view class="stat-item">
@@ -103,8 +105,8 @@ const quickActions = ref([
 ])
 
 const assetList = ref([
-  { id: '1', icon: '股', name: '股票', amount: '¥3,250,000.00', bgColor: 'rgba(183, 16, 42, 0.1)', iconColor: '#b7102a' },
-  { id: '2', icon: '基', name: '基金', amount: '¥742,050.00', bgColor: 'rgba(0, 103, 84, 0.1)', iconColor: '#006754' }
+  { id: '1', type: 'stock', icon: '股', name: '股票', amount: '¥3,250,000.00', bgColor: 'rgba(183, 16, 42, 0.1)', iconColor: '#b7102a' },
+  { id: '2', type: 'fund', icon: '基', name: '基金', amount: '¥742,050.00', bgColor: 'rgba(0, 103, 84, 0.1)', iconColor: '#006754' }
 ])
 
 const formattedBalance = computed(() => {
@@ -133,7 +135,17 @@ const handleAction = (actionId) => {
 }
 
 const handleAssetTap = (asset) => {
-  uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  const paths = {
+    stock: '/pages/asset/holding/stock',
+    fund: '/pages/asset/holding/fund'
+  }
+  console.log(asset.type)
+  const url = paths[asset.type]
+  if (url) {
+    uni.navigateTo({ url })
+  } else {
+    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  }
 }
 
 onLoad((options) => {
@@ -177,8 +189,9 @@ onLoad((options) => {
 
 .card-label {
   font-size: $font-size-body-sm;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
+  font-weight: 900;
+  letter-spacing: 1rpx;
+  color: $outline;
 }
 
 .visibility-btn {
@@ -200,8 +213,25 @@ onLoad((options) => {
 }
 
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-bold;
+  display: inline-flex;
+  align-items: baseline;
+  font-size: $font-size-num-display;
+  font-weight: 900;
+  color: $on-surface;
+  letter-spacing: -2rpx;
+}
+
+.currency-symbol {
+  font-family: $font-family-primary;
+  font-size: $font-size-headline-md;
+  font-weight: 900;
+  color: $on-surface;
+}
+
+.balance-value {
+  font-family: $font-family-mono;
+  font-size: $font-size-num-display;
+  font-weight: 900;
   color: $on-surface;
   letter-spacing: -2rpx;
 }
@@ -225,14 +255,15 @@ onLoad((options) => {
 
 .stat-label {
   font-size: $font-size-body-sm;
-  color: $on-surface-variant;
+  color: $outline;
   margin-bottom: $spacing-1;
 }
 
 .stat-value {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
+  font-family: $font-family-mono;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-profit {

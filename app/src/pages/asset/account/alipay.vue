@@ -13,16 +13,19 @@
             </view>
           </view>
           <view class="balance-row">
-            <text class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            <view class="amount-wrapper">
+              <text class="currency">¥</text>
+              <text class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            </view>
           </view>
           <view class="stats-grid">
             <view class="stat-item">
               <text class="stat-label">{{ accountData.yesterdayLabel }}</text>
-              <text class="stat-value font-mono text-secondary">{{ isVisible ? accountData.yesterdayChange : '****' }}</text>
+              <text class="stat-value">{{ isVisible ? accountData.yesterdayChange : '****' }}</text>
             </view>
             <view class="stat-item">
               <text class="stat-label">{{ accountData.totalLabel }}</text>
-              <text class="stat-value font-mono text-secondary">{{ isVisible ? accountData.totalChange : '****' }}</text>
+              <text class="stat-value">{{ isVisible ? accountData.totalChange : '****' }}</text>
             </view>
           </view>
         </view>
@@ -187,8 +190,9 @@ onLoad((options) => {
 
 .card-label {
   font-size: $font-size-body-sm;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
+  font-weight: 900;
+  letter-spacing: 1rpx;
+  color: $outline;
 }
 
 .visibility-btn {
@@ -209,9 +213,23 @@ onLoad((options) => {
   margin-bottom: $spacing-6;
 }
 
+.amount-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.currency {
+  font-family: $font-family-primary;
+  font-size: $font-size-headline-md;
+  font-weight: 900;
+  color: $on-surface;
+}
+
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-num-display;
+  font-weight: 900;
+  font-family: $font-family-mono;
   color: $on-surface;
   letter-spacing: -2rpx;
 }
@@ -232,14 +250,15 @@ onLoad((options) => {
 
 .stat-label {
   font-size: $font-size-body-sm;
-  color: $on-surface-variant;
+  color: $outline;
   margin-bottom: $spacing-1;
 }
 
 .stat-value {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
+  font-family: $font-family-mono;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-secondary {

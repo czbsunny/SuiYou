@@ -2,45 +2,23 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- TopAppBar -->
-        <header class="top-bar">
-          <view class="top-bar-left">
-            <button class="back-btn" @tap="handleBack">
-              <text class="icon-back">arrow_back</text>
-            </button>
-            <h1 class="page-title">股票持仓</h1>
+        <!-- Portfolio Hero Card -->
+        <view class="hero-card">
+          <view class="card-header">
+            <text class="card-label">股票总市值 (HKD)</text>
+            <text class="balance-amount font-mono">2,485,920.00</text>
           </view>
-          <view class="top-bar-right">
-            <button class="notification-btn" @tap="handleNotification">
-              <text class="icon-notification">notifications</text>
-            </button>
-            <view class="avatar-wrap">
-              <image 
-                class="avatar" 
-                src="https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20business%20woman%20portrait&image_size=square" 
-                mode="aspectFill" 
-              />
+          <view class="stats-grid">
+            <view class="stat-item">
+              <text class="stat-label">累计盈亏</text>
+              <text class="stat-value font-mono text-profit">+458,200.00</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-label">今日盈亏</text>
+              <text class="stat-value font-mono text-profit">+12,430.50</text>
             </view>
           </view>
-        </header>
-
-        <!-- Portfolio Hero Card -->
-        <section class="hero-card">
-          <div class="card-header">
-            <span class="card-label">股票总市值 (HKD)</span>
-            <span class="balance-amount font-mono">2,485,920.00</span>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-label">累计盈亏</span>
-              <span class="stat-value font-mono text-profit">+458,200.00</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">今日盈亏</span>
-              <span class="stat-value font-mono text-profit">+12,430.50</span>
-            </div>
-          </div>
-        </section>
+        </view>
 
         <!-- Section Header -->
         <div class="section-header">
@@ -106,26 +84,6 @@
         </div>
       </view>
     </scroll-view>
-
-    <!-- BottomNavBar -->
-    <nav class="bottom-nav">
-      <button class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <span class="nav-label">Home</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('goals')">
-        <text class="nav-icon">target</text>
-        <span class="nav-label">Goals</span>
-      </button>
-      <button class="nav-item active" @tap="navigateTo('assets')">
-        <text class="nav-icon active">account_balance_wallet</text>
-        <span class="nav-label active">Assets</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('mine')">
-        <text class="nav-icon">person</text>
-        <span class="nav-label">Mine</span>
-      </button>
-    </nav>
   </view>
 </template>
 
@@ -171,14 +129,6 @@ const stockList = ref([
   }
 ])
 
-const handleBack = () => {
-  uni.navigateBack()
-}
-
-const handleNotification = () => {
-  uni.showToast({ title: '暂无新通知', icon: 'none' })
-}
-
 const handleAddStock = () => {
   uni.navigateTo({
     url: '/pages/asset/holding/add-stock'
@@ -187,16 +137,6 @@ const handleAddStock = () => {
 
 const handleStockTap = (stock) => {
   uni.showToast({ title: `${stock.name}详情`, icon: 'none' })
-}
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    goals: '/pages/goal/index',
-    assets: '/pages/asset/index',
-    mine: '/pages/profile/index'
-  }
-  uni.navigateTo({ url: pages[page] })
 }
 </script>
 
@@ -210,84 +150,11 @@ const navigateTo = (page) => {
 
 .scroll {
   height: 100vh;
-  padding-bottom: 200rpx;
+  padding-bottom: $spacing-8;
 }
 
 .content {
   padding: $spacing-4;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $spacing-5 $spacing-4 $spacing-4;
-  background: $surface;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-}
-
-.icon-back {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $on-surface;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-}
-
-.notification-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-}
-
-.icon-notification {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $on-surface-variant;
-}
-
-.avatar-wrap {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 50%;
-  border: 4rpx solid $tertiary-fixed;
-  padding: 2rpx;
-  overflow: hidden;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
 }
 
 .hero-card {
@@ -295,24 +162,25 @@ const navigateTo = (page) => {
   border-radius: $rounded-md;
   padding: $spacing-6;
   box-shadow: $shadow-soft;
-  margin-top: $spacing-2;
   border: 2rpx solid $surface-container;
 }
 
 .card-header {
   display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-label {
-  font-size: $font-size-xs;
-  color: rgba($on-surface-variant, 0.7);
+  font-size: $font-size-body-sm;
+  font-weight: 900;
+  letter-spacing: 1rpx;
+  color: $outline;
 }
 
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-semibold;
+  font-size: $font-size-num-display;
+  font-weight: 900;
   color: $on-surface;
   letter-spacing: -2rpx;
 }
@@ -326,25 +194,21 @@ const navigateTo = (page) => {
   grid-template-columns: repeat(2, 1fr);
   gap: $spacing-4;
   margin-top: $spacing-4;
-  padding-top: $spacing-4;
-  border-top: 2rpx solid rgba($surface-variant, 0.3);
 }
 
 .stat-item {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
 }
 
 .stat-label {
-  font-size: $font-size-xs;
-  color: rgba($on-surface-variant, 0.7);
+  font-size: $font-size-body-sm;
+  color: $outline;
+  margin-bottom: $spacing-1;
 }
 
 .stat-value {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-profit {
@@ -355,7 +219,7 @@ const navigateTo = (page) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-8;
+  margin-top: $spacing-6;
   margin-bottom: $spacing-3;
 }
 
@@ -386,7 +250,6 @@ const navigateTo = (page) => {
   gap: $spacing-1;
   background: $primary-container;
   color: $on-primary-container;
-  padding: $spacing-2 $spacing-4;
   border-radius: $rounded-full;
 }
 
@@ -499,57 +362,5 @@ const navigateTo = (page) => {
   &.loss {
     color: $loss;
   }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-3;
-  padding-bottom: calc($spacing-3 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg 0 0 0;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-1;
-  padding: $spacing-2;
-  background: transparent;
-  
-  &.active {
-    .nav-icon {
-      font-variation-settings: 'FILL' 1;
-    }
-    
-    .nav-label {
-      color: $primary;
-    }
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-label {
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
-  text-transform: uppercase;
-  letter-spacing: 2rpx;
-  color: $on-surface-variant;
 }
 </style>

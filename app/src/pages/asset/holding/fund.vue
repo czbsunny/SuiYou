@@ -2,41 +2,23 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- TopAppBar -->
-        <header class="top-bar">
-          <view class="top-bar-left">
-            <button class="back-btn" @tap="handleBack">
-              <text class="icon-back">chevron_left</text>
-            </button>
-            <h1 class="page-title">基金</h1>
-          </view>
-          <view class="top-bar-right">
-            <button class="action-btn">
-              <text class="icon-action">chevron_left</text>
-            </button>
-            <button class="action-btn active">
-              <text class="icon-action">radio_button_checked</text>
-            </button>
-          </view>
-        </header>
-
         <!-- Portfolio Hero Card -->
-        <section class="hero-card">
-          <div class="card-header">
-            <span class="card-label">基金总资产 (元)</span>
-            <span class="balance-amount font-mono">504,285.00</span>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-label">持有收益</span>
-              <span class="stat-value font-mono text-profit">+24,800.50</span>
-            </div>
-            <div class="stat-item text-right">
-              <span class="stat-label">今日收益</span>
-              <span class="stat-value font-mono text-profit">+1,562.20</span>
-            </div>
-          </div>
-        </section>
+        <view class="hero-card">
+          <view class="card-header">
+            <text class="card-label">基金总资产 (元)</text>
+            <text class="balance-amount font-mono">504,285.00</text>
+          </view>
+          <view class="stats-grid">
+            <view class="stat-item">
+              <text class="stat-label">持有收益</text>
+              <text class="stat-value font-mono text-profit">+24,800.50</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-label">今日收益</text>
+              <text class="stat-value font-mono text-profit">+1,562.20</text>
+            </view>
+          </view>
+        </view>
 
         <!-- Section Header -->
         <div class="section-header">
@@ -90,26 +72,6 @@
         </div>
       </view>
     </scroll-view>
-
-    <!-- BottomNavBar -->
-    <nav class="bottom-nav">
-      <button class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <span class="nav-label">Home</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('goals')">
-        <text class="nav-icon">target</text>
-        <span class="nav-label">Goals</span>
-      </button>
-      <button class="nav-item active" @tap="navigateTo('assets')">
-        <text class="nav-icon active">account_balance_wallet</text>
-        <span class="nav-label active">Assets</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('mine')">
-        <text class="nav-icon">person</text>
-        <span class="nav-label">Mine</span>
-      </button>
-    </nav>
   </view>
 </template>
 
@@ -139,10 +101,6 @@ const fundList = ref([
   }
 ])
 
-const handleBack = () => {
-  uni.navigateBack()
-}
-
 const handleAddFund = () => {
   uni.navigateTo({
     url: '/pages/asset/holding/add-fund'
@@ -151,16 +109,6 @@ const handleAddFund = () => {
 
 const handleFundTap = (fund) => {
   uni.showToast({ title: `${fund.name}详情`, icon: 'none' })
-}
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    goals: '/pages/goal/index',
-    assets: '/pages/asset/index',
-    mine: '/pages/profile/index'
-  }
-  uni.navigateTo({ url: pages[page] })
 }
 </script>
 
@@ -174,73 +122,11 @@ const navigateTo = (page) => {
 
 .scroll {
   height: 100vh;
-  padding-bottom: 180rpx;
+  padding-bottom: $spacing-8;
 }
 
 .content {
   padding: $spacing-4;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $spacing-5 $spacing-4 $spacing-4;
-  background: $surface;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-}
-
-.icon-back {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $on-surface;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.top-bar-right {
-  display: flex;
-  gap: $spacing-2;
-}
-
-.action-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba($surface-variant, 0.2);
-  padding: 0;
-  
-  &.active .icon-action {
-    font-size: 56rpx;
-  }
-}
-
-.icon-action {
-  font-family: 'Material Symbols Outlined';
-  font-size: 32rpx;
-  color: $on-surface;
 }
 
 .hero-card {
@@ -259,15 +145,16 @@ const navigateTo = (page) => {
 
 .card-label {
   font-size: $font-size-body-sm;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
+  font-weight: 900;
+  letter-spacing: 1rpx;
+  color: $outline;
 }
 
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-num-display;
+  font-weight: 900;
   color: $on-surface;
-  letter-spacing: -1rpx;
+  letter-spacing: -2rpx;
 }
 
 .font-mono {
@@ -279,29 +166,24 @@ const navigateTo = (page) => {
   grid-template-columns: repeat(2, 1fr);
   gap: $spacing-4;
   margin-top: $spacing-4;
-  padding-top: $spacing-4;
-  border-top: 2rpx solid $surface-container;
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  
-  &.text-right {
-    align-items: flex-end;
-  }
 }
 
 .stat-label {
-  font-size: $font-size-xs;
-  color: $on-surface-variant;
+  font-size: $font-size-body-sm;
+  color: $outline;
+  margin-bottom: $spacing-1;
 }
 
 .stat-value {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-profit {
@@ -342,7 +224,6 @@ const navigateTo = (page) => {
   gap: $spacing-1;
   background: $primary;
   color: $on-primary;
-  padding: $spacing-2 $spacing-4;
   border-radius: $rounded-full;
 }
 
@@ -456,56 +337,5 @@ const navigateTo = (page) => {
   &.loss {
     color: $loss;
   }
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-3;
-  padding-bottom: calc($spacing-3 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg 0 0 0;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-1;
-  padding: $spacing-2;
-  background: transparent;
-  
-  &.active {
-    .nav-icon {
-      font-variation-settings: 'FILL' 1;
-    }
-    
-    .nav-label {
-      color: $primary;
-    }
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-label {
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
-  text-transform: uppercase;
-  color: $on-surface-variant;
 }
 </style>

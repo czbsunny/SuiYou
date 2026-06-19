@@ -11,7 +11,10 @@
             </view>
           </view>
           <view class="balance-row">
-            <text class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            <view class="amount-wrapper">
+              <text class="currency">¥</text>
+              <text class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            </view>
           </view>
           <view class="stats-grid">
             <view class="stat-item">
@@ -178,10 +181,10 @@ onLoad((options) => {
 }
 
 .card-label {
-  font-size: $font-size-label-caps;
-  font-weight: $font-weight-bold;
-  color: $on-surface-variant;
-  letter-spacing: 2rpx;
+  font-size: $font-size-body-sm;
+  font-weight: 900;
+  color: $outline;
+  letter-spacing: 1rpx;
 }
 
 .visibility-btn {
@@ -202,9 +205,23 @@ onLoad((options) => {
   margin-top: $spacing-4;
 }
 
+.amount-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.currency {
+  font-family: $font-family-primary;
+  font-size: $font-size-headline-md;
+  font-weight: 900;
+  color: $on-surface;
+}
+
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-num-display;
+  font-weight: 900;
+  font-family: $font-family-mono;
   color: $on-surface;
   letter-spacing: -2rpx;
 }
@@ -224,17 +241,16 @@ onLoad((options) => {
 }
 
 .stat-label {
-  font-size: $font-size-label-caps;
+  font-size: $font-size-body-sm;
   color: $outline;
-  letter-spacing: 1rpx;
+  letter-spacing: 0;
 }
 
 .stat-value {
-  display: block;
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-  margin-top: $spacing-1;
+  font-family: $font-family-mono;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-secondary {

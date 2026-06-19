@@ -2,14 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- TopAppBar -->
-        <header class="top-bar">
-          <button class="back-btn" @tap="handleBack">
-            <text class="icon-back">arrow_back</text>
-          </button>
-          <h1 class="page-title">录入持仓</h1>
-        </header>
-
         <!-- Manual Entry Section -->
         <section class="form-section">
           <div class="section-header">
@@ -115,37 +107,6 @@
       </view>
     </scroll-view>
 
-    <!-- Bottom Action Bar -->
-    <div class="bottom-bar">
-      <button class="confirm-btn" @tap="handleConfirm">
-        <span class="confirm-text">确认录入持仓</span>
-        <text class="icon-check">check_circle</text>
-      </button>
-      <p class="hint-text">录入后资产将自动更新至您的投资组合</p>
-    </div>
-
-    <!-- BottomNavBar -->
-    <nav class="bottom-nav">
-      <button class="nav-item" @tap="navigateTo('home')">
-        <text class="nav-icon">home</text>
-        <span class="nav-label">首页</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('goals')">
-        <text class="nav-icon">track_changes</text>
-        <span class="nav-label">目标</span>
-      </button>
-      <button class="nav-item active" @tap="navigateTo('assets')">
-        <text class="nav-icon active">account_balance_wallet</text>
-        <span class="nav-label active">资产</span>
-      </button>
-      <button class="nav-item" @tap="navigateTo('mine')">
-        <text class="nav-icon">person</text>
-        <span class="nav-label">我的</span>
-      </button>
-    </nav>
-
-    <!-- Background Decor -->
-    <div class="bg-decor"></div>
   </view>
 </template>
 
@@ -174,10 +135,6 @@ const pendingList = ref([
     quantity: '2,400'
   }
 ])
-
-const handleBack = () => {
-  uni.navigateBack()
-}
 
 const handleOCR = () => {
   uni.showToast({ title: '图片识别功能开发中', icon: 'none' })
@@ -214,28 +171,6 @@ const handleAddToList = () => {
 const handleDelete = (id) => {
   pendingList.value = pendingList.value.filter(item => item.id !== id)
 }
-
-const handleConfirm = () => {
-  if (pendingList.value.length === 0) {
-    uni.showToast({ title: '请先添加持仓', icon: 'none' })
-    return
-  }
-  
-  uni.showToast({ title: '录入成功', icon: 'success' })
-  setTimeout(() => {
-    uni.navigateBack()
-  }, 1500)
-}
-
-const navigateTo = (page) => {
-  const pages = {
-    home: '/pages/home/index',
-    goals: '/pages/goal/index',
-    assets: '/pages/asset/index',
-    mine: '/pages/profile/index'
-  }
-  uni.navigateTo({ url: pages[page] })
-}
 </script>
 
 <style lang="scss" scoped>
@@ -250,41 +185,11 @@ const navigateTo = (page) => {
 
 .scroll {
   height: 100vh;
-  padding-bottom: 320rpx;
+  padding-bottom: $spacing-8;
 }
 
 .content {
   padding: $spacing-4;
-}
-
-.top-bar {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-  padding: $spacing-5 $spacing-4 $spacing-4;
-  background: $surface;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-}
-
-.icon-back {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: $primary;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
 }
 
 .form-section {
@@ -322,8 +227,8 @@ const navigateTo = (page) => {
   display: flex;
   align-items: center;
   gap: $spacing-1;
-  background: rgba($primary-fixed, 0.3);
-  color: $on-primary-fixed-variant;
+  background: rgba($primary-container, 0.3);
+  color: $on-primary-container;
   padding: $spacing-2 $spacing-3;
   border-radius: $rounded-full;
 }
@@ -426,7 +331,7 @@ const navigateTo = (page) => {
   gap: $spacing-2;
   background: $primary;
   color: $on-primary;
-  padding: $spacing-3;
+  padding: $spacing-1;
   border-radius: $rounded-full;
   margin-top: $spacing-4;
 }
@@ -535,124 +440,5 @@ const navigateTo = (page) => {
   font-family: 'Material Symbols Outlined';
   font-size: 40rpx;
   color: $outline-variant;
-}
-
-.bottom-bar {
-  position: fixed;
-  bottom: 140rpx;
-  left: 0;
-  right: 0;
-  padding: $spacing-4;
-  background: $surface;
-  box-shadow: $shadow-soft;
-  border-radius: $rounded-lg 0 0 0;
-}
-
-.confirm-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: $spacing-2;
-  background: $primary;
-  color: $on-primary;
-  padding: $spacing-4;
-  border-radius: $rounded-full;
-  box-shadow: 0 8rpx 24rpx rgba($primary, 0.2);
-}
-
-.confirm-text {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-bold;
-}
-
-.icon-check {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-}
-
-.hint-text {
-  text-align: center;
-  font-size: $font-size-xs;
-  color: $outline;
-  margin-top: $spacing-3;
-}
-
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: $spacing-3;
-  padding-bottom: calc($spacing-3 + env(safe-area-inset-bottom));
-  background: $surface-container-lowest;
-  box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.04);
-  border-radius: $rounded-lg 0 0 0;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-1;
-  padding: $spacing-2;
-  background: transparent;
-  
-  &.active {
-    background: rgba($primary-container, 0.1);
-    border-radius: $rounded-lg;
-    
-    .nav-icon {
-      font-variation-settings: 'FILL' 1;
-    }
-    
-    .nav-label {
-      color: $primary;
-    }
-  }
-}
-
-.nav-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-  color: $on-surface-variant;
-  
-  &.active {
-    color: $primary;
-  }
-}
-
-.nav-label {
-  font-family: $font-family-mono;
-  font-size: 20rpx;
-  font-weight: $font-weight-bold;
-  text-transform: uppercase;
-  color: $on-surface-variant;
-}
-
-.bg-decor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: -1;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -10%;
-    right: -10%;
-    width: 60%;
-    height: 40%;
-    background: $primary;
-    border-radius: 50%;
-    opacity: 0.05;
-    filter: blur(120rpx);
-  }
 }
 </style>

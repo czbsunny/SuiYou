@@ -2,15 +2,6 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- TopAppBar -->
-        <header class="top-bar">
-          <button class="back-btn" @tap="handleBack">
-            <text class="icon-back">arrow_back_ios</text>
-          </button>
-          <h1 class="page-title">添加基金</h1>
-          <view class="placeholder"></view>
-        </header>
-
         <!-- Manual Entry Form -->
         <section class="form-section">
           <div class="section-header">
@@ -116,16 +107,6 @@
       </view>
     </scroll-view>
 
-    <!-- Bottom Action Bar -->
-    <div class="bottom-bar">
-      <button class="confirm-btn" @tap="handleConfirm">
-        <span class="confirm-text">确认添加</span>
-        <text class="icon-check">check_circle</text>
-      </button>
-    </div>
-
-    <!-- Background Decor -->
-    <div class="bg-decor"></div>
   </view>
 </template>
 
@@ -154,10 +135,6 @@ const pendingList = ref([
     profit: -420.15
   }
 ])
-
-const handleBack = () => {
-  uni.navigateBack()
-}
 
 const handleOCR = () => {
   uni.showToast({ title: '图片识别功能开发中', icon: 'none' })
@@ -197,18 +174,6 @@ const handleAddToList = () => {
 const handleDelete = (id) => {
   pendingList.value = pendingList.value.filter(item => item.id !== id)
 }
-
-const handleConfirm = () => {
-  if (pendingList.value.length === 0) {
-    uni.showToast({ title: '请先添加持仓', icon: 'none' })
-    return
-  }
-  
-  uni.showToast({ title: '添加成功', icon: 'success' })
-  setTimeout(() => {
-    uni.navigateBack()
-  }, 1500)
-}
 </script>
 
 <style lang="scss" scoped>
@@ -223,45 +188,11 @@ const handleConfirm = () => {
 
 .scroll {
   height: 100vh;
-  padding-bottom: 200rpx;
+  padding-bottom: $spacing-8;
 }
 
 .content {
   padding: $spacing-4;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $spacing-5 $spacing-4 $spacing-4;
-  background: $surface;
-}
-
-.back-btn {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  padding: 0;
-}
-
-.icon-back {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-  color: $primary;
-}
-
-.page-title {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.placeholder {
-  width: 64rpx;
 }
 
 .form-section {
@@ -299,8 +230,8 @@ const handleConfirm = () => {
   display: flex;
   align-items: center;
   gap: $spacing-1;
-  background: rgba($primary-fixed, 0.3);
-  color: $on-primary-fixed-variant;
+  background: rgba($primary-container, 0.3);
+  color: $on-primary-container;
   padding: $spacing-2 $spacing-3;
   border-radius: $rounded-full;
 }
@@ -398,7 +329,7 @@ const handleConfirm = () => {
   gap: $spacing-2;
   background: $primary;
   color: $on-primary;
-  padding: $spacing-3;
+  padding: $spacing-1;
   border-radius: $rounded-full;
   margin-top: $spacing-4;
 }
@@ -511,76 +442,5 @@ const handleConfirm = () => {
   font-family: 'Material Symbols Outlined';
   font-size: 40rpx;
   color: $outline-variant;
-}
-
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: $spacing-4;
-  padding-bottom: calc($spacing-4 + env(safe-area-inset-bottom));
-  background: $surface;
-  box-shadow: $shadow-soft;
-  border-radius: $rounded-lg 0 0 0;
-}
-
-.confirm-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: $spacing-2;
-  background: $primary;
-  color: $on-primary;
-  padding: $spacing-4;
-  border-radius: $rounded-full;
-  box-shadow: 0 8rpx 24rpx rgba($primary, 0.2);
-}
-
-.confirm-text {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-bold;
-}
-
-.icon-check {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-}
-
-.bg-decor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: -1;
-  
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    opacity: 0.1;
-  }
-  
-  &::before {
-    top: -10%;
-    right: -10%;
-    width: 60%;
-    height: 40%;
-    background: $primary-fixed;
-    filter: blur(120rpx);
-  }
-  
-  &::after {
-    bottom: -5%;
-    left: -5%;
-    width: 40%;
-    height: 30%;
-    background: $secondary-fixed;
-    filter: blur(100rpx);
-  }
 }
 </style>

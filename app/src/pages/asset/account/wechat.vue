@@ -186,8 +186,9 @@ onLoad((options) => {
 
 .card-label {
   font-size: $font-size-body-sm;
-  font-weight: $font-weight-medium;
-  color: $on-surface-variant;
+  font-weight: 900;
+  color: $outline;
+  letter-spacing: 1rpx;
 }
 
 .visibility-btn {
@@ -213,13 +214,13 @@ onLoad((options) => {
 
 .currency {
   font-size: $font-size-headline-md;
-  font-weight: $font-weight-bold;
-  color: $primary;
+  font-weight: 900;
+  color: $on-surface;
 }
 
 .balance-amount {
-  font-size: $font-size-display-lg;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-num-display;
+  font-weight: 900;
   color: $on-surface;
   letter-spacing: -2rpx;
 }
@@ -240,8 +241,9 @@ onLoad((options) => {
 }
 
 .stat-label {
-  font-size: 24rpx;
-  color: $on-surface-variant;
+  font-size: $font-size-body-sm;
+  color: $outline;
+  letter-spacing: 0;
   margin-bottom: $spacing-1;
 }
 
@@ -252,9 +254,10 @@ onLoad((options) => {
 }
 
 .stat-value {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
+  font-family: $font-family-mono;
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: $secondary;
 }
 
 .text-secondary {
