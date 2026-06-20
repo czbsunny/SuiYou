@@ -4,29 +4,31 @@
       <view class="content">
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
-          <view class="card-header">
-            <view class="label-row">
-              <span class="card-label">{{ accountData.balanceLabel }}</span>
+          <view class="label-row">
+            <view class="label-left">
+              <text class="card-label">我的钱包</text>
               <view class="visibility-btn" @tap="toggleVisibility">
                 <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
               </view>
             </view>
+            <view class="settings-btn" @tap="handleSettings">
+              <image class="icon-settings" src="/static/images/settings.png" mode="aspectFit" />
+            </view>
           </view>
           <view class="balance-row">
-            <span class="currency">¥</span>
-            <h1 class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</h1>
+            <view class="amount-wrapper">
+              <text class="currency">¥</text>
+              <text class="balance-amount font-mono">{{ isVisible ? formattedBalance : '****' }}</text>
+            </view>
           </view>
           <view class="stats-grid">
             <view class="stat-item">
-              <p class="stat-label">{{ accountData.yesterdayLabel }}</p>
-              <div class="stat-value-row">
-                <span class="stat-value font-mono text-secondary">{{ isVisible ? accountData.yesterdayChange : '****' }}</span>
-                <text class="icon-trend">↑</text>
-              </div>
+              <text class="stat-label">昨日收益</text>
+              <text class="stat-value font-mono text-secondary">{{ isVisible ? accountData.yesterdayChange : '****' }}</text>
             </view>
             <view class="stat-item">
-              <p class="stat-label">{{ accountData.totalLabel }}</p>
-              <span class="stat-value font-mono text-secondary">{{ isVisible ? accountData.totalChange : '****' }}</span>
+              <text class="stat-label">累计收益</text>
+              <text class="stat-value font-mono">{{ isVisible ? accountData.totalChange : '****' }}</text>
             </view>
           </view>
         </view>
@@ -35,9 +37,6 @@
         <view class="section">
           <view class="section-header">
             <span class="section-title">资产列表</span>
-            <view class="add-btn" @tap="handleAddAsset">
-              <text class="icon-add">+</text>
-            </view>
           </view>
           <view class="asset-list">
             <view 
@@ -73,18 +72,15 @@ const isVisible = ref(true)
 
 const accountData = ref({
   institutionName: 'Heritage Hearth',
-  balanceLabel: '我的钱包',
   totalBalance: 862490.52,
-  yesterdayLabel: '昨日收益',
   yesterdayChange: '+124.80',
-  totalLabel: '累计收益',
   totalChange: '+42,931.15',
   avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=mature%20professional%20man%20portrait%20warm%20lighting&image_size=square'
 })
 
 const assetList = ref([
-  { id: '1', icon: '零', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C' },
-  { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a' },
+  { id: '1', icon: '零', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C', targetPath: '/pages/asset/holding/current' },
+  { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a', targetPath: '/pages/asset/holding/current-plus' },
   { id: '3', icon: '基', name: '基金', desc: '长期稳健增值', amount: '500,000.00', bgColor: '#ECFDF5', iconColor: '#006754' },
   { id: '4', icon: '金', name: '黄金', desc: '实物黄金', amount: '100,000.00', bgColor: '#FFFBEB', iconColor: '#705624' },
   { id: '5', icon: '微', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488' }
@@ -101,12 +97,30 @@ const toggleVisibility = () => {
   isVisible.value = !isVisible.value
 }
 
-const handleAddAsset = () => {
-  uni.showToast({ title: '添加资产功能开发中', icon: 'none' })
+const currentAccountType = ref('wechat')
+
+const handleSettings = () => {
+  uni.navigateTo({
+    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+  })
 }
 
 const handleAssetTap = (asset) => {
-  uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  console.log(asset)
+  if (asset.targetPath) {
+    uni.navigateTo({
+      url: `${asset.targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: asset.id,
+        name: asset.name,
+        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
+      }))}`,
+      fail: () => {
+        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+      }
+    })
+  } else {
+    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  }
 }
 
 onLoad((options) => {
@@ -137,25 +151,45 @@ onLoad((options) => {
 
 .wealth-card {
   padding: $spacing-6 $spacing-5 $spacing-4;
-  background: #fff;
   border-radius: 32rpx;
+  background: #fff;
   box-shadow: $shadow-soft;
-}
-
-.card-header {
-  margin-bottom: $spacing-4;
 }
 
 .label-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: $spacing-2;
 }
 
+.label-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.settings-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.icon-settings {
+  width: 40rpx;
+  height: 40rpx;
+}
+
 .card-label {
+  color: $outline;
   font-size: $font-size-body-sm;
   font-weight: 900;
-  color: $outline;
   letter-spacing: 1rpx;
 }
 
@@ -173,23 +207,26 @@ onLoad((options) => {
 }
 
 .balance-row {
+  margin-top: 24rpx;
+}
+
+.amount-wrapper {
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
-  margin-bottom: $spacing-6;
+  gap: 16rpx;
 }
 
 .currency {
+  color: $on-surface;
   font-size: $font-size-headline-md;
   font-weight: 900;
-  color: $on-surface;
 }
 
 .balance-amount {
+  color: $on-surface;
+  font-family: $font-family-mono;
   font-size: $font-size-num-display;
   font-weight: 900;
-  color: $on-surface;
-  letter-spacing: -2rpx;
 }
 
 .font-mono {
@@ -197,43 +234,30 @@ onLoad((options) => {
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  margin-top: $section-margin;
+  display: flex;
   gap: $spacing-5;
 }
 
 .stat-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 .stat-label {
-  font-size: $font-size-body-sm;
   color: $outline;
-  letter-spacing: 0;
-  margin-bottom: $spacing-1;
-}
-
-.stat-value-row {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
+  font-size: $font-size-body-sm;
 }
 
 .stat-value {
+  margin-top: $spacing-1;
   font-family: $font-family-mono;
   font-size: $font-size-lg;
   font-weight: 600;
-  color: $secondary;
 }
 
 .text-secondary {
-  color: $secondary;
-}
-
-.icon-trend {
-  font-family: 'Material Symbols Outlined';
-  font-size: 28rpx;
   color: $secondary;
 }
 
@@ -250,24 +274,8 @@ onLoad((options) => {
 
 .section-title {
   font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
+  font-weight: 900;
   color: $on-surface;
-}
-
-.add-btn {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  background: $surface-container-low;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-add {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
-  color: $primary;
 }
 
 .asset-list {

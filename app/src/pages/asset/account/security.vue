@@ -4,12 +4,15 @@
       <view class="content">
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
-          <view class="card-header">
-            <view class="label-row">
-              <text class="card-label">{{ accountData.balanceLabel }}</text>
+          <view class="label-row">
+            <view class="label-left">
+              <text class="card-label">总资产 (CNY)</text>
               <view class="visibility-btn" @tap="toggleVisibility">
                 <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
               </view>
+            </view>
+            <view class="settings-btn" @tap="handleSettings">
+              <image class="icon-settings" src="/static/images/settings.png" mode="aspectFit" />
             </view>
           </view>
           <view class="balance-row">
@@ -19,15 +22,15 @@
           </view>
           <view class="stats-grid">
             <view class="stat-item">
-              <text class="stat-label">{{ accountData.todayLabel }}</text>
+              <text class="stat-label">今日盈亏</text>
               <text class="stat-value font-mono text-profit">{{ isVisible ? accountData.todayChange : '****' }}</text>
             </view>
             <view class="stat-item">
-              <text class="stat-label">{{ accountData.totalLabel }}</text>
+              <text class="stat-label">累计盈亏</text>
               <text class="stat-value font-mono text-profit">{{ isVisible ? accountData.totalChange : '****' }}</text>
             </view>
             <view class="stat-item col-span-2">
-              <text class="stat-label">{{ accountData.availableLabel }}</text>
+              <text class="stat-label">可用余额</text>
               <text class="stat-value font-mono">{{ isVisible ? accountData.availableBalance : '****' }}</text>
             </view>
           </view>
@@ -88,13 +91,9 @@ const isVisible = ref(true)
 
 const accountData = ref({
   institutionName: '中信证券',
-  balanceLabel: '总资产 (CNY)',
   totalBalance: 4120500.00,
-  todayLabel: '今日盈亏',
   todayChange: '+12,400.50',
-  totalLabel: '累计盈亏',
   totalChange: '+450,210.00',
-  availableLabel: '可用余额',
   availableBalance: '128,450.00',
   avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20stock%20trader%20portrait&image_size=square'
 })
@@ -120,6 +119,14 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
+}
+
+const currentAccountType = ref('security')
+
+const handleSettings = () => {
+  uni.navigateTo({
+    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+  })
 }
 
 const handleAction = (actionId) => {
@@ -183,14 +190,34 @@ onLoad((options) => {
   box-shadow: $shadow-soft;
 }
 
-.card-header {
-  margin-bottom: $spacing-4;
-}
-
 .label-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: $spacing-2;
+}
+
+.label-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.settings-btn {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.icon-settings {
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .card-label {
@@ -214,7 +241,7 @@ onLoad((options) => {
 }
 
 .balance-row {
-  margin-top: $spacing-4;
+  margin-top: $spacing-3;
 }
 
 .balance-amount {
@@ -253,6 +280,9 @@ onLoad((options) => {
 }
 
 .stat-item {
+  display: flex;
+  flex-direction: column;
+
   &.col-span-2 {
     grid-column: span 2;
   }
@@ -261,10 +291,10 @@ onLoad((options) => {
 .stat-label {
   font-size: $font-size-body-sm;
   color: $outline;
-  margin-bottom: $spacing-1;
 }
 
 .stat-value {
+  margin-top: $spacing-1;
   font-family: $font-family-mono;
   font-size: $font-size-lg;
   font-weight: 600;
@@ -363,8 +393,8 @@ onLoad((options) => {
 }
 
 .section-title {
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-title-sm;
+  font-weight: 900;
   color: $on-surface;
 }
 

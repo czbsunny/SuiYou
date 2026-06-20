@@ -91,6 +91,14 @@
       }
     },
     {
+      "path": "pages/asset/account/edit",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "编辑账户",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
       "path": "pages/asset/account/bank",
       "style": {
         "navigationStyle": "default",
@@ -143,6 +151,22 @@
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "交易查询",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/current",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "现金",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/current-plus",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "现金+",
         "backgroundColor": "#FAF9F6"
       }
     },
