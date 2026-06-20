@@ -5,9 +5,11 @@
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
           <view class="card-header">
-            <text class="card-label">{{ accountData.balanceLabel }}</text>
-            <view class="visibility-btn" @tap="toggleVisibility">
-              <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
+            <view class="label-row">
+              <text class="card-label">{{ accountData.balanceLabel }}</text>
+              <view class="visibility-btn" @tap="toggleVisibility">
+                <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
+              </view>
             </view>
           </view>
           <view class="balance-row">
@@ -37,7 +39,7 @@
             @tap="handleAction(action.id)"
           >
             <view class="action-icon-wrap">
-              <text class="action-icon">{{ action.icon }}</text>
+              <image class="action-icon" :src="action.icon" />
             </view>
             <text class="action-label">{{ action.label }}</text>
           </view>
@@ -99,10 +101,10 @@ const accountData = ref({
 })
 
 const quickActions = ref([
-  { id: 'transfer', icon: '转', label: '转账' },
-  { id: 'deposit', icon: '存', label: '存款' },
-  { id: 'wealth', icon: '理', label: '理财' },
-  { id: 'statement', icon: '收', label: '收支' }
+  { id: 'transfer', icon: '/static/assets/actions/transfer.png', label: '转账' },
+  { id: 'quota', icon: '/static/assets/actions/quota.png', label: '专款' },
+  { id: 'event', icon: '/static/assets/actions/event.png', label: '待办' },
+  { id: 'bill', icon: '/static/assets/actions/bill.png', label: '收支' }
 ])
 
 const assetList = ref([
@@ -126,9 +128,9 @@ const toggleVisibility = () => {
 const handleAction = (actionId) => {
   const actionNames = {
     transfer: '转账',
-    deposit: '存款',
-    wealth: '理财',
-    statement: '收支'
+    quota: '专款',
+    event: '待办',
+    bill: '收支'
   }
   uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
 }
@@ -175,9 +177,13 @@ onLoad((options) => {
 }
 
 .card-header {
+  margin-bottom: $spacing-4;
+}
+
+.label-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: $spacing-2;
 }
 
 .card-label {
@@ -196,9 +202,8 @@ onLoad((options) => {
 }
 
 .icon-visibility {
-  font-family: 'Material Symbols Outlined';
-  font-size: 32rpx;
-  color: $on-surface-variant;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .balance-row {
@@ -258,8 +263,9 @@ onLoad((options) => {
 }
 
 .quick-actions {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $stack-gap-md;
   margin-top: $spacing-6;
 }
 
@@ -267,31 +273,30 @@ onLoad((options) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-2;
+  gap: $stack-gap-sm;
 }
 
 .action-icon-wrap {
-  width: 100rpx;
-  height: 100rpx;
-  background: $surface-container-lowest;
+  width: 112rpx;
+  height: 112rpx;
+  background: #fff;
   border-radius: $rounded-lg;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: $shadow-soft;
+  box-shadow: $shadow-sm;
 }
 
 .action-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-  color: $primary;
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .action-label {
-  font-size: 22rpx;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-xs;
+  font-weight: 700;
   color: $on-surface-variant;
-  letter-spacing: 1rpx;
+  letter-spacing: 0.5rpx;
 }
 
 .section {

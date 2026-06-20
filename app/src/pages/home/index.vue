@@ -30,7 +30,7 @@
 
         <!-- Recent Transactions -->
         <view class="section-header">
-          <text class="section-title">近期交易</text>
+          <text class="section-title">资金明细</text>
           <text class="section-link" @tap="tapAction('查看全部')">查看全部</text>
         </view>
 
@@ -214,8 +214,8 @@ const tapAction = (label) => {
 
 .section-title {
   color: $on-surface;
-  font-size: $font-size-headline-md;
-  font-weight: 600;
+  font-size: $font-size-title-sm;
+  font-weight: 900;
 }
 
 .section-link {

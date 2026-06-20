@@ -8,7 +8,7 @@
             <view class="label-row">
               <text class="card-label">{{ accountData.balanceLabel }}</text>
               <view class="visibility-btn" @tap="toggleVisibility">
-                <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
+                <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
               </view>
             </view>
           </view>
@@ -27,21 +27,6 @@
               <text class="stat-label">{{ accountData.totalLabel }}</text>
               <text class="stat-value">{{ isVisible ? accountData.totalChange : '****' }}</text>
             </view>
-          </view>
-        </view>
-
-        <!-- Quick Actions -->
-        <view class="quick-actions">
-          <view 
-            v-for="action in quickActions" 
-            :key="action.id" 
-            class="action-item"
-            @tap="handleAction(action.id)"
-          >
-            <view class="action-icon-wrap" :class="action.bgClass">
-              <text class="action-icon" :class="action.iconClass">{{ action.icon }}</text>
-            </view>
-            <text class="action-label">{{ action.label }}</text>
           </view>
         </view>
 
@@ -98,13 +83,6 @@ const accountData = ref({
   avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20wealth%20manager%20studio%20portrait&image_size=square'
 })
 
-const quickActions = ref([
-  { id: 'withdraw', icon: '提', label: '提现', bgClass: 'bg-blue', iconClass: 'text-blue-600' },
-  { id: 'recharge', icon: '充', label: '充值', bgClass: 'bg-orange', iconClass: 'text-orange-600' },
-  { id: 'wealth', icon: '理', label: '理财', bgClass: 'bg-green', iconClass: 'text-green-600' },
-  { id: 'statement', icon: '收', label: '收支', bgClass: 'bg-purple', iconClass: 'text-purple-600' }
-])
-
 const assetList = ref([
   { id: '1', icon: '余', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray', bgColor: '#EFF6FF', iconColor: '#2563EB' },
   { id: '2', icon: '宝', name: '余额宝', desc: '收益稳健', amount: '256,000.00', subText: '+2.15%', subClass: 'text-secondary', bgColor: '#EFF6FF', iconColor: '#2563EB' },
@@ -125,16 +103,6 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const handleAction = (actionId) => {
-  const actionNames = {
-    withdraw: '提现',
-    recharge: '充值',
-    wealth: '理财',
-    statement: '收支'
-  }
-  uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
 }
 
 const handleAddAsset = () => {
@@ -204,9 +172,8 @@ onLoad((options) => {
 }
 
 .icon-visibility {
-  font-family: 'Material Symbols Outlined';
-  font-size: 32rpx;
-  color: $on-surface-variant;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .balance-row {
@@ -275,68 +242,6 @@ onLoad((options) => {
 
 .text-pink {
   color: #DB2777;
-}
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-4;
-  padding: 0 $spacing-4;
-  margin-top: $spacing-6;
-}
-
-.action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-2;
-}
-
-.action-icon-wrap {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: $rounded-lg;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: $shadow-soft;
-
-  &.bg-blue {
-    background: #EFF6FF;
-  }
-  &.bg-orange {
-    background: #FFF7ED;
-  }
-  &.bg-green {
-    background: #ECFDF5;
-  }
-  &.bg-purple {
-    background: #F5F3FF;
-  }
-}
-
-.action-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
-
-  &.text-blue-600 {
-    color: #2563EB;
-  }
-  &.text-orange-600 {
-    color: #EA580C;
-  }
-  &.text-green-600 {
-    color: #059669;
-  }
-  &.text-purple-600 {
-    color: #7C3AED;
-  }
-}
-
-.action-label {
-  font-size: 24rpx;
-  font-weight: $font-weight-medium;
-  color: $on-surface;
 }
 
 .section {

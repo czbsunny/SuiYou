@@ -3,7 +3,7 @@
     <view class="content">
       <!-- Search Input -->
       <view class="search-wrap">
-        <text class="icon-search">search</text>
+        <image class="icon-search" src="/static/images/search.png" />
         <input 
           class="search-input" 
           type="text" 
@@ -14,24 +14,7 @@
           @input="handleInput"
           focus
         />
-        <text v-if="searchText" class="icon-clear" @tap="clearSearch">cancel</text>
-      </view>
-
-      <!-- Asset Type Switcher -->
-      <view class="switcher-section">
-        <scroll-view scroll-x class="switcher-scroll hide-scrollbar">
-          <view class="switcher-wrap">
-            <button 
-              v-for="type in assetTypes" 
-              :key="type.id" 
-              class="switcher-btn"
-              :class="{ active: activeType === type.id }"
-              @tap="handleTypeSwitch(type.id)"
-            >
-              {{ type.label }}
-            </button>
-          </view>
-        </scroll-view>
+        <image v-if="searchText" class="icon-clear" @tap="clearSearch" src="/static/images/cancel.png" />
       </view>
 
       <!-- History Section (before search) -->
@@ -122,12 +105,12 @@ const activeType = ref('fund')
 const hasSearched = ref(false)
 const historyTags = ref(['沪深300', '医疗健康', '000001', '低碳经济'])
 
-const assetTypes = [
-  { id: 'fund', label: '基金' },
-  { id: 'stock', label: '股票' },
-  { id: 'hk', label: '港股' },
-  { id: 'us', label: '美股' }
-]
+const typeLabels = {
+  fund: '基金',
+  stock: '股票',
+  hk: '港股',
+  us: '美股'
+}
 
 const placeholder = computed(() => {
   const map = {
@@ -139,10 +122,7 @@ const placeholder = computed(() => {
   return map[activeType.value] || '请输入关键词'
 })
 
-const currentTypeLabel = computed(() => {
-  const t = assetTypes.find(a => a.id === activeType.value)
-  return t ? t.label : ''
-})
+const currentTypeLabel = computed(() => typeLabels[activeType.value] || '')
 
 const mockDatabase = [
   { id: 'f1', name: '招商中证500指数增强', code: '004192', type: '指数型', category: 'fund' },
@@ -184,17 +164,13 @@ const filteredResults = computed(() => {
 })
 
 onLoad((options) => {
-  if (options?.type) {
+  if (options?.type && typeLabels[options.type]) {
     activeType.value = options.type
   }
 })
 
 const handleInput = () => {
-  if (searchText.value) {
-    hasSearched.value = true
-  } else {
-    hasSearched.value = false
-  }
+  hasSearched.value = !!searchText.value
 }
 
 const handleSearch = () => {
@@ -209,13 +185,6 @@ const handleSearch = () => {
 const clearSearch = () => {
   searchText.value = ''
   hasSearched.value = false
-}
-
-const handleTypeSwitch = (type) => {
-  activeType.value = type
-  if (searchText.value) {
-    hasSearched.value = true
-  }
 }
 
 const handleClearHistory = () => {
@@ -271,9 +240,8 @@ const handleSelect = (item) => {
 }
 
 .icon-search {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $outline;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: $spacing-2;
 }
 
@@ -291,41 +259,9 @@ const handleSelect = (item) => {
 }
 
 .icon-clear {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
-  color: $outline;
+  width: 36rpx;
+  height: 36rpx;
   padding: 0 $spacing-2;
-}
-
-.switcher-section {
-  padding: $spacing-3 0;
-}
-
-.switcher-scroll {
-  white-space: nowrap;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.switcher-wrap {
-  display: inline-flex;
-  gap: $spacing-2;
-}
-
-.switcher-btn {
-  padding: $spacing-2 $spacing-6;
-  background: $surface-container-low;
-  color: $on-surface-variant;
-  border-radius: $rounded-md;
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-semibold;
-  
-  &.active {
-    background: $primary-container;
-    color: $on-primary-container;
-  }
 }
 
 .section-header {

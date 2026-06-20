@@ -5,9 +5,11 @@
         <!-- Wealth Hero Card -->
         <view class="wealth-card">
           <view class="card-header">
-            <text class="card-label">{{ accountData.balanceLabel }}</text>
-            <view class="visibility-btn" @tap="toggleVisibility">
-              <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
+            <view class="label-row">
+              <text class="card-label">{{ accountData.balanceLabel }}</text>
+              <view class="visibility-btn" @tap="toggleVisibility">
+                <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
+              </view>
             </view>
           </view>
           <view class="balance-row">
@@ -40,7 +42,7 @@
             @tap="handleAction(action.id)"
           >
             <view class="action-icon-wrap" :class="action.bgClass">
-              <text class="action-icon" :class="action.iconClass">{{ action.icon }}</text>
+              <image class="action-icon-img" :class="action.iconClass" :src="action.icon" mode="aspectFit" />
             </view>
             <text class="action-label">{{ action.label }}</text>
           </view>
@@ -98,10 +100,10 @@ const accountData = ref({
 })
 
 const quickActions = ref([
-  { id: 'buy', icon: '买', label: '买入', bgClass: 'bg-secondary', iconClass: 'text-secondary' },
-  { id: 'sell', icon: '卖', label: '卖出', bgClass: 'bg-primary', iconClass: 'text-primary' },
-  { id: 'transfer', icon: '转', label: '转账', bgClass: 'bg-gray', iconClass: 'text-gray' },
-  { id: 'query', icon: '查', label: '查询', bgClass: 'bg-gray', iconClass: 'text-gray' }
+  { id: 'buy', icon: '/static/assets/actions/buy.png', label: '买入', bgClass: 'bg-gray', iconClass: 'rotate-right' },
+  { id: 'sell', icon: '/static/assets/actions/sell.png', label: '卖出', bgClass: 'bg-gray', iconClass: 'rotate-left' },
+  { id: 'transfer', icon: '/static/assets/actions/transfer.png', label: '转账', bgClass: 'bg-gray' },
+  { id: 'query', icon: '/static/assets/actions/query.png', label: '查询', bgClass: 'bg-gray' }
 ])
 
 const assetList = ref([
@@ -182,9 +184,13 @@ onLoad((options) => {
 }
 
 .card-header {
+  margin-bottom: $spacing-4;
+}
+
+.label-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: $spacing-2;
 }
 
 .card-label {
@@ -203,9 +209,8 @@ onLoad((options) => {
 }
 
 .icon-visibility {
-  font-family: 'Material Symbols Outlined';
-  font-size: 32rpx;
-  color: $on-surface-variant;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .balance-row {
@@ -281,7 +286,7 @@ onLoad((options) => {
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-4;
+  gap: $stack-gap-md;
   margin-top: $spacing-6;
 }
 
@@ -289,12 +294,12 @@ onLoad((options) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-2;
+  gap: $stack-gap-sm;
 }
 
 .action-icon-wrap {
-  width: 100rpx;
-  height: 100rpx;
+  width: 112rpx;
+  height: 112rpx;
   border-radius: $rounded-lg;
   display: flex;
   align-items: center;
@@ -314,7 +319,7 @@ onLoad((options) => {
 
 .action-icon {
   font-family: 'Material Symbols Outlined';
-  font-size: 48rpx;
+  font-size: 56rpx;
 
   &.text-secondary {
     color: $secondary;
@@ -327,10 +332,23 @@ onLoad((options) => {
   }
 }
 
+.action-icon-img {
+  width: 56rpx;
+  height: 56rpx;
+
+  &.rotate-right {
+    transform: rotate(90deg);
+  }
+  &.rotate-left {
+    transform: rotate(-90deg);
+  }
+}
+
 .action-label {
-  font-size: 22rpx;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
+  font-size: $font-size-xs;
+  font-weight: 700;
+  color: $on-surface-variant;
+  letter-spacing: 0.5rpx;
 }
 
 .section {

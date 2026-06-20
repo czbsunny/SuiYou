@@ -8,7 +8,7 @@
             <view class="label-row">
               <span class="card-label">{{ accountData.balanceLabel }}</span>
               <view class="visibility-btn" @tap="toggleVisibility">
-                <text class="icon-visibility">{{ isVisible ? '显示' : '隐藏' }}</text>
+                <image class="icon-visibility" :src="isVisible ? '/static/images/visibility_off.png' : '/static/images/visibility.png'" />
               </view>
             </view>
           </view>
@@ -29,21 +29,6 @@
               <span class="stat-value font-mono text-secondary">{{ isVisible ? accountData.totalChange : '****' }}</span>
             </view>
           </view>
-        </view>
-
-        <!-- Quick Actions -->
-        <view class="quick-actions">
-          <button 
-            v-for="action in quickActions" 
-            :key="action.id" 
-            class="action-item"
-            @tap="handleAction(action.id)"
-          >
-            <view class="action-icon-wrap">
-              <text class="action-icon">{{ action.icon }}</text>
-            </view>
-            <span class="action-label">{{ action.label }}</span>
-          </button>
         </view>
 
         <!-- Asset List Section -->
@@ -97,13 +82,6 @@ const accountData = ref({
   avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=mature%20professional%20man%20portrait%20warm%20lighting&image_size=square'
 })
 
-const quickActions = ref([
-  { id: 'withdraw', icon: '提', label: '提现' },
-  { id: 'recharge', icon: '充', label: '充值' },
-  { id: 'wealth', icon: '理', label: '理财' },
-  { id: 'statement', icon: '账', label: '账单' }
-])
-
 const assetList = ref([
   { id: '1', icon: '零', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C' },
   { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a' },
@@ -121,16 +99,6 @@ const formattedBalance = computed(() => {
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const handleAction = (actionId) => {
-  const actionNames = {
-    withdraw: '提现',
-    recharge: '充值',
-    wealth: '理财',
-    statement: '账单'
-  }
-  uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
 }
 
 const handleAddAsset = () => {
@@ -200,9 +168,8 @@ onLoad((options) => {
 }
 
 .icon-visibility {
-  font-family: 'Material Symbols Outlined';
-  font-size: 28rpx;
-  color: $on-surface-variant;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .balance-row {
@@ -268,47 +235,6 @@ onLoad((options) => {
   font-family: 'Material Symbols Outlined';
   font-size: 28rpx;
   color: $secondary;
-}
-
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: $spacing-6;
-  padding: 0 $spacing-4;
-  margin-top: $spacing-6;
-}
-
-.action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-2;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-.action-icon-wrap {
-  width: 88rpx;
-  height: 88rpx;
-  background: #fff;
-  border-radius: $rounded-lg;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: $shadow-sm;
-}
-
-.action-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 44rpx;
-  color: #2a806c;
-}
-
-.action-label {
-  font-size: 22rpx;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
 }
 
 .section {
