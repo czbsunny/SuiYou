@@ -45,17 +45,15 @@
           <text class="chart-unit">单位: 元</text>
         </view>
         <view class="chart-card">
-          <view class="chart-body">
-            <view class="line-chart">
-              <qiun-data-charts
-                type="area"
-                :chartData="profitChartData"
-                :opts="profitChartOpts"
-                canvasId="profitAreaChart"
-                :inScrollView="false"
-                :reshow="false"
-              />
-            </view>
+          <view class="line-chart">
+            <qiun-data-charts
+              v-if="profitChartData.series && profitChartData.series.length > 0"
+              type="profitArea"
+              :chartData="profitChartData"
+              canvasId="profitAreaChart"
+              :inScrollView="false"
+              :reshow="false"
+            />
           </view>
         </view>
       </view>
@@ -64,7 +62,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const balance = ref('0.00')
 const fundName = ref('中银活期宝A')
@@ -73,53 +71,27 @@ const totalProfit = ref('¥0.00')
 const yesterdayProfit = ref('昨日 ¥0.00')
 
 const profitData = ref([
-  { date: '06-14', label: '周六', value: 0.12 },
-  { date: '06-15', label: '周日', value: 0.15 },
-  { date: '06-16', label: '周一', value: 0.08 },
-  { date: '06-17', label: '周二', value: 0.22 },
-  { date: '06-18', label: '周三', value: 0.18 },
-  { date: '06-19', label: '周四', value: 0.25 },
-  { date: '06-20', label: '周五', value: 0.30 }
+  { date: '06-14', label: '周六', value: 123.12 },
+  { date: '06-15', label: '周日', value: 112.15 },
+  { date: '06-16', label: '周一', value: 108.08 },
+  { date: '06-17', label: '周二', value: 106.22 },
+  { date: '06-18', label: '周三', value: 104.18 },
+  { date: '06-19', label: '周四', value: 102.25 },
+  { date: '06-20', label: '周五', value: 125.38 }
 ])
 
-const profitChartData = computed(() => ({
-  categories: profitData.value.map(i => i.label),
-  series: [{
-    name: '收益',
-    data: profitData.value.map(i => Number(i.value.toFixed(2)))
-  }]
-}))
+const profitChartData = ref({ categories: [], series: [] })
 
-const profitChartOpts = {
-  color: ['#E02020'],
-  padding: [20, 16, 0, 16],
-  legend: { show: false },
-  tooltip: { show: false },
-  title: { name: '' },
-  subtitle: { name: '' },
-  xAxis: {
-    disableGrid: true,
-    labelColor: '#999999',
-    labelFontSize: 10
-  },
-  yAxis: {
-    gridType: 'dash',
-    dashLength: 2,
-    labelColor: '#999999',
-    labelFontSize: 10,
-    min: 0
-  },
-  extra: {
-    area: {
-      type: 'straight',
-      opacity: 0.35,
-      addLine: true,
-      width: 2,
-      activeType: 'hollow',
-      gradient: true
-    }
-  }
-}
+onMounted(() => {
+  const rawData = profitData.value
+  profitChartData.value = JSON.parse(JSON.stringify({
+    categories: rawData.map(i => i.label),
+    series: [{
+      name: '收益',
+      data: rawData.map(i => Number(i.value.toFixed(2)))
+    }]
+  }))
+})
 
 const handleEdit = () => {
   uni.showModal({
@@ -340,13 +312,9 @@ const handleProfit = () => {
   margin-top: 0;
   background: $surface-container-lowest;
   border-radius: $rounded-lg;
-  padding: $spacing-5;
+  padding: $spacing-3;
   box-shadow: $shadow-soft;
   border: 2rpx solid $surface-container;
-}
-
-.chart-body {
-  padding: $spacing-2 0 0;
 }
 
 .line-chart {

@@ -43,11 +43,11 @@ const formatDateTime = (timeStamp, returnType)=>{
 
 const cfu = {
   //demotype为自定义图表类型，一般不需要自定义图表类型，只需要改根节点上对应的类型即可
-	"type":["pie","ring","rose","word","funnel","map","arcbar","line","column","mount","bar","area","radar","gauge","candle","mix","tline","tarea","scatter","bubble","demotype"],
-	"range":["饼状图","圆环图","玫瑰图","词云图","漏斗图","地图","圆弧进度条","折线图","柱状图","山峰图","条状图","区域图","雷达图","仪表盘","K线图","混合图","时间轴折线","时间轴区域","散点图","气泡图","自定义类型"],
+	"type":["pie","ring","rose","word","funnel","map","arcbar","line","column","mount","bar","area","profitArea","radar","gauge","candle","mix","tline","tarea","scatter","bubble","demotype"],
+	"range":["饼状图","圆环图","玫瑰图","词云图","漏斗图","地图","圆弧进度条","折线图","柱状图","山峰图","条状图","区域图","收益区域图","雷达图","仪表盘","K线图","混合图","时间轴折线","时间轴区域","散点图","气泡图","自定义类型"],
   //增加自定义图表类型，如果需要categories，请在这里加入您的图表类型，例如最后的"demotype"
   //自定义类型时需要注意"tline","tarea","scatter","bubble"等时间轴（矢量x轴）类图表，没有categories，不需要加入categories
-	"categories":["line","column","mount","bar","area","radar","gauge","candle","mix","demotype"],
+	"categories":["line","column","mount","bar","area","profitArea","radar","gauge","candle","mix","demotype"],
   //instance为实例变量承载属性，不要删除
   "instance":{},
   //option为opts及eopts承载属性，不要删除
@@ -402,6 +402,47 @@ const cfu = {
 				"gradient": false,
         "activeType": "hollow"
 			},
+		}
+	},
+	"profitArea":{
+		"type": "area",
+		"color": ["#E02020"],
+		"padding": [20, 0, 0, 0],
+		"xAxis": {
+			"disableGrid": true,
+			"labelColor": "#999999",
+			"labelFontSize": 10
+		},
+		"yAxis": {
+			"disabled": true,
+			"show": false,
+			"disableGrid": true,
+			"label": false,
+			"min": 0
+		},
+		"legend": {
+			"show": false
+		},
+		"tooltip": {
+			"show": false,
+			"group": [],
+			"index": 0
+		},
+		"title": {
+			"name": ""
+		},
+		"subtitle": {
+			"name": ""
+		},
+		"extra": {
+			"area": {
+				"type": "straight",
+				"opacity": 0.35,
+				"addLine": true,
+				"width": 2,
+				"activeType": "hollow",
+				"gradient": true
+			}
 		}
 	},
 	"radar":{
