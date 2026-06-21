@@ -18,46 +18,43 @@
 
           <view class="stats-row">
             <view class="stat-item">
-              <view class="stat-tags">
+              <text class="stat-label">7日年化收益率</text>
+              <text class="stat-value font-mono" @tap="handleAnnualized">{{ annualizedRate }}</text>
+              <view class="tag-wrap">
                 <view class="tag-chip">
                   <text class="tag-text">{{ fundName }}</text>
                 </view>
-                <text class="stat-label">7日年化收益率</text>
-                <text class="stat-value font-mono" @tap="handleAnnualized">{{ annualizedRate }}</text>
               </view>
             </view>
             <view class="stat-item right">
-              <view class="stat-tags">
+              <text class="stat-label">累计收益</text>
+              <text class="stat-value font-mono" @tap="handleProfit">{{ totalProfit }}</text>
+              <view class="tag-wrap">
                 <view class="tag-chip light">
                   <text class="tag-text">{{ yesterdayProfit }}</text>
                 </view>
-                <text class="stat-label">累计收益</text>
-                <text class="stat-value font-mono" @tap="handleProfit">{{ totalProfit }}</text>
               </view>
             </view>
           </view>
         </view>
 
-        <view class="chart-card">
-          <view class="chart-header">
-            <text class="chart-title">最近7天收益</text>
-            <text class="chart-unit">单位: 元</text>
+        <view class="section-header margin-top-lg">
+          <view class="section-title-wrap">
+            <h2 class="section-title">最近7天收益</h2>
           </view>
+          <text class="chart-unit">单位: 元</text>
+        </view>
+        <view class="chart-card">
           <view class="chart-body">
-            <view class="bar-chart">
-              <view v-for="item in profitData" :key="item.date" class="bar-wrapper">
-                <text class="bar-value font-mono" :class="{ profit: item.value > 0 }">
-                  {{ item.value.toFixed(2) }}
-                </text>
-                <view class="bar-track">
-                  <view
-                    class="bar-fill"
-                    :class="item.value >= 0 ? 'profit' : 'loss'"
-                    :style="{ height: getBarHeight(item.value) + '%' }"
-                  ></view>
-                </view>
-                <text class="bar-label">{{ item.label }}</text>
-              </view>
+            <view class="line-chart">
+              <qiun-data-charts
+                type="area"
+                :chartData="profitChartData"
+                :opts="profitChartOpts"
+                canvasId="profitAreaChart"
+                :inScrollView="false"
+                :reshow="false"
+              />
             </view>
           </view>
         </view>
@@ -67,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const balance = ref('0.00')
 const fundName = ref('中银活期宝A')
@@ -85,12 +82,43 @@ const profitData = ref([
   { date: '06-20', label: '周五', value: 0.30 }
 ])
 
-const maxValue = ref(Math.max(...profitData.value.map(i => Math.abs(i.value)), 1))
+const profitChartData = computed(() => ({
+  categories: profitData.value.map(i => i.label),
+  series: [{
+    name: '收益',
+    data: profitData.value.map(i => Number(i.value.toFixed(2)))
+  }]
+}))
 
-const getBarHeight = (value) => {
-  const abs = Math.abs(value)
-  const height = (abs / maxValue.value) * 100
-  return Math.max(height, 6)
+const profitChartOpts = {
+  color: ['#E02020'],
+  padding: [20, 16, 0, 16],
+  legend: { show: false },
+  tooltip: { show: false },
+  title: { name: '' },
+  subtitle: { name: '' },
+  xAxis: {
+    disableGrid: true,
+    labelColor: '#999999',
+    labelFontSize: 10
+  },
+  yAxis: {
+    gridType: 'dash',
+    dashLength: 2,
+    labelColor: '#999999',
+    labelFontSize: 10,
+    min: 0
+  },
+  extra: {
+    area: {
+      type: 'straight',
+      opacity: 0.35,
+      addLine: true,
+      width: 2,
+      activeType: 'hollow',
+      gradient: true
+    }
+  }
 }
 
 const handleEdit = () => {
@@ -161,6 +189,27 @@ const handleProfit = () => {
   border: 2rpx solid $surface-container;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-3;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex: 1;
+}
+
+.section-title {
+  font-size: $font-size-title-sm;
+  font-weight: $font-weight-bold;
+  color: $on-surface;
+  line-height: 40rpx;
+}
+
 .card-header {
   display: flex;
   flex-direction: column;
@@ -171,11 +220,7 @@ const handleProfit = () => {
   display: flex;
   align-items: center;
   gap: $spacing-2;
-}
-
-.icon-edit {
-  width: 40rpx;
-  height: 40rpx;
+  justify-content: center;
 }
 
 .card-title {
@@ -185,11 +230,18 @@ const handleProfit = () => {
   letter-spacing: 2rpx;
 }
 
+.icon-edit {
+  width: 40rpx;
+  height: 40rpx;
+}
+
 .balance-row {
-  margin-top: $spacing-3;
+  margin-top: 0;
 }
 
 .amount-wrapper {
+  padding: $spacing-2 0;
+  text-align: center;
   display: flex;
   align-items: baseline;
   gap: 12rpx;
@@ -222,26 +274,26 @@ const handleProfit = () => {
 
 .stat-item {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-1;
 
   &.right {
-    display: flex;
-    justify-content: flex-end;
+    align-items: center;
   }
 }
 
-.stat-tags {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
-}
-
-.stat-item.right .stat-tags {
-  align-items: flex-end;
+.tag-wrap {
+  display: inline-flex;
+  justify-content: center;
+  margin-top: $spacing-1;
 }
 
 .tag-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   background: $primary-container;
   padding: 8rpx 24rpx;
   border-radius: $rounded-full;
@@ -275,26 +327,8 @@ const handleProfit = () => {
   font-weight: $font-weight-bold;
 }
 
-.chart-card {
-  margin-top: $spacing-5;
-  background: $surface-container-lowest;
-  border-radius: $rounded-lg;
-  padding: $spacing-5;
-  box-shadow: $shadow-soft;
-  border: 2rpx solid $surface-container;
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $spacing-5;
-}
-
-.chart-title {
-  font-size: $font-size-title-sm;
-  color: $on-surface;
-  font-weight: $font-weight-bold;
+.margin-top-lg {
+  margin-top: $spacing-6;
 }
 
 .chart-unit {
@@ -302,65 +336,28 @@ const handleProfit = () => {
   color: $on-surface-variant;
 }
 
+.chart-card {
+  margin-top: 0;
+  background: $surface-container-lowest;
+  border-radius: $rounded-lg;
+  padding: $spacing-5;
+  box-shadow: $shadow-soft;
+  border: 2rpx solid $surface-container;
+}
+
 .chart-body {
-  padding: 0 $spacing-2;
+  padding: $spacing-2 0 0;
 }
 
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 320rpx;
-  gap: $spacing-1;
-}
-
-.bar-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-1;
-  height: 100%;
-}
-
-.bar-value {
-  font-size: 20rpx;
-  color: $on-surface-variant;
-  font-weight: $font-weight-medium;
-  white-space: nowrap;
-
-  &.profit {
-    color: $profit;
-  }
-}
-
-.bar-track {
-  flex: 1;
+.line-chart {
+  position: relative;
+  height: 420rpx;
   width: 100%;
-  background: $surface-container;
-  border-radius: $rounded-sm;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-}
 
-.bar-fill {
-  width: 100%;
-  border-radius: $rounded-sm $rounded-sm 0 0;
-  transition: height 0.4s ease;
-
-  &.profit {
-    background: linear-gradient(180deg, $profit 0%, rgba($profit, 0.6) 100%);
+  :deep(.chartsview),
+  :deep(.chartsbox) {
+    width: 100% !important;
+    height: 100% !important;
   }
-
-  &.loss {
-    background: linear-gradient(180deg, $loss 0%, rgba($loss, 0.6) 100%);
-  }
-}
-
-.bar-label {
-  font-size: 20rpx;
-  color: $on-surface-variant;
-  font-weight: $font-weight-medium;
 }
 </style>
