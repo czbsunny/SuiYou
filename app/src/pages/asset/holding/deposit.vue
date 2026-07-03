@@ -2,8 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Hero Card -->
-        <view class="hero-card">
+        <view class="main-card">
           <view class="card-header">
             <text class="card-label">定期存款总额 (CNY)</text>
             <text class="balance-amount font-mono">200,000.00</text>
@@ -14,24 +13,8 @@
               <text class="stat-value font-mono text-profit">+13,750.00</text>
             </view>
             <view class="stat-item">
-              <text class="stat-label">已到期金额</text>
-              <text class="stat-value font-mono text-muted">0.00</text>
-            </view>
-          </view>
-          <view class="summary-row">
-            <view class="summary-item">
-              <text class="summary-label">平均利率</text>
-              <text class="summary-value font-mono">2.25%</text>
-            </view>
-            <view class="summary-divider"></view>
-            <view class="summary-item">
-              <text class="summary-label">存款笔数</text>
-              <text class="summary-value font-mono">2笔</text>
-            </view>
-            <view class="summary-divider"></view>
-            <view class="summary-item">
-              <text class="summary-label">最早到期</text>
-              <text class="summary-value font-mono">2027-01-15</text>
+              <text class="stat-label">平均利率</text>
+              <text class="stat-value font-mono">2.25%</text>
             </view>
           </view>
         </view>
@@ -139,33 +122,17 @@ const handleDepositTap = (deposit) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
   padding-bottom: $spacing-8;
 }
 
-.content {
-  padding: $spacing-4;
-}
-
-.hero-card {
-  background: $surface-container-lowest;
-  border-radius: $rounded-md;
-  padding: $spacing-6, $spacing-5, $spacing-4;
-  box-shadow: $shadow-soft;
-  border: 2rpx solid $surface-container;
-}
-
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: $spacing-2;
 }
 
 .card-label {
@@ -217,39 +184,6 @@ const handleDepositTap = (deposit) => {
 
 .text-muted {
   color: $outline;
-}
-
-.summary-row {
-  display: flex;
-  align-items: center;
-  padding: $spacing-4 0 0;
-  margin-top: $spacing-4;
-  border-top: 2rpx solid $surface-container;
-}
-
-.summary-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4rpx;
-}
-
-.summary-label {
-  font-size: $font-size-xs;
-  color: $outline;
-}
-
-.summary-value {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.summary-divider {
-  width: 2rpx;
-  height: 40rpx;
-  background: $surface-container;
 }
 
 .section-header {
@@ -312,7 +246,6 @@ const handleDepositTap = (deposit) => {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
-  padding-bottom: $spacing-8;
 }
 
 .deposit-card {

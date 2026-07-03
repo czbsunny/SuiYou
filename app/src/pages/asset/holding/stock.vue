@@ -2,8 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Portfolio Hero Card -->
-        <view class="hero-card">
+        <view class="main-card">
           <view class="card-header">
             <text class="card-label">股票总市值 (HKD)</text>
             <text class="balance-amount font-mono">2,485,920.00</text>
@@ -142,27 +141,11 @@ const handleStockTap = (stock) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
   padding-bottom: $spacing-8;
-}
-
-.content {
-  padding: $spacing-4;
-}
-
-.hero-card {
-  background: $surface-container-lowest;
-  border-radius: $rounded-md;
-  padding: $spacing-6, $spacing-5, $spacing-4;
-  box-shadow: $shadow-soft;
-  border: 2rpx solid $surface-container;
 }
 
 .card-header {

@@ -2,8 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Portfolio Hero Card -->
-        <view class="hero-card">
+        <view class="main-card">
           <view class="card-header">
             <text class="card-label">基金总资产 (元)</text>
             <text class="balance-amount font-mono">504,285.00</text>
@@ -114,27 +113,11 @@ const handleFundTap = (fund) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
   padding-bottom: $spacing-8;
-}
-
-.content {
-  padding: $spacing-4;
-}
-
-.hero-card {
-  background: $surface-container-lowest;
-  border-radius: $rounded-md;
-  padding: $spacing-6, $spacing-5, $spacing-4;
-  box-shadow: $shadow-soft;
-  margin-bottom: $spacing-6;
 }
 
 .card-header {
