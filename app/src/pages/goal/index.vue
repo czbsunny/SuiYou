@@ -2,7 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <view class="summary-card">
+        <view class="main-card">
           <text class="eyebrow">累计储蓄</text>
           <view class="amount-row">
             <text class="currency">¥</text>
@@ -121,25 +121,10 @@ const tapAction = (label) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding: $spacing-4 $spacing-4 170rpx;
-}
-
-.summary-card {
-  padding: $spacing-6 $spacing-5 $spacing-4;
-  border-radius: 32rpx;
-  background: $surface-container-lowest;
-  box-shadow: $shadow-soft;
 }
 
 .goal-card {

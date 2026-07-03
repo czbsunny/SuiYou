@@ -1,8 +1,3 @@
-// ============================================
-// Heritage Hearth Design System - Mixins
-// 基于设计文件 designs/ 中的原型图定义
-// ============================================
-
 @import './variables.scss';
 
 // --------------------------------------------
@@ -78,10 +73,10 @@
 }
 
 @mixin card-lg {
+  padding: $spacing-6 $spacing-5 $spacing-4;
+  border-radius: $rounded-lg;
   background: $surface-container-lowest;
-  border-radius: $rounded-md;
   box-shadow: $shadow-soft;
-  padding: $stack-gap-lg;
 }
 
 // --------------------------------------------

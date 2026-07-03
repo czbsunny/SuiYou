@@ -214,19 +214,12 @@ onShow(() => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
 }
 
-.content {
-  padding: $spacing-4 $spacing-4 170rpx;
-}
 
 .asset-hero {
   padding: $spacing-6 $spacing-5 $spacing-4;

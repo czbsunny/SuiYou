@@ -1,9 +1,8 @@
 <template>
-  <view class="page home-page">
+  <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Hero Wealth Card -->
-        <view class="hero-card">
+        <view class="main-card">
           <text class="eyebrow">家庭资产净值</text>
           <view class="amount-row">
             <text class="currency">¥</text>
@@ -88,26 +87,10 @@ const tapAction = (label) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding: $spacing-4 $spacing-4 160rpx;
-}
-
-/* Hero Card */
-.hero-card {
-  padding: $spacing-6 $spacing-5 $spacing-4;
-  border-radius: 32rpx;
-  background: #fff;
-  box-shadow: $shadow-soft;
 }
 
 .eyebrow {

@@ -171,6 +171,14 @@
       }
     },
     {
+      "path": "pages/asset/holding/deposit",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "定存",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
       "path": "pages/asset/holding/stock",
       "style": {
         "navigationStyle": "default",

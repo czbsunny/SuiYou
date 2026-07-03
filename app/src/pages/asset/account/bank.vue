@@ -103,10 +103,10 @@ const quickActions = ref([
 ])
 
 const assetList = ref([
-  { id: '1', icon: '活', name: '活期资产', desc: '高收益现金管理', amount: '124,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754' },
-  { id: '2', icon: '+', name: '活期+', desc: '高收益现金管理', amount: '312,500.00', bgColor: 'rgba(255, 218, 216, 0.2)', iconColor: '#b7102a' },
-  { id: '3', icon: '定', name: '定期存款', desc: '稳健理财', amount: '200,000.00', bgColor: 'rgba(255, 222, 170, 0.2)', iconColor: '#705624' },
-  { id: '4', icon: '基', name: '基金', desc: '长期稳健增值', amount: '206,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754' }
+  { id: '1', icon: '活', name: '活期资产', desc: '高收益现金管理', amount: '124,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754', targetPath: '/pages/asset/holding/current' },
+  { id: '2', icon: '+', name: '活期+', desc: '高收益现金管理', amount: '312,500.00', bgColor: 'rgba(255, 218, 216, 0.2)', iconColor: '#b7102a', targetPath: '/pages/asset/holding/current-plus' },
+  { id: '3', icon: '定', name: '定期存款', desc: '稳健理财', amount: '200,000.00', bgColor: 'rgba(255, 222, 170, 0.2)', iconColor: '#705624', targetPath: '/pages/asset/holding/deposit' },
+  { id: '4', icon: '基', name: '基金', desc: '长期稳健增值', amount: '206,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754', targetPath: '/pages/asset/holding/fund' }
 ])
 
 const formattedBalance = computed(() => {
@@ -139,7 +139,20 @@ const handleAction = (actionId) => {
 }
 
 const handleAssetTap = (asset) => {
-  uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  if (asset.targetPath) {
+    uni.navigateTo({
+      url: `${asset.targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: asset.id,
+        name: asset.name,
+        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
+      }))}`,
+      fail: () => {
+        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+      }
+    })
+  } else {
+    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+  }
 }
 
 onLoad((options) => {

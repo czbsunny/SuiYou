@@ -132,7 +132,7 @@ const handleFundTap = (fund) => {
 .hero-card {
   background: $surface-container-lowest;
   border-radius: $rounded-md;
-  padding: $spacing-5;
+  padding: $spacing-6, $spacing-5, $spacing-4;
   box-shadow: $shadow-soft;
   margin-bottom: $spacing-6;
 }
