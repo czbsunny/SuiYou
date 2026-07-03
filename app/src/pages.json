@@ -195,6 +195,46 @@
       }
     },
     {
+      "path": "pages/asset/holding/loan",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "贷款",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/stock-detail",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "股票详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/fund-detail",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "基金详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/deposit-detail",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "定存详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
+      "path": "pages/asset/holding/loan-detail",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "贷款详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
       "path": "pages/asset/holding/add-stock",
       "style": {
         "navigationStyle": "default",

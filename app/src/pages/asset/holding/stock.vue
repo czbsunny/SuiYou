@@ -135,7 +135,9 @@ const handleAddStock = () => {
 }
 
 const handleStockTap = (stock) => {
-  uni.showToast({ title: `${stock.name}详情`, icon: 'none' })
+  uni.navigateTo({
+    url: `/pages/asset/holding/stock-detail?data=${encodeURIComponent(JSON.stringify(stock))}`
+  })
 }
 </script>
 
@@ -150,8 +152,8 @@ const handleStockTap = (stock) => {
 
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: $spacing-2;
 }
 
 .card-label {
@@ -180,6 +182,9 @@ const handleStockTap = (stock) => {
 }
 
 .stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
 }
 
 .stat-label {

@@ -107,7 +107,9 @@ const handleAddFund = () => {
 }
 
 const handleFundTap = (fund) => {
-  uni.showToast({ title: `${fund.name}详情`, icon: 'none' })
+  uni.navigateTo({
+    url: `/pages/asset/holding/fund-detail?data=${encodeURIComponent(JSON.stringify(fund))}`
+  })
 }
 </script>
 
@@ -177,6 +179,7 @@ const handleFundTap = (fund) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: $spacing-6;
   margin-bottom: $spacing-3;
 }
 

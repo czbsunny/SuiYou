@@ -4,17 +4,17 @@
       <view class="content">
         <view class="main-card">
           <view class="card-header">
-            <text class="card-label">定期存款总额 (CNY)</text>
-            <text class="balance-amount font-mono">200,000.00</text>
+            <text class="card-label">贷款总余额 (CNY)</text>
+            <text class="balance-amount font-mono">1,286,450.00</text>
           </view>
           <view class="stats-grid">
             <view class="stat-item">
-              <text class="stat-label">预计总利息</text>
-              <text class="stat-value font-mono text-profit">+13,750.00</text>
+              <text class="stat-label">待还利息</text>
+              <text class="stat-value font-mono text-loss">+58,230.00</text>
             </view>
             <view class="stat-item">
-              <text class="stat-label">平均利率</text>
-              <text class="stat-value font-mono">2.25%</text>
+              <text class="stat-label">月供总额</text>
+              <text class="stat-value font-mono">18,650.00</text>
             </view>
           </view>
         </view>
@@ -22,56 +22,56 @@
         <!-- Section Header -->
         <div class="section-header">
           <div class="section-title-wrap">
-            <h2 class="section-title">存款明细</h2>
-            <span class="count-badge">2笔</span>
+            <h2 class="section-title">贷款明细</h2>
+            <span class="count-badge">3笔</span>
           </div>
-          <button class="add-btn" @tap="handleAddDeposit">
+          <button class="add-btn" @tap="handleAddLoan">
             <image src="/static/images/add.png" class="icon-add" />
-            <span class="add-text">存入定存</span>
+            <span class="add-text">新增贷款</span>
           </button>
         </div>
 
-        <!-- Deposit List -->
-        <div class="deposit-list">
+        <!-- Loan List -->
+        <div class="loan-list">
           <view
-            v-for="deposit in depositList"
-            :key="deposit.id"
-            class="deposit-card"
-            @tap="handleDepositTap(deposit)"
+            v-for="loan in loanList"
+            :key="loan.id"
+            class="loan-card"
+            @tap="handleLoanTap(loan)"
           >
             <div class="card-top">
-              <div class="deposit-info">
-                <h3 class="deposit-name">{{ deposit.name }}</h3>
-                <view class="deposit-meta">
-                  <span class="status-tag" :class="{ matured: deposit.status === '已到期' }">{{ deposit.status }}</span>
-                  <span class="term-text">{{ deposit.term }}</span>
+              <div class="loan-info">
+                <h3 class="loan-name">{{ loan.name }}</h3>
+                <view class="loan-meta">
+                  <span class="status-tag" :class="{ active: loan.status === '还款中', cleared: loan.status === '已结清' }">{{ loan.status }}</span>
+                  <span class="type-text">{{ loan.type }}</span>
                 </view>
               </div>
-              <view class="rate-badge">{{ deposit.rate }}%</view>
+              <view class="rate-badge">{{ loan.rate }}%</view>
             </div>
             <div class="card-dates">
               <view class="date-item">
-                <text class="date-label">存入日</text>
-                <text class="date-value font-mono">{{ deposit.startDate }}</text>
+                <text class="date-label">放款日</text>
+                <text class="date-value font-mono">{{ loan.startDate }}</text>
               </view>
               <text class="date-arrow">→</text>
               <view class="date-item">
                 <text class="date-label">到期日</text>
-                <text class="date-value font-mono">{{ deposit.maturityDate }}</text>
+                <text class="date-value font-mono">{{ loan.maturityDate }}</text>
               </view>
             </div>
             <div class="card-bottom">
               <div class="info-item">
-                <span class="info-label">本金</span>
-                <span class="info-value font-mono">{{ deposit.principal }}</span>
+                <span class="info-label">贷款总额</span>
+                <span class="info-value font-mono">{{ loan.totalAmount }}</span>
               </div>
               <div class="info-item center">
-                <span class="info-label">预计利息</span>
-                <span class="info-value font-mono text-profit">+{{ deposit.expectedInterest }}</span>
+                <span class="info-label">剩余本金</span>
+                <span class="info-value font-mono">{{ loan.remaining }}</span>
               </div>
               <div class="info-item right">
-                <span class="info-label">已持天数</span>
-                <span class="info-value font-mono">{{ deposit.heldDays }}天</span>
+                <span class="info-label">月供</span>
+                <span class="info-value font-mono">{{ loan.monthlyPayment }}</span>
               </div>
             </div>
           </view>
@@ -84,40 +84,52 @@
 <script setup>
 import { ref } from 'vue'
 
-const depositList = ref([
+const loanList = ref([
   {
     id: '1',
-    name: '一年期整存整取',
-    status: '未到期',
-    term: '1年',
-    rate: 1.80,
-    principal: '100,000.00',
-    expectedInterest: '1,800.00',
-    startDate: '2026-06-15',
-    maturityDate: '2027-06-15',
-    heldDays: 18
+    name: '个人住房贷款',
+    status: '还款中',
+    type: '商业贷款',
+    rate: 3.85,
+    totalAmount: '800,000.00',
+    remaining: '620,000.00',
+    monthlyPayment: '8,450.00',
+    startDate: '2023-03-15',
+    maturityDate: '2043-03-15'
   },
   {
     id: '2',
-    name: '三年期大额存单',
-    status: '未到期',
-    term: '3年',
-    rate: 2.70,
-    principal: '100,000.00',
-    expectedInterest: '8,100.00',
-    startDate: '2026-04-01',
-    maturityDate: '2029-04-01',
-    heldDays: 93
+    name: '消费贷款',
+    status: '还款中',
+    type: '信用贷款',
+    rate: 4.50,
+    totalAmount: '200,000.00',
+    remaining: '120,000.00',
+    monthlyPayment: '6,200.00',
+    startDate: '2024-08-01',
+    maturityDate: '2027-08-01'
+  },
+  {
+    id: '3',
+    name: '汽车贷款',
+    status: '已结清',
+    type: '抵押贷款',
+    rate: 4.20,
+    totalAmount: '150,000.00',
+    remaining: '0.00',
+    monthlyPayment: '0.00',
+    startDate: '2022-01-10',
+    maturityDate: '2025-01-10'
   }
 ])
 
-const handleAddDeposit = () => {
-  uni.showToast({ title: '存入定存功能开发中', icon: 'none' })
+const handleAddLoan = () => {
+  uni.showToast({ title: '新增贷款功能开发中', icon: 'none' })
 }
 
-const handleDepositTap = (deposit) => {
+const handleLoanTap = (loan) => {
   uni.navigateTo({
-    url: `/pages/asset/holding/deposit-detail?data=${encodeURIComponent(JSON.stringify(deposit))}`
+    url: `/pages/asset/holding/loan-detail?data=${encodeURIComponent(JSON.stringify(loan))}`
   })
 }
 </script>
@@ -180,8 +192,8 @@ const handleDepositTap = (deposit) => {
   color: $secondary;
 }
 
-.text-profit {
-  color: $profit;
+.text-loss {
+  color: $loss;
 }
 
 .text-muted {
@@ -244,13 +256,13 @@ const handleDepositTap = (deposit) => {
   line-height: 1;
 }
 
-.deposit-list {
+.loan-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.deposit-card {
+.loan-card {
   background: $surface-container-lowest;
   border-radius: $rounded-md;
   padding: $spacing-5;
@@ -265,19 +277,19 @@ const handleDepositTap = (deposit) => {
   margin-bottom: $spacing-4;
 }
 
-.deposit-info {
+.loan-info {
   display: flex;
   flex-direction: column;
   gap: $spacing-2;
 }
 
-.deposit-name {
+.loan-name {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
 }
 
-.deposit-meta {
+.loan-meta {
   display: flex;
   align-items: center;
   gap: $spacing-2;
@@ -290,13 +302,18 @@ const handleDepositTap = (deposit) => {
   padding: 4rpx 16rpx;
   border-radius: $rounded-sm;
 
-  &.matured {
+  &.active {
+    background: rgba($secondary, 0.1);
+    color: $secondary;
+  }
+
+  &.cleared {
     background: rgba($profit, 0.1);
     color: $profit;
   }
 }
 
-.term-text {
+.type-text {
   font-size: $font-size-xs;
   color: rgba($on-surface-variant, 0.6);
   font-family: $font-family-mono;
@@ -305,9 +322,9 @@ const handleDepositTap = (deposit) => {
 .rate-badge {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
-  color: $secondary;
+  color: $loss;
   font-family: $font-family-mono;
-  background: rgba($secondary, 0.06);
+  background: rgba($loss, 0.06);
   padding: $spacing-1 $spacing-2;
   border-radius: $rounded-sm;
 }
@@ -375,17 +392,5 @@ const handleDepositTap = (deposit) => {
   font-size: $font-size-body-sm;
   font-weight: $font-weight-bold;
   color: $on-surface;
-
-  &.profit {
-    color: $profit;
-  }
-
-  &.loss {
-    color: $loss;
-  }
-
-  &.text-profit {
-    color: $profit;
-  }
 }
 </style>

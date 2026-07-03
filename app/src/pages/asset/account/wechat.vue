@@ -82,7 +82,7 @@ const assetList = ref([
   { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a', targetPath: '/pages/asset/holding/current-plus' },
   { id: '3', icon: '基', name: '基金', desc: '长期稳健增值', amount: '500,000.00', bgColor: '#ECFDF5', iconColor: '#006754' },
   { id: '4', icon: '金', name: '黄金', desc: '实物黄金', amount: '100,000.00', bgColor: '#FFFBEB', iconColor: '#705624' },
-  { id: '5', icon: '微', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488' }
+  { id: '5', icon: '微', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488', targetPath: '/pages/asset/holding/loan' }
 ])
 
 const formattedBalance = computed(() => {
