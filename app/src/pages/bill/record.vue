@@ -1,5 +1,5 @@
 <template>
-  <view class="page record-page">
+  <view class="page">
     <!-- 滚动区域（包含切换器和分类） -->
     <scroll-view scroll-y class="main-scroll">
       <view class="scroll-content">
@@ -407,13 +407,7 @@ const confirmSave = () => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-.page {
-  height: 100vh;
-  background: $background;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+@import '@/styles/common.scss';
 
 /* 1. 支出/收入分段选择器 */
 .segmented-bar {

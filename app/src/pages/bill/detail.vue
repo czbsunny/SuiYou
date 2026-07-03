@@ -1,5 +1,5 @@
 <template>
-  <view class="page detail-page">
+  <view class="page">
     <!-- Fixed Header Area -->
     <view class="fixed-header">
       <!-- Controls Row -->
@@ -146,11 +146,7 @@ const handleTransaction = (item) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .fixed-header {
   position: sticky;

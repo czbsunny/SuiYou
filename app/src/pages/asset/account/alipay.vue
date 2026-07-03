@@ -2,8 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Wealth Hero Card -->
-        <view class="wealth-card">
+        <view class="main-card">
           <view class="label-row">
             <view class="label-left">
               <text class="card-label">我的资产 (元)</text>
@@ -139,25 +138,10 @@ onLoad((options) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding: $spacing-4 $spacing-4 170rpx;
-}
-
-.wealth-card {
-  padding: $spacing-6 $spacing-5 $spacing-4;
-  border-radius: 32rpx;
-  background: #fff;
-  box-shadow: $shadow-soft;
 }
 
 .label-row {

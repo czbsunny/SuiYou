@@ -344,18 +344,10 @@ const navigateTo = (page) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding-bottom: $spacing-4;
 }
 
 .stock-card {

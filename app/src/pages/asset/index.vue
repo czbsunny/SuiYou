@@ -2,7 +2,7 @@
   <view class="page">
     <scroll-view scroll-y class="scroll" @refresherrefresh="onRefresh" :refresher-enabled="true" :refresher-triggered="refreshing">
       <view class="content">
-        <view class="asset-hero">
+        <view class="main-card">
           <text class="eyebrow">家庭资产净值</text>
           <view class="amount-row">
             <text class="currency">¥</text>
@@ -218,14 +218,6 @@ onShow(() => {
 
 .scroll {
   height: 100vh;
-}
-
-
-.asset-hero {
-  padding: $spacing-6 $spacing-5 $spacing-4;
-  border-radius: 32rpx;
-  background: #fff;
-  box-shadow: $shadow-soft;
 }
 
 .eyebrow {

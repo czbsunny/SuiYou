@@ -192,21 +192,11 @@ const handleDelete = (id) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-  position: relative;
-  overflow: hidden;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
   padding-bottom: $spacing-8;
-}
-
-.content {
-  padding: $spacing-4;
 }
 
 .form-section {

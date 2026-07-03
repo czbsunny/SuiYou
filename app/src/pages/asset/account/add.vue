@@ -1,6 +1,6 @@
 <template>
-  <view class="add-account-page">
-    <scroll-view scroll-y class="scroll-content">
+  <view class="page">
+    <scroll-view scroll-y class="scroll">
       <view class="institution-info-card">
         <view class="institution-header">
           <view class="inst-icon">
@@ -350,13 +350,9 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
+@import '@/styles/common.scss';
 
-.add-account-page {
-  min-height: 100vh;
-  background: $background;
-}
-
-.scroll-content {
+.scroll {
   height: calc(100vh - 160rpx);
 }
 

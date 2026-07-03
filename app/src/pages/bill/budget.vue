@@ -2,7 +2,7 @@
   <view class="page budget-page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <view class="hero-card">
+        <view class="main-card">
           <view class="ring-container">
             <view class="ring-wrapper">
               <qiun-data-charts
@@ -171,27 +171,10 @@ const handleSettings = () => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-  padding-bottom: 140rpx;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding: 0 $container-padding;
-}
-
-.hero-card {
-  margin-top: $stack-gap-md;
-  padding: $spacing-6;
-  border-radius: $rounded-xl;
-  background: $surface-container-lowest;
-  box-shadow: $shadow-soft;
 }
 
 .ring-container {

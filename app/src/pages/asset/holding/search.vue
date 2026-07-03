@@ -221,15 +221,7 @@ const handleSelect = (item) => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-}
-
-.content {
-  padding: $spacing-3 $spacing-4 $spacing-8;
-}
+@import '@/styles/common.scss';
 
 .search-wrap {
   display: flex;

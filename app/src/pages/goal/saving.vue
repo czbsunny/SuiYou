@@ -1,20 +1,5 @@
 <template>
-  <view class="page saving-page">
-    <!-- Top Navigation -->
-    <view class="header">
-      <view class="header-left">
-        <view class="avatar-wrapper">
-          <image class="avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2x_Ryn73VLixmuopsZLxgAeNkhYOy39eKWCL9boucQ5hthfF8WncM6mmYtvle9jGzz8Hv9cJfKKuMII2zAaiKzvlcInXeqh4iu060WPABzTgmRhkg0bQwJpFq8CqO-xLJIWbUuuaVPyF-yTznXtJHqmjD5Sj38Sa_J9wECZ6SnB45f7uMCyDwEqyj5KjYSCCDYu9EmJV-l0bpQgkpjNaW8pl8Gbpv37gtKCuXz2_Lk_rpphKsD6aAnvkKNx5INAQeQFWGSTxLTFV3" mode="aspectFill" />
-        </view>
-        <text class="app-name">Stewardship</text>
-      </view>
-      <view class="header-right">
-        <view class="notification-btn" @tap="handleNotification">
-          <text class="icon">notifications</text>
-        </view>
-      </view>
-    </view>
-
+  <view class="page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
         <!-- Total Savings Hero -->
@@ -231,71 +216,10 @@ const animateAmount = () => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
-
-.page {
-  min-height: 100vh;
-  background: $background;
-  padding-bottom: 140rpx;
-}
+@import '@/styles/common.scss';
 
 .scroll {
   height: 100vh;
-}
-
-.content {
-  padding: $spacing-4 $container-padding;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-3 $container-padding;
-  background: $background;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: $stack-gap-sm;
-}
-
-.avatar-wrapper {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $rounded-full;
-  border: 4rpx solid #C5A36A;
-  overflow: hidden;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-}
-
-.app-name {
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.notification-btn {
-  width: 80rpx;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
-  color: $primary;
 }
 
 .hero-card {
