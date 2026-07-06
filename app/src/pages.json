@@ -26,6 +26,14 @@
       }
     },
     {
+      "path": "pages/goal/detail",
+      "style": {
+        "navigationStyle": "default",
+        "navigationBarTitleText": "目标详情",
+        "backgroundColor": "#FAF9F6"
+      }
+    },
+    {
       "path": "pages/asset/index",
       "style": {
         "navigationStyle": "default",

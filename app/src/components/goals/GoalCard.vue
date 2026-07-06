@@ -89,7 +89,7 @@ const formatDate = (dateStr) => {
 }
 
 const handleTap = () => {
-  uni.showToast({ title: props.goal.name, icon: 'none' })
+  uni.navigateTo({ url: `/pages/goal/detail?id=${props.goal.id}` })
 }
 </script>
 

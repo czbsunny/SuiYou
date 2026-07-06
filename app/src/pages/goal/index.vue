@@ -23,7 +23,7 @@
             <view class="sort-button" @tap="toggleSort">
               <image src="/static/images/manage.png" class="sort-icon" mode="aspectFit" />
             </view>
-            <view class="add-button" @tap="tapAction('创建新目标')">
+            <view class="add-button" @tap="handleCreate">
               <image src="/static/images/add.png" class="add-icon" mode="aspectFit" />
             </view>
           </view>
@@ -35,7 +35,7 @@
         </view>
 
         <view class="goal-list">
-          <view v-for="goal in goals" :key="goal.name" class="goal-card">
+          <view v-for="goal in goals" :key="goal.name" class="goal-card" @tap="handleTap(goal)">
             <view class="goal-head">
               <view class="round-icon">
                 <text>{{ goal.icon }}</text>
@@ -68,11 +68,6 @@
               <text>起始: {{ goal.start }}</text>
               <text>结束: {{ goal.end }}</text>
             </view>
-          </view>
-
-          <view class="create-goal" @tap="tapAction('创建新目标')">
-            <text class="create-plus">⊕</text>
-            <text>创建新目标</text>
           </view>
         </view>
       </view>
@@ -114,8 +109,12 @@ const sortGoals = () => {
   })
 }
 
-const tapAction = (label) => {
-  uni.showToast({ title: label, icon: 'none' })
+const handleTap = (goal) => {
+  uni.navigateTo({ url: `/pages/goal/detail?id=${goal.name}` })
+}
+
+const handleCreate = () => {
+  uni.navigateTo({ url: '/pages/goal/create' })
 }
 </script>
 
@@ -374,20 +373,4 @@ const tapAction = (label) => {
   justify-content: space-between;
 }
 
-.create-goal {
-  height: 106rpx;
-  border-radius: $rounded-xl;
-  border: 3rpx dashed rgba($outline, 0.45);
-  color: $outline;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $stack-gap-sm;
-  font-size: $font-size-sm;
-  font-weight: 800;
-}
-
-.create-plus {
-  font-size: $font-size-xl;
-}
 </style>
