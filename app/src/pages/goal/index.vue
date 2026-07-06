@@ -114,7 +114,7 @@ const handleTap = (goal) => {
 }
 
 const handleCreate = () => {
-  uni.navigateTo({ url: '/pages/goal/create' })
+  uni.navigateTo({ url: '/pages/goal/guide' })
 }
 </script>
 
