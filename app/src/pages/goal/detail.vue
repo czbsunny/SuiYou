@@ -59,10 +59,10 @@
           </view>
         </view>
 
-        <!-- ===== 中间：目标资金曲线 ===== -->
+        <!-- ===== 中间：目标跟踪折线图 ===== -->
         <view class="chart-card">
           <view class="section-header">
-            <text class="section-title">资金曲线</text>
+            <text class="section-title">目标跟踪</text>
             <view class="chart-legend">
               <view class="legend-item">
                 <view class="legend-dot target"></view>
@@ -75,12 +75,16 @@
             </view>
           </view>
           <view class="chart-container">
-            <canvas
-              canvas-id="fundChart"
-              id="fundChart"
-              class="fund-chart"
-              :style="{ width: chartWidth + 'px', height: chartHeight + 'px' }"
-            ></canvas>
+            <qiun-data-charts
+              type="goalLine"
+              :chartData="chartData"
+              canvas2d
+              :tooltipShow="true"
+              :onmovetip="true"
+              :ontap="true"
+              background="rgba(0,0,0,0)"
+              style="width: 100%; height: 560rpx;"
+            />
           </view>
           <view class="chart-summary">
             <view class="summary-item">
@@ -143,34 +147,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 
 const goal = ref(null)
 const linkedAssets = ref([])
-const chartWidth = ref(670)
-const chartHeight = ref(320)
 
 // --------------- icons ---------------
-const iconMap = {
-  '购车': 'directions_car',
-  '旅行': 'beach_access',
-  '教育': 'school',
-  '房产': 'house',
-  '医疗': 'medical_services',
-  '投资': 'trending_up',
-  '购物': 'shopping_cart',
-  '养老': 'elderly',
-  '结婚': 'favorite',
-  '应急': 'shield'
-}
 const goalIcon = computed(() => {
-  if (!goal.value) return 'target'
-  const name = goal.value.name || ''
-  for (const [key, val] of Object.entries(iconMap)) {
-    if (name.includes(key)) return val
-  }
-  return 'target'
+  if (!goal.value?.name) return '目'
+  return goal.value.name.charAt(0)
 })
 
 // --------------- status ---------------
@@ -186,6 +172,68 @@ const remainAmount = computed(() => {
 const progressPercent = computed(() => {
   if (!goal.value || !goal.value.targetAmount) return 0
   return Math.min(100, Math.round(((goal.value.currentAmount || 0) / goal.value.targetAmount) * 100))
+})
+
+// --------------- chart data for qiun-data-charts ---------------
+const rightLabelDate = computed(() => {
+  if (!goal.value?.startDate || !goal.value?.deadline) return ''
+  const start = new Date(goal.value.startDate)
+  const deadline = new Date(goal.value.deadline)
+  const diffMonths = (deadline.getFullYear() - start.getFullYear()) * 12 + (deadline.getMonth() - start.getMonth())
+  if (diffMonths <= 12) {
+    // 不超过1年：开始时间+1年，不能超过截止日
+    const plusYear = new Date(start.getFullYear() + 1, start.getMonth(), 1)
+    const end = plusYear > deadline ? deadline : plusYear
+    return `${end.getFullYear()}/${String(end.getMonth() + 1).padStart(2, '0')}`
+  } else {
+    // 超过1年：当前时间月份
+    const now = new Date()
+    return `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}`
+  }
+})
+
+const chartData = computed(() => {
+  if (!goal.value) return { categories: [], series: [] }
+  const start = new Date(goal.value.startDate)
+  const deadline = new Date(goal.value.deadline)
+  const totalMonths = Math.max(1, (deadline.getFullYear() - start.getFullYear()) * 12 + (deadline.getMonth() - start.getMonth()) + 1)
+  const target = Math.round((goal.value.targetAmount || 0) / 10000)
+  const current = Math.round((goal.value.currentAmount || 0) / 10000)
+  const elapsed = monthsElapsed.value
+
+  const categories = []
+  const targetData = []
+  const actualData = []
+  const baseActual = current * 0.15
+
+  for (let i = 0; i <= totalMonths; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, 1)
+    categories.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`)
+    targetData.push(Math.round((target / totalMonths) * i))
+    if (i <= elapsed && elapsed > 0) {
+      const phase = i / elapsed
+      const curved = baseActual + (current - baseActual) * (1 - Math.pow(1 - phase, 2.5))
+      actualData.push(Math.round(curved))
+    } else {
+      actualData.push(null)
+    }
+  }
+
+  // 将右侧标签日期追加到末尾（若不在categories中），确保折线图能展示到deadline
+  const rightLabel = rightLabelDate.value
+  if (rightLabel && !categories.includes(rightLabel)) {
+    categories.push(rightLabel)
+    targetData.push(target)
+    actualData.push(current)
+  }
+
+  return {
+    categories,
+    series: [
+      { name: '目标线', data: targetData, color: '#bec9c4' },
+      { name: '实际', data: actualData, color: '#006754' }
+    ]
+  }
 })
 
 // --------------- chart stats ---------------
@@ -222,128 +270,9 @@ const formatDate = (dateStr) => {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
 }
 
-// --------------- chart drawing ---------------
-const generateChartData = () => {
-  if (!goal.value) return { months: [], targets: [], actuals: [] }
-  const start = new Date(goal.value.startDate || '2024-01-01')
-  const deadline = new Date(goal.value.deadline || '2025-12-31')
-  const totalMonths = Math.max(1, (deadline.getFullYear() - start.getFullYear()) * 12 + (deadline.getMonth() - start.getMonth()) + 1)
-  const target = goal.value.targetAmount || 0
-  const current = goal.value.currentAmount || 0
-  const elapsed = monthsElapsed.value
-
-  const months = []
-  const targets = []
-  const actuals = []
-  const baseActual = current * 0.15
-  for (let i = 0; i <= totalMonths; i++) {
-    const d = new Date(start.getFullYear(), start.getMonth() + i, 1)
-    months.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`)
-    targets.push(Math.round((target / totalMonths) * i))
-    if (i <= elapsed && elapsed > 0) {
-      const phase = i / elapsed
-      const curved = baseActual + (current - baseActual) * (1 - Math.pow(1 - phase, 2.5))
-      actuals.push(Math.round(curved))
-    } else {
-      actuals.push(null)
-    }
-  }
-  return { months, targets, actuals }
-}
-
-const drawChart = () => {
-  nextTick(() => {
-    const ctx = uni.createCanvasContext('fundChart')
-    const w = chartWidth.value
-    const h = chartHeight.value
-    const pad = { top: 28, right: 20, bottom: 48, left: 20 }
-    const pw = w - pad.left - pad.right
-    const ph = h - pad.top - pad.bottom
-
-    const { months, targets, actuals } = generateChartData()
-    if (!months.length) return
-
-    const maxVal = Math.max(targets[targets.length - 1] || 1, ...actuals.filter(Boolean), 1)
-    const yScale = ph / maxVal
-
-    const toX = (i) => pad.left + (pw / (months.length - 1)) * i
-    const toY = (v) => pad.top + ph - v * yScale
-
-    // grid
-    ctx.setStrokeStyle('rgba(0,0,0,0.06)')
-    ctx.setLineWidth(1)
-    for (let g = 0; g <= 4; g++) {
-      const gy = pad.top + (ph / 4) * g
-      ctx.beginPath()
-      ctx.moveTo(pad.left, gy)
-      ctx.lineTo(pad.left + pw, gy)
-      ctx.stroke()
-    }
-
-    // target line (dashed)
-    ctx.setStrokeStyle('#bec9c4')
-    ctx.setLineWidth(2)
-    ctx.setLineDash([8, 6])
-    ctx.beginPath()
-    targets.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)) })
-    ctx.stroke()
-    ctx.setLineDash([])
-
-    // actual fill area
-    const actualPoints = actuals.map((v, i) => v != null ? [toX(i), toY(v)] : null).filter(Boolean)
-    if (actualPoints.length > 1) {
-      const gradient = ctx.createLinearGradient(0, pad.top, 0, pad.top + ph)
-      gradient.addColorStop(0, 'rgba(0,103,84,0.18)')
-      gradient.addColorStop(1, 'rgba(0,103,84,0.01)')
-      ctx.setFillStyle(gradient)
-      ctx.beginPath()
-      actualPoints.forEach(([x, y], i) => { i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y) })
-      ctx.lineTo(actualPoints[actualPoints.length - 1][0], pad.top + ph)
-      ctx.lineTo(actualPoints[0][0], pad.top + ph)
-      ctx.closePath()
-      ctx.fill()
-    }
-
-    // actual line
-    ctx.setStrokeStyle('#006754')
-    ctx.setLineWidth(3)
-    ctx.setLineCap('round')
-    ctx.setLineJoin('round')
-    ctx.beginPath()
-    actualPoints.forEach(([x, y], i) => { i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y) })
-    ctx.stroke()
-
-    // dots on actual
-    actualPoints.forEach(([x, y]) => {
-      ctx.setFillStyle('#FFFFFF')
-      ctx.beginPath()
-      ctx.arc(x, y, 5, 0, 2 * Math.PI)
-      ctx.fill()
-      ctx.setFillStyle('#006754')
-      ctx.beginPath()
-      ctx.arc(x, y, 3.5, 0, 2 * Math.PI)
-      ctx.fill()
-    })
-
-    // x-axis labels (show first, 1/3, 2/3, last)
-    const labelIdx = [0, Math.floor((months.length - 1) / 3), Math.floor((months.length - 1) * 2 / 3), months.length - 1]
-    ctx.setFillStyle('#6f7975')
-    ctx.setFontSize(11)
-    ctx.setTextAlign('center')
-    labelIdx.forEach((i) => {
-      if (i < months.length) {
-        ctx.fillText(months[i], toX(i), h - 8)
-      }
-    })
-
-    ctx.draw()
-  })
-}
-
 // --------------- data loading ---------------
 const loadData = (id) => {
   // TODO: 接入接口：useGoalStore().fetchGoalDetail(id)
-  // 当前使用 mock 数据
   goal.value = {
     id: id || '1',
     name: '购车计划',
@@ -359,13 +288,11 @@ const loadData = (id) => {
   }
 
   linkedAssets.value = [
-    { id: 1, name: '工商银行储蓄卡', typeLabel: '活期储蓄', balance: 180000, trend: 2.1, icon: 'account_balance', colorClass: 'bank' },
-    { id: 2, name: '沪深300指数基金', typeLabel: '基金定投', balance: 150000, trend: 8.5, icon: 'trending_up', colorClass: 'fund' },
-    { id: 3, name: '招行定期存款', typeLabel: '1年期定存', balance: 100000, trend: 3.5, icon: 'savings', colorClass: 'deposit' },
-    { id: 4, name: '余额宝', typeLabel: '货币基金', balance: 20000, trend: 1.8, icon: 'wallet', colorClass: 'wallet' }
+    { id: 1, name: '工商银行储蓄卡', typeLabel: '活期储蓄', balance: 180000, trend: 2.1, icon: '工', colorClass: 'bank' },
+    { id: 2, name: '沪深300指数基金', typeLabel: '基金定投', balance: 150000, trend: 8.5, icon: '沪', colorClass: 'fund' },
+    { id: 3, name: '招行定期存款', typeLabel: '1年期定存', balance: 100000, trend: 3.5, icon: '招', colorClass: 'deposit' },
+    { id: 4, name: '余额宝', typeLabel: '货币基金', balance: 20000, trend: 1.8, icon: '余额', colorClass: 'wallet' }
   ]
-
-  nextTick(() => { drawChart() })
 }
 
 onLoad((options) => {
@@ -421,8 +348,8 @@ const goBack = () => { uni.navigateBack() }
 }
 
 .goal-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 56rpx;
+  font-size: 48rpx;
+  font-weight: 800;
   color: $primary;
 }
 
@@ -580,8 +507,8 @@ const goBack = () => { uni.navigateBack() }
 
 // ===== 资金曲线卡片 =====
 .chart-card {
-  margin-bottom: $stack-gap-md;
-  padding: $spacing-6;
+  margin-bottom: $spacing-6;
+  padding: $spacing-6 $spacing-1;
   border-radius: $rounded-xl;
   background: $surface-container-lowest;
   box-shadow: $shadow-soft;
@@ -629,11 +556,6 @@ const goBack = () => { uni.navigateBack() }
 
 .chart-container {
   margin-bottom: $stack-gap-md;
-
-  .fund-chart {
-    display: block;
-    width: 100%;
-  }
 }
 
 .chart-summary {
@@ -668,7 +590,7 @@ const goBack = () => { uni.navigateBack() }
 
 // ===== 关联资产列表 =====
 .assets-card {
-  margin-bottom: $stack-gap-md;
+  margin-bottom: $spacing-6;
   padding: $spacing-6;
   border-radius: $rounded-xl;
   background: $surface-container-lowest;
