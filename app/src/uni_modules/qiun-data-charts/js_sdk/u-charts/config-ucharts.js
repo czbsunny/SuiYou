@@ -1,21 +1,3 @@
-/*
- * uCharts®
- * 高性能跨平台图表库，支持H5、APP、小程序（微信/支付宝/百度/头条/QQ/360）、Vue、Taro等支持canvas的框架平台
- * Copyright (c) 2021 QIUN®秋云 https://www.ucharts.cn All rights reserved.
- * Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
- * 复制使用请保留本段注释，感谢支持开源！
- *
- * uCharts®官方网站
- * https://www.uCharts.cn
- *
- * 开源地址:
- * https://gitee.com/uCharts/uCharts
- *
- * uni-app插件市场地址：
- * http://ext.dcloud.net.cn/plugin?id=271
- *
- */
-
 const primaryColors = {
     green: "#006754",
     lightGreen: "#bec9c4",
@@ -62,15 +44,21 @@ const cfu = {
         type: "line",
         color: [primaryColors.lightGreen, primaryColors.green],
         padding: [10, 15, 20, 50],
-        dataLabel: false,
+
         xAxis: {
             disableGrid: true,
-            labelCount: 2
+            labelCount: 2,
+            boundaryGap: 'justify'
         },
         yAxis: {
-            axisLine: false,
             gridType: "dash",
-            dashLength: 2
+            dashLength: 2,
+            data: [
+                {
+                    min: 0
+                }
+            ],
+            formatter: formatter.money
         },
         legend: {
             show: false
@@ -83,7 +71,7 @@ const cfu = {
             line: {
                 type: "curve",
                 width: 2,
-                activeType: "none"
+                activeType: "hollow"
             }
         }
     },

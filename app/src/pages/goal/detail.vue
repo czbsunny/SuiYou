@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <scroll-view scroll-y class="scroll">
+    <scroll-view scroll-y class="scroll" @scroll="onPageScroll">
       <view class="content" v-if="goal">
         <view class="main-card">
           <view class="hero-bg"></view>
@@ -79,6 +79,9 @@
               type="goalLine"
               :chartData="chartData"
               canvas2d
+              :inScrollView="true"
+              :disableScroll="true"
+              :pageScrollTop="pageScrollTop"
               :tooltipShow="true"
               :onmovetip="true"
               :ontap="true"
@@ -152,6 +155,7 @@ import { onLoad } from '@dcloudio/uni-app'
 
 const goal = ref(null)
 const linkedAssets = ref([])
+const pageScrollTop = ref(0)
 
 // --------------- icons ---------------
 const goalIcon = computed(() => {
@@ -215,7 +219,7 @@ const chartData = computed(() => {
       const curved = baseActual + (current - baseActual) * (1 - Math.pow(1 - phase, 2.5))
       actualData.push(Math.round(curved))
     } else {
-      actualData.push(null)
+      actualData.push(undefined)
     }
   }
 
@@ -293,6 +297,10 @@ const loadData = (id) => {
     { id: 3, name: '招行定期存款', typeLabel: '1年期定存', balance: 100000, trend: 3.5, icon: '招', colorClass: 'deposit' },
     { id: 4, name: '余额宝', typeLabel: '货币基金', balance: 20000, trend: 1.8, icon: '余额', colorClass: 'wallet' }
   ]
+}
+
+const onPageScroll = (e) => {
+  pageScrollTop.value = e.detail.scrollTop || 0
 }
 
 onLoad((options) => {
