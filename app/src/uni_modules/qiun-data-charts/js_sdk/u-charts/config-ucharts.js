@@ -14,144 +14,143 @@ const color = [
     primaryColors.blue
 ];
 
-const formatter = {
-    money: function (value) {
-        if (value >= 10000) {
-            return (value / 10000).toFixed(value >= 1000000 ? 0 : 1) + '万'
-        }
-        return value
-    },
-    percent: function (value) {
-        return value + "%"
-    },
-    moneyTooltip: function (item, category) {
-        let result = category + "\n"
-        item.forEach(row => {
-            result += row.name + "：" + formatter.money(row.data) + "\n"
-        })
-        return result
-    }
-}
-
 const cfu = {
-    type: ["goalLine", "assetLine", "allocationRing", "goalArc", "cashFlowColumn"],
-    range: ["目标曲线", "资产走势", "资产配置", "目标完成率", "现金流"],
-    instance: {},
-    option: {},
-    formatter: formatter,
+    "type": ["goalLine", "assetLine", "allocationRing", "goalArc", "cashFlowColumn"],
+    "range": ["目标曲线", "资产走势", "资产配置", "目标完成率", "现金流"],
+    "instance": {},
+    "option": {},
+    "formatter": {
+        "money": function(val, index, opts){
+            if (val >= 10000) {
+                return (val / 10000).toFixed(val >= 1000000 ? 0 : 1) + '万'
+            }
+            return val
+        },
+        "percent": function (val, index, opts) {
+            return val + "%"
+        },
+        "moneyTooltip": function (item, category, index, opts) {
+            let result = category + "\n"
+            item.forEach(row => {
+                result += row.name + "：" + formatter.money(row.data, index, opts) + "\n"
+            })
+            return result
+        }
+    },
 
-    goalLine: {
-        type: "line",
-        color: [primaryColors.lightGreen, primaryColors.green],
-        padding: [10, 15, 20, 50],
-
-        xAxis: {
-            disableGrid: true,
-            labelCount: 2,
-            boundaryGap: 'justify'
+    "goalLine": {
+        "type": "line",
+        "color": [primaryColors.lightGreen, primaryColors.green],
+        "padding": [16, 8, 20, 8],
+        "dataLabel": false,
+        "dataPointShape": false,
+        "xAxis": {
+            "disableGrid": true,
+            "labelCount": 2,
+            "boundaryGap": false,
+            "textAlign": "edges"
         },
-        yAxis: {
-            gridType: "dash",
-            dashLength: 2,
-            data: [
-                {
-                    min: 0
-                }
-            ],
-            formatter: formatter.money
+        "yAxis": {
+            "min": 0,
+            "gridType": "dash",
+            "dashLength": 2,
+            "data": [{
+                "axisLine": false,
+                "format": "money"
+            }]
         },
-        legend: {
-            show: false
+        "legend": {
+            "show": false
         },
-        tooltip: {
-            show: true,
-            format: "moneyTooltip"
+        "grid": {
+            "left": 40,
+            "right": 40
         },
-        extra: {
-            line: {
-                type: "curve",
-                width: 2,
-                activeType: "hollow"
+        "extra": {
+            "line": {
+                "type": "curve",
+                "width": 2,
+                "activeType": "hollow"
             }
         }
     },
 
-    assetLine: {
-        type: "line",
-        color: [primaryColors.green],
-        padding: [10, 15, 20, 50],
-        dataLabel: false,
-        xAxis: {
-            disableGrid: true
+    "assetLine": {
+        "type": "line",
+        "color": [primaryColors.green],
+        "padding": [10, 15, 20, 50],
+        "dataLabel": false,
+        "xAxis": {
+            "disableGrid": true
         },
-        yAxis: {
-            axisLine: false,
-            gridType: "dash"
+        "yAxis": {
+            "axisLine": false,
+            "gridType": "dash"
         },
-        legend: {
-            show: false
+        "legend": {
+            "show": false
         },
-        extra: {
-            line: {
-                type: "curve",
-                width: 3,
-                activeType: "hollow"
+        "extra": {
+            "line": {
+                "type": "curve",
+                "width": 3,
+                "activeType": "hollow"
             }
         }
     },
 
-    allocationRing: {
-        type: "ring",
-        color: color,
-        padding: [5, 5, 5, 5],
-        dataLabel: false,
-        legend: {
-            show: true,
-            position: "right"
+    "allocationRing": {
+        "type": "ring",
+        "color": color,
+        "padding": [5, 5, 5, 5],
+        "dataLabel": false,
+        "legend": {
+            "show": true,
+            "position": "right"
         },
-        extra: {
-            ring: {
-                ringWidth: 30,
-                activeOpacity: 0.5
+        "extra": {
+            "ring": {
+                "ringWidth": 30,
+                "activeOpacity": 0.5
             }
         }
     },
 
-    goalArc: {
-        type: "arcbar",
-        color: [primaryColors.green],
-        title: {
-            fontSize: 26
+    "goalArc": {
+        "type": "arcbar",
+        "color": [primaryColors.green],
+        "title": {
+            "fontSize": 26
         },
-        subtitle: {
-            fontSize: 14
+        "subtitle": {
+            "fontSize": 14
         },
-        extra: {
-            arcbar: {
-                width: 15
+        "extra": {
+            "arcbar": {
+                "width": 15
             }
         }
     },
 
-    cashFlowColumn: {
-        type: "column",
-        color: color,
-        padding: [10, 15, 20, 50],
-        dataLabel: false,
-        xAxis: {
-            disableGrid: true
+    "cashFlowColumn": {
+        "type": "column",
+        "color": color,
+        "padding": [10, 15, 20, 50],
+        "dataLabel": false,
+        "xAxis": {
+            "disableGrid": true
         },
-        yAxis: {
-            axisLine: false,
-            gridType: "dash"
+        "yAxis": {
+            "axisLine": false,
+            "gridType": "dash"
         },
-        legend: {
-            show: false
+        "legend": {
+            "show": false
         },
-        extra: {
-            column: {
-                type: "group",
-                width: 20
+        "extra": {
+            "column": {
+                "type": "group",
+                "width": 20
             }
         }
     }

@@ -2166,6 +2166,7 @@ function drawActivePoint(points, color, shape, context, opts, option, seriesInde
   if(!opts.tooltip){
     return
   }
+
   if(opts.tooltip.group.length>0 && opts.tooltip.group.includes(seriesIndex) == false){
     return
   }
@@ -4568,7 +4569,19 @@ function drawXAxis(categories, opts, config, context) {
     if (config._xAxisTextAngle_ === 0) {
       newCategories.forEach(function(item, index) {
         var xitem = opts.xAxis.formatter ? opts.xAxis.formatter(item,index,opts) : item;
-        var offset = -measureText(String(xitem), xAxisFontSize, context) / 2;
+        var textWidth = measureText(String(xitem), xAxisFontSize, context);
+        var offset;
+        if (opts.xAxis.textAlign === 'edges') {
+          if (index === 0) {
+            offset = 0;
+          } else if (index === newCategories.length - 1) {
+            offset = -textWidth / 2 - eachSpacing;
+          } else {
+            offset = -textWidth / 2;
+          }
+        } else {
+          offset = -textWidth / 2;
+        }
         if (boundaryGap == 'center') {
           offset += eachSpacing / 2;
         }

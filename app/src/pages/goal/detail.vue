@@ -1,7 +1,6 @@
 <template>
   <view class="page">
-    <scroll-view scroll-y class="scroll" @scroll="onPageScroll">
-      <view class="content" v-if="goal">
+    <view class="content" v-if="goal">
         <view class="main-card">
           <view class="hero-bg"></view>
           <view class="hero-content">
@@ -60,10 +59,12 @@
         </view>
 
         <!-- ===== 中间：目标跟踪折线图 ===== -->
+        <view class="section-heading">
+          <text class="section-title">目标跟踪</text>
+        </view>
         <view class="chart-card">
-          <view class="section-header">
-            <text class="section-title">目标跟踪</text>
-            <view class="chart-legend">
+          <view class="legend-container">
+            <view v-if="!activePoint" class="chart-legend">
               <view class="legend-item">
                 <view class="legend-dot target"></view>
                 <text>目标线</text>
@@ -73,25 +74,32 @@
                 <text>实际</text>
               </view>
             </view>
+            <view v-else class="active-point">
+              <text class="active-point-date">{{ activePoint.date }}</text>
+              <view class="active-point-values">
+                <view class="active-point-item">
+                  <view class="legend-dot target"></view>
+                  <text>目标 ¥{{ formatAmount(activePoint.target) }}</text>
+                </view>
+                <view class="active-point-item">
+                  <view class="legend-dot actual"></view>
+                  <text>实际 ¥{{ formatAmount(activePoint.actual) }}</text>
+                </view>
+              </view>
+            </view>
           </view>
           <view class="chart-container">
             <qiun-data-charts
               type="goalLine"
               :chartData="chartData"
-              canvas2d
-              :inScrollView="true"
-              :disableScroll="true"
-              :pageScrollTop="pageScrollTop"
-              :tooltipShow="true"
-              :onmovetip="true"
-              :ontap="true"
-              background="rgba(0,0,0,0)"
+              :tooltipShow="false"
+              :enable-scroll="true"
               style="width: 100%; height: 560rpx;"
             />
           </view>
           <view class="chart-summary">
             <view class="summary-item">
-              <text class="summary-label">月均存入</text>
+              <text class="summary-label">月均增长</text>
               <text class="summary-value">¥{{ formatAmount(monthlyAvg) }}</text>
             </view>
             <view class="summary-item">
@@ -105,13 +113,13 @@
           </view>
         </view>
 
-        <!-- ===== 底部：目标关联资产列表 ===== -->
-        <view class="assets-card">
-          <view class="section-header">
-            <text class="section-title">关联资产</text>
-            <text class="section-count">共 {{ linkedAssets.length }} 项</text>
-          </view>
 
+        <!-- ===== 底部：目标关联资产列表 ===== -->
+        <view class="section-heading">
+          <text class="section-title">关联资产</text>
+          <text class="section-count">共 {{ linkedAssets.length }} 项</text>
+        </view>
+        <view class="assets-card">
           <view v-if="linkedAssets.length > 0" class="asset-list">
             <view v-for="asset in linkedAssets" :key="asset.id" class="asset-item">
               <view class="asset-icon-wrap" :class="asset.colorClass">
@@ -145,7 +153,6 @@
           <text>返回列表</text>
         </view>
       </view>
-    </scroll-view>
   </view>
 </template>
 
@@ -155,7 +162,7 @@ import { onLoad } from '@dcloudio/uni-app'
 
 const goal = ref(null)
 const linkedAssets = ref([])
-const pageScrollTop = ref(0)
+const activePoint = ref(null)
 
 // --------------- icons ---------------
 const goalIcon = computed(() => {
@@ -201,14 +208,14 @@ const chartData = computed(() => {
   const start = new Date(goal.value.startDate)
   const deadline = new Date(goal.value.deadline)
   const totalMonths = Math.max(1, (deadline.getFullYear() - start.getFullYear()) * 12 + (deadline.getMonth() - start.getMonth()) + 1)
-  const target = Math.round((goal.value.targetAmount || 0) / 10000)
-  const current = Math.round((goal.value.currentAmount || 0) / 10000)
+  const target = goal.value.targetAmount || 0
+  const current = goal.value.currentAmount || 0
   const elapsed = monthsElapsed.value
 
   const categories = []
   const targetData = []
   const actualData = []
-  const baseActual = current * 0.15
+  const baseActual = Math.round(current * 0.15)
 
   for (let i = 0; i <= totalMonths; i++) {
     const d = new Date(start.getFullYear(), start.getMonth() + i, 1)
@@ -219,7 +226,7 @@ const chartData = computed(() => {
       const curved = baseActual + (current - baseActual) * (1 - Math.pow(1 - phase, 2.5))
       actualData.push(Math.round(curved))
     } else {
-      actualData.push(undefined)
+      actualData.push(null)
     }
   }
 
@@ -231,13 +238,15 @@ const chartData = computed(() => {
     actualData.push(current)
   }
 
-  return {
+  console.log(categories, targetData, actualData)
+  let res = {
     categories,
     series: [
-      { name: '目标线', data: targetData, color: '#bec9c4' },
+      { name: '目标线', data: targetData, color: '#bec9c4', lineType: 'dash', dashLength: 4 },
       { name: '实际', data: actualData, color: '#006754' }
     ]
   }
+  return JSON.parse(JSON.stringify(res));
 })
 
 // --------------- chart stats ---------------
@@ -281,7 +290,7 @@ const loadData = (id) => {
     id: id || '1',
     name: '购车计划',
     description: '家庭 SUV 升级',
-    targetAmount: 600000,
+    targetAmount: 160000,
     currentAmount: 450000,
     progressPercent: 75,
     status: 'ON_GOING',
@@ -299,10 +308,6 @@ const loadData = (id) => {
   ]
 }
 
-const onPageScroll = (e) => {
-  pageScrollTop.value = e.detail.scrollTop || 0
-}
-
 onLoad((options) => {
   if (options.id) {
     loadData(options.id)
@@ -318,8 +323,9 @@ const goBack = () => { uni.navigateBack() }
 @import '@/styles/variables.scss';
 @import '@/styles/common.scss';
 
-.scroll {
+.page {
   height: 100vh;
+  overflow-y: auto;
 }
 
 .hero-bg {
@@ -522,17 +528,26 @@ const goBack = () => { uni.navigateBack() }
   box-shadow: $shadow-soft;
 }
 
-.section-header {
+.section-heading {
+  margin-top: $section-margin;
+  margin-bottom: $stack-gap-md;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $spacing-4;
 }
 
 .section-title {
   font-size: $font-size-title-sm;
-  font-weight: $font-weight-semibold;
+  font-weight: 900;
   color: $on-surface;
+}
+
+.legend-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-4;
+  padding: 0rpx $spacing-5;
 }
 
 .section-count {
@@ -558,19 +573,57 @@ const goBack = () => { uni.navigateBack() }
   height: 6rpx;
   border-radius: $rounded-full;
 
-  &.target { background: $outline-variant; }
-  &.actual { background: $primary; }
+  &.target {
+    width: 32rpx;
+    background: repeating-linear-gradient(
+      90deg,
+      $outline-variant 0,
+      $outline-variant 10rpx,
+      transparent 10rpx,
+      transparent 16rpx
+    );
+    border-radius: 0;
+  }
+  &.actual { width: 32rpx; background: $primary; }
+}
+
+.active-point {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  padding: $spacing-2 $spacing-4;
+  border-radius: $rounded-lg;
+  background: rgba($primary, 0.06);
+}
+
+.active-point-date {
+  font-family: $font-family-mono;
+  font-size: $font-size-label-caps;
+  font-weight: $font-weight-bold;
+  color: $on-surface;
+}
+
+.active-point-values {
+  display: flex;
+  gap: $spacing-3;
+}
+
+.active-point-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+  font-size: $font-size-body-sm;
+  color: $on-surface-variant;
 }
 
 .chart-container {
   margin-bottom: $stack-gap-md;
+  height: 560rpx;
 }
 
 .chart-summary {
   display: flex;
   justify-content: space-between;
-  padding-top: $spacing-4;
-  border-top: 1rpx solid $surface-container;
 }
 
 .summary-item {
@@ -598,8 +651,7 @@ const goBack = () => { uni.navigateBack() }
 
 // ===== 关联资产列表 =====
 .assets-card {
-  margin-bottom: $spacing-6;
-  padding: $spacing-6;
+  padding: $spacing-6 $spacing-4;
   border-radius: $rounded-xl;
   background: $surface-container-lowest;
   box-shadow: $shadow-soft;
