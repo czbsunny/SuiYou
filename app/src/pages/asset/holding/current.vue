@@ -21,7 +21,7 @@
 
         <view class="section-header">
           <view class="section-title-wrap">
-            <h2 class="section-title">余额变动明细</h2>
+            <h2 class="section-title">余额明细</h2>
             <span class="count-badge">{{ transactionList.length }}笔</span>
           </view>
           <text class="view-all" @tap="handleViewAll">全部</text>
@@ -175,8 +175,8 @@ const handleItemTap = (item) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-6;
-  margin-bottom: $spacing-3;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title-wrap {

@@ -151,7 +151,7 @@ const tapAction = (label) => {
 
 /* Quick Actions */
 .quick-actions {
-  margin-top: $stack-gap-lg;
+  margin-top: $stack-gap-md;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $stack-gap-md;
@@ -189,7 +189,7 @@ const tapAction = (label) => {
 
 /* Section Header */
 .section-header {
-  margin-top: $section-margin;
+  margin-top: $stack-gap-md;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -209,7 +209,7 @@ const tapAction = (label) => {
 
 /* Transaction List */
 .transaction-list {
-  margin-top: $spacing-3;
+  margin-top: $stack-gap-sm;
   display: flex;
   flex-direction: column;
   gap: $stack-gap-md;

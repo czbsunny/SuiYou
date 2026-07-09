@@ -157,7 +157,7 @@ onLoad((options) => {
 }
 
 .section-header {
-  margin-bottom: $spacing-4;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title {

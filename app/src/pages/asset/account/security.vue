@@ -301,7 +301,7 @@ onLoad((options) => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $stack-gap-md;
-  margin-top: $spacing-6;
+  margin-top: $stack-gap-md;
 }
 
 .action-item {
@@ -366,14 +366,14 @@ onLoad((options) => {
 }
 
 .section {
-  margin-top: $spacing-8;
+  margin-top: $stack-gap-md;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-3;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title {

@@ -149,7 +149,8 @@ const handleProfit = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $spacing-3;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title-wrap {
@@ -281,10 +282,6 @@ const handleProfit = () => {
   font-size: $font-size-num-data;
   color: $on-surface;
   font-weight: $font-weight-bold;
-}
-
-.margin-top-lg {
-  margin-top: $spacing-6;
 }
 
 .chart-unit {

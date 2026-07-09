@@ -546,7 +546,6 @@ const goBack = () => { uni.navigateBack() }
 
 // ===== 资金曲线卡片 =====
 .chart-card {
-  margin-bottom: $spacing-6;
   padding: $spacing-6 $spacing-1;
   border-radius: $rounded-xl;
   background: $surface-container-lowest;
@@ -554,8 +553,8 @@ const goBack = () => { uni.navigateBack() }
 }
 
 .section-heading {
-  margin-top: $section-margin;
-  margin-bottom: $stack-gap-md;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -262,7 +262,7 @@ onLoad((options) => {
 }
 
 .section {
-  margin-top: $spacing-6;
+  margin-top: $stack-gap-md;
 }
 
 .section-header {

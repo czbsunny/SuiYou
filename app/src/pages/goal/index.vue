@@ -192,8 +192,8 @@ const handleCreate = () => {
 }
 
 .section-heading {
-  margin-top: $section-margin;
-  margin-bottom: $stack-gap-md;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
   display: flex;
   align-items: center;
   justify-content: space-between;

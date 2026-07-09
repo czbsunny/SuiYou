@@ -207,8 +207,8 @@ const handleStockTap = (stock) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-6;
-  margin-bottom: $spacing-3;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title-wrap {
