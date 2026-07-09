@@ -15,8 +15,8 @@ const color = [
 ];
 
 const cfu = {
-    "type": ["goalLine", "assetArea", "assetLine", "allocationRing", "goalArc", "cashFlowColumn"],
-    "range": ["目标曲线", "资产走势", "资产走势", "资产配置", "目标完成率", "现金流"],
+    "type": ["goalLine", "assetArea", "goalArc", "expenseRing", "investIncomeColumn", "allocationRing"],
+    "range": ["目标曲线", "资产走势", "目标完成率", "支出环图", "投资收益", "资产配置"],
     "instance": {},
     "option": {},
     "formatter": {
@@ -78,7 +78,7 @@ const cfu = {
     "assetArea": {
         "type": "area",
         "color": [primaryColors.green],
-        "padding": [0, 8, 8, 8],
+        "padding": [0, 8, 8, 16],
         "dataLabel": false,
         "dataPointShape": false,
         "xAxis": {
@@ -132,23 +132,6 @@ const cfu = {
         }
     },
 
-    "allocationRing": {
-        "type": "ring",
-        "color": color,
-        "padding": [5, 5, 5, 5],
-        "dataLabel": false,
-        "legend": {
-            "show": true,
-            "position": "right"
-        },
-        "extra": {
-            "ring": {
-                "ringWidth": 30,
-                "activeOpacity": 0.5
-            }
-        }
-    },
-
     "goalArc": {
         "type": "arcbar",
         "color": [primaryColors.green],
@@ -168,25 +151,75 @@ const cfu = {
         }
     },
 
-    "cashFlowColumn": {
+    "expenseRing": {
+        "type": "ring",
+        "color": color,
+        "padding": [0, 8, 8, 16],
+        "rotate": false,
+        "dataLabel": false,
+        "legend": {
+            "show": true,
+            "position": "right",
+            "lineHeight": 25
+        },
+        "extra": {
+            "ring": {
+                "ringWidth": 30,
+                "activeOpacity": 0.5,
+                "activeRadius": 10,
+				"offsetAngle": 0,
+				"labelWidth": 15,
+				"border": true,
+				"borderWidth": 3,
+				"borderColor": "#FFFFFF"
+            }
+        }
+    },
+    
+    "investIncomeColumn": {
         "type": "column",
         "color": color,
-        "padding": [10, 15, 20, 50],
+        "padding": [8, 0, 0, 0],
         "dataLabel": false,
         "xAxis": {
             "disableGrid": true
         },
         "yAxis": {
             "axisLine": false,
-            "gridType": "dash"
+            "gridType": "dash",
+            "data": [{
+                "axisLine": false
+            }]
+
         },
         "legend": {
             "show": false
         },
         "extra": {
             "column": {
-                "type": "group",
-                "width": 20
+				"type": "group",
+				"width": 24,
+				"activeBgColor": "#000000",
+				"activeBgOpacity": 0.08,
+                "barBorderCircle": true,
+                "seriesGap": 12
+			},
+        }
+    },
+
+    "allocationRing": {
+        "type": "ring",
+        "color": color,
+        "padding": [5, 5, 5, 5],
+        "dataLabel": false,
+        "legend": {
+            "show": true,
+            "position": "right"
+        },
+        "extra": {
+            "ring": {
+                "ringWidth": 30,
+                "activeOpacity": 0.5
             }
         }
     }

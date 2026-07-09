@@ -2,61 +2,34 @@
   <view class="page monthly-page">
     <scroll-view scroll-y class="scroll">
       <view class="content">
-        <!-- Date Header -->
-        <view class="date-header">
-          <text class="date-text">2023年10月 · 月度报告</text>
+        <!-- Income & Expense Section -->
+        <view class="section-header">
+          <text class="section-title">收支概览</text>
+          <text class="section-date">2023年10月</text>
         </view>
 
-        <!-- Income & Expense Section -->
         <view class="section-card">
-          <view class="section-header">
-            <text class="section-title">收支概览</text>
-            <text class="section-subtitle">本月净储蓄</text>
-          </view>
+          <view class="card-subtitle">本月现金流</view>
 
-          <view class="net-savings">
-            <text class="savings-amount">¥42,850</text>
-            <text class="savings-change">+12.4%</text>
-          </view>
-
-          <!-- Expenditure Doughnut Chart -->
-          <view class="doughnut-section">
-            <view class="doughnut-wrapper">
-              <canvas canvas-id="doughnutChart" class="doughnut-chart"></canvas>
-              <view class="doughnut-center">
-                <text class="doughnut-label">支出总额</text>
-                <text class="doughnut-amount">55k</text>
+          <!-- Cash Flow Bars -->
+          <view class="cashflow-list">
+            <view v-for="item in cashFlowList" :key="item.name" class="cashflow-item">
+              <text class="cashflow-name">{{ item.name }}</text>
+              <view class="cashflow-bar-track">
+                <view class="cashflow-bar-fill" :style="{ width: item.percent + '%', background: item.color }"></view>
               </view>
-            </view>
-            <view class="doughnut-legend">
-              <view v-for="item in doughnutData" :key="item.name" class="legend-item">
-                <view class="legend-dot" :style="{ background: item.color }"></view>
-                <text class="legend-name">{{ item.name }}</text>
-                <text class="legend-percent">{{ item.percent }}</text>
-              </view>
+              <text class="cashflow-amount">¥{{ item.amount }}</text>
             </view>
           </view>
 
-          <!-- Income & Expense Bars -->
-          <view class="bars-section">
-            <view class="bar-item">
-              <view class="bar-header">
-                <text class="bar-label">总收入</text>
-                <text class="bar-value">¥98,200</text>
-              </view>
-              <view class="bar-track">
-                <view class="bar-fill income" style="width: 100%"></view>
-              </view>
-            </view>
-            <view class="bar-item">
-              <view class="bar-header">
-                <text class="bar-label">总支出</text>
-                <text class="bar-value">¥55,350</text>
-              </view>
-              <view class="bar-track">
-                <view class="bar-fill expense" style="width: 56%"></view>
-              </view>
-            </view>
+          <!-- Expenditure Ring Chart -->
+          <view class="expense-ring-section">
+            <qiun-data-charts
+              type="expenseRing"
+              :chartData="ringChartData"
+              :opts="ringChartOpts"
+              style="width: 100%; height: 200rpx;"
+            />
           </view>
 
           <!-- Top 5 Expenditure -->
@@ -75,14 +48,16 @@
         </view>
 
         <!-- Investment Income Section -->
+        <view class="section-header">
+          <text class="section-title">投资收益</text>
+        </view>
+
         <view class="section-card">
-          <view class="section-header">
-            <text class="section-title">投资收益</text>
-            <text class="icon-text">[趋势]</text>
+          <view class="card-header">
+            <text class="card-subtitle">本月实现收益</text>
           </view>
 
           <view class="investment-summary">
-            <text class="investment-label">本月实现收益</text>
             <view class="investment-amount">
               <text class="amount">¥12,480.00</text>
               <text class="change">+3.8%</text>
@@ -91,13 +66,13 @@
 
           <!-- Monthly Comparison Chart -->
           <view class="chart-section">
-            <text class="chart-title">近三月收益对比</text>
-            <view class="bar-chart">
-              <view v-for="month in monthlyData" :key="month.name" class="chart-bar-wrapper">
-                <view class="chart-bar" :class="{ active: month.active }" :style="{ height: month.height + '%' }"></view>
-                <text class="chart-label" :class="{ active: month.active }">{{ month.name }}</text>
-              </view>
-            </view>
+            <text class="chart-title">近六月收益对比</text>
+            <qiun-data-charts
+              type="investIncomeColumn"
+              :chartData="monthlyChartData"
+              :opts="monthlyChartOpts"
+              style="width: 100%; height: 300rpx;"
+            />
           </view>
 
           <!-- Asset Distribution -->
@@ -152,12 +127,45 @@
 </template>
 
 <script setup>
-const doughnutData = [
-  { name: '居住', percent: '40%', color: '#006754' },
-  { name: '教育', percent: '24%', color: '#8b6e3a' },
-  { name: '餐饮', percent: '20%', color: '#b7102a' },
-  { name: '其他', percent: '16%', color: '#bec9c4' }
-]
+const ringChartData = {
+  categories: ['居住', '教育', '餐饮', '交通', '娱乐', '购物', '医疗', '其他'],
+  series: [
+    { name: '居住', data: 30, color: '#006754' },
+    { name: '教育', data: 18, color: '#8b6e3a' },
+    { name: '餐饮', data: 15, color: '#b7102a' },
+    { name: '交通', data: 10, color: '#5470C6' },
+    { name: '娱乐', data: 8, color: '#91CC75' },
+    { name: '购物', data: 7, color: '#FAC858' },
+    { name: '医疗', data: 6, color: '#EE6666' },
+    { name: '其他', data: 6, color: '#bec9c4' }
+  ]
+}
+
+const ringChartOpts = {
+  color: ['#006754', '#8b6e3a', '#b7102a', '#5470C6', '#91CC75', '#FAC858', '#EE6666', '#bec9c4'],
+  padding: [5, 5, 5, 5],
+  dataLabel: false,
+  legend: {
+    show: true,
+    position: 'right'
+  },
+  title: {
+      name: `55k`,
+      fontSize: 16,
+      color: '#1a1c1a',
+    },
+  subtitle: {
+    name: '支出金额',
+    fontSize: 16,
+    color: '#1a1c1a',
+  },
+  extra: {
+    ring: {
+      ringWidth: 24,
+      activeOpacity: 0.5
+    }
+  }
+}
 
 const topExpenses = [
   { name: '房贷', amount: '15,000', percent: 85 },
@@ -167,11 +175,71 @@ const topExpenses = [
   { name: '交通', amount: '2,100', percent: 15 }
 ]
 
-const monthlyData = [
-  { name: '8月', height: 60 },
-  { name: '9月', height: 75 },
-  { name: '10月', height: 100, active: true }
+const cashFlowList = [
+  { name: '收入', amount: '12,580', percent: 100, color: '#006754' },
+  { name: '支出', amount: '8,460', percent: 67, color: '#EE6666' },
+  { name: '结余', amount: '4,120', percent: 33, color: '#5470C6' }
 ]
+
+const monthlyChartData = {
+  categories: ['2月', '3月', '4月', '5月', '6月', '7月'],
+  series: [
+    {
+      name: '月度收益',
+      data: [
+        { value: 15000, color: '#006754' },
+        { value: -5000, color: '#EE6666' },
+        { value: 8000, color: '#006754' },
+        { value: -3000, color: '#EE6666' },
+        { value: 12000, color: '#006754' },
+        { value: -2000, color: '#EE6666' }
+      ]
+    }
+  ]
+}
+
+// 计算y轴范围：取整到整百/整千/整万，增加10%缓冲，分4段
+function niceStep(step) {
+  if (step === 0) return 0
+  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(step))))
+  const residual = Math.abs(step) / magnitude
+  let nice
+  if (residual <= 1.5) nice = 1
+  else if (residual <= 3.5) nice = 2
+  else if (residual <= 7.5) nice = 5
+  else nice = 10
+  return nice * magnitude
+}
+
+const chartValues = monthlyChartData.series[0].data.map(d => d.value)
+let rawMin = Math.min(...chartValues)
+let rawMax = Math.max(...chartValues)
+const pad = 0.1
+const paddedMin = rawMin - Math.abs(rawMin) * pad
+const paddedMax = rawMax + Math.abs(rawMax) * pad
+const step = niceStep((paddedMax - paddedMin) / 4)
+const axisMin = Math.floor(paddedMin / step) * step
+const axisMax = Math.ceil(paddedMax / step) * step
+
+const monthlyChartOpts = {
+  dataLabel: false,
+  xAxis: {
+    disableGrid: true
+  },
+  yAxis: {
+    axisLine: false,
+    gridType: 'dash',
+    splitNumber: 4,
+    min: axisMin,
+    max: axisMax,
+    data: [{
+      format: 'money'
+    }]
+  },
+  legend: {
+    show: false
+  }
+}
 
 const assetData = [
   { name: '股票', value: '450k', change: '+5.2%', changeClass: 'profit' },
@@ -194,16 +262,6 @@ const topAccounts = [
   height: 100vh;
 }
 
-.date-header {
-  margin-bottom: $stack-gap-md;
-}
-
-.date-text {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-medium;
-  color: $outline;
-}
-
 .section-card {
   padding: $spacing-6;
   border-radius: $rounded-lg;
@@ -214,18 +272,34 @@ const topAccounts = [
 
 .section-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
+}
+
+.section-card + .section-header {
+  margin-top: $stack-gap-md;
 }
 
 .section-title {
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-bold;
-  color: $primary;
+  color: $on-surface;
+  font-size: $font-size-title-sm;
+  font-weight: 900;
 }
 
-.section-subtitle {
+.section-date {
+  color: $primary;
+  font-size: $font-size-body-sm;
+  font-weight: 500;
+}
+
+.section-link {
+  color: $primary;
+  font-size: $font-size-body-sm;
+  font-weight: 500;
+}
+
+.card-subtitle {
   font-size: $font-size-label-caps;
   font-weight: $font-weight-bold;
   color: $outline;
@@ -233,153 +307,53 @@ const topAccounts = [
   letter-spacing: 1rpx;
 }
 
-.net-savings {
-  display: flex;
-  align-items: baseline;
-  gap: $stack-gap-sm;
-  margin-bottom: $section-margin;
+.expense-ring-section {
+  margin-bottom: $stack-gap-md;
 }
 
-.savings-amount {
-  font-family: $font-family-mono;
-  font-size: 64rpx;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-}
-
-.savings-change {
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-bold;
-  color: $secondary;
-}
-
-.doughnut-section {
-  display: flex;
-  align-items: center;
-  gap: $stack-gap-lg;
-  margin-bottom: $section-margin;
-}
-
-.doughnut-wrapper {
-  position: relative;
-  width: 200rpx;
-  height: 200rpx;
-}
-
-.doughnut-chart {
-  width: 100%;
-  height: 100%;
-}
-
-.doughnut-center {
-  position: absolute;
-  inset: 0;
+.cashflow-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: $stack-gap-sm;
+  margin-bottom: $stack-gap-md;
 }
 
-.doughnut-label {
-  font-size: 20rpx;
+.cashflow-item {
+  display: flex;
+  align-items: center;
+  gap: $stack-gap-xs;
+}
+
+.cashflow-name {
+  width: 60rpx;
+  font-size: 24rpx;
   font-weight: $font-weight-bold;
   color: $outline;
 }
 
-.doughnut-amount {
-  font-family: $font-family-mono;
-  font-size: 28rpx;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.doughnut-legend {
+.cashflow-bar-track {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: $stack-gap-sm;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: $stack-gap-sm;
-}
-
-.legend-dot {
-  width: 16rpx;
   height: 16rpx;
   border-radius: $rounded-full;
-}
-
-.legend-name {
-  flex: 1;
-  font-size: 24rpx;
-  color: $outline;
-}
-
-.legend-percent {
-  font-family: $font-family-mono;
-  font-size: 24rpx;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.bars-section {
-  display: flex;
-  flex-direction: column;
-  gap: $stack-gap-md;
-  margin-bottom: $section-margin;
-}
-
-.bar-item {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
-}
-
-.bar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.bar-label {
-  font-size: 24rpx;
-  color: $outline;
-}
-
-.bar-value {
-  font-family: $font-family-mono;
-  font-size: 24rpx;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.bar-track {
-  height: 12rpx;
-  border-radius: $rounded-full;
-  background: $surface-container-high;
+  // background: $surface-container;
   overflow: hidden;
 }
 
-.bar-fill {
+.cashflow-bar-fill {
   height: 100%;
   border-radius: $rounded-full;
   transition: width 0.5s ease;
+}
 
-  &.income {
-    background: $secondary;
-  }
-
-  &.expense {
-    background: $primary;
-  }
+.cashflow-amount {
+  font-family: $font-family-mono;
+  font-size: 24rpx;
+  font-weight: $font-weight-bold;
+  color: $on-surface;
 }
 
 .top-expenses {
-  padding-top: $section-margin;
-  border-top: 1rpx solid $surface-variant;
+  padding-top: $stack-gap-md;
 }
 
 .top-title {
@@ -403,7 +377,7 @@ const topAccounts = [
 }
 
 .expense-name {
-  width: 80rpx;
+  width: 60rpx;
   font-size: 24rpx;
   font-weight: $font-weight-bold;
   color: $outline;
@@ -449,7 +423,7 @@ const topAccounts = [
 
 .amount {
   font-family: $font-family-mono;
-  font-size: 64rpx;
+  font-size: 56rpx;
   font-weight: $font-weight-semibold;
   color: $on-surface;
 }
@@ -461,7 +435,7 @@ const topAccounts = [
 }
 
 .chart-section {
-  margin-bottom: $section-margin;
+  margin-bottom: $stack-gap-md;
 }
 
 .chart-title {
@@ -474,47 +448,9 @@ const topAccounts = [
   margin-bottom: $stack-gap-md;
 }
 
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 200rpx;
-  padding: 0 $spacing-2;
-}
-
-.chart-bar-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: $spacing-2;
-}
-
-.chart-bar {
-  width: 48rpx;
-  border-radius: $rounded-lg $rounded-lg 0 0;
-  background: $surface-container-high;
-  transition: height 0.5s ease;
-
-  &.active {
-    background: rgba($secondary, 0.8);
-  }
-}
-
-.chart-label {
-  font-size: 20rpx;
-  color: $outline;
-
-  &.active {
-    font-weight: $font-weight-bold;
-    color: $secondary;
-  }
-}
-
 .asset-distribution {
-  padding-top: $section-margin;
-  border-top: 1rpx solid $surface-variant;
-  margin-bottom: $section-margin;
+  padding-top: $stack-gap-md;
+  margin-bottom: $stack-gap-md;
 }
 
 .distribution-title {
@@ -573,7 +509,6 @@ const topAccounts = [
 
 .top-accounts {
   padding-top: $section-margin;
-  border-top: 1rpx solid $surface-variant;
   margin-bottom: $section-margin;
 }
 
@@ -590,8 +525,8 @@ const topAccounts = [
 }
 
 .account-icon {
-  width: 64rpx;
-  height: 64rpx;
+  width:56rpx;
+  height: 56rpx;
   border-radius: $rounded-full;
   background: $surface-container;
   display: flex;
@@ -641,8 +576,7 @@ const topAccounts = [
 .summary-row {
   display: flex;
   justify-content: space-between;
-  padding-top: $section-margin;
-  border-top: 1rpx solid $surface-variant;
+  padding-top: $stack-gap-md;
 }
 
 .summary-item {

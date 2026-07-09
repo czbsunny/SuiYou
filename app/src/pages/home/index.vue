@@ -190,6 +190,7 @@ const tapAction = (label) => {
 /* Section Header */
 .section-header {
   margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
