@@ -212,7 +212,7 @@ const handleProfit = () => {
 .balance-amount {
   color: $on-surface;
   font-family: $font-family-mono;
-  font-size: 96rpx;
+  font-size: 56rpx;
   font-weight: $font-weight-bold;
   line-height: 1;
 }

@@ -3748,7 +3748,7 @@ function drawAreaDataPoints(series, opts, config, context) {
       if (areaOption.gradient) {
         let gradient = context.createLinearGradient(0, opts.area[0], 0, opts.height - opts.area[2]);
         gradient.addColorStop('0', hexToRgb(eachSeries.color, areaOption.opacity));
-        gradient.addColorStop('1.0', hexToRgb("#FFFFFF", 0.1));
+        gradient.addColorStop('1.0', hexToRgb(areaOption.color?areaOption.color:"#FFFFFF", 0.2));
         context.setFillStyle(gradient);
       } else {
         context.setFillStyle(hexToRgb(eachSeries.color, areaOption.opacity));

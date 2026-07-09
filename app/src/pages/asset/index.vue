@@ -8,26 +8,14 @@
             <text class="currency">¥</text>
             <text class="hero-amount">{{ formatNumber(totalNetWorth) }}</text>
           </view>
-          <view class="chart">
-            <svg class="chart-svg" viewBox="0 0 400 140" preserveAspectRatio="none">
-              <polyline
-                :points="chartPoints"
-                fill="none"
-                stroke="#006754"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <circle v-for="(point, index) in chartDots" :key="index" :cx="point.x" :cy="point.y" r="6" fill="#2a806c" />
-            </svg>
-          </view>
-          <view class="chart-labels">
-            <text
-              v-for="(label, index) in timelineLabels"
-              :key="index"
-              class="chart-label"
-              :style="{ left: label.x + 'px' }"
-            >{{ label.text }}</text>
+          <view class="chart-container">
+            <qiun-data-charts
+              type="assetArea"
+              :chartData="chartData"
+              :tooltipShow="false"
+              :enable-scroll="false"
+              style="width: 100%; height: 240rpx;"
+            />
           </view>
         </view>
 
@@ -84,48 +72,18 @@ const loading = ref(false)
 const refreshing = ref(false)
 const accounts = ref([])
 
-const getMonthLabel = (date) => {
-  const month = date.getMonth() + 1
-  return `${month}月`
-}
-
-const timelineLabels = computed(() => {
+const chartData = computed(() => {
+  const categories = []
+  const data = []
   const now = new Date()
-  const labels = []
-  for (let i = 11; i >= 0; i -= 3) {
+  const baseValue = 800000
+  for (let i = 11; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    labels.push({
-      text: getMonthLabel(date),
-      x: 20 + (11 - i) / 11 * 360
-    })
+    categories.push(`${date.getMonth() + 1}月`)
+    const growth = Math.round((11 - i) / 11 * 400000)
+    data.push(baseValue + growth + Math.round(Math.random() * 50000 - 25000))
   }
-  return labels
-})
-
-const chartPoints = computed(() => {
-  const points = [
-    { x: 20, y: 110 },
-    { x: 60, y: 105 },
-    { x: 100, y: 95 },
-    { x: 140, y: 85 },
-    { x: 180, y: 75 },
-    { x: 220, y: 65 },
-    { x: 260, y: 55 },
-    { x: 300, y: 45 },
-    { x: 340, y: 38 },
-    { x: 380, y: 30 }
-  ]
-  return points.map(p => `${p.x},${p.y}`).join(' ')
-})
-
-const chartDots = computed(() => {
-  return [
-    { x: 20, y: 110 },
-    { x: 100, y: 95 },
-    { x: 180, y: 75 },
-    { x: 260, y: 55 },
-    { x: 380, y: 30 }
-  ]
+  return { categories, series: [{ name: '净值', data, color: '#006754' }] }
 })
 
 const formatNumber = (value) => {
@@ -228,10 +186,10 @@ onShow(() => {
 }
 
 .amount-row {
-  margin-top: 24rpx;
+  margin-top: $stack-gap-xs;
   display: flex;
   align-items: baseline;
-  gap: 16rpx;
+  gap: $stack-gap-sm;
 }
 
 .currency {
@@ -247,29 +205,10 @@ onShow(() => {
   font-weight: 900;
 }
 
-.chart {
+.chart-container {
   position: relative;
-  height: 140rpx;
-  margin-top: $spacing-5;
-}
-
-.chart-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.chart-labels {
-  position: relative;
-  height: 40rpx;
-  margin-top: $spacing-1;
-}
-
-.chart-label {
-  position: absolute;
-  transform: translateX(-50%);
-  color: $on-surface-variant;
-  font-size: $font-size-xs;
-  white-space: nowrap;
+  height: 240rpx;
+  margin-top: $spacing-2;
 }
 
 .section-heading {

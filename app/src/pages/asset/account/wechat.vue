@@ -191,13 +191,13 @@ onLoad((options) => {
 }
 
 .balance-row {
-  margin-top: 24rpx;
+  margin-top: $stack-gap-xs;
 }
 
 .amount-wrapper {
   display: flex;
   align-items: baseline;
-  gap: 16rpx;
+  gap: $stack-gap-sm;
 }
 
 .currency {

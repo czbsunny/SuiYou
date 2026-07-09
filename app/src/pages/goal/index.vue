@@ -141,7 +141,7 @@ const handleCreate = () => {
 }
 
 .amount-row {
-  margin-top: 24rpx;
+  margin-top: $stack-gap-xs;
   display: flex;
   align-items: baseline;
   gap: $stack-gap-sm;

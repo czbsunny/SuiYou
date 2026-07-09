@@ -15,8 +15,8 @@ const color = [
 ];
 
 const cfu = {
-    "type": ["goalLine", "assetLine", "allocationRing", "goalArc", "cashFlowColumn"],
-    "range": ["目标曲线", "资产走势", "资产配置", "目标完成率", "现金流"],
+    "type": ["goalLine", "assetArea", "assetLine", "allocationRing", "goalArc", "cashFlowColumn"],
+    "range": ["目标曲线", "资产走势", "资产走势", "资产配置", "目标完成率", "现金流"],
     "instance": {},
     "option": {},
     "formatter": {
@@ -71,6 +71,39 @@ const cfu = {
                 "type": "curve",
                 "width": 2,
                 "activeType": "hollow"
+            }
+        }
+    },
+
+    "assetArea": {
+        "type": "area",
+        "color": [primaryColors.green],
+        "padding": [0, 8, 8, 8],
+        "dataLabel": false,
+        "dataPointShape": false,
+        "xAxis": {
+            "disableGrid": true,
+            "labelCount": 4,
+            "boundaryGap": "justify",
+        },
+        "yAxis": {
+            "disabled": true,
+            "show": false,
+            "disableGrid": true,
+            "min": 0
+        },
+        "legend": {
+            "show": false
+        },
+        "extra": {
+            "area": {
+                "type": "curve",
+                "opacity": 0.5,
+                "addLine": true,
+                "width": 2,
+                "gradient": true,
+                "activeType": "none",
+                "color": "#d0e8e2"
             }
         }
     },
