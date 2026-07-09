@@ -272,7 +272,10 @@ const cfu = {
           "min":0,
           "max":80
         }
-      ]
+	      ],
+      "formatter":function(value){
+        return value+'万'
+      }
   	},
   	"legend": {
   	},

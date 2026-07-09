@@ -4,55 +4,55 @@
         <view class="main-card">
           <view class="hero-bg"></view>
           <view class="hero-content">
-            <view class="goal-identity">
-              <view class="goal-icon-wrap">
-                <text class="goal-icon">{{ goalIcon }}</text>
+            <view class="hero-left">
+              <view class="goal-identity">
+                <view class="goal-icon-wrap">
+                  <text class="goal-icon">{{ goalIcon }}</text>
+                </view>
+                <view class="goal-title-wrap">
+                  <text class="goal-name">{{ goal.name }}</text>
+                  <text class="goal-desc">{{ goal.description || '家庭理财目标' }}</text>
+                </view>
               </view>
-              <view class="goal-title-wrap">
-                <text class="goal-name">{{ goal.name }}</text>
-                <text class="goal-desc">{{ goal.description || '家庭理财目标' }}</text>
-              </view>
-              <view class="goal-status" :class="statusClass">{{ statusLabel }}</view>
-            </view>
 
-            <view class="amount-row">
-              <view class="amount-item">
-                <text class="amount-label">目标金额</text>
-                <text class="amount-value">¥{{ formatAmount(goal.targetAmount) }}</text>
-              </view>
-              <view class="amount-divider"></view>
-              <view class="amount-item">
-                <text class="amount-label">已达成</text>
-                <text class="amount-value primary">¥{{ formatAmount(goal.currentAmount) }}</text>
-              </view>
-              <view class="amount-divider"></view>
-              <view class="amount-item">
-                <text class="amount-label">剩余缺口</text>
-                <text class="amount-value remain">¥{{ formatAmount(remainAmount) }}</text>
-              </view>
-            </view>
-
-            <view class="progress-section">
-              <view class="progress-header">
-                <text class="progress-label">完成进度</text>
-                <text class="progress-percent">{{ goal.progressPercent || progressPercent }}%</text>
-              </view>
-              <view class="progress-track">
-                <view class="progress-fill" :style="{ width: (goal.progressPercent || progressPercent) + '%' }"></view>
+              <view class="metrics-list">
+                <view class="metric-row">
+                  <text class="metric-label">目标时间</text>
+                  <text class="metric-value">{{ formatDate(goal.deadline) }}</text>
+                </view>
+                <view class="metric-row">
+                  <text class="metric-label">目标金额</text>
+                  <text class="metric-value">¥{{ formatAmount(goal.targetAmount) }}</text>
+                </view>
+                <view class="metric-row">
+                  <text class="metric-label">关联资产</text>
+                  <text class="metric-value primary">¥{{ formatAmount(goal.currentAmount) }}</text>
+                </view>
+                <view class="metric-row">
+                  <text class="metric-label">本月新增</text>
+                  <text class="metric-value accent">¥{{ formatAmount(monthlyAddition) }}</text>
+                </view>
               </view>
             </view>
 
-            <view class="date-row">
-              <view class="date-item">
-                <text class="date-label">起始日期</text>
-                <text class="date-value">{{ formatDate(goal.startDate) }}</text>
+            <view class="hero-right">
+              <view class="arc-chart-container">
+                <qiun-data-charts
+                  type="goalArc"
+                  :chartData="arcChartData"
+                  :opts="arcChartOpts"
+                  style="width: 100%; height: 100%;"
+                />
               </view>
-              <view class="date-arrow">
-                <text class="arrow-icon">arrow_forward</text>
-              </view>
-              <view class="date-item right">
-                <text class="date-label">目标日期</text>
-                <text class="date-value">{{ formatDate(goal.deadline) }}</text>
+              <view class="arc-legend">
+                <view class="legend-item">
+                  <view class="arc-legend-dot green"></view>
+                  <text class="legend-text">金额进度 {{ progressPercent }}%</text>
+                </view>
+                <view class="legend-item">
+                  <view class="arc-legend-dot gold"></view>
+                  <text class="legend-text">时间进度 {{ timeProgressPercent }}%</text>
+                </view>
               </view>
             </view>
           </view>
@@ -67,7 +67,7 @@
             <view v-if="!activePoint" class="chart-legend">
               <view class="legend-item">
                 <view class="legend-dot target"></view>
-                <text>目标线</text>
+                <text>目标</text>
               </view>
               <view class="legend-item">
                 <view class="legend-dot actual"></view>
@@ -185,6 +185,61 @@ const progressPercent = computed(() => {
   return Math.min(100, Math.round(((goal.value.currentAmount || 0) / goal.value.targetAmount) * 100))
 })
 
+const timeProgressPercent = computed(() => {
+  if (!goal.value || !goal.value.startDate || !goal.value.deadline) return 0
+  const start = new Date(goal.value.startDate)
+  const deadline = new Date(goal.value.deadline)
+  const now = new Date()
+  const totalDays = (deadline - start) / (1000 * 60 * 60 * 24)
+  if (totalDays <= 0) return 100
+  const elapsedDays = (now - start) / (1000 * 60 * 60 * 24)
+  return Math.min(100, Math.max(0, Math.round((elapsedDays / totalDays) * 100)))
+})
+
+const monthlyAddition = computed(() => {
+  return 15000
+})
+
+// --------------- goalArc chart data ---------------
+const arcChartData = computed(() => {
+  if (!goal.value) return { categories: [], series: [] }
+  const amountPercent = goal.value.progressPercent || progressPercent.value / 100
+  const timePercent = timeProgressPercent.value / 100
+  console.log(amountPercent, timePercent)
+  return {
+    categories: ['完成进度'],
+    series: [
+      {
+        name: '金额进度',
+        data: amountPercent,
+        color: '#006754'
+      },
+      {
+        name: '时间进度',
+        data: timePercent,
+        color: '#C5A36A'
+      }
+    ]
+  }
+})
+
+const arcChartOpts = computed(() => {
+  const amountPercent = goal.value?.progressPercent || progressPercent.value
+  return {
+    color: ['#006754', '#C5A36A'],
+    title: {
+      name: `${amountPercent}%`,
+      fontSize: 16,
+      color: '#1a1c1a',
+    },
+    subtitle: {
+      name: '完成率',
+      fontSize: 16,
+      color: '#1a1c1a',
+    }
+  }
+})
+
 // --------------- chart data for qiun-data-charts ---------------
 const rightLabelDate = computed(() => {
   if (!goal.value?.startDate || !goal.value?.deadline) return ''
@@ -280,7 +335,7 @@ const formatAmount = (val) => {
 const formatDate = (dateStr) => {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+  return `${d.getFullYear()}年${String(d.getMonth() + 1).padStart(2, '0')}月`
 }
 
 // --------------- data loading ---------------
@@ -290,12 +345,11 @@ const loadData = (id) => {
     id: id || '1',
     name: '购车计划',
     description: '家庭 SUV 升级',
-    targetAmount: 160000,
+    targetAmount: 1600000,
     currentAmount: 450000,
-    progressPercent: 75,
     status: 'ON_GOING',
     startDate: '2024-01-15',
-    deadline: '2025-12-31',
+    deadline: '2028-12-31',
     iconUrl: '',
     bgUrl: ''
   }
@@ -342,13 +396,35 @@ const goBack = () => { uni.navigateBack() }
 .hero-content {
   position: relative;
   z-index: 1;
+  display: flex;
+  gap: $spacing-4;
+  align-items: flex-start;
+}
+
+.hero-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-right {
+  width: 260rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.arc-chart-container {
+  width: 224rpx;
+  height: 224rpx;
 }
 
 .goal-identity {
   display: flex;
   align-items: center;
   gap: $spacing-3;
-  margin-bottom: $stack-gap-md;
+  margin-bottom: $spacing-3;
 }
 
 .goal-icon-wrap {
@@ -398,125 +474,74 @@ const goBack = () => { uni.navigateBack() }
   &.cancelled { background: rgba($outline, 0.15); color: $outline; }
 }
 
-// 金额三栏
-.amount-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: $stack-gap-md;
-  padding: $spacing-4;
-  border-radius: $rounded-lg;
-  background: $surface-container-low;
-}
-
-.amount-item {
-  flex: 1;
-  text-align: center;
+// 指标列表
+.metrics-list {
   display: flex;
   flex-direction: column;
+  gap: $spacing-2;
 }
 
-.amount-divider {
-  width: 2rpx;
-  height: 64rpx;
-  background: $outline-variant;
-  flex-shrink: 0;
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 
-.amount-label {
+.metric-label {
   font-size: $font-size-label-caps;
   font-weight: $font-weight-bold;
   color: $outline;
   text-transform: uppercase;
   letter-spacing: 1rpx;
-  margin-bottom: $spacing-1;
 }
 
-.amount-value {
-  font-family: $font-family-mono;
-  font-size: $font-size-num-data;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-
-  &.primary { color: $primary; }
-  &.remain  { color: $secondary; }
-}
-
-// 进度条
-.progress-section {
-  margin-bottom: $stack-gap-md;
-}
-
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: $spacing-2;
-}
-
-.progress-label {
+.metric-value {
   font-size: $font-size-label-caps;
   font-weight: $font-weight-bold;
   color: $on-surface-variant;
-  letter-spacing: 1rpx;
+
+  &.primary { color: $primary; }
+  &.accent  { color: $accent; }
 }
 
-.progress-percent {
-  font-family: $font-family-mono;
-  font-size: $font-size-title-sm;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.progress-track {
-  height: 20rpx;
-  border-radius: $rounded-full;
-  background: $surface-container;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: $rounded-full;
-  background: linear-gradient(90deg, $primary, $primary-container);
-  transition: width 0.8s ease;
-}
-
-// 日期行
-.date-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.date-item {
+// 环形图legend
+.arc-legend {
   display: flex;
   flex-direction: column;
-
-  &.right { align-items: flex-end; }
+  align-items: center;
+  gap: $spacing-2;
+  width: 100%;
 }
 
-.date-label {
-  font-size: $font-size-label-caps;
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.arc-legend-dot {
+  width: 12rpx;
+  height: 12rpx;
+  min-width: 12rpx;
+  min-height: 12rpx;
+  flex: 0 0 12rpx;
+  margin-top: 4rpx;
+
+  border-radius: 9999rpx;
+}
+
+.arc-legend-dot.green {
+  background-color: $primary;
+}
+
+.arc-legend-dot.gold {
+  background-color: $accent;
+}
+
+.legend-text {
+  font-size: $font-size-body-tertiary;
   font-weight: $font-weight-bold;
   color: $outline;
-  letter-spacing: 1rpx;
-  margin-bottom: 4rpx;
-}
-
-.date-value {
-  font-family: $font-family-mono;
-  font-size: $font-size-body-sm;
-  font-weight: $font-weight-semibold;
-  color: $on-surface;
-}
-
-.date-arrow {
-  color: $outline-variant;
-
-  .arrow-icon {
-    font-family: 'Material Symbols Outlined';
-    font-size: 40rpx;
-  }
 }
 
 // ===== 资金曲线卡片 =====

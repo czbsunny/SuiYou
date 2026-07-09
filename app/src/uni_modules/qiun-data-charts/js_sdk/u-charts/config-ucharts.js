@@ -153,14 +153,17 @@ const cfu = {
         "type": "arcbar",
         "color": [primaryColors.green],
         "title": {
-            "fontSize": 26
+            "fontSize": 16
         },
         "subtitle": {
-            "fontSize": 14
+            "fontSize": 16
         },
         "extra": {
             "arcbar": {
-                "width": 15
+                "type": "circle",
+                "width": 8,
+                "backgroundColor": "#E9E9E9",
+                "startAngle": 1.5
             }
         }
     },

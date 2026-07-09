@@ -4575,7 +4575,7 @@ function drawXAxis(categories, opts, config, context) {
           if (index === 0) {
             offset = 0;
           } else if (index === newCategories.length - 1) {
-            offset = -textWidth / 2 - eachSpacing;
+            offset = -textWidth + opts.padding[1];
           } else {
             offset = -textWidth / 2;
           }
