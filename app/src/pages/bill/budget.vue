@@ -6,32 +6,24 @@
           <view class="ring-container">
             <view class="ring-wrapper">
               <qiun-data-charts
-                type="ring"
-                :chartData="ringChartData"
-                :opts="ringChartOpts"
-                canvasId="budgetRing"
+                type="budgetArc"
+                :chartData="budgetChartData"
+                :opts="budgetChartOpts"
+                canvasId="budgetArc"
                 :inScrollView="false"
                 :resscale="false"
               />
-              <!-- 中心文字区域：添加 pointer-events: none 避免阻挡图表层级 -->
-              <view class="ring-center">
-                <text class="ring-label">剩余可用</text>
-                <view class="ring-amount">
-                  <text class="currency">¥</text>
-                  <text class="amount-num">12,480</text>
-                </view>
-                <text class="ring-total">总预算 ¥45,000</text>
-              </view>
+              
             </view>
           </view>
           <view class="stats-row">
             <view class="stat-card">
-              <text class="stat-label">本月支出</text>
-              <text class="stat-value">¥32,520</text>
+              <text class="stat-label">预算金额</text>
+              <text class="stat-value">¥{{ formattedBudget }}</text>
             </view>
             <view class="stat-card">
-              <text class="stat-label">预算进度</text>
-              <text class="stat-value primary">72%</text>
+              <text class="stat-label">支出金额</text>
+              <text class="stat-value" :class="{ error: isOverBudget }">¥{{ formattedExpense }}</text>
             </view>
           </view>
         </view>
@@ -40,9 +32,7 @@
         <view class="section">
           <view class="section-header">
             <text class="section-title">支出分类</text>
-            <view class="settings-btn" @tap="handleSettings">
-              <text class="icon-text">设置</text>
-            </view>
+            <text class="section-link" @tap="handleSettings">设置</text>
           </view>
 
           <view class="category-list">
@@ -72,8 +62,65 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
+// ── 预算数据 ──
+const budgetTotal = 45000
+const expenseAmount = ref(32520)
+
+// ── 计算属性 ──
+const remainingAmount = computed(() => budgetTotal - expenseAmount.value)
+const usedPercent = computed(() => Math.round(expenseAmount.value / budgetTotal * 100))
+const remainingPercent = computed(() => Math.max(0, 100 - usedPercent.value))
+const overPercent = computed(() => usedPercent.value - 100)
+const isOverBudget = computed(() => usedPercent.value >= 100)
+
+const formatMoney = (val) => val.toLocaleString('zh-CN')
+const formattedBudget = computed(() => formatMoney(budgetTotal))
+const formattedExpense = computed(() => formatMoney(expenseAmount.value))
+
+// ── 环形图数据（适配 arcbar） ──
+const budgetChartData = computed(() => ({
+  series: [{
+    data: [{ value: Math.min(usedPercent.value, 100) }]
+  }]
+}))
+
+// ── 图表配置（根据超支状态动态切换） ──
+const budgetChartOpts = computed(() => ({
+  color: [isOverBudget.value ? '#E53935' : '#006754', '#e3e2e0'],
+  padding: [0, 0, 0, 0],
+  legend: { show: false },
+  tooltip: { show: false },
+  title: {
+    name: isOverBudget.value ? '已超支' : '剩余可用',
+    fontSize: 16,
+    color: isOverBudget.value ? '#E53935' : '#666666'
+  },
+  subtitle: {
+    name: isOverBudget.value ? `${overPercent.value}%` : `${remainingPercent.value}%`,
+    fontSize: 32,
+    color: isOverBudget.value ? '#E53935' : '#006754',
+    offsetY: 8
+  },
+  series: {
+    dataLabel: false,
+    label: { show: false },
+    labelLine: { show: false }
+  },
+  extra: {
+    budgetArc: {
+      ringWidth: 14,
+      activeOpacity: 1,
+      activeRadius: 0,
+      offsetAngle: -90,
+      customRadius: 75,
+      labelWidth: 0
+    }
+  }
+}))
+
+// ── 分类数据 ──
 const categories = ref([
   {
     name: '餐饮美食',
@@ -117,53 +164,6 @@ const categories = ref([
   }
 ])
 
-// 环形图数据
-const ringChartData = ref({
-  series: [{
-    data: [
-      { value: 32520, name: '已使用' },
-      { value: 12480, name: '剩余' }
-    ]
-  }]
-})
-
-// 图表配置 - 隐藏所有标签，只保留圆环
-const ringChartOpts = ref({
-  color: ['#006754', '#e3e2e0'],
-  padding: [0, 0, 0, 0],
-  legend: {
-    show: false
-  },
-  tooltip: {
-    show: false
-  },
-  title: {
-    name: "" 
-  },
-  subtitle: {
-    name: "" 
-  },
-  series: {
-    dataLabel: false,
-    label: {
-      show: false
-    },
-    labelLine: {
-      show: false
-    }
-  },
-  extra: {
-    ring: {
-      ringWidth: 14,
-      activeOpacity: 1,
-      activeRadius: 0,
-      offsetAngle: -90,
-      customRadius: 75,
-      labelWidth: 0
-    }
-  }
-})
-
 const handleSettings = () => {
   uni.showToast({ title: '设置', icon: 'none' })
 }
@@ -194,57 +194,15 @@ const handleSettings = () => {
   }
 }
 
-.ring-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  pointer-events: none; /* 穿透点击事件，防止遮挡图表交互 */
-}
-
-.ring-label {
-  font-size: $font-size-label-caps;
-  font-weight: $font-weight-bold;
-  color: $outline;
-  text-transform: uppercase;
-}
-
-.ring-amount {
-  display: flex;
-  align-items: baseline;
-  gap: 8rpx;
-}
-
-.currency {
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-bold;
-  color: $primary;
-}
-
-.amount-num {
-  font-family: $font-family-mono;
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-semibold;
-  color: $primary;
-}
-
-.ring-total {
-  font-size: $font-size-body-sm;
-  color: $outline;
-}
-
 .stats-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: $stack-gap-md;
-  margin-top: $section-margin;
+  margin-top: $stack-gap-md;
 }
 
 .stat-card {
-  padding: $spacing-4;
+  padding: $spacing-3;
   border-radius: $rounded-lg;
   background: $surface;
   display: flex;
@@ -268,23 +226,30 @@ const handleSettings = () => {
   &.primary {
     color: $primary;
   }
-}
 
-.section {
-  margin-top: $section-margin;
+  &.error {
+    color: $error;
+  }
 }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $stack-gap-md;
+  margin-top: $stack-gap-md;
+  margin-bottom: $stack-gap-sm;
 }
 
 .section-title {
-  font-size: $font-size-headline-md;
-  font-weight: $font-weight-semibold;
+  font-size: $font-size-title-sm;
+  font-weight: 900;
   color: $on-surface;
+}
+
+.section-link {
+  color: $primary;
+  font-size: $font-size-body-sm;
+  font-weight: 500;
 }
 
 .category-list {

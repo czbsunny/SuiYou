@@ -19,7 +19,6 @@
         <!-- 2. 分类选择区域 -->
         <view class="category-card">
           <view v-for="(row, rowIndex) in chunkedCategories" :key="rowIndex" class="category-row-group">
-            
             <!-- 主分类网格 -->
             <view class="category-grid">
               <view 
@@ -71,34 +70,16 @@
       <view class="info-tags">
         <!-- 日期标签 -->
         <view class="info-tag">
-          <svg class="tag-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8D938C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
           <text class="tag-text">{{ displayDateTime }}</text>
         </view>
         
         <!-- 账户标签 -->
         <view class="info-tag" @tap="handleAccount">
-          <svg class="tag-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8D938C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="2" y1="10" x2="22" y2="10"></line>
-          </svg>
           <text class="tag-text">{{ selectedAccount?.accountName || '账户' }}</text>
         </view>
         
         <!-- 备注标签 -->
         <view class="info-tag remark">
-          <svg class="tag-svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8D938C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <circle cx="3" cy="6" r="1"></circle>
-            <circle cx="3" cy="12" r="1"></circle>
-            <circle cx="3" cy="18" r="1"></circle>
-          </svg>
           <input class="tag-input" type="text" v-model="remark" placeholder="备注..." placeholder-style="color:#8D938C" />
         </view>
       </view>
@@ -409,9 +390,17 @@ const confirmSave = () => {
 @import '@/styles/variables.scss';
 @import '@/styles/common.scss';
 
+/* 全屏 flex 布局：中间滚动，底部固定 */
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 /* 1. 支出/收入分段选择器 */
 .segmented-bar {
-  padding: 24rpx 0;
+  padding: 24rpx;
   display: flex;
   justify-content: center;
   background: $background;
@@ -476,40 +465,41 @@ const confirmSave = () => {
 .category-card {
   background: $surface-container-lowest;
   border-radius: 32rpx;
+  padding: 24rpx;
 }
 
 .category-row-group {
-  margin-bottom: 40rpx;
+  margin-bottom: 16rpx;
 }
 
 .category-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  row-gap: 32rpx;
+  row-gap: 20rpx;
   column-gap: 16rpx;
-  padding: 0 8rpx;
+  padding: 0;
 }
 
 .category-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  gap: 8rpx;
 }
 
 .category-icon-wrapper {
-  width: 100rpx;
-  height: 100rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
   background: #F1F3F0;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease-out;
-  padding: 12rpx;
+  padding: 6rpx;
 
   .category-icon {
-    font-size: 36rpx;
+    font-size: 34rpx;
   }
 
   &.active {
@@ -519,7 +509,7 @@ const confirmSave = () => {
 }
 
 .category-label {
-  font-size: 24rpx;
+  font-size: 20rpx;
   color: #8D938C;
   font-weight: 500;
   line-height: 1.2;
@@ -548,19 +538,19 @@ const confirmSave = () => {
 .sub-category-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  row-gap: 32rpx;
+  row-gap: 16rpx;
 }
 
 .sub-category-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12rpx;
+  gap: 6rpx;
 }
 
 .sub-icon-wrapper {
-  width: 84rpx;
-  height: 84rpx;
+  width: 64rpx;
+  height: 64rpx;
   border-radius: 50%;
   background: #FFFFFF;
   display: flex;
@@ -568,7 +558,7 @@ const confirmSave = () => {
   justify-content: center;
 
   .sub-icon {
-    font-size: 38rpx;
+    font-size: 26rpx;
   }
 
   &.active {
@@ -589,7 +579,7 @@ const confirmSave = () => {
 
 /* 输入详情框 */
 .info-card {
-  margin: 24rpx 32rpx;
+  margin: 24rpx;
   padding: 32rpx;
   border-radius: 40rpx;
   background: #FFFFFF;
@@ -635,10 +625,6 @@ const confirmSave = () => {
   border-radius: 100rpx;
   background: #F1F3F0;
   flex-shrink: 0;
-
-  .tag-svg {
-    flex-shrink: 0;
-  }
 
   &.remark {
     flex: 1;

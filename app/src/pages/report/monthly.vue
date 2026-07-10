@@ -91,7 +91,7 @@
 
           <!-- Top Performing Accounts -->
           <view class="top-accounts">
-            <text class="top-title">收益领先账户</text>
+            <text class="top-title">账户收益榜</text>
             <view class="account-list">
               <view v-for="account in topAccounts" :key="account.name" class="account-item">
                 <view class="account-icon">

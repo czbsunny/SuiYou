@@ -15,8 +15,8 @@ const color = [
 ];
 
 const cfu = {
-    "type": ["goalLine", "assetArea", "goalArc", "expenseRing", "investIncomeColumn", "allocationRing"],
-    "range": ["目标曲线", "资产走势", "目标完成率", "支出环图", "投资收益", "资产配置"],
+    "type": ["goalLine", "assetArea", "goalArc", "expenseRing", "investIncomeColumn", "allocationRing", "budgetArc"],
+    "range": ["目标曲线", "资产走势", "目标完成率", "支出环图", "投资收益", "资产配置", "预算进度"],
     "instance": {},
     "option": {},
     "formatter": {
@@ -222,7 +222,24 @@ const cfu = {
                 "activeOpacity": 0.5
             }
         }
-    }
+    },
+
+    "budgetArc": {
+        "type": "arcbar",
+        "color": [primaryColors.green],
+        "title": {
+            "fontSize": 16
+        },
+        "subtitle": {
+            "fontSize": 16
+        },
+        "extra": {
+            "arcbar": {
+                "type": "default",
+                "width": 16,
+            }
+        }
+    },
 }
 
 export default cfu;
