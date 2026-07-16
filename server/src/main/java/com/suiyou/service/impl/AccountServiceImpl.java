@@ -5,6 +5,7 @@ import com.suiyou.dto.account.AccountModuleDTO;
 import com.suiyou.dto.account.AccountModuleRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.enums.AccountType;
 import com.suiyou.enums.InstType;
 import com.suiyou.enums.ModuleType;
@@ -107,6 +108,67 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return toAccountRespDTO(savedAccount);
+    }
+
+    @Override
+    @Transactional
+    public AccountRespDTO updateAccount(UpdateAccountDTO dto) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+
+        Account account = accountRepository.findByIdAndOwnerId(dto.getAccountId(), currentUserId)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + dto.getAccountId()));
+
+        account.setAccountNo(dto.getAccountNo());
+        account.setAccountName(dto.getAccountName());
+        account.setIncludeInNetWorth(dto.getIncludeInNetWorth() != null ? dto.getIncludeInNetWorth() : true);
+
+        Account savedAccount = accountRepository.save(account);
+
+        // 删除旧模块，重新创建
+        List<AccountModule> existingModules = accountModuleRepository.findByAccountIdAndEnabled(String.valueOf(savedAccount.getId()), 1);
+        if (!existingModules.isEmpty()) {
+            for (AccountModule module : existingModules) {
+                module.setEnabled(0);
+            }
+            accountModuleRepository.saveAll(existingModules);
+        }
+
+        if (dto.getModules() != null && !dto.getModules().isEmpty()) {
+            List<AccountModule> newModules = new ArrayList<>();
+            int sortOrder = 0;
+            for (AccountModuleDTO moduleDTO : dto.getModules()) {
+                AccountModule module = new AccountModule();
+                module.setId(UUID.randomUUID().toString().replace("-", ""));
+                module.setAccountId(String.valueOf(savedAccount.getId()));
+                module.setModuleType(moduleDTO.getModuleType());
+                module.setModuleName(moduleDTO.getModuleName());
+
+                ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
+                if (moduleType == null) {
+                    throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
+                }
+                module.setIconUrl(moduleType.getIconUrl());
+                module.setBgColor(moduleType.getBgColor());
+                module.setCanPay(moduleType.isCanPay() ? 1 : 0);
+                module.setSortOrder(sortOrder++);
+                newModules.add(module);
+            }
+            accountModuleRepository.saveAll(newModules);
+        }
+
+        return toAccountRespDTO(savedAccount);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(Long id) {
+        Long currentUserId = SecurityUtils.getCurrentUserId();
+        Account account = accountRepository.findByIdAndOwnerId(id, currentUserId)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + id));
+
+        account.setDeleted(true);
+        account.setStatus(0);
+        accountRepository.save(account);
     }
 
     private AccountListItemRespDTO toAccountListItemRespDTO(Account account) {

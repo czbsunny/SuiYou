@@ -42,10 +42,16 @@ export const getAccountList = (params) => {
   return get('/api/accounts', params)
 }
 
+/**
+ * 获取指定账户详情
+ */
 export const getAccountById = (id) => {
   return get(`/api/accounts/${id}`)
 }
 
+/**
+ * 更新账户
+ */
 export const updateAccount = (data) => {
   return put('/api/accounts', data)
 }
@@ -54,6 +60,9 @@ export const updateAccountStatus = (id, status) => {
   return put(`/api/accounts/${id}/status`, { status })
 }
 
+/**
+ * 删除账户
+ */
 export const deleteAccount = (id) => {
   return del(`/api/accounts/${id}`)
 }

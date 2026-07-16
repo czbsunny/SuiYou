@@ -3,6 +3,7 @@ package com.suiyou.controller;
 import com.suiyou.dto.account.AccountListItemRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
+import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.security.SecurityUtils;
 import com.suiyou.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,17 @@ public class AccountController {
     public ResponseEntity<AccountRespDTO> getAccountById(@PathVariable Long id) {
         AccountRespDTO account = accountService.getAccountById(id);
         return ResponseEntity.ok(account);
+    }
+
+    @PutMapping
+    public ResponseEntity<AccountRespDTO> updateAccount(@RequestBody UpdateAccountDTO dto) {
+        AccountRespDTO account = accountService.updateAccount(dto);
+        return ResponseEntity.ok(account);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+        accountService.deleteAccount(id);
+        return ResponseEntity.noContent().build();
     }
 }
