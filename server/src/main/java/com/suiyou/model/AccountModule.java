@@ -14,8 +14,8 @@ public class AccountModule {
     @Column(length = 32)
     private String id;
     
-    @Column(name = "account_id", nullable = false, length = 32)
-    private String accountId;
+    @Column(name = "account_id", nullable = false)
+    private Long accountId;
     
     @Column(name = "module_type", nullable = false, length = 20)
     private String moduleType;

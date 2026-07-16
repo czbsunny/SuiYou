@@ -68,8 +68,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { getAccountById } from '@/api/modules/asset'
+import { MODULE_ROUTES } from '@/configs/routes'
 
 const accountData = ref({
   accountId: '',
@@ -86,6 +87,8 @@ const accountData = ref({
 })
 
 const moduleList = ref([])
+
+const accountIdRef = ref('')
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -107,9 +110,10 @@ const handleSettings = () => {
 }
 
 const handleModuleTap = (module) => {
-  if (module.targetPath) {
+  const targetPath = MODULE_ROUTES[module.type]
+  if (targetPath) {
     uni.navigateTo({
-      url: `${module.targetPath}?data=${encodeURIComponent(JSON.stringify({
+      url: `${targetPath}?data=${encodeURIComponent(JSON.stringify({
         id: module.id,
         name: module.name,
         availableBalance: parseFloat(String(module.amount).replace(/,/g, '')) || 0
@@ -123,46 +127,57 @@ const handleModuleTap = (module) => {
   }
 }
 
-onLoad((options) => {
-  const accountId = options.accountId
-  if (accountId) {
-    getAccountById(accountId).then(res => {
-      if (res.statusCode === 200) {
-        const data = res.data
-        accountData.value = {
-          accountId: data.accountId || data.id || '',
-          accountType: data.accountType || '',
-          accountName: data.accountName || '',
-          accountNumber: data.accountNumber || '',
+const loadAccountData = (accountId) => {
+  if (!accountId) return
+  getAccountById(accountId).then(res => {
+    if (res.statusCode === 200) {
+      const data = res.data
+      accountData.value = {
+        accountId: data.accountId || data.id || '',
+        accountType: data.accountType || '',
+        accountName: data.accountName || '',
+        accountNumber: data.accountNumber || '',
 
-          instCode: data.instCode || '',
-          instName: data.instName || '',
-          
-          totalBalance: 0,
-          yesterdayChange: '',
-          totalChange: ''
-        }
-        if (data.modules && data.modules.length > 0) {
-          moduleList.value = data.modules.map(m => {
-            return {
-              id: m.id,
-              icon: m.iconUrl,
-              bgColor: m.bgColor,
-              name: m.moduleName,
-              desc: '',
-              amount: 0,
-              targetPath: ''
-            }
-          })
-        }
-      } else {
-        uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+        instCode: data.instCode || '',
+        instName: data.instName || '',
+        
+        totalBalance: 0,
+        yesterdayChange: '',
+        totalChange: ''
       }
-    }).catch(err => {
-      console.error('获取账户详情失败:', err)
-      uni.showToast({ title: '网络请求失败', icon: 'none' })
-    })
-  }
+      if (data.modules && data.modules.length > 0) {
+        moduleList.value = data.modules.map(m => {
+          return {
+            id: m.id,
+            icon: m.iconUrl,
+            bgColor: m.bgColor,
+            name: m.moduleName,
+            type: m.moduleType,
+            desc: '',
+            amount: 0
+          }
+        })
+      }
+    } else {
+      uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+    }
+  }).catch(err => {
+    console.error('获取账户详情失败:', err)
+    uni.showToast({ title: '网络请求失败', icon: 'none' })
+  })
+}
+
+onLoad((options) => {
+  accountIdRef.value = options.accountId
+  loadAccountData(accountIdRef.value)
+
+  uni.$on('refreshAccountDetail', () => { 
+    loadAccountData(accountIdRef.value) 
+  })
+})
+
+onUnload(() => { 
+  uni.$off('refreshAccountDetail') 
 })
 </script>
 

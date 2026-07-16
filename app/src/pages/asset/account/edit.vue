@@ -264,6 +264,7 @@ const doSave = async () => {
 
     if (resp?.statusCode === 200) {
       uni.showToast({ title: '修改成功', icon: 'success' })
+      uni.$emit('refreshAccountDetail')
       setTimeout(() => {
         uni.navigateBack()
       }, 1200)
@@ -290,7 +291,7 @@ const handleDelete = () => {
         deleting.value = true
         try {
           const resp = await deleteAccount(accountId.value)
-          if (resp?.statusCode === 200) {
+          if (resp?.statusCode === 204) {
             uni.showToast({ title: '删除成功', icon: 'success' })
             setTimeout(() => {
               uni.switchTab({ url: '/pages/asset/index' })

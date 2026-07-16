@@ -85,8 +85,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { getAccountById } from '@/api/modules/asset'
+import { MODULE_ROUTES } from '@/configs/routes'
 
 const isVisible = ref(true)
 
@@ -145,22 +146,27 @@ const handleAction = (actionId) => {
   }
 }
 
-const handleModuleTap = (module) => {
-  const paths = {
-    stock: '/pages/asset/holding/stock',
-    fund: '/pages/asset/holding/fund'
-  }
-  console.log(module.type)
-  const url = paths[module.type]
-  if (url) {
-    uni.navigateTo({ url })
+const handleModuleTap = (mod) => {
+  const targetPath = MODULE_ROUTES[mod.type]
+  if (targetPath) {
+    uni.navigateTo({
+      url: `${targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: mod.id,
+        name: mod.name,
+        availableBalance: parseFloat(String(mod.amount).replace(/,/g, '')) || 0
+      }))}`,
+      fail: () => {
+        uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
+      }
+    })
   } else {
-    uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
   }
 }
 
-onLoad((options) => {
-  const accountId = options.accountId
+const accountIdRef = ref('')
+
+const loadAccountData = (accountId) => {
   if (accountId) {
     getAccountById(accountId).then(res => {
       if (res.statusCode === 200) {
@@ -186,9 +192,9 @@ onLoad((options) => {
               icon: m.iconUrl,
               bgColor: m.bgColor,
               name: m.moduleName,
+              type: m.moduleType,
               desc: '',
-              amount: 0,
-              targetPath: ''
+              amount: 0
             }
           })
         }
@@ -200,7 +206,20 @@ onLoad((options) => {
       uni.showToast({ title: '网络请求失败', icon: 'none' })
     })
   }
+}
+
+onLoad((options) => {
+  accountIdRef.value = options.accountId
+  loadAccountData(accountIdRef.value)
+
+  uni.$on('refreshAccountDetail', () => { 
+    loadAccountData(accountIdRef.value) 
+  })
 })
+
+onUnload(() => { 
+  uni.$off('refreshAccountDetail') }
+)
 </script>
 
 <style lang="scss" scoped>

@@ -67,8 +67,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { getAccountById } from '@/api/modules/asset'
+import { MODULE_ROUTES } from '@/configs/routes'
 
 const isVisible = ref(true)
 
@@ -105,26 +106,27 @@ const handleSettings = () => {
   })
 }
 
-const handleModuleTap = (module) => {
-  console.log(module)
-  if (module.targetPath) {
+const handleModuleTap = (mod) => {
+  const targetPath = MODULE_ROUTES[mod.type]
+  if (targetPath) {
     uni.navigateTo({
-      url: `${module.targetPath}?data=${encodeURIComponent(JSON.stringify({
-        id: module.id,
-        name: module.name,
-        availableBalance: parseFloat(String(module.amount).replace(/,/g, '')) || 0
+      url: `${targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: mod.id,
+        name: mod.name,
+        availableBalance: parseFloat(String(mod.amount).replace(/,/g, '')) || 0
       }))}`,
       fail: () => {
-        uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
+        uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
       }
     })
   } else {
-    uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
   }
 }
 
-onLoad((options) => {
-  const accountId = options.accountId
+const accountIdRef = ref('')
+
+const loadAccountData = (accountId) => {
   if (accountId) {
     getAccountById(accountId).then(res => {
       if (res.statusCode === 200) {
@@ -149,9 +151,9 @@ onLoad((options) => {
               icon: m.iconUrl,
               bgColor: m.bgColor,
               name: m.moduleName,
+              type: m.moduleType,
               desc: '',
-              amount: 0,
-              targetPath: ''
+              amount: 0
             }
           })
         }
@@ -163,6 +165,19 @@ onLoad((options) => {
       uni.showToast({ title: '网络请求失败', icon: 'none' })
     })
   }
+}
+
+onLoad((options) => {
+  accountIdRef.value = options.accountId
+  loadAccountData(accountIdRef.value)
+
+  uni.$on('refreshAccountDetail', () => { 
+    loadAccountData(accountIdRef.value) 
+  })
+})
+
+onUnload(() => { 
+  uni.$off('refreshAccountDetail') 
 })
 </script>
 
