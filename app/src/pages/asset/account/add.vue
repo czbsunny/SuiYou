@@ -121,8 +121,7 @@
               v-for="module in optionalModules" 
               :key="module.moduleType"
               class="module-card"
-              :class="{ disabled: !module.enabled }"
-              @tap="module.enabled && toggleModule(module, !getModuleChecked(module))"
+              @tap="handleModuleTap(module)"
             >
               <view class="module-icon-wrap default-bg">
                 <image :src="module.iconUrl || '/static/images/default_icon.png'" class="module-icon" mode="aspectFit" />
@@ -231,6 +230,16 @@ const toggleModule = (module, checked) => {
     if (index > -1) {
       selectedModules.value.splice(index, 1)
     }
+  }
+}
+
+const handleModuleTap = (module) => {
+  const key = module.moduleType || module.id
+  const index = selectedModules.value.indexOf(key)
+  if (index > -1) {
+    selectedModules.value.splice(index, 1)
+  } else {
+    selectedModules.value.push(key)
   }
 }
 
