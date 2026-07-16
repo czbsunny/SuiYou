@@ -3,6 +3,8 @@ package com.suiyou.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+// TODO: 处理冗余字段
+
 @Entity
 @Table(name = "sys_account_template")
 @Data

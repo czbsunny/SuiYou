@@ -14,6 +14,7 @@ public class AccountModuleRespDTO {
     private String moduleType;
     private String moduleName;
     private String iconUrl;
+    private String bgColor;
     private Integer canPay;
     private Integer sortOrder;
 }

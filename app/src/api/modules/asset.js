@@ -28,16 +28,22 @@ export const getInstitutions = () => {
   return get('/api/assets/institutions')
 }
 
+/**
+ * 创建账户
+ */
+export const createAccount = (data) => {
+  return post('/api/accounts', data)
+}
+
+/**
+ * 获取所有账户
+ */
 export const getAccountList = (params) => {
   return get('/api/accounts', params)
 }
 
 export const getAccountById = (id) => {
   return get(`/api/accounts/${id}`)
-}
-
-export const createAccount = (data) => {
-  return post('/api/accounts', data)
 }
 
 export const updateAccount = (data) => {
@@ -72,27 +78,44 @@ export const getAssetStructure = () => {
   return get('/api/assets/structure')
 }
 
+/**
+ * 获取所有机构类型
+ */
 export const getInstitutionTypes = () => {
   return get('/api/inst/types')
 }
 
+/**
+ * 获取所有机构下的所有机构信息
+ */
 export const getAllInstitutions = () => {
   return get('/api/inst/all')
 }
 
+/**
+ * 获取热门机构下的所有机构信息
+ */
 export const getHotInstitutions = () => {
   return get('/api/inst/hot')
 }
 
+/**
+ * 获取指定机构类型下的所有机构信息
+ */
 export const getInstitutionsByType = (typeCode) => {
   return get(`/api/inst/type/${typeCode}`)
 }
 
-
+/**
+ * 获取指定机构下的所有账户类型
+ */
 export const getInstitutionDetail = (instCode) => {
   return get(`/api/inst/${instCode}`)
 }
 
+/**
+ * 获取指定机构账户下的所有账户模块
+ */
 export const getAccountModules = (instCode, accountType) => {
   return get(`/api/inst/${instCode}/account-types/${accountType}/modules`)
 }

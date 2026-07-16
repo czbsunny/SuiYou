@@ -19,6 +19,7 @@ public class AccountRespDTO {
     private String accountType;    
     private String accountTypeName;
     private String instCode;
+    private String instName;
     private String instType;
     private String instTypeName;
     private Boolean includeInNetWorth;

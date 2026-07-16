@@ -267,7 +267,7 @@ const handleConfirm = async () => {
   submitting.value = true
   try {
     const selectedModules = [
-      ...requiredModules.value.map(m => ({ assetType: m.moduleType, moduleName: m.moduleName })),
+      ...requiredModules.value.map(m => ({ moduleType: m.moduleType, moduleName: m.moduleName })),
       ...optionalModules.value
         .filter(m => getModuleChecked(m))
         .map(m => ({ moduleType: m.moduleType, moduleName: m.moduleName }))

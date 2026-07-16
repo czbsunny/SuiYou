@@ -155,10 +155,9 @@ const handleAccountTap = (account) => {
   }
 
   if (pagePath) {
-    const institutionName = encodeURIComponent(account.instName || account.accountName || account.instCode || '账户详情')
     const accountId = account.id
     uni.navigateTo({
-      url: `${pagePath}?institutionName=${institutionName}&instCode=${account.instCode}&accountId=${accountId}`
+      url: `${pagePath}?accountId=${accountId}`
     })
   } else {
     uni.showToast({ title: '该账户类型开发中', icon: 'none' })

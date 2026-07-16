@@ -12,30 +12,31 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum ModuleType {
 
-    CURRENT("CURRENT", "活期", 1, "/static/assets/modules/current.png", true),
+    CURRENT("CURRENT", "活期", 1, "/static/assets/modules/current.png", "#EAF5F2", true),
 
-    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/static/assets/modules/current-plus.png", true),
+    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/static/assets/modules/current-plus.png", "#EAF5F2", true),
 
-    BANK_PRODUCT("BANK_PRODUCT", "银行理财", 3, "/static/assets/modules/bank-product.png", false),
+    BANK_PRODUCT("BANK_PRODUCT", "银行理财", 3, "/static/assets/modules/bank-product.png", "#FEF6EB", false),
 
-    TIME_DEPOSIT("TIME_DEPOSIT", "定存", 4, "/static/assets/modules/time-deposit.png", false),
+    TIME_DEPOSIT("TIME_DEPOSIT", "定存", 4, "/static/assets/modules/time-deposit.png", "#FEF6EB", false),
 
-    FUND("FUND", "基金", 5, "/static/assets/modules/fund.png", false),
+    FUND("FUND", "基金", 5, "/static/assets/modules/fund.png", "#FEF6EB", false),
 
-    STOCK("STOCK", "股票", 6, "/static/assets/modules/stock.png", false),
+    STOCK("STOCK", "股票", 6, "/static/assets/modules/stock.png", "#FEF6EB", false),
 
-    GOLD("GOLD", "黄金", 7, "/static/assets/modules/gold.png", false),
+    GOLD("GOLD", "黄金", 7, "/static/assets/modules/gold.png", "#FEF6EB", false),
 
-    LOAN("LOAN", "贷款", 8, "/static/assets/modules/loan.png", false),
+    LOAN("LOAN", "贷款", 8, "/static/assets/modules/loan.png", "#F1F3F5", false),
 
-    CREDIT("CREDIT", "信用卡", 9, "/static/assets/modules/credit.png", true),
+    CREDIT("CREDIT", "信用卡", 9, "/static/assets/modules/credit.png", "#F1F3F5", true),
 
-    INSURANCE("INSURANCE", "保险", 10, "/static/assets/modules/insurance.png", false);  
+    INSURANCE("INSURANCE", "保险", 10, "/static/assets/modules/insurance.png", "#E6F4F8", false);  
 
     private final String code;
     private final String name;
     private final int order;
     private final String iconUrl;
+    private final String bgColor;
     private final boolean canPay;
 
     public static ModuleType ofCode(String code) {

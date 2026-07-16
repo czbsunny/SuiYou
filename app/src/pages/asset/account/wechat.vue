@@ -32,27 +32,29 @@
           </view>
         </view>
 
-        <!-- Asset List Section -->
+        <!-- Module List Section -->
         <view class="section">
           <view class="section-header">
-            <span class="section-title">资产列表</span>
+            <text class="section-title">资产列表</text>
           </view>
-          <view class="asset-list">
+          <view class="module-list">
             <view 
-              v-for="asset in assetList" 
-              :key="asset.id" 
-              class="asset-item"
-              @tap="handleAssetTap(asset)"
+              v-for="module in moduleList" 
+              :key="module.id" 
+              class="module-item"
+              @tap="handleModuleTap(module)"
             >
-              <view class="asset-icon-wrap" :style="{ background: asset.bgColor }">
-                <text class="asset-icon" :style="{ color: asset.iconColor }">{{ asset.icon }}</text>
+              <view class="module-icon-wrap" :style="{ background: module.bgColor }">
+                <image class="module-icon" :src="module.icon" mode="aspectFit" />
               </view>
-              <view class="asset-info">
-                <span class="asset-name">{{ asset.name }}</span>
-                <span class="asset-desc">{{ asset.desc }}</span>
+              <view class="module-info">
+                <text class="module-name">{{ module.name }}</text>
+                <text class="module-desc">{{ module.desc }}</text>
               </view>
-              <view class="asset-right">
-                <span class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</span>
+              <view class="module-right">
+                <view class="module-amount-wrap">
+                  <text class="module-amount font-mono">{{ isVisible ? module.amount : '****' }}</text>
+                </view>
                 <text class="icon-chevron">›</text>
               </view>
             </view>
@@ -66,24 +68,25 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import { getAccountById } from '@/api/modules/asset'
 
 const isVisible = ref(true)
 
 const accountData = ref({
-  institutionName: 'Heritage Hearth',
-  totalBalance: 862490.52,
-  yesterdayChange: '+124.80',
-  totalChange: '+42,931.15',
-  avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=mature%20professional%20man%20portrait%20warm%20lighting&image_size=square'
+  accountId: '',
+  accountType: '',
+  accountName: '',
+  accountNumber: '',
+  
+  instCode: '',
+  instName: '',
+
+  totalBalance: 0,
+  yesterdayChange: '',
+  totalChange: ''
 })
 
-const assetList = ref([
-  { id: '1', icon: '零', name: '零钱', desc: '可用余额', amount: '12,490.52', bgColor: '#EFF6FF', iconColor: '#2A806C', targetPath: '/pages/asset/holding/current' },
-  { id: '2', icon: '通', name: '零钱通', desc: '收益稳健', amount: '250,000.00', bgColor: '#FFF7ED', iconColor: '#b7102a', targetPath: '/pages/asset/holding/current-plus' },
-  { id: '3', icon: '基', name: '基金', desc: '长期稳健增值', amount: '500,000.00', bgColor: '#ECFDF5', iconColor: '#006754' },
-  { id: '4', icon: '金', name: '黄金', desc: '实物黄金', amount: '100,000.00', bgColor: '#FFFBEB', iconColor: '#705624' },
-  { id: '5', icon: '微', name: '微粒贷', desc: '额度可用', amount: '可借 50,000', bgColor: '#ECFEFF', iconColor: '#0D9488', targetPath: '/pages/asset/holding/loan' }
-])
+const moduleList = ref([])
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -96,38 +99,69 @@ const toggleVisibility = () => {
   isVisible.value = !isVisible.value
 }
 
-const currentAccountType = ref('wechat')
-
 const handleSettings = () => {
   uni.navigateTo({
-    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+    url: `/pages/asset/account/edit?accountId=${accountData.value.accountId}`
   })
 }
 
-const handleAssetTap = (asset) => {
-  console.log(asset)
-  if (asset.targetPath) {
+const handleModuleTap = (module) => {
+  console.log(module)
+  if (module.targetPath) {
     uni.navigateTo({
-      url: `${asset.targetPath}?data=${encodeURIComponent(JSON.stringify({
-        id: asset.id,
-        name: asset.name,
-        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
+      url: `${module.targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: module.id,
+        name: module.name,
+        availableBalance: parseFloat(String(module.amount).replace(/,/g, '')) || 0
       }))}`,
       fail: () => {
-        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+        uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
       }
     })
   } else {
-    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
   }
 }
 
 onLoad((options) => {
-  if (options?.institutionName) {
-    accountData.value.institutionName = decodeURIComponent(options.institutionName)
-  }
-  if (options?.balance) {
-    accountData.value.totalBalance = parseFloat(options.balance) || 862490.52
+  const accountId = options.accountId
+  if (accountId) {
+    getAccountById(accountId).then(res => {
+      if (res.statusCode === 200) {
+        const data = res.data
+        accountData.value = {
+          accountId: data.accountId || data.id || '',
+          accountType: data.accountType || '',
+          accountName: data.accountName || '',
+          accountNumber: data.accountNumber || '',
+
+          instCode: data.instCode || '',
+          instName: data.instName || '',
+          
+          totalBalance: 0,
+          yesterdayChange: '',
+          totalChange: ''
+        }
+        if (data.modules && data.modules.length > 0) {
+          moduleList.value = data.modules.map(m => {
+            return {
+              id: m.id,
+              icon: m.iconUrl,
+              bgColor: m.bgColor,
+              name: m.moduleName,
+              desc: '',
+              amount: 0,
+              targetPath: ''
+            }
+          })
+        }
+      } else {
+        uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+      }
+    }).catch(err => {
+      console.error('获取账户详情失败:', err)
+      uni.showToast({ title: '网络请求失败', icon: 'none' })
+    })
   }
 })
 </script>
@@ -262,67 +296,70 @@ onLoad((options) => {
   color: $on-surface;
 }
 
-.asset-list {
+.module-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.asset-item {
+.module-item {
   display: flex;
   align-items: center;
   padding: $spacing-4;
   background: $surface-container-lowest;
   border-radius: $rounded-lg;
+  box-shadow: $shadow-sm;
 }
 
-.asset-icon-wrap {
-  width: 88rpx;
-  height: 88rpx;
+.module-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: $spacing-4;
+  background: $surface-container-lowest;
 }
 
-.asset-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.asset-info {
+.module-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 0 $spacing-4;
 }
 
-.asset-name {
-  font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
-  color: $on-surface;
-}
-
-.asset-desc {
-  font-size: $font-size-body-sm;
-  color: $on-surface-variant;
-  margin-top: 4rpx;
-}
-
-.asset-right {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-}
-
-.asset-amount {
+.module-name {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-semibold;
   color: $on-surface;
 }
 
+.module-desc {
+  font-size: $font-size-body-sm;
+  color: $outline;
+  margin-top: 4rpx;
+}
+
+.module-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.module-amount-wrap {
+  text-align: right;
+}
+
+.module-amount {
+  font-size: $font-size-body-reg;
+  font-weight: $font-weight-bold;
+  color: $on-surface;
+}
+
 .icon-chevron {
-  font-family: 'Material Symbols Outlined';
   font-size: 28rpx;
   color: $outline-variant;
 }

@@ -50,27 +50,28 @@
           </view>
         </view>
 
-        <!-- Asset List Section -->
+        <!-- Module List Section -->
         <view class="section">
           <view class="section-header">
             <text class="section-title">持仓明细</text>
           </view>
-          <view class="asset-list">
+          <view class="module-list">
             <view 
-              v-for="asset in assetList" 
-              :key="asset.id" 
-              class="asset-item"
-              @tap="handleAssetTap(asset)"
+              v-for="module in moduleList" 
+              :key="module.id" 
+              class="module-item"
+              @tap="handleModuleTap(module)"
             >
-              <view class="asset-icon-wrap" :style="{ background: asset.bgColor }">
-                <text class="asset-icon" :style="{ color: asset.iconColor }">{{ asset.icon }}</text>
+              <view class="module-icon-wrap" :style="{ background: module.bgColor }">
+                <image class="module-icon" :src="module.icon" mode="aspectFit" />
               </view>
-              <view class="asset-info">
-                <text class="asset-name">{{ asset.name }}</text>
+              <view class="module-info">
+                <text class="module-name">{{ module.name }}</text>
+                <text class="module-desc">{{ module.desc }}</text>
               </view>
-              <view class="asset-right">
-                <view class="asset-amount-wrap">
-                  <text class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</text>
+              <view class="module-right">
+                <view class="module-amount-wrap">
+                  <text class="module-amount font-mono">{{ isVisible ? module.amount : '****' }}</text>
                 </view>
                 <text class="icon-chevron">›</text>
               </view>
@@ -85,16 +86,23 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import { getAccountById } from '@/api/modules/asset'
 
 const isVisible = ref(true)
 
 const accountData = ref({
-  institutionName: '中信证券',
-  totalBalance: 4120500.00,
-  todayChange: '+12,400.50',
-  totalChange: '+450,210.00',
-  availableBalance: '128,450.00',
-  avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20stock%20trader%20portrait&image_size=square'
+  accountId: '',
+  accountType: '',
+  accountName: '',
+  accountNumber: '',
+  
+  instCode: '',
+  instName: '',
+
+  totalBalance: 0,
+  todayChange: '',
+  totalChange: '',
+  availableBalance: '',
 })
 
 const quickActions = ref([
@@ -104,10 +112,7 @@ const quickActions = ref([
   { id: 'query', icon: '/static/assets/actions/query.png', label: '查询', bgClass: 'bg-gray' }
 ])
 
-const assetList = ref([
-  { id: '1', type: 'stock', icon: '股', name: '股票', amount: '¥3,250,000.00', bgColor: 'rgba(183, 16, 42, 0.1)', iconColor: '#b7102a' },
-  { id: '2', type: 'fund', icon: '基', name: '基金', amount: '¥742,050.00', bgColor: 'rgba(0, 103, 84, 0.1)', iconColor: '#006754' }
-])
+const moduleList = ref([])
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -120,11 +125,9 @@ const toggleVisibility = () => {
   isVisible.value = !isVisible.value
 }
 
-const currentAccountType = ref('security')
-
 const handleSettings = () => {
   uni.navigateTo({
-    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+    url: `/pages/asset/account/edit?accountId=${accountData.value.accountId}`
   })
 }
 
@@ -142,26 +145,60 @@ const handleAction = (actionId) => {
   }
 }
 
-const handleAssetTap = (asset) => {
+const handleModuleTap = (module) => {
   const paths = {
     stock: '/pages/asset/holding/stock',
     fund: '/pages/asset/holding/fund'
   }
-  console.log(asset.type)
-  const url = paths[asset.type]
+  console.log(module.type)
+  const url = paths[module.type]
   if (url) {
     uni.navigateTo({ url })
   } else {
-    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
   }
 }
 
 onLoad((options) => {
-  if (options?.institutionName) {
-    accountData.value.institutionName = decodeURIComponent(options.institutionName)
-  }
-  if (options?.balance) {
-    accountData.value.totalBalance = parseFloat(options.balance) || 4120500.00
+  const accountId = options.accountId
+  if (accountId) {
+    getAccountById(accountId).then(res => {
+      if (res.statusCode === 200) {
+        const data = res.data
+        accountData.value = {
+          accountId: data.accountId || data.id || '',
+          accountType: data.accountType || '',
+          accountName: data.accountName || '',
+          accountNumber: data.accountNumber || '',
+
+          instCode: data.instCode || '',
+          instName: data.instName || '',
+          
+          totalBalance: 0,
+          todayChange: '',
+          totalChange: '',
+          availableBalance: '',
+        }
+        if (data.modules && data.modules.length > 0) {
+          moduleList.value = data.modules.map(m => {
+            return {
+              id: m.id,
+              icon: m.iconUrl,
+              bgColor: m.bgColor,
+              name: m.moduleName,
+              desc: '',
+              amount: 0,
+              targetPath: ''
+            }
+          })
+        }
+      } else {
+        uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+      }
+    }).catch(err => {
+      console.error('获取账户详情失败:', err)
+      uni.showToast({ title: '网络请求失败', icon: 'none' })
+    })
   }
 })
 </script>
@@ -382,64 +419,70 @@ onLoad((options) => {
   color: $on-surface;
 }
 
-.asset-list {
+.module-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.asset-item {
+.module-item {
   display: flex;
   align-items: center;
-  padding: $spacing-5;
+  padding: $spacing-4;
   background: $surface-container-lowest;
   border-radius: $rounded-lg;
   box-shadow: $shadow-sm;
 }
 
-.asset-icon-wrap {
+.module-icon-wrap {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: $surface-container-lowest;
 }
 
-.asset-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.asset-info {
+.module-info {
   flex: 1;
   padding: 0 $spacing-4;
 }
 
-.asset-name {
+.module-name {
   font-size: $font-size-body-reg;
-  font-weight: $font-weight-bold;
+  font-weight: $font-weight-semibold;
   color: $on-surface;
 }
 
-.asset-right {
+.module-desc {
+  font-size: $font-size-body-sm;
+  color: $outline;
+  margin-top: 4rpx;
+}
+
+.module-right {
   display: flex;
   align-items: center;
   gap: $spacing-2;
 }
 
-.asset-amount-wrap {
+.module-amount-wrap {
   text-align: right;
 }
 
-.asset-amount {
+.module-amount {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
 }
 
 .icon-chevron {
-  font-family: 'Material Symbols Outlined';
   font-size: 28rpx;
   color: $outline-variant;
 }

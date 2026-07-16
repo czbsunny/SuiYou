@@ -37,25 +37,26 @@
           <view class="section-header">
             <text class="section-title">资产列表</text>
           </view>
-          <view class="asset-list">
+          <view class="module-list">
             <view 
-              v-for="asset in assetList" 
-              :key="asset.id" 
-              class="asset-item"
-              @tap="handleAssetTap(asset)"
+              v-for="module in moduleList" 
+              :key="module.id" 
+              class="module-item"
+              @tap="handleModuleTap(module)"
             >
-              <view class="asset-icon-wrap" :style="{ background: asset.bgColor }">
-                <text class="asset-icon" :style="{ color: asset.iconColor }">{{ asset.icon }}</text>
+              <view class="module-icon-wrap" :style="{ background: module.bgColor }">
+                <image class="module-icon" :src="module.icon" mode="aspectFit" />
               </view>
-              <view class="asset-info">
-                <text class="asset-name">{{ asset.name }}</text>
-                <text class="asset-desc">{{ asset.desc }}</text>
+              <view class="module-info">
+                <text class="module-name">{{ module.name }}</text>
+                <text class="module-desc">{{ module.desc }}</text>
               </view>
-              <view class="asset-right">
-                <view class="asset-amount-wrap">
-                  <text class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</text>
-                  <text v-if="asset.subText" class="asset-sub" :class="asset.subClass">{{ asset.subText }}</text>
+              <view class="module-right">
+                <view class="module-amount-wrap">
+                  <text class="module-amount font-mono">{{ isVisible ? module.amount : '****' }}</text>
+                  <text v-if="module.subText" class="module-sub" :class="module.subClass">{{ module.subText }}</text>
                 </view>
+                <text class="icon-chevron">›</text>
               </view>
             </view>
           </view>
@@ -68,27 +69,23 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-
-const isVisible = ref(true)
+import { getAccountById } from '@/api/modules/asset'
 
 const accountData = ref({
-  institutionName: 'Heritage Hearth',
-  totalBalance: 862450.00,
-  yesterdayChange: '+128.45',
-  totalChange: '+42,105.12',
-  avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20wealth%20manager%20studio%20portrait&image_size=square'
+  accountId: '',
+  accountType: '',
+  accountName: '',
+  accountNumber: '',
+  
+  instCode: '',
+  instName: '',
+
+  totalBalance: 0,
+  yesterdayChange: '',
+  totalChange: ''
 })
 
-const assetList = ref([
-  { id: '1', icon: '余', name: '余额', desc: '流动资金', amount: '12,450.00', subText: 'CNY', subClass: 'text-gray', bgColor: '#EFF6FF', iconColor: '#2563EB', targetPath: '/pages/asset/holding/current' },
-  { id: '2', icon: '宝', name: '余额宝', desc: '收益稳健', amount: '256,000.00', subText: '+2.15%', subClass: 'text-secondary', bgColor: '#EFF6FF', iconColor: '#2563EB', targetPath: '/pages/asset/holding/current-plus' },
-  { id: '3', icon: '花', name: '花呗', desc: '下月应还', amount: '-1,240.50', subText: '10月账单', subClass: 'text-gray', bgColor: '#FFF7ED', iconColor: '#EA580C' },
-  { id: '4', icon: '借', name: '借呗', desc: '额度可用', amount: '50,000.00', subText: '免息中', subClass: 'text-primary', bgColor: '#EEF2FF', iconColor: '#4F46E5' },
-  { id: '5', icon: '利', name: '余利宝', desc: '企业理财', amount: '142,500.00', subText: '稳健经营', subClass: 'text-gray', bgColor: '#ECFDF5', iconColor: '#059669' },
-  { id: '6', icon: '荷', name: '小荷包', desc: '共同攒钱', amount: '2,500.00', subText: '攒钱计划', subClass: 'text-pink', bgColor: '#FDF2F8', iconColor: '#DB2777' },
-  { id: '7', icon: '基', name: '基金', desc: '持有3支', amount: '382,000.00', subText: '+15.2%', subClass: 'text-secondary', bgColor: '#F5F3FF', iconColor: '#7C3AED' },
-  { id: '8', icon: '金', name: '黄金', desc: '实物黄金', amount: '15,000.00', subText: '32g', subClass: 'text-gray', bgColor: '#FFFBEB', iconColor: '#D97706' }
-])
+const moduleList = ref([])
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -97,41 +94,74 @@ const formattedBalance = computed(() => {
   })
 })
 
+const isVisible = ref(true)
+
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
 }
 
-const currentAccountType = ref('alipay')
-
 const handleSettings = () => {
   uni.navigateTo({
-    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+    url: `/pages/asset/account/edit?accountId=${accountData.value.accountId}`
   })
 }
 
-const handleAssetTap = (asset) => {
-  if (asset.targetPath) {
+const handleModuleTap = (module) => {
+  if (module.targetPath) {
     uni.navigateTo({
-      url: `${asset.targetPath}?data=${encodeURIComponent(JSON.stringify({
-        id: asset.id,
-        name: asset.name,
-        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
+      url: `${module.targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: module.id,
+        name: module.name,
+        availableBalance: parseFloat(String(module.amount).replace(/,/g, '')) || 0
       }))}`,
       fail: () => {
-        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+        uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
       }
     })
   } else {
-    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${module.name}详情开发中`, icon: 'none' })
   }
 }
 
 onLoad((options) => {
-  if (options?.institutionName) {
-    accountData.value.institutionName = decodeURIComponent(options.institutionName)
-  }
-  if (options?.balance) {
-    accountData.value.totalBalance = parseFloat(options.balance) || 862450.00
+  const accountId = options.accountId
+  if (accountId) {
+    getAccountById(accountId).then(res => {
+      if (res.statusCode === 200) {
+        const data = res.data
+        accountData.value = {
+          accountId: data.accountId || data.id || '',
+          accountType: data.accountType || '',
+          accountName: data.accountName || '',
+          accountNumber: data.accountNumber || '',
+
+          instCode: data.instCode || '',
+          instName: data.instName || '',
+          
+          totalBalance: 0,
+          yesterdayChange: '',
+          totalChange: ''
+        }
+        if (data.modules && data.modules.length > 0) {
+          moduleList.value = data.modules.map(m => {
+            return {
+              id: m.id,
+              icon: m.iconUrl,
+              bgColor: m.bgColor,
+              name: m.moduleName,
+              desc: '',
+              amount: 0,
+              targetPath: ''
+            }
+          })
+        }
+      } else {
+        uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+      }
+    }).catch(err => {
+      console.error('获取账户详情失败:', err)
+      uni.showToast({ title: '网络请求失败', icon: 'none' })
+    })
   }
 })
 </script>
@@ -249,18 +279,6 @@ onLoad((options) => {
   color: $secondary;
 }
 
-.text-primary {
-  color: $primary;
-}
-
-.text-gray {
-  color: $on-surface-variant;
-}
-
-.text-pink {
-  color: #DB2777;
-}
-
 .section {
   margin-top: $stack-gap-md;
 }
@@ -278,71 +296,77 @@ onLoad((options) => {
   color: $on-surface;
 }
 
-.asset-list {
+.module-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.asset-item {
+.module-item {
   display: flex;
   align-items: center;
   padding: $spacing-4;
   background: $surface-container-lowest;
-  border-radius: 24rpx;
+  border-radius: $rounded-lg;
   box-shadow: $shadow-sm;
 }
 
-.asset-icon-wrap {
-  width: 80rpx;
-  height: 80rpx;
+.module-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: $spacing-4;
+  background: $surface-container-lowest;
 }
 
-.asset-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 40rpx;
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.asset-info {
+.module-info {
   flex: 1;
+  padding: 0 $spacing-4;
 }
 
-.asset-name {
+.module-name {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-semibold;
   color: $on-surface;
 }
 
-.asset-desc {
+.module-desc {
   font-size: $font-size-body-sm;
-  color: $on-surface-variant;
+  color: $outline;
   margin-top: 4rpx;
 }
 
-.asset-right {
+.module-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.module-amount-wrap {
   text-align: right;
 }
 
-.asset-amount-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.asset-amount {
+.module-amount {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
 }
 
-.asset-sub {
+.module-sub {
   font-size: 20rpx;
   font-family: $font-family-mono;
   margin-top: 4rpx;
+}
+
+.icon-chevron {
+  font-size: 28rpx;
+  color: $outline-variant;
 }
 </style>

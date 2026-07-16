@@ -53,6 +53,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountRespDTO getAccountById(Long id) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        Account account = accountRepository.findByIdAndOwnerId(id, userId)
+                .orElseThrow(() -> new RuntimeException("Account not found: " + id));
+        return toAccountRespDTO(account);
+    }
+
+    @Override
     @Transactional
     public AccountRespDTO createAccount(CreateAccountDTO dto) {
         Long currentUserId = SecurityUtils.getCurrentUserId();
@@ -82,14 +90,16 @@ public class AccountServiceImpl implements AccountService {
                 if (template != null) {
                     module.setIconUrl(template.getIconUrl());
                     module.setCanPay(template.getCanPay() ? 1 : 0);
-                } else {
-                    ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
-                    if (moduleType == null) {
-                        throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
-                    }
-                    module.setIconUrl(moduleType.getIconUrl());
-                    module.setCanPay(moduleType.isCanPay() ? 1 : 0);
                 }
+                
+                ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
+                if (moduleType == null) {
+                    throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
+                }
+                module.setBgColor(moduleType.getBgColor());
+                module.setIconUrl(moduleType.getIconUrl());
+                module.setCanPay(moduleType.isCanPay() ? 1 : 0);
+                
                 module.setSortOrder(sortOrder++);
                 modules.add(module);
             }
@@ -126,9 +136,9 @@ public class AccountServiceImpl implements AccountService {
                 .accountTypeName(accountTypeName)
                 .amount(account.getAmount())
                 .instCode(account.getInstCode())
+                .instName(instName)
                 .instType(instType)
                 .instTypeName(instTypeName)
-                .instName(instName)
                 .logoUrl(logoUrl)
                 .build();
     }
@@ -142,8 +152,10 @@ public class AccountServiceImpl implements AccountService {
         SysInstitution institution = sysInstitutionRepository.findByInstCode(account.getInstCode());
         String instType = null;
         String instTypeName = null;
+        String instName = null;
         if (institution != null) {
             instType = institution.getInstType();
+            instName = institution.getInstName();
             InstType instTypeEnum = InstType.ofCode(instType);
             instTypeName = instTypeEnum != null ? instTypeEnum.getName() : null;
         }
@@ -157,6 +169,7 @@ public class AccountServiceImpl implements AccountService {
         return AccountRespDTO.builder()
                 .id(account.getId())
                 .instCode(account.getInstCode())
+                .instName(instName)
                 .instType(instType)
                 .instTypeName(instTypeName)
                 .accountNo(account.getAccountNo())
@@ -175,6 +188,7 @@ public class AccountServiceImpl implements AccountService {
                 .moduleType(module.getModuleType())
                 .moduleName(module.getModuleName())
                 .iconUrl(module.getIconUrl())
+                .bgColor(module.getBgColor())
                 .canPay(module.getCanPay())
                 .sortOrder(module.getSortOrder())
                 .build();

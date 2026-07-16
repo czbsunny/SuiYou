@@ -31,4 +31,10 @@ public class AccountController {
         AccountRespDTO account = accountService.createAccount(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(account);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountRespDTO> getAccountById(@PathVariable Long id) {
+        AccountRespDTO account = accountService.getAccountById(id);
+        return ResponseEntity.ok(account);
+    }
 }

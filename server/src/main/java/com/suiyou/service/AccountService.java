@@ -9,4 +9,5 @@ import java.util.List;
 public interface AccountService {
     List<AccountListItemRespDTO> getAccountsByOwnerId(Long ownerId);
     AccountRespDTO createAccount(CreateAccountDTO dto);
+    AccountRespDTO getAccountById(Long id);
 }

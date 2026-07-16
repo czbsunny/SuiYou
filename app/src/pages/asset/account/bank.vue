@@ -47,28 +47,28 @@
           </view>
         </view>
 
-        <!-- Asset List Section -->
+        <!-- Module List Section -->
         <view class="section">
           <view class="section-header">
             <text class="section-title">资产列表</text>
           </view>
-          <view class="asset-list">
+          <view class="module-list">
             <view 
-              v-for="asset in assetList" 
-              :key="asset.id" 
-              class="asset-item"
-              @tap="handleAssetTap(asset)"
+              v-for="module in moduleList" 
+              :key="module.id" 
+              class="module-item"
+              @tap="handleModuleTap(module)"
             >
-              <view class="asset-icon-wrap" :style="{ background: asset.bgColor }">
-                <text class="asset-icon" :style="{ color: asset.iconColor }">{{ asset.icon }}</text>
+              <view class="module-icon-wrap" :style="{ background: module.bgColor }">
+                <image class="module-icon" :src="module.icon" mode="aspectFit" />
               </view>
-              <view class="asset-info">
-                <text class="asset-name">{{ asset.name }}</text>
-                <text class="asset-desc">{{ asset.desc }}</text>
+              <view class="module-info">
+                <text class="module-name">{{ module.name }}</text>
+                <text class="module-desc">{{ module.desc }}</text>
               </view>
-              <view class="asset-right">
-                <view class="asset-amount-wrap">
-                  <text class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</text>
+              <view class="module-right">
+                <view class="module-amount-wrap">
+                  <text class="module-amount font-mono">{{ isVisible ? module.amount : '****' }}</text>
                 </view>
                 <text class="icon-chevron">›</text>
               </view>
@@ -83,15 +83,22 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
+import { getAccountById } from '@/api/modules/asset'
 
 const isVisible = ref(true)
 
 const accountData = ref({
-  institutionName: 'Construction Bank',
-  totalBalance: 842500.00,
-  yesterdayChange: '+1,240.50',
-  availableBalance: '124,000.00',
-  avatarUrl: 'https://neeko-copilot.bytedance.net/api/text2image?prompt=professional%20bank%20manager%20portrait&image_size=square'
+  accountId: '',
+  accountType: '',
+  accountName: '',
+  accountNumber: '',
+  
+  instCode: '',
+  instName: '',
+
+  totalBalance: 0,
+  yesterdayChange: '',
+  availableBalance: ''
 })
 
 const quickActions = ref([
@@ -101,13 +108,7 @@ const quickActions = ref([
   { id: 'bill', icon: '/static/assets/actions/bill.png', label: '收支' }
 ])
 
-const assetList = ref([
-  { id: '1', icon: '活', name: '活期资产', desc: '高收益现金管理', amount: '124,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754', targetPath: '/pages/asset/holding/current' },
-  { id: '2', icon: '+', name: '活期+', desc: '高收益现金管理', amount: '312,500.00', bgColor: 'rgba(255, 218, 216, 0.2)', iconColor: '#b7102a', targetPath: '/pages/asset/holding/current-plus' },
-  { id: '3', icon: '定', name: '定期存款', desc: '稳健理财', amount: '200,000.00', bgColor: 'rgba(255, 222, 170, 0.2)', iconColor: '#705624', targetPath: '/pages/asset/holding/deposit' },
-  { id: '4', icon: '基', name: '基金', desc: '长期稳健增值', amount: '206,000.00', bgColor: 'rgba(132, 214, 190, 0.2)', iconColor: '#006754', targetPath: '/pages/asset/holding/fund' },
-  { id: '5', icon: '贷', name: '贷款', desc: '待还贷款', amount: '1,286,450.00', bgColor: 'rgba(239, 68, 68, 0.1)', iconColor: '#DC2626', targetPath: '/pages/asset/holding/loan' }
-])
+const moduleList = ref([])
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -120,11 +121,9 @@ const toggleVisibility = () => {
   isVisible.value = !isVisible.value
 }
 
-const currentAccountType = ref('bank')
-
 const handleSettings = () => {
   uni.navigateTo({
-    url: `/pages/asset/account/edit?accountType=${currentAccountType.value}&institutionName=${encodeURIComponent(accountData.value.institutionName || '')}`
+    url: `/pages/asset/account/edit?accountId=${accountData.value.accountId}`
   })
 }
 
@@ -138,29 +137,62 @@ const handleAction = (actionId) => {
   uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
 }
 
-const handleAssetTap = (asset) => {
-  if (asset.targetPath) {
+const handleModuleTap = (mod) => {
+  if (mod.targetPath) {
     uni.navigateTo({
-      url: `${asset.targetPath}?data=${encodeURIComponent(JSON.stringify({
-        id: asset.id,
-        name: asset.name,
-        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
+      url: `${mod.targetPath}?data=${encodeURIComponent(JSON.stringify({
+        id: mod.id,
+        name: mod.name,
+        availableBalance: parseFloat(String(mod.amount).replace(/,/g, '')) || 0
       }))}`,
       fail: () => {
-        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+        uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
       }
     })
   } else {
-    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
   }
 }
 
 onLoad((options) => {
-  if (options?.institutionName) {
-    accountData.value.institutionName = decodeURIComponent(options.institutionName)
-  }
-  if (options?.balance) {
-    accountData.value.totalBalance = parseFloat(options.balance) || 842500.00
+  const accountId = options.accountId
+  if (accountId) {
+    getAccountById(accountId).then(res => {
+      if (res.statusCode === 200) {
+        const data = res.data
+        accountData.value = {
+          accountId: data.accountId || data.id || '',
+          accountType: data.accountType || '',
+          accountName: data.accountName || '',
+          accountNumber: data.accountNumber || '',
+
+          instCode: data.instCode || '',
+          instName: data.instName || '',
+          
+          totalBalance: 0,
+          yesterdayChange: '',
+          availableBalance: ''
+        }
+        if (data.modules && data.modules.length > 0) {
+          moduleList.value = data.modules.map(m => {
+            return {
+              id: m.id,
+              icon: m.iconUrl,
+              bgColor: m.bgColor,
+              name: m.moduleName,
+              desc: '',
+              amount: 0,
+              targetPath: ''
+            }
+          })
+        }
+      } else {
+        uni.showToast({ title: '获取账户详情失败', icon: 'none' })
+      }
+    }).catch(err => {
+      console.error('获取账户详情失败:', err)
+      uni.showToast({ title: '网络请求失败', icon: 'none' })
+    })
   }
 })
 </script>
@@ -332,13 +364,13 @@ onLoad((options) => {
   color: $on-surface;
 }
 
-.asset-list {
+.module-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.asset-item {
+.module-item {
   display: flex;
   align-items: center;
   padding: $spacing-4;
@@ -347,55 +379,55 @@ onLoad((options) => {
   box-shadow: $shadow-sm;
 }
 
-.asset-icon-wrap {
+.module-icon-wrap {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: $surface-container-lowest;
 }
 
-.asset-icon {
-  font-family: 'Material Symbols Outlined';
-  font-size: 36rpx;
+.module-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.asset-info {
+.module-info {
   flex: 1;
   padding: 0 $spacing-4;
 }
 
-.asset-name {
+.module-name {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-semibold;
   color: $on-surface;
 }
 
-.asset-desc {
+.module-desc {
   font-size: $font-size-body-sm;
   color: $outline;
   margin-top: 4rpx;
 }
 
-.asset-right {
+.module-right {
   display: flex;
   align-items: center;
   gap: $spacing-2;
 }
 
-.asset-amount-wrap {
+.module-amount-wrap {
   text-align: right;
 }
 
-.asset-amount {
+.module-amount {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;
 }
 
 .icon-chevron {
-  font-family: 'Material Symbols Outlined';
   font-size: 28rpx;
   color: $outline-variant;
 }

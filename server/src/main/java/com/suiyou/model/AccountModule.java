@@ -26,6 +26,9 @@ public class AccountModule {
     @Column(name = "icon_url", nullable = false, length = 255)
     private String iconUrl;
     
+    @Column(name = "bg_color", nullable = false, length = 10)
+    private String bgColor;
+    
     @Column(name = "can_pay", nullable = false, columnDefinition = "tinyint(1) default 0")
     private Integer canPay = 0;
     
