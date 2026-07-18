@@ -30,7 +30,7 @@
         <view class="section-label">选择一个目标分类</view>
         <view 
           v-for="cat in categories" 
-          :key="cat.categoryCode" 
+          :key="cat.code" 
           class="goal-card" 
           @click="toStepTwo(cat)"
         >
@@ -54,7 +54,7 @@
 
         <view 
           v-for="tpl in filteredTemplates" 
-          :key="tpl.templateCode" 
+          :key="tpl.code" 
           class="goal-card tpl-card" 
           @click="handleFinalSelect(tpl)"
         >
@@ -90,7 +90,7 @@ const selectedCat = ref(null);
 
 const filteredTemplates = computed(() => {
   if (!selectedCat.value) return [];
-  return props.templates.filter(t => t.categoryCode === selectedCat.value.categoryCode);
+  return props.templates.filter(t => t.categoryCode === selectedCat.value.code);
 });
 
 const toStepTwo = (cat) => {
@@ -114,7 +114,11 @@ const formatMoney = (val) => Number(val).toLocaleString();
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
 
-.goal-selector { width: 100%; min-height: 100vh; background-color: $background; }
+.goal-selector { 
+  width: 100%; 
+  min-height: 100vh; 
+  background-color: $background; 
+}
 
 .header-area {
   padding: $spacing-4 $spacing-4 $spacing-5;

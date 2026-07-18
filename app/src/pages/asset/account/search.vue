@@ -480,7 +480,7 @@ onMounted(async () => {
   .logo-wrapper {
     width: 88rpx; 
     height: 88rpx; 
-    border-radius: $rounded-full; 
+    border-radius: 20rpx; 
     display: flex; 
     align-items: center; 
     justify-content: center; 

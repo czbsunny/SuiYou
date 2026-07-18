@@ -3,12 +3,9 @@ import {
   getGoalList,
   getGoalDetail,
   createGoal,
-  updateGoal,
   deleteGoal,
-  completeGoal,
   getGoalCategories,
-  getGoalTemplates,
-  getGoalProgress
+  getGoalTemplates
 } from '@/api/modules/goal'
 
 export const useGoalStore = defineStore('goal', {
@@ -38,8 +35,8 @@ export const useGoalStore = defineStore('goal', {
       try {
         const res = await getGoalList(params)
         const result = res.data
-        this.goalList = result.list || result
-        this.total = result.total || this.goalList.length
+        this.goalList = result.goals || []
+        this.total = result.count || this.goalList.length
         return this.goalList
       } catch (error) {
         console.error('获取目标列表失败:', error)
@@ -53,8 +50,8 @@ export const useGoalStore = defineStore('goal', {
       try {
         const res = await getGoalDetail(id)
         const detail = res.data
-        this.currentGoal = detail
-        return detail
+        this.currentGoal = detail.goal || detail
+        return this.currentGoal
       } catch (error) {
         console.error('获取目标详情失败:', error)
         throw error
@@ -73,18 +70,6 @@ export const useGoalStore = defineStore('goal', {
       }
     },
 
-    async updateGoal(id, data) {
-      try {
-        const res = await updateGoal(id, data)
-        const result = res.data
-        await this.fetchGoalList()
-        return result
-      } catch (error) {
-        console.error('更新目标失败:', error)
-        throw error
-      }
-    },
-
     async deleteGoal(id) {
       try {
         const res = await deleteGoal(id)
@@ -97,50 +82,26 @@ export const useGoalStore = defineStore('goal', {
       }
     },
 
-    async completeGoalAction(id) {
-      try {
-        const res = await completeGoal(id)
-        const result = res.data
-        await this.fetchGoalList()
-        return result
-      } catch (error) {
-        console.error('完成目标失败:', error)
-        throw error
-      }
-    },
-
     async fetchCategories() {
       try {
         const res = await getGoalCategories()
-        const categories = res.data
-        this.categories = categories
-        return categories
+        const result = res.data
+        this.categories = result.categories || []
+        return this.categories
       } catch (error) {
         console.error('获取目标分类失败:', error)
         throw error
       }
     },
 
-    async fetchTemplates() {
+    async fetchTemplates(categoryCode) {
       try {
-        const res = await getGoalTemplates()
-        const templates = res.data
-        this.templates = templates
-        return templates
+        const res = await getGoalTemplates(categoryCode)
+        const result = res.data
+        this.templates = result.templates || []
+        return this.templates
       } catch (error) {
         console.error('获取目标模板失败:', error)
-        throw error
-      }
-    },
-
-    async fetchProgress(id) {
-      try {
-        const res = await getGoalProgress(id)
-        const progress = res.data
-        this.progress = progress
-        return progress
-      } catch (error) {
-        console.error('获取目标进度失败:', error)
         throw error
       }
     },

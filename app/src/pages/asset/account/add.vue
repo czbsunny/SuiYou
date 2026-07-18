@@ -147,7 +147,7 @@
     <view class="bottom-bar">
       <view class="bottom-content">
         <button class="confirm-btn" @tap="handleConfirm" :disabled="!canSubmit || submitting">
-          <text class="btn-text">{{ submitting ? '提交中...' : '确认添加' }}</text>
+          <text class="btn-text">{{ submitting ? '创建中...' : '创建' }}</text>
         </button>
       </view>
     </view>

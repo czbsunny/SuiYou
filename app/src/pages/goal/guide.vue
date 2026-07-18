@@ -1,28 +1,40 @@
 <template>
   <view class="guide-container">
     <GoalGuide 
-      :categories="goalStore.categories"
-      :templates="goalStore.templates"
+      :categories="categories"
+      :templates="templates"
       @select="handleGoalSelect"
     />
   </view>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { useGoalStore } from '@/stores/goal.js';
+import { getGoalCategories, getGoalTemplates } from '@/api/modules/goal';
 import GoalGuide from '@/components/goals/GoalGuide.vue';
 
-const goalStore = useGoalStore();
+const categories = ref([]);
+const templates = ref([]);
 
-onLoad(async () => {
-  await goalStore.fetchCategories();
-  await goalStore.fetchTemplates();
-});
+const loadData = async () => {
+  try {
+    const categoryRes = await getGoalCategories();
+    categories.value = categoryRes.data.categories || [];
+    
+    const templateRes = await getGoalTemplates();
+    templates.value = templateRes.data.templates || [];
+  } catch (error) {
+    console.error('加载目标数据失败:', error);
+  }
+};
+
+onLoad(loadData);
 
 const handleGoalSelect = (template) => {
+  const tplStr = encodeURIComponent(JSON.stringify(template));
   uni.navigateTo({
-    url: `/pages/goal/add?tpl=${template.code || template.templateCode}`
+    url: `/pages/goal/add?tpl=${tplStr}`
   });
 };
 </script>

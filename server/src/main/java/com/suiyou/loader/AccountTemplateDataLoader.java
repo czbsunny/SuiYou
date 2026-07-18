@@ -5,20 +5,18 @@ import com.suiyou.enums.ModuleType;
 import com.suiyou.model.SysAccountTemplate;
 import com.suiyou.repository.SysAccountTemplateRepository;
 import com.suiyou.repository.SysInstitutionRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.*;
 
 @Component
 @Order(2)
-@Slf4j
+@lombok.extern.slf4j.Slf4j
 public class AccountTemplateDataLoader extends AbstractConfigLoader {
 
     @Autowired
@@ -31,10 +29,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
     private Resource jsonResource;
     
     @Override
-    @Transactional
     protected void loadConfig() throws Exception {
-        log.info("开始同步账户模板数据...");
-
         if (!jsonResource.exists()) {
             log.warn("账户模板配置文件不存在，跳过加载");
             return;
@@ -45,15 +40,16 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
             new TypeReference<Map<String, Object>>() {}
         );
 
-        List<SysAccountTemplate> allTemplates = new ArrayList<>();
+        Map<String, SysAccountTemplate> templateMap = new HashMap<>();
         
         Map<String, Object> typeRules = (Map<String, Object>) config.get("typeRules");
         List<Map<String, Object>> instModuleRules = (List<Map<String, Object>>) config.get("instModuleRules");
 
-        Set<String> allInstCodes = new HashSet<>();
-        institutionRepository.findAll().forEach(inst -> allInstCodes.add(inst.getInstCode()));
+        List<String> allInstCodes = institutionRepository.findAll().stream()
+            .map(inst -> inst.getInstCode())
+            .toList();
         
-        Map<String, SysAccountTemplate> templateMap = new HashMap<>();
+        log.info("发现 {} 个机构，开始生成账户模板...", allInstCodes.size());
 
         for (Map.Entry<String, Object> typeEntry : typeRules.entrySet()) {
             String accountType = typeEntry.getKey();
@@ -67,6 +63,8 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
                 }
             }
         }
+
+        log.info("基础规则生成完成，已生成 {} 条模板", templateMap.size());
 
         for (Map<String, Object> instModuleRule : instModuleRules) {
             String instCode = (String) instModuleRule.get("instCode");
@@ -84,7 +82,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
             
             ModuleType moduleTypeEnum = ModuleType.ofCode(moduleType);
             if (moduleTypeEnum == null) {
-                log.warn("模块类型 {} 不存在于枚举中，跳过", moduleTypeEnum);
+                log.warn("模块类型 {} 不存在于枚举中，跳过", moduleType);
                 continue;
             }
             
@@ -104,14 +102,28 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
             templateMap.put(key, template);
         }
 
-        allTemplates.addAll(templateMap.values());
+        log.info("机构特殊规则合并完成，共 {} 条模板", templateMap.size());
 
-        accountTemplateRepository.deleteAll();
-        accountTemplateRepository.saveAll(allTemplates);
+        log.info("开始删除旧数据...");
+        accountTemplateRepository.deleteAllInBatch();
+        log.info("旧数据删除完成");
+        
+        List<SysAccountTemplate> allTemplates = new ArrayList<>(templateMap.values());
+        int batchSize = 200;
+        for (int i = 0; i < allTemplates.size(); i += batchSize) {
+            int end = Math.min(i + batchSize, allTemplates.size());
+            accountTemplateRepository.saveAll(allTemplates.subList(i, end));
+            log.info("已保存 {}-{} 条模板", i + 1, end);
+        }
         
         updateConfigVersion("account_template_data", DigestUtils.md5DigestAsHex(objectMapper.writeValueAsBytes(config)));
         
         log.info("账户模板数据同步完成，共 {} 条记录", allTemplates.size());
+    }
+    
+    @Override
+    protected String getLoaderName() {
+        return "账户模板数据加载器";
     }
     
     private List<SysAccountTemplate> buildTemplates(String instCode, String accountType, Map<String, Object> moduleRules) {

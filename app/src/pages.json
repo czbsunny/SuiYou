@@ -36,8 +36,8 @@
     {
       "path": "pages/goal/guide",
       "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "开启目标",
+        "navigationStyle": "default",
+        "navigationBarTitleText": "选择目标",
         "backgroundColor": "#FAF9F6"
       }
     },
@@ -45,7 +45,7 @@
       "path": "pages/goal/add",
       "style": {
         "navigationStyle": "default",
-        "navigationBarTitleText": "目标信息",
+        "navigationBarTitleText": "新增目标",
         "backgroundColor": "#FAF9F6"
       }
     },
@@ -110,7 +110,7 @@
       "path": "pages/asset/account/add",
       "style": {
         "navigationStyle": "default",
-        "navigationBarTitleText": "账户信息",
+        "navigationBarTitleText": "新增账户",
         "backgroundColor": "#FAF9F6"
       }
     },
