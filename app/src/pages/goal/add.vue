@@ -126,14 +126,11 @@ const handleSave = async () => {
     await createGoal(createData);
 
     uni.hideLoading();
-    uni.showToast({ title: '目标已开启！', icon: 'success' });
+    uni.showToast({ title: '创建目标成功！', icon: 'success' });
     
     setTimeout(() => {
       uni.switchTab({
-        url: '/pages/goal/index',
-        success: () => {
-          uni.$emit('refreshGoalList'); 
-        }
+        url: '/pages/goal/index'
       });
     }, 1500);
   } catch (error) {

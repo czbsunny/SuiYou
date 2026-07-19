@@ -6,14 +6,14 @@
           <text class="eyebrow">累计储蓄</text>
           <view class="amount-row">
             <text class="currency">¥</text>
-            <text class="hero-amount">1,248,500.00</text>
+            <text class="hero-amount">{{ totalSaved }}</text>
           </view>
           <view class="progress-head">
             <text>总体进度</text>
-            <text class="percent">64%</text>
+            <text class="percent">{{ overallProgress }}%</text>
           </view>
           <view class="progress-track">
-            <view class="progress-fill" style="width: 64%"></view>
+            <view class="progress-fill" :style="{ width: `${overallProgress}%` }"></view>
           </view>
         </view>
 
@@ -38,8 +38,12 @@
           <view v-for="goal in goals" :key="goal.name" class="goal-card" @tap="handleTap(goal)">
             <view class="goal-head">
               <view class="round-icon">
-                <text>{{ goal.icon }}</text>
-              </view>
+              <image v-if="goal.icon && (goal.icon.startsWith('http') || goal.icon.startsWith('/static'))" 
+                     :src="goal.icon" 
+                     class="round-icon-img" 
+                     mode="aspectFit" />
+              <text v-else>{{ goal.icon }}</text>
+            </view>
               <view class="goal-main">
                 <text class="goal-title">{{ goal.name }}</text>
                 <text class="goal-subtitle">{{ goal.desc }}</text>
@@ -77,16 +81,60 @@
 
 <script setup>
 import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import { getGoalList } from '@/api/modules/goal.js'
 
 const isSortOpen = ref(false)
 
 const sortBy = ref('target')
 
-const goals = ref([
-  { name: '购车计划', desc: '家庭 SUV 升级', saved: '450,000', target: '600,000', progress: 75, start: '2023.01', end: '2024.12', badge: '还剩 45 天', icon: 'car' },
-  { name: '教育基金', desc: '常春藤盟校储备', saved: '680,000', target: '1,600,000', progress: 42, start: '2022.09', end: '2030.09', badge: '倒计时 6 年', icon: 'edu' },
-  { name: '度假基金', desc: '2025 地中海邮轮游', saved: '118,500', target: '125,000', progress: 95, start: '2024.04', end: '2025.06', badge: '还剩 14 个月', icon: 'sea' }
-])
+const goals = ref([])
+
+const totalSaved = ref('0.00')
+const overallProgress = ref(0)
+
+const fetchGoalList = async () => {
+  uni.showLoading({ title: '加载中...', mask: true })
+  try {
+    const res = await getGoalList()
+    if (res && res.data) {
+      goals.value = res.data.map(item => ({
+        name: item.name,
+        desc: item.description || '',
+        saved: formatAmount(item.currentAmount || 0),
+        target: formatAmount(item.targetAmount || 0),
+        progress: item.progress || 0,
+        start: formatDate(item.startDate),
+        end: formatDate(item.deadline),
+        badge: '',
+        icon: item.iconUrl || '💰',
+        id: item.id,
+        rawCurrentAmount: item.currentAmount || 0,
+        rawTargetAmount: item.targetAmount || 0
+      }))
+
+      const totalCurrent = goals.value.reduce((sum, g) => sum + parseFloat(g.rawCurrentAmount), 0)
+      const totalTarget = goals.value.reduce((sum, g) => sum + parseFloat(g.rawTargetAmount), 0)
+      totalSaved.value = formatAmount(totalCurrent)
+      overallProgress.value = totalTarget > 0 ? Math.round((totalCurrent / totalTarget) * 100) : 0
+    }
+  } catch (error) {
+    console.error('获取目标列表失败:', error)
+    uni.showToast({ title: '加载失败', icon: 'none' })
+  } finally {
+    uni.hideLoading()
+  }
+}
+
+const formatAmount = (amount) => {
+  return parseFloat(amount).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`
+}
 
 const toggleSort = () => {
   isSortOpen.value = !isSortOpen.value
@@ -101,7 +149,7 @@ const selectSort = (type) => {
 const sortGoals = () => {
   goals.value = [...goals.value].sort((a, b) => {
     if (sortBy.value === 'target') {
-      return parseInt(b.target.replace(/,/g, '')) - parseInt(a.target.replace(/,/g, ''))
+      return parseFloat(b.target.replace(/,/g, '')) - parseFloat(a.target.replace(/,/g, ''))
     } else if (sortBy.value === 'progress') {
       return b.progress - a.progress
     }
@@ -110,12 +158,16 @@ const sortGoals = () => {
 }
 
 const handleTap = (goal) => {
-  uni.navigateTo({ url: `/pages/goal/detail?id=${goal.name}` })
+  uni.navigateTo({ url: `/pages/goal/detail?id=${goal.id}` })
 }
 
 const handleCreate = () => {
   uni.navigateTo({ url: '/pages/goal/guide' })
 }
+
+onShow(() => {
+  fetchGoalList()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -280,6 +332,11 @@ const handleCreate = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.round-icon-img {
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .goal-main {
