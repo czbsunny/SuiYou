@@ -31,6 +31,9 @@ public class CreateGoalDTO {
     @Size(max = 255, message = "背景URL长度不能超过255个字符")
     private String bgUrl;
 
+    @NotNull(message = "模板不能为空")
+    private Long templateId;
+
     @NotNull(message = "是否为主线目标不能为空")
     private Boolean isPrimary = false;
 }

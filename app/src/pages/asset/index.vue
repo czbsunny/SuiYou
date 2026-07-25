@@ -35,7 +35,13 @@
           <text class="loading-text">加载中...</text>
         </view>
         <view v-else-if="accounts.length === 0" class="empty-wrap">
-          <text class="empty-text">暂无账户，点击右上角 + 添加</text>
+           <image src="/static/assets/no_data.png" class="empty-img" mode="widthFix" />
+          <text class="empty-title">还没有添加账户</text>
+          <text class="empty-desc">添加账户，全面管理你的资产</text>
+          <view class="empty-btn" @tap="handleAddAccount">
+            <image src="/static/images/add.png" class="btn-icon" mode="aspectFit" />
+            <text class="btn-text">添加账户</text>
+          </view>
         </view>
         <view v-else class="account-list">
           <view v-for="account in accounts" :key="account.id" class="account-card" @tap="handleAccountTap(account)">
@@ -250,17 +256,69 @@ onShow(() => {
   filter: brightness(0) saturate(100%);
 }
 
-.loading-wrap,
-.empty-wrap {
+.loading-wrap {
   padding: 80rpx 0;
   display: flex;
   justify-content: center;
 }
 
-.loading-text,
-.empty-text {
+.loading-text {
   color: $on-surface-variant;
   font-size: $font-size-body-sm;
+}
+
+.empty-wrap {
+  padding: 80rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-img {
+  width: 100%;
+  max-width: 600rpx;
+  height: auto;
+  margin-top: -$spacing-4;
+  margin-bottom: $spacing-6;
+}
+
+.empty-title {
+  font-size: $font-size-2xl;
+  font-weight: 900;
+  color: $on-surface;
+  margin-bottom: $spacing-2;
+}
+
+.empty-desc {
+  font-size: $font-size-body-sm;
+  color: $outline;
+  line-height: 1.8;
+}
+
+.empty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  width: 100%;
+  max-width: 480rpx;
+  height: 96rpx;
+  background: $primary;
+  border-radius: $rounded-full;
+  margin-top: $spacing-2;
+}
+
+.btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+  filter: brightness(0) saturate(100%) invert(1);
+}
+
+.btn-text {
+  font-size: $font-size-lg;
+  font-weight: 900;
+  color: $on-primary;
 }
 
 .account-list {

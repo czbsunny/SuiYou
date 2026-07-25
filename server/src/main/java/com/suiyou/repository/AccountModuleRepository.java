@@ -21,5 +21,5 @@ public interface AccountModuleRepository extends JpaRepository<AccountModule, Lo
      * @param isEnabled 是否启用
      * @return 账户关联的模块列表
      */
-    List<AccountModule> findByAccountIdAndEnabled(Long accountId, Integer isEnabled);
+    List<AccountModule> findByAccountIdAndIsEnabled(Long accountId, Integer isEnabled);
 }

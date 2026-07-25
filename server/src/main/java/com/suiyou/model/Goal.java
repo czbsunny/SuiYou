@@ -1,5 +1,7 @@
 package com.suiyou.model;
 
+import com.suiyou.enums.GoalStatus;
+import com.suiyou.enums.GoalPriority;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -32,6 +34,9 @@ public class Goal {
     @Column(nullable = false, length = 128, name = "name")
     private String name;
     
+    @Column(name = "remark", length = 255)
+    private String remark;
+
     @Column(name = "target_amount", nullable = false, columnDefinition = "decimal(18,2)")
     private BigDecimal targetAmount;
     
@@ -44,14 +49,11 @@ public class Goal {
     @Column(name = "spent_amount", nullable = false, columnDefinition = "decimal(18,2) default '0.00'")
     private BigDecimal spentAmount = BigDecimal.ZERO;
     
-    @Column(name = "progress_percent", nullable = false, columnDefinition = "decimal(5,2) default '0.00'")
-    private BigDecimal progressPercent = BigDecimal.ZERO;
-    
     @Column(name = "start_date", nullable = false, columnDefinition = "date")
     private LocalDate startDate;
     
     @Column(name = "status", nullable = false, length = 32, columnDefinition = "varchar(32) default 'ON_GOING'")
-    private String status = "ON_GOING";
+    private String status = GoalStatus.ON_GOING.getCode();
     
     @Column(name = "complete_date", columnDefinition = "date DEFAULT NULL")
     private LocalDate completeDate;
@@ -73,4 +75,13 @@ public class Goal {
 
     @Column(name = "bg_url", length = 255)
     private String bgUrl;
+
+    @Column(name = "template_id", nullable = false)
+    private Long templateId;
+
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
+
+    @Column(name = "priority", nullable = false)
+    private String priority = GoalPriority.OPTIONAL.getCode();
 }

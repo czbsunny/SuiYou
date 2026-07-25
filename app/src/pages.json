@@ -46,7 +46,8 @@
       "style": {
         "navigationStyle": "default",
         "navigationBarTitleText": "新增目标",
-        "backgroundColor": "#FAF9F6"
+        "backgroundColor": "#FAF9F6",
+        "disableScroll": true
       }
     },
     {

@@ -4,6 +4,7 @@ import com.suiyou.dto.goal.CreateGoalDTO;
 import com.suiyou.dto.goal.GoalCategoryRespDTO;
 import com.suiyou.dto.goal.GoalRespDTO;
 import com.suiyou.dto.goal.GoalTemplateRespDTO;
+import com.suiyou.enums.GoalStatus;
 import com.suiyou.model.Goal;
 import com.suiyou.model.SysGoalCategory;
 import com.suiyou.model.SysGoalTemplate;
@@ -67,6 +68,16 @@ public class GoalServiceImpl implements GoalService {
             throw new RuntimeException("截止日期必须晚于开始日期");
         }
 
+        SysGoalTemplate template = sysGoalTemplateRepository.findById(goalDTO.getTemplateId()).orElse(null);
+        if (template == null) {
+            throw new RuntimeException("模板不存在");
+        }
+
+        SysGoalCategory category = sysGoalCategoryRepository.findByCategoryCode(template.getCategoryCode()).orElse(null);
+        if (category == null) {
+            throw new RuntimeException("分类不存在");
+        }
+        
         Goal goal = new Goal();
         goal.setUserId(userId);
         goal.setFamilyId(1L);
@@ -75,12 +86,13 @@ public class GoalServiceImpl implements GoalService {
         goal.setTargetAmount(goalDTO.getTargetAmount());
         goal.setDeadline(goalDTO.getDeadline());
         goal.setStartDate(goalDTO.getStartDate());
+        goal.setCategoryId(category.getId());
+        goal.setTemplateId(goalDTO.getTemplateId());
         goal.setVisibleScope(goalDTO.getVisibleScope());
 
         goal.setCurrentAmount(BigDecimal.ZERO);
         goal.setSpentAmount(BigDecimal.ZERO);
-        goal.setProgressPercent(BigDecimal.ZERO);
-        goal.setStatus("ON_GOING");
+        goal.setStatus(GoalStatus.ON_GOING.getCode());
 
         goal.setIconUrl(goalDTO.getIconUrl());
         goal.setBgUrl(goalDTO.getBgUrl());
@@ -114,6 +126,7 @@ public class GoalServiceImpl implements GoalService {
         List<SysGoalCategory> categories = sysGoalCategoryRepository.findByIsEnabledTrueOrderBySortOrderAsc();
         return categories.stream()
                 .map(cat -> GoalCategoryRespDTO.builder()
+                        .id(cat.getId())
                         .code(cat.getCategoryCode())
                         .name(cat.getName())
                         .slogan(cat.getSlogan())
@@ -137,6 +150,7 @@ public class GoalServiceImpl implements GoalService {
 
         return templates.stream()
                 .map(tpl -> GoalTemplateRespDTO.builder()
+                        .id(tpl.getId())
                         .code(tpl.getTemplateCode())
                         .categoryCode(tpl.getCategoryCode())
                         .name(tpl.getName())

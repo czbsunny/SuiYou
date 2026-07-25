@@ -137,8 +137,8 @@ public class AccountServiceImpl implements AccountService {
 
         // 处理需要禁用或删除的模块（在表中但不在 DTO 中）
         for (AccountModule existing : allModules) {
-            if (!dtoModuleTypes.contains(existing.getModuleType()) && existing.getEnabled() == 1) {
-                existing.setEnabled(0);
+            if (!dtoModuleTypes.contains(existing.getModuleType()) && existing.getIsEnabled() == 1) {
+                existing.setIsEnabled(0);
                 modulesToSave.add(existing);
             }
         }
@@ -150,7 +150,7 @@ public class AccountServiceImpl implements AccountService {
                 AccountModule existing = moduleMap.get(moduleDTO.getModuleType());
                 if (existing != null) {
                     // 已存在，启用并更新
-                    existing.setEnabled(1);
+                    existing.setIsEnabled(1);
                     existing.setModuleName(moduleDTO.getModuleName());
                     existing.setSortOrder(sortOrder++);
                     modulesToSave.add(existing);
@@ -220,7 +220,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private AccountRespDTO toAccountRespDTO(Account account) {
-        List<AccountModule> modules = accountModuleRepository.findByAccountIdAndEnabled(account.getId(), 1);
+        List<AccountModule> modules = accountModuleRepository.findByAccountIdAndIsEnabled(account.getId(), 1);
         List<AccountModuleRespDTO> moduleDTOs = modules.stream()
                 .map(this::toAccountModuleRespDTO)
                 .collect(Collectors.toList());
@@ -285,7 +285,7 @@ public class AccountServiceImpl implements AccountService {
         module.setBgColor(moduleType.getBgColor());
         module.setCanPay(moduleType.isCanPay() ? 1 : 0);
         module.setSortOrder(sortOrder);
-        module.setEnabled(1);
+        module.setIsEnabled(1);
         return module;
     }
 }

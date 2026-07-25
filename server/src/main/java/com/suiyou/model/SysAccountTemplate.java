@@ -3,8 +3,6 @@ package com.suiyou.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-// TODO: 处理冗余字段
-
 @Entity
 @Table(name = "sys_account_template")
 @Data
@@ -31,11 +29,11 @@ public class SysAccountTemplate {
     @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
     private Boolean canPay = false;
     
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
-    private Boolean required = false;
+    @Column(name = "is_required", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean isRequired = false;
     
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Boolean enabled = true;
+    @Column(name = "is_enabled", nullable = false, columnDefinition = "tinyint(1) default 1")
+    private Boolean isEnabled = true;
     
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 0")
     private Integer sortOrder = 0;

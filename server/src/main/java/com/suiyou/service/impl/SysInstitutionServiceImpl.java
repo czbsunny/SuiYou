@@ -124,8 +124,8 @@ public class SysInstitutionServiceImpl implements SysInstitutionService {
                         .moduleType(t.getModuleType())
                         .moduleName(t.getModuleName())
                         .iconUrl(t.getIconUrl())
-                        .required(t.getRequired())
-                        .enabled(t.getEnabled())
+                        .required(t.getIsRequired())
+                        .enabled(t.getIsEnabled())
                         .sortOrder(t.getSortOrder())
                         .build())
                 .collect(Collectors.toList());

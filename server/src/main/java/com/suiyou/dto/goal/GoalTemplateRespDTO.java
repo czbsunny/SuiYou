@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GoalTemplateRespDTO {
+    private Long id;
     private String code;
     private String categoryCode;
     private String name;

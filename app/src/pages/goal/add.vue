@@ -1,54 +1,56 @@
 <template>
   <view class="page">
-    <view class="icon-display">
-      <image v-if="form.iconUrl && (form.iconUrl.startsWith('http') || form.iconUrl.startsWith('/static'))" 
-             :src="form.iconUrl" 
-             class="icon-img" 
-             mode="aspectFit" />
-      <text v-else class="icon-emoji">{{ form.iconUrl }}</text>
-    </view>
-
-    <view class="form-item">
-      <text class="form-label">目标名称<text class="required-mark">*</text></text>
-      <view class="input-wrap">
-        <input 
-          class="form-input" 
-          v-model="form.title" 
-          placeholder="例如：积攒一笔钱"
-        />
+    <view class="content">
+      <view class="icon-display">
+        <image v-if="form.iconUrl && (form.iconUrl.startsWith('http') || form.iconUrl.startsWith('/static'))" 
+               :src="form.iconUrl" 
+               class="icon-img" 
+               mode="aspectFit" />
+        <text v-else class="icon-emoji">{{ form.iconUrl }}</text>
       </view>
-    </view>
 
-    <view class="form-item">
-      <text class="form-label">目标金额<text class="required-mark">*</text></text>
-      <view class="input-wrap">
-        <text class="amount-symbol">¥</text>
-        <input 
-          type="digit" 
-          v-model="form.targetAmount" 
-          placeholder="0.00" 
-          class="form-input amount-input"
-          placeholder-class="amount-placeholder"
-        />
-      </view>
-    </view>
-
-    <view class="form-item">
-      <text class="form-label">达成日期</text>
-      <uni-datetime-picker 
-        type="month" 
-        return-type="string" 
-        :value="form.deadline" 
-        :border="false"
-        @change="onDateChange"
-      >
-        <view class="form-picker">
-          <text :class="{ 'picker-placeholder': !form.deadline }">
-            {{ form.deadline || '点击选择日期' }}
-          </text>
-          <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
+      <view class="form-item">
+        <text class="form-label">目标名称<text class="required-mark">*</text></text>
+        <view class="input-wrap">
+          <input 
+            class="form-input" 
+            v-model="form.title" 
+            placeholder="例如：积攒一笔钱"
+          />
         </view>
-      </uni-datetime-picker>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">目标金额<text class="required-mark">*</text></text>
+        <view class="input-wrap">
+          <text class="amount-symbol">¥</text>
+          <input 
+            type="digit" 
+            v-model="form.targetAmount" 
+            placeholder="0.00" 
+            class="form-input amount-input"
+            placeholder-class="amount-placeholder"
+          />
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">达成日期</text>
+        <uni-datetime-picker 
+          type="date" 
+          return-type="string" 
+          :value="form.deadline" 
+          :border="false"
+          @change="onDateChange"
+        >
+          <view class="form-picker">
+            <text :class="{ 'picker-placeholder': !form.deadline }">
+              {{ form.deadline || '点击选择日期' }}
+            </text>
+            <image src="/static/images/chevron_right.png" class="picker-arrow" mode="aspectFit" />
+          </view>
+        </uni-datetime-picker>
+      </view>
     </view>
 
     <view class="bottom-bar">
@@ -69,8 +71,9 @@ import { createGoal } from '@/api/modules/goal.js';
 const form = ref({
   title: '',
   targetAmount: '',
-  iconUrl: '💰',
+  iconUrl: '',
   deadline: '',
+  templateId: '',
   categoryCode: '',
   templateCode: '',
   bgUrl: ''
@@ -82,6 +85,7 @@ onLoad((options) => {
       const tplData = JSON.parse(decodeURIComponent(options.tpl));
       console.log(tplData);
       if (tplData) {
+        form.value.templateId = tplData.id;
         form.value.templateCode = tplData.code;
         form.value.categoryCode = tplData.categoryCode;
         form.value.title = tplData.name;
@@ -117,29 +121,34 @@ const handleSave = async () => {
       name: form.value.title,
       targetAmount: parseFloat(form.value.targetAmount),
       deadline: form.value.deadline,
+      startDate: new Date().toISOString().split('T')[0],
       iconUrl: form.value.iconUrl,
       bgUrl: form.value.bgUrl,
-      categoryCode: form.value.categoryCode,
-      templateCode: form.value.templateCode
+      templateId: form.value.templateId,
+      isPrimary: false
     };
     
-    await createGoal(createData);
+    const resp = await createGoal(createData);
 
     uni.hideLoading();
-    uni.showToast({ title: '创建目标成功！', icon: 'success' });
-    
-    setTimeout(() => {
-      uni.switchTab({
-        url: '/pages/goal/index'
+
+    if (resp?.statusCode === 201) {
+      uni.showToast({ title: '创建目标成功！', icon: 'success' });
+      setTimeout(() => {
+        uni.switchTab({
+          url: '/pages/goal/index'
+        });
+      }, 1500);
+    } else {
+      uni.showToast({
+        title: (resp?.data?.message) || '创建失败',
+        icon: 'none'
       });
-    }, 1500);
+    }
   } catch (error) {
     uni.hideLoading();
-    uni.showModal({
-      title: '提示',
-      content: error.message || '系统繁忙，请稍后再试',
-      showCancel: false
-    });
+    console.error('创建目标失败:', error);
+    uni.showToast({ title: '创建失败，请稍后重试', icon: 'none' });
   }
 };
 </script>
@@ -148,11 +157,8 @@ const handleSave = async () => {
 @import '@/styles/variables.scss';
 @import '@/styles/common.scss';
 
-.page {
-  min-height: 100vh;
-  background-color: $background;
-  padding: $spacing-4;
-  padding-bottom: calc(#{$spacing-4} + 160rpx);
+.content {
+  height: calc(100vh - 160rpx);
 }
 
 .icon-display {

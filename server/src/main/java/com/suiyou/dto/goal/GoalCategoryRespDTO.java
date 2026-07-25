@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GoalCategoryRespDTO {
+    private Long id;
     private String code;
     private String name;
     private String slogan;

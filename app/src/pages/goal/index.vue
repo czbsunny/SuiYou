@@ -34,7 +34,7 @@
           <view class="chip" :class="{ active: sortBy === 'progress' }" @tap="selectSort('progress')">完成度 ↕</view>
         </view>
 
-        <view class="goal-list">
+        <view class="goal-list" v-if="goals.length > 0">
           <view v-for="goal in goals" :key="goal.name" class="goal-card" @tap="handleTap(goal)">
             <view class="goal-head">
               <view class="round-icon">
@@ -72,6 +72,17 @@
               <text>起始: {{ goal.start }}</text>
               <text>结束: {{ goal.end }}</text>
             </view>
+          </view>
+        </view>
+
+        <view v-else class="empty-state">
+          <image src="/static/goals/no_data.png" class="empty-img" mode="widthFix" />
+          <text class="empty-text">还没有目标</text>
+          <text class="empty-hint">从一个小目标开始，</text>
+          <text class="empty-hint">让每一分钱都有方向。</text>
+          <view class="create-button" @tap="handleCreate">
+            <image src="/static/images/add.png" class="btn-icon" mode="aspectFit" />
+            <text class="btn-text">创建第一个目标</text>
           </view>
         </view>
       </view>
@@ -176,6 +187,12 @@ onShow(() => {
 
 .scroll {
   height: 100vh;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .goal-card {
@@ -428,6 +445,58 @@ onShow(() => {
   font-size: $font-size-xs;
   display: flex;
   justify-content: space-between;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.empty-img {
+  width: 100%;
+  margin-top: -$spacing-4;
+}
+
+.empty-text {
+  font-size: $font-size-2xl;
+  font-weight: 900;
+  color: $on-surface;
+  margin-bottom: $spacing-2;
+}
+
+.empty-hint {
+  font-size: $font-size-body-sm;
+  color: $outline;
+  line-height: 1.8;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  width: 100%;
+  max-width: 480rpx;
+  height: 96rpx;
+  background: $primary;
+  border-radius: $rounded-full;
+  margin-top: $spacing-2;
+}
+
+.btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+  filter: brightness(0) saturate(100%) invert(1);
+}
+
+.btn-text {
+  font-size: $font-size-lg;
+  font-weight: 900;
+  color: $on-primary;
 }
 
 </style>

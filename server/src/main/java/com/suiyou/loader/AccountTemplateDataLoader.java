@@ -93,8 +93,8 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
             template.setAccountType(accountType);
             template.setModuleType(moduleType);
             template.setModuleName(moduleName);
-            template.setRequired(required != null ? required : false);
-            template.setEnabled(enabled != null ? enabled : true);
+            template.setIsRequired(required != null ? required : false);
+            template.setIsEnabled(enabled != null ? enabled : true);
             template.setIconUrl(iconUrl != null ? iconUrl : moduleTypeEnum.getIconUrl());
             template.setSortOrder(moduleTypeEnum.getOrder());
             template.setCanPay(moduleTypeEnum.isCanPay());
@@ -185,8 +185,8 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
         template.setModuleName(moduleTypeEnum.getName());
         template.setIconUrl(moduleTypeEnum.getIconUrl());
         template.setCanPay(moduleTypeEnum.isCanPay());
-        template.setRequired(required);
-        template.setEnabled(enabled);
+        template.setIsRequired(required);
+        template.setIsEnabled(enabled);
         template.setSortOrder(moduleTypeEnum.getOrder());
         return template;
     }

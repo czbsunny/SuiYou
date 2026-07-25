@@ -36,14 +36,14 @@ public class Account {
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Boolean includeInNetWorth = true;
 
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Integer status = 1;
+    @Column(name = "is_archived", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean isArchived = false;
 
     @Column(name = "sort_order", nullable = false, columnDefinition = "int default 9999")
     private Integer sortOrder = 9999;
     
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
-    private Boolean deleted = false;
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Boolean isDeleted = false;
     
     @Column(nullable = false, columnDefinition = "decimal(18,4) default 0.0000")
     private Double amount = 0.00;

@@ -6,6 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.math.RoundingMode;
 
 @Data
 public class GoalRespDTO {
@@ -19,7 +20,6 @@ public class GoalRespDTO {
     private LocalDate deadline;
     private BigDecimal currentAmount;
     private BigDecimal spentAmount;
-    private BigDecimal progressPercent;
     private LocalDate startDate;
     private String status;
     private LocalDate completeDate;
@@ -41,7 +41,6 @@ public class GoalRespDTO {
         dto.setDeadline(goal.getDeadline());
         dto.setCurrentAmount(goal.getCurrentAmount());
         dto.setSpentAmount(goal.getSpentAmount());
-        dto.setProgressPercent(goal.getProgressPercent());
         dto.setStartDate(goal.getStartDate());
         dto.setStatus(goal.getStatus());
         dto.setCompleteDate(goal.getCompleteDate());

@@ -282,7 +282,7 @@ const handleConfirm = async () => {
       modules: selectedModules
     })
 
-    if (resp?.statusCode === 200 || resp?.statusCode === 201) {
+    if (resp?.statusCode === 201) {
       uni.showToast({ title: '添加成功', icon: 'success' })
       setTimeout(() => {
         uni.switchTab({ url: '/pages/asset/index' })

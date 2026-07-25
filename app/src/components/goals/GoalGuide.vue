@@ -179,7 +179,7 @@ const formatMoney = (val) => Number(val).toLocaleString();
 }
 
 .section-label {
-  font-size: 24rpx; font-weight: 700; color: #D1D5DB;
+  font-size: 24rpx; font-weight: 700; color: $outline;
   margin-bottom: $spacing-3; padding-left: 8rpx;
   text-transform: uppercase; letter-spacing: 2rpx;
 }
