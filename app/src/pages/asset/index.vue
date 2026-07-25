@@ -31,10 +31,7 @@
           </view>
         </view>
 
-        <view v-if="loading" class="loading-wrap">
-          <text class="loading-text">加载中...</text>
-        </view>
-        <view v-else-if="accounts.length === 0" class="empty-wrap">
+        <view v-if="accounts.length === 0" class="empty-wrap">
            <image src="/static/assets/no_data.png" class="empty-img" mode="widthFix" />
           <text class="empty-title">还没有添加账户</text>
           <text class="empty-desc">添加账户，全面管理你的资产</text>
@@ -74,7 +71,6 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getAccountList } from '@/api/modules/asset'
 
-const loading = ref(false)
 const refreshing = ref(false)
 const accounts = ref([])
 
@@ -106,7 +102,7 @@ const totalNetWorth = computed(() => {
 })
 
 const loadAccounts = async () => {
-  loading.value = true
+  uni.showLoading({ title: '加载中...', mask: true })
   try {
     const resp = await getAccountList()
     console.log('加载账户列表响应:', resp)
@@ -115,7 +111,7 @@ const loadAccounts = async () => {
     console.error('加载账户列表失败:', error)
     uni.showToast({ title: '加载账户失败', icon: 'none' })
   } finally {
-    loading.value = false
+    uni.hideLoading()
   }
 }
 
@@ -254,17 +250,6 @@ onShow(() => {
   width: 36rpx;
   height: 36rpx;
   filter: brightness(0) saturate(100%);
-}
-
-.loading-wrap {
-  padding: 80rpx 0;
-  display: flex;
-  justify-content: center;
-}
-
-.loading-text {
-  color: $on-surface-variant;
-  font-size: $font-size-body-sm;
 }
 
 .empty-wrap {

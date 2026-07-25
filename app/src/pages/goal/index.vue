@@ -120,7 +120,7 @@ const fetchGoalList = async () => {
         start: formatDate(item.startDate),
         end: formatDate(item.deadline),
         badge: getStatusBadge(item.status),
-        icon: item.iconUrl || '💰',
+        icon: item.iconUrl,
         id: item.id,
         rawCurrentAmount: item.currentAmount || 0,
         rawTargetAmount: item.targetAmount || 0
