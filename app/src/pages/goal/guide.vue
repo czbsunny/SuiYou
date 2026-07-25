@@ -20,10 +20,10 @@ const templates = ref([]);
 const loadData = async () => {
   try {
     const categoryRes = await getGoalCategories();
-    categories.value = categoryRes.data.categories || [];
+    categories.value = categoryRes.data || [];
     
     const templateRes = await getGoalTemplates();
-    templates.value = templateRes.data.templates || [];
+    templates.value = templateRes.data || [];
   } catch (error) {
     console.error('加载目标数据失败:', error);
   }

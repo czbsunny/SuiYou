@@ -111,13 +111,15 @@ const fetchGoalList = async () => {
     if (res && res.data) {
       goals.value = res.data.map(item => ({
         name: item.name,
-        desc: item.description || '',
+        desc: item.visibleScope === 'PRIVATE' ? '个人目标' : '家庭目标',
         saved: formatAmount(item.currentAmount || 0),
         target: formatAmount(item.targetAmount || 0),
-        progress: item.progress || 0,
+        progress: item.targetAmount && item.targetAmount > 0 
+          ? Math.round((item.currentAmount / item.targetAmount) * 100) 
+          : 0,
         start: formatDate(item.startDate),
         end: formatDate(item.deadline),
-        badge: '',
+        badge: getStatusBadge(item.status),
         icon: item.iconUrl || '💰',
         id: item.id,
         rawCurrentAmount: item.currentAmount || 0,
@@ -145,6 +147,15 @@ const formatDate = (dateStr) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+const getStatusBadge = (status) => {
+  const statusMap = {
+    'ON_GOING': '进行中',
+    'COMPLETED': '已完成',
+    'ABANDONED': '已放弃',
+  }
+  return statusMap[status] || ''
 }
 
 const toggleSort = () => {
@@ -190,15 +201,8 @@ onShow(() => {
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
+  @include flex-column;
   min-height: 100%;
-}
-
-.goal-card {
-  background: #fff;
-  border-radius: 44rpx;
-  box-shadow: $shadow-soft;
 }
 
 .eyebrow,
@@ -278,16 +282,13 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: $stack-gap-sm;
-  color: $on-surface;
 }
 
 .sort-button,
 .add-button {
   width: 52rpx;
   height: 52rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   background-color: transparent;
 }
 
@@ -328,8 +329,9 @@ onShow(() => {
 
 .goal-card {
   padding: $spacing-4;
-  border-radius: $rounded-xl;
+  border-radius: $rounded-lg;
   box-shadow: $shadow-soft;
+  background: $surface-container-lowest;
 }
 
 .goal-head {
@@ -346,9 +348,7 @@ onShow(() => {
   color: $primary;
   font-size: $font-size-xs;
   font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
 }
 
 .round-icon-img {
@@ -358,8 +358,7 @@ onShow(() => {
 
 .goal-main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  @include flex-column;
 }
 
 .goal-title {
@@ -390,8 +389,7 @@ onShow(() => {
 }
 
 .goal-amounts view {
-  display: flex;
-  flex-direction: column;
+  @include flex-column;
 }
 
 .right {
@@ -449,10 +447,8 @@ onShow(() => {
 
 .empty-state {
   flex: 1;
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: 100%;
 }
 
@@ -475,9 +471,7 @@ onShow(() => {
 }
 
 .create-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
   gap: $spacing-2;
   width: 100%;
   max-width: 480rpx;
