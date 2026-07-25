@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class AssetCreateRequest {
     private Long accountId;
-    private String accountModuleId;
+    private Long accountModuleId;
     private Long ownerId;
     private String groupType;
     private String category;

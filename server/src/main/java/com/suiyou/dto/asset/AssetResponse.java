@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AssetResponse {
     private Long id;
     private Long accountId;
-    private String accountModuleId;
+    private Long accountModuleId;
     private Long ownerId;
     private String groupType;
     private String category;

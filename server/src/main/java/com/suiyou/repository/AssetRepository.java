@@ -18,4 +18,8 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     Optional<Asset> findByIdAndOwnerId(Long id, Long ownerId);
     
     List<Asset> findByAccountIdAndStatus(Long accountId, Integer status);
+    
+    List<Asset> findByAccountModuleIdAndStatus(String accountModuleId, Integer status);
+    
+    List<Asset> findByAccountModuleIdAndCategory(String accountModuleId, String category);
 }

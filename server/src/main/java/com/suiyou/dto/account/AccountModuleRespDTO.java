@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountModuleRespDTO {
-    private String id;
+    private Long id;
     private String moduleType;
     private String moduleName;
     private String iconUrl;

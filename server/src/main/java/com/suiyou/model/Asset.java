@@ -16,8 +16,8 @@ public class Asset {
     @Column(name = "account_id", nullable = false)
     private Long accountId;
 
-    @Column(name = "account_module_id", nullable = false, length = 32)
-    private String accountModuleId;
+    @Column(name = "account_module_id", nullable = false)
+    private Long accountModuleId;
 
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;

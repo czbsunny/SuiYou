@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @Data
 public class AccountModule {
     @Id
-    @Column(length = 32)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
     @Column(name = "account_id", nullable = false)
     private Long accountId;
