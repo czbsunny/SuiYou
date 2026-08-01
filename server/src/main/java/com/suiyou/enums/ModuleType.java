@@ -14,7 +14,7 @@ public enum ModuleType {
 
     CURRENT("CURRENT", "活期", 1, "/static/assets/modules/current.png", "#EAF5F2", true),
 
-    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/static/assets/modules/current-plus.png", "#EAF5F2", true),
+    CURRENT_PLUS("CURRENT_PLUS", "活期+", 2, "/static/assets/modules/current-plus.png", "#EAF5F2", false),
 
     BANK_PRODUCT("BANK_PRODUCT", "银行理财", 3, "/static/assets/modules/bank-product.png", "#FEF6EB", false),
 
