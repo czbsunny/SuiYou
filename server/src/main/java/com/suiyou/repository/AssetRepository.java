@@ -13,13 +13,13 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
     
     List<Asset> findByAccountId(Long accountId);
     
-    List<Asset> findByAccountModuleId(String accountModuleId);
+    List<Asset> findByAccountModuleId(Long accountModuleId);
     
     Optional<Asset> findByIdAndOwnerId(Long id, Long ownerId);
     
     List<Asset> findByAccountIdAndStatus(Long accountId, Integer status);
     
-    List<Asset> findByAccountModuleIdAndStatus(String accountModuleId, Integer status);
+    List<Asset> findByAccountModuleIdAndStatus(Long accountModuleId, Integer status);
     
-    List<Asset> findByAccountModuleIdAndCategory(String accountModuleId, String category);
+    List<Asset> findByAccountModuleIdAndCategory(Long accountModuleId, String category);
 }
