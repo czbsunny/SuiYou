@@ -11,7 +11,5 @@ public interface FamilyService {
 
     Family getRequiredFamilyByUserId(Long userId);
 
-    Family ensureFamily(Long creatorId);
-
     Family getFamilyById(Long familyId);
 }
