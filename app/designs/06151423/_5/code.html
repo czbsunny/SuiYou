@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>证券账户 - 卖出</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#efeeeb",
+                    "on-error": "#ffffff",
+                    "tertiary": "#705624",
+                    "on-background": "#1a1c1a",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#ffb3b1",
+                    "tertiary-fixed-dim": "#e6c185",
+                    "inverse-on-surface": "#f2f1ee",
+                    "primary-fixed-dim": "#84d6be",
+                    "outline-variant": "#bec9c4",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#fffbff",
+                    "surface-container-highest": "#e3e2e0",
+                    "surface-tint": "#066b58",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#faf9f6",
+                    "on-primary-fixed-variant": "#005142",
+                    "surface-dim": "#dbdad7",
+                    "tertiary-container": "#8b6e3a",
+                    "surface": "#faf9f6",
+                    "on-surface": "#1a1c1a",
+                    "surface-container-high": "#e9e8e5",
+                    "tertiary-fixed": "#ffdeaa",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#db313f",
+                    "on-tertiary-fixed": "#271900",
+                    "inverse-primary": "#84d6be",
+                    "primary-container": "#2a806c",
+                    "outline": "#6f7975",
+                    "on-tertiary-container": "#fff8f2",
+                    "secondary": "#b7102a",
+                    "primary-fixed": "#a0f2da",
+                    "background": "#faf9f6",
+                    "secondary-fixed": "#ffdad8",
+                    "on-primary-container": "#e7fff5",
+                    "primary": "#006754",
+                    "on-tertiary-fixed-variant": "#5b4313",
+                    "on-primary-fixed": "#002019",
+                    "surface-variant": "#e3e2e0",
+                    "surface-container-low": "#f4f3f1",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#410007",
+                    "on-surface-variant": "#3f4945",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#92001c",
+                    "inverse-surface": "#2f312f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "display": ["Plus Jakarta Sans"],
+                    "body": ["Plus Jakarta Sans"],
+                    "label": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #faf9f6; }
+        .font-mono-data { font-family: 'JetBrains Mono', monospace; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-surface dark:bg-surface-dim flex items-center px-5 h-16 justify-between transition-all">
+<div class="flex items-center gap-4">
+<button class="active:opacity-70 transition-opacity flex items-center justify-center p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">arrow_back</span>
+</button>
+<h1 class="font-headline text-headline-md font-semibold text-primary dark:text-primary-fixed">交易中心</h1>
+</div>
+<div class="flex items-center">
+<span class="font-headline text-title-sm font-bold text-primary dark:text-primary-fixed">HERITAGE</span>
+</div>
+</header>
+<main class="px-5 py-6 space-y-6 max-w-lg mx-auto">
+<!-- Stock Selector Card -->
+<section class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_20px_rgba(26,28,26,0.04)] transition-all">
+<label class="block text-on-surface-variant font-semibold text-sm mb-3">已持仓股票</label>
+<div class="flex items-center justify-between bg-surface-container rounded-lg p-4 cursor-pointer hover:bg-surface-container-high transition-colors">
+<div class="flex flex-col">
+<span class="font-bold text-lg">腾讯控股</span>
+<span class="font-mono-data text-xs text-outline tracking-wider">00700.HK</span>
+</div>
+<div class="text-right">
+<div class="font-mono-data text-lg font-semibold text-secondary">412.800</div>
+<div class="font-mono-data text-xs text-secondary">-0.42%</div>
+</div>
+<span class="material-symbols-outlined ml-2 text-outline">expand_more</span>
+</div>
+<div class="mt-4 flex justify-between items-center px-1">
+<span class="text-xs text-on-surface-variant">可用持仓</span>
+<span class="font-mono-data font-bold text-on-surface">1,200 <span class="text-[10px] text-outline ml-1">股</span></span>
+</div>
+</section>
+<!-- Order Entry & Market Depth Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+<!-- Order Form -->
+<div class="md:col-span-7 space-y-4">
+<!-- Price Input -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_rgba(26,28,26,0.04)]">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-semibold text-on-surface-variant">卖出价格</span>
+<span class="text-[10px] text-outline-variant">限价委托</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high active:scale-95 transition-all" onclick="adjustPrice(-0.1)">
+<span class="material-symbols-outlined text-on-surface">remove</span>
+</button>
+<input class="flex-1 bg-transparent border-none text-center font-mono-data text-xl font-bold focus:ring-0 focus:outline-none" id="price-input" type="text" value="412.800"/>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high active:scale-95 transition-all" onclick="adjustPrice(0.1)">
+<span class="material-symbols-outlined text-on-surface">add</span>
+</button>
+</div>
+</div>
+<!-- Quantity Input -->
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_rgba(26,28,26,0.04)]">
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-semibold text-on-surface-variant">卖出数量</span>
+<span class="font-mono-data text-[10px] text-outline">可卖 1,200</span>
+</div>
+<div class="flex items-center mb-4">
+<input class="w-full bg-surface-container rounded-lg px-4 py-3 border-none font-mono-data text-lg font-bold focus:ring-1 focus:ring-primary focus:outline-none transition-all" id="qty-input" placeholder="请输入数量" type="number"/>
+</div>
+<!-- Quick Percentage Buttons -->
+<div class="grid grid-cols-4 gap-2">
+<button class="py-1.5 rounded-full border border-outline-variant text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="setQty(0.25)">1/4</button>
+<button class="py-1.5 rounded-full border border-outline-variant text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="setQty(0.5)">1/2</button>
+<button class="py-1.5 rounded-full border border-outline-variant text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="setQty(0.75)">3/4</button>
+<button class="py-1.5 rounded-full border border-outline-variant text-[10px] font-bold text-on-surface-variant hover:bg-surface-container-high transition-colors" onclick="setQty(1)">全仓</button>
+</div>
+</div>
+</div>
+<!-- Market Depth (L2) -->
+<div class="md:col-span-5 bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_rgba(26,28,26,0.04)] flex flex-col justify-between">
+<div>
+<h3 class="text-[10px] font-bold text-outline-variant tracking-widest mb-3 uppercase">Market Depth</h3>
+<div class="space-y-1">
+<!-- Sell (Ask) side -->
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(413.200)">
+<div class="absolute right-0 top-0 bottom-0 bg-secondary/5 w-[15%] transition-all group-hover:w-[25%]"></div>
+<span class="text-outline z-10">卖5</span>
+<span class="font-mono-data text-secondary font-semibold z-10">413.200</span>
+<span class="font-mono-data text-on-surface-variant z-10">2.1k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(413.100)">
+<div class="absolute right-0 top-0 bottom-0 bg-secondary/5 w-[45%] transition-all group-hover:w-[55%]"></div>
+<span class="text-outline z-10">卖4</span>
+<span class="font-mono-data text-secondary font-semibold z-10">413.100</span>
+<span class="font-mono-data text-on-surface-variant z-10">5.8k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(413.000)">
+<div class="absolute right-0 top-0 bottom-0 bg-secondary/5 w-[65%] transition-all group-hover:w-[75%]"></div>
+<span class="text-outline z-10">卖3</span>
+<span class="font-mono-data text-secondary font-semibold z-10">413.000</span>
+<span class="font-mono-data text-on-surface-variant z-10">8.4k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.900)">
+<div class="absolute right-0 top-0 bottom-0 bg-secondary/5 w-[30%] transition-all group-hover:w-[40%]"></div>
+<span class="text-outline z-10">卖2</span>
+<span class="font-mono-data text-secondary font-semibold z-10">412.900</span>
+<span class="font-mono-data text-on-surface-variant z-10">3.2k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.800)">
+<div class="absolute right-0 top-0 bottom-0 bg-secondary/5 w-[85%] transition-all group-hover:w-[95%]"></div>
+<span class="text-outline z-10">卖1</span>
+<span class="font-mono-data text-secondary font-semibold z-10">412.800</span>
+<span class="font-mono-data text-on-surface-variant z-10">12.5k</span>
+</div>
+</div>
+</div>
+<hr class="border-surface-container-high my-2"/>
+<div>
+<div class="space-y-1">
+<!-- Buy (Bid) side -->
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.700)">
+<div class="absolute right-0 top-0 bottom-0 bg-primary/5 w-[60%] transition-all group-hover:w-[70%]"></div>
+<span class="text-outline z-10">买1</span>
+<span class="font-mono-data text-primary font-semibold z-10">412.700</span>
+<span class="font-mono-data text-on-surface-variant z-10">7.1k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.600)">
+<div class="absolute right-0 top-0 bottom-0 bg-primary/5 w-[35%] transition-all group-hover:w-[45%]"></div>
+<span class="text-outline z-10">买2</span>
+<span class="font-mono-data text-primary font-semibold z-10">412.600</span>
+<span class="font-mono-data text-on-surface-variant z-10">4.3k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.500)">
+<div class="absolute right-0 top-0 bottom-0 bg-primary/5 w-[90%] transition-all group-hover:w-[100%]"></div>
+<span class="text-outline z-10">买3</span>
+<span class="font-mono-data text-primary font-semibold z-10">412.500</span>
+<span class="font-mono-data text-on-surface-variant z-10">18.2k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.400)">
+<div class="absolute right-0 top-0 bottom-0 bg-primary/5 w-[20%] transition-all group-hover:w-[30%]"></div>
+<span class="text-outline z-10">买4</span>
+<span class="font-mono-data text-primary font-semibold z-10">412.400</span>
+<span class="font-mono-data text-on-surface-variant z-10">2.5k</span>
+</div>
+<div class="flex justify-between items-center text-[11px] h-6 relative overflow-hidden group cursor-pointer" onclick="fillPrice(412.300)">
+<div class="absolute right-0 top-0 bottom-0 bg-primary/5 w-[50%] transition-all group-hover:w-[60%]"></div>
+<span class="text-outline z-10">买5</span>
+<span class="font-mono-data text-primary font-semibold z-10">412.300</span>
+<span class="font-mono-data text-on-surface-variant z-10">6.7k</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sell Summary Card -->
+<section class="bg-surface-container-low rounded-xl p-5 mt-4 border border-outline-variant/10">
+<div class="flex justify-between items-center mb-3">
+<span class="text-sm text-on-surface-variant">预计成交金额</span>
+<span class="font-mono-data font-bold text-xl text-primary" id="est-amount">0.00</span>
+</div>
+<div class="flex gap-4 text-[10px] text-outline">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">info</span>
+<span>手续费约: ¥12.50</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">timer</span>
+<span>T+1 资金到账</span>
+</div>
+</div>
+</section>
+<!-- Big Action Button -->
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-primary-container text-white font-bold py-4 rounded-full shadow-lg active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" onclick="handleSell()">
+<span class="text-lg">卖出</span>
+<span class="material-symbols-outlined">sell</span>
+</button>
+<p class="text-center text-[10px] text-outline-variant mt-3">股票投资有风险，入市需谨慎</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface-container-lowest shadow-[0_-4px_20px_rgba(26,28,26,0.04)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">add_chart</span>
+<span class="font-label text-[10px] font-bold tracking-widest mt-1">买入</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sell</span>
+<span class="font-label text-[10px] tracking-widest mt-1">卖出</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-label text-[10px] font-bold tracking-widest mt-1">转账</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label text-[10px] font-bold tracking-widest mt-1">查询</span>
+</a>
+</nav>
+<script>
+        const priceInput = document.getElementById('price-input');
+        const qtyInput = document.getElementById('qty-input');
+        const estAmountDisplay = document.getElementById('est-amount');
+        const totalHoldings = 1200;
+
+        function adjustPrice(delta) {
+            let current = parseFloat(priceInput.value);
+            priceInput.value = (current + delta).toFixed(3);
+            updateEstimate();
+        }
+
+        function fillPrice(price) {
+            priceInput.value = price.toFixed(3);
+            updateEstimate();
+        }
+
+        function setQty(percent) {
+            qtyInput.value = Math.floor(totalHoldings * percent);
+            updateEstimate();
+        }
+
+        function updateEstimate() {
+            const p = parseFloat(priceInput.value) || 0;
+            const q = parseInt(qtyInput.value) || 0;
+            const total = (p * q).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            estAmountDisplay.innerText = total;
+        }
+
+        function handleSell() {
+            const q = qtyInput.value;
+            if(!q || q <= 0) {
+                alert('请输入有效的卖出数量');
+                return;
+            }
+            alert(`卖出指令已提交：腾讯控股 ${q} 股`);
+        }
+
+        priceInput.addEventListener('input', updateEstimate);
+        qtyInput.addEventListener('input', updateEstimate);
+    </script>
+</body></html>

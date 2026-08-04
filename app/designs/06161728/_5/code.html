@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>收支明细 - Stewardship</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006754",
+                        "primary-container": "#2a806c",
+                        "secondary": "#b7102a",
+                        "background": "#faf9f6",
+                        "surface": "#faf9f6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f4f3f1",
+                        "surface-container": "#efeeeb",
+                        "surface-container-high": "#e9e8e5",
+                        "on-surface": "#1a1c1a",
+                        "on-surface-variant": "#3f4945",
+                        "outline": "#6f7975",
+                        "outline-variant": "#bec9c4",
+                        // "Red for Profit, Green for Loss" semantic aliases
+                        "profit": "#b7102a",
+                        "expense": "#006754"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "24px", // Updated to 24px as per Heritage Hearth refinement
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "16px",
+                        "stack-gap-sm": "8px",
+                        "stack-gap-md": "16px",
+                        "stack-gap-lg": "24px",
+                        "section-margin": "32px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #faf9f6;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100dvh;
+        }
+        .num-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface select-none">
+<!-- Header Section -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-surface-container-low">
+<div class="flex items-center justify-between px-container-padding h-14">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<h1 class="text-[17px] font-bold">明细</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-on-surface-variant">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="pt-14 pb-24 px-container-padding">
+<!-- Controls Row -->
+<section class="mt-4 mb-6 flex items-center justify-between">
+<button class="flex items-center gap-1.5 bg-surface-container-low px-4 py-2 rounded-full active:bg-surface-container-high transition-colors">
+<span class="text-[15px] font-semibold">2024年5月</span>
+<span class="material-symbols-outlined text-primary text-[18px]">expand_more</span>
+</button>
+<button class="flex items-center gap-1.5 text-on-surface-variant active:opacity-60 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<span class="text-[14px] font-medium">筛选</span>
+</button>
+</section>
+<!-- Summary Cards -->
+<section class="grid grid-cols-2 gap-4 mb-8">
+<div class="bg-surface-container-lowest p-5 rounded-lg custom-shadow">
+<p class="text-[12px] font-bold text-outline uppercase tracking-wider mb-2">本月支出</p>
+<div class="flex items-baseline gap-1">
+<span class="text-[14px] font-bold text-expense">¥</span>
+<span class="num-font text-[22px] font-bold text-expense">12,480.00</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-lg custom-shadow">
+<p class="text-[12px] font-bold text-outline uppercase tracking-wider mb-2">本月收入</p>
+<div class="flex items-baseline gap-1">
+<span class="text-[14px] font-bold text-profit">¥</span>
+<span class="num-font text-[22px] font-bold text-profit">42,000.00</span>
+</div>
+</div>
+</section>
+<!-- Transaction List -->
+<section class="space-y-8">
+<!-- Group: Today -->
+<div>
+<div class="flex items-center justify-between py-2 border-b border-surface-container-low mb-4">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-bold text-on-surface">5月21日</span>
+<span class="text-[12px] text-outline font-medium">今天</span>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-outline font-medium">
+<span class="">支: 156.00</span>
+<span class="">收: 0.00</span>
+</div>
+</div>
+<div class="">
+<!-- Item 1 -->
+<div class="flex items-center justify-between group active:opacity-60 transition-opacity rounded-[16px] p-4 bg-surface-container-lowest rounded-lg custom-shadow mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<h3 class="font-bold text-[15px]">餐饮 · 午餐</h3>
+<p class="text-[12px] text-outline">12:30</p>
+</div>
+</div>
+<span class="num-font text-[16px] font-bold text-expense">-88.00</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between group active:opacity-60 transition-opacity rounded-[16px] p-4 bg-surface-container-lowest rounded-lg custom-shadow mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">local_taxi</span>
+</div>
+<div>
+<h3 class="font-bold text-[15px]">出行 · 网约车</h3>
+<p class="text-[12px] text-outline">08:45</p>
+</div>
+</div>
+<span class="num-font text-[16px] font-bold text-expense">-68.00</span>
+</div>
+</div>
+</div>
+<!-- Group: Yesterday -->
+<div>
+<div class="flex items-center justify-between py-2 border-b border-surface-container-low mb-4">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-bold text-on-surface">5月20日</span>
+<span class="text-[12px] text-outline font-medium">昨天</span>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-outline font-medium">
+<span class="">支: 420.00</span>
+<span class="">收: 30,000.00</span>
+</div>
+</div>
+<div class="">
+<!-- Item 3: Income -->
+<div class="flex items-center justify-between group active:opacity-60 transition-opacity rounded-[16px] p-4 bg-surface-container-lowest rounded-lg custom-shadow mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-profit/10 flex items-center justify-center text-profit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">payments</span>
+</div>
+<div>
+<h3 class="font-bold text-[15px]">薪资 · 月度发放</h3>
+<p class="text-[12px] text-outline">10:00</p>
+</div>
+</div>
+<span class="num-font text-[16px] font-bold text-profit">+30,000.00</span>
+</div>
+<!-- Item 4 -->
+<div class="flex items-center justify-between group active:opacity-60 transition-opacity rounded-[16px] p-4 bg-surface-container-lowest rounded-lg custom-shadow mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<h3 class="font-bold text-[15px]">购物 · Apple Store</h3>
+<p class="text-[12px] text-outline">15:20</p>
+</div>
+</div>
+<span class="num-font text-[16px] font-bold text-expense">-420.00</span>
+</div>
+</div>
+</div>
+<!-- Group: May 19 -->
+<div>
+<div class="flex items-center justify-between py-2 border-b border-surface-container-low mb-4">
+<div class="flex items-center gap-2">
+<span class="text-[13px] font-bold text-on-surface">5月19日</span>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-outline font-medium">
+<span class="">支: 1,200.00</span>
+<span class="">收: 0.00</span>
+</div>
+</div>
+<div class="">
+<div class="flex items-center justify-between group active:opacity-60 transition-opacity rounded-[16px] p-4 bg-surface-container-lowest rounded-lg custom-shadow mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">home</span>
+</div>
+<div>
+<h3 class="font-bold text-[15px]">住房 · 物业管理费</h3>
+<p class="text-[12px] text-outline">14:00</p>
+</div>
+</div>
+<span class="num-font text-[16px] font-bold text-expense">-1,200.00</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-1 pb-safe bg-surface-container-lowest border-t border-surface-container-low z-50">
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">home</span>
+<span class="text-[10px] font-medium mt-0.5">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">list_alt</span>
+<span class="text-[10px] font-medium mt-0.5">明细</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">trending_up</span>
+<span class="text-[10px] font-medium mt-0.5">趋势</span>
+</a>
+<a class="flex flex-col items-center justify-center py-1 flex-1 text-outline hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined text-[26px]">person</span>
+<span class="text-[10px] font-medium mt-0.5">我的</span>
+</a>
+</nav>
+<script>
+        // Tab Interaction Logic
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.classList.contains('text-primary')) return;
+                
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('text-primary');
+                    l.classList.add('text-outline');
+                    l.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                });
+                this.classList.add('text-primary');
+                this.classList.remove('text-outline');
+                this.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+
+        // Simple touch feedback for list items
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('touchstart', () => item.classList.add('opacity-60'));
+            item.addEventListener('touchend', () => item.classList.remove('opacity-60'));
+        });
+    </script>
+
+
+</body></html>

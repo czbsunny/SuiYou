@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#efeeeb",
+                        "on-error": "#ffffff",
+                        "tertiary": "#705624",
+                        "on-background": "#1a1c1a",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "tertiary-fixed-dim": "#e6c185",
+                        "inverse-on-surface": "#f2f1ee",
+                        "primary-fixed-dim": "#84d6be",
+                        "outline-variant": "#bec9c4",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#fffbff",
+                        "surface-container-highest": "#e3e2e0",
+                        "surface-tint": "#066b58",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#faf9f6",
+                        "on-primary-fixed-variant": "#005142",
+                        "surface-dim": "#dbdad7",
+                        "tertiary-container": "#8b6e3a",
+                        "surface": "#faf9f6",
+                        "on-surface": "#1a1c1a",
+                        "surface-container-high": "#e9e8e5",
+                        "tertiary-fixed": "#ffdeaa",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#db313f",
+                        "on-tertiary-fixed": "#271900",
+                        "inverse-primary": "#84d6be",
+                        "primary-container": "#2a806c",
+                        "outline": "#6f7975",
+                        "on-tertiary-container": "#fff8f2",
+                        "secondary": "#b7102a",
+                        "primary-fixed": "#a0f2da",
+                        "background": "#faf9f6",
+                        "secondary-fixed": "#ffdad8",
+                        "on-primary-container": "#e7fff5",
+                        "primary": "#006754",
+                        "on-tertiary-fixed-variant": "#5b4313",
+                        "on-primary-fixed": "#002019",
+                        "surface-variant": "#e3e2e0",
+                        "surface-container-low": "#f4f3f1",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#410007",
+                        "on-surface-variant": "#3f4945",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "inverse-surface": "#2f312f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["JetBrains Mono"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #faf9f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .font-num {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .order-book-row {
+            transition: background-color 0.2s ease;
+        }
+        .order-book-row:hover {
+            background-color: rgba(0, 103, 84, 0.05);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim w-full top-0 sticky z-50">
+<div class="flex items-center px-5 h-16 w-full justify-between">
+<div class="flex items-center gap-4">
+<button class="active:opacity-70 transition-opacity flex items-center justify-center">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed">arrow_back</span>
+</button>
+<h1 class="font-headline text-headline-md font-semibold text-on-surface">股票买入</h1>
+</div>
+<div class="flex items-center">
+<span class="font-headline text-title-sm font-bold text-primary dark:text-primary-fixed">交易中心</span>
+</div>
+</div>
+</header>
+<main class="px-5 pt-4 space-y-6">
+<!-- Main Transaction Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Buy Controls (Left Column) -->
+<div class="lg:col-span-7 space-y-6">
+<!-- Stock Search Section -->
+<div class="space-y-2">
+<label class="text-label-caps text-on-surface-variant px-1">选择证券</label>
+<div class="w-full h-14 bg-white rounded-xl shadow-[0_4px_20px_rgba(26,28,26,0.04)] flex items-center px-4 cursor-pointer hover:bg-surface-container-low transition-colors" onclick="window.location.href='#'">
+<span class="material-symbols-outlined text-outline mr-3">search</span>
+<div class="flex-1">
+<span class="text-on-surface-variant">输入代码/首字母</span>
+</div>
+<div class="bg-surface-container px-3 py-1 rounded-full">
+<span class="text-xs font-bold text-primary">自选</span>
+</div>
+</div>
+</div>
+<!-- Price Input Section -->
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="text-label-caps text-on-surface-variant">买入价格</label>
+<div class="flex gap-4">
+<span class="text-[10px] text-secondary font-num">涨停 24.32</span>
+<span class="text-[10px] text-primary font-num">跌停 19.88</span>
+</div>
+</div>
+<div class="flex items-center bg-white rounded-xl shadow-[0_4px_20px_rgba(26,28,26,0.04)] p-1">
+<button class="w-12 h-12 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined">remove_circle_outline</span>
+</button>
+<input class="flex-1 text-center font-num text-xl font-semibold bg-transparent border-none focus:ring-0 text-on-surface" type="text" value="22.10"/>
+<button class="w-12 h-12 flex items-center justify-center text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined">add_circle_outline</span>
+</button>
+</div>
+</div>
+<!-- Amount Input Section -->
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-label-caps text-on-surface-variant px-1">买入数量 (股)</label>
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,28,26,0.04)] p-1">
+<input class="w-full h-12 px-4 font-num text-lg bg-transparent border-none focus:ring-0 text-on-surface" placeholder="请输入100的整数倍" type="number"/>
+</div>
+</div>
+<!-- Quick Ratios -->
+<div class="grid grid-cols-4 gap-3">
+<button class="py-2 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant active:bg-primary-container active:text-white transition-all">1/4</button>
+<button class="py-2 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant active:bg-primary-container active:text-white transition-all">1/2</button>
+<button class="py-2 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant active:bg-primary-container active:text-white transition-all">3/4</button>
+<button class="py-2 bg-surface-container rounded-full text-xs font-bold text-on-surface-variant active:bg-primary-container active:text-white transition-all">全仓</button>
+</div>
+<div class="flex justify-between px-1">
+<span class="text-xs text-on-surface-variant">最大可买</span>
+<span class="text-xs font-num font-semibold text-on-surface">14,200 股</span>
+</div>
+</div>
+<!-- Confirm Button (Mobile Only hidden in Desktop layout if preferred) -->
+<button class="w-full py-4 bg-secondary text-white rounded-full font-bold text-lg shadow-lg active:scale-[0.98] transition-transform hover:opacity-90">
+                    立即买入
+                </button>
+</div>
+<!-- Order Book (Right Column) -->
+<div class="lg:col-span-5 bg-white rounded-2xl p-4 shadow-[0_4px_20px_rgba(26,28,26,0.04)] space-y-4">
+<div class="flex justify-between items-center border-b border-surface-container pb-2">
+<span class="text-label-caps text-on-surface-variant">盘口五档</span>
+<span class="text-[10px] text-outline font-num">实时更新</span>
+</div>
+<!-- Sell Orders (Top to Bottom: 5 down to 1) -->
+<div class="space-y-1">
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">卖五</span>
+<span class="font-num font-semibold text-secondary">22.15</span>
+<span class="font-num text-outline">824</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">卖四</span>
+<span class="font-num font-semibold text-secondary">22.14</span>
+<span class="font-num text-outline">1,202</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">卖三</span>
+<span class="font-num font-semibold text-secondary">22.13</span>
+<span class="font-num text-outline">543</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">卖二</span>
+<span class="font-num font-semibold text-secondary">22.12</span>
+<span class="font-num text-outline">3,491</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">卖一</span>
+<span class="font-num font-semibold text-secondary">22.11</span>
+<span class="font-num text-outline">762</span>
+</div>
+</div>
+<div class="h-px bg-surface-container-high my-2"></div>
+<!-- Buy Orders (Top to Bottom: 1 down to 5) -->
+<div class="space-y-1">
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">买一</span>
+<span class="font-num font-semibold text-primary">22.10</span>
+<span class="font-num text-outline">1,104</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">买二</span>
+<span class="font-num font-semibold text-primary">22.09</span>
+<span class="font-num text-outline">882</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">买三</span>
+<span class="font-num font-semibold text-primary">22.08</span>
+<span class="font-num text-outline">2,551</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">买四</span>
+<span class="font-num font-semibold text-primary">22.07</span>
+<span class="font-num text-outline">430</span>
+</div>
+<div class="flex justify-between items-center text-xs order-book-row px-2 py-1 rounded-lg">
+<span class="text-on-surface-variant">买五</span>
+<span class="font-num font-semibold text-primary">22.06</span>
+<span class="font-num text-outline">1,829</span>
+</div>
+</div>
+<!-- Mini Portfolio Card -->
+<div class="mt-6 p-4 bg-surface rounded-xl border border-outline-variant/30 space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">可用资金</span>
+<span class="text-sm font-num font-bold text-on-surface">¥315,420.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-on-surface-variant">参考市值</span>
+<span class="text-sm font-num font-bold text-on-surface">¥1,240,850.00</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface-container-lowest shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed font-bold active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_chart</span>
+<span class="font-label text-[10px] tracking-wider mt-1">买入</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">sell</span>
+<span class="font-label text-[10px] tracking-wider mt-1">卖出</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-label text-[10px] tracking-wider mt-1">转账</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:text-primary-container active:scale-95 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label text-[10px] tracking-wider mt-1">查询</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.classList.add('opacity-80');
+            });
+            btn.addEventListener('touchend', function() {
+                this.classList.remove('opacity-80');
+            });
+        });
+
+        // Price adjustment logic
+        const priceInput = document.querySelector('input[value="22.10"]');
+        const adjustButtons = document.querySelectorAll('button .material-symbols-outlined');
+        
+        adjustButtons.forEach(icon => {
+            if (icon.innerText === 'add_circle_outline') {
+                icon.parentElement.onclick = () => {
+                    let val = parseFloat(priceInput.value);
+                    priceInput.value = (val + 0.01).toFixed(2);
+                };
+            } else if (icon.innerText === 'remove_circle_outline') {
+                icon.parentElement.onclick = () => {
+                    let val = parseFloat(priceInput.value);
+                    if (val > 0.01) priceInput.value = (val - 0.01).toFixed(2);
+                };
+            }
+        });
+    </script>
+</body></html>

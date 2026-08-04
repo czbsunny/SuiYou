@@ -1,0 +1,324 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.04);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#faf9f6",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e3e2e0",
+                        "inverse-surface": "#2f312f",
+                        "surface-variant": "#e3e2e0",
+                        "inverse-primary": "#84d6be",
+                        "primary-fixed-dim": "#84d6be",
+                        "primary-container": "#2a806c",
+                        "inverse-on-surface": "#f2f1ee",
+                        "on-primary-fixed-variant": "#005142",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bec9c4",
+                        "on-primary-fixed": "#002019",
+                        "on-surface-variant": "#3f4945",
+                        "on-background": "#1a1c1a",
+                        "on-tertiary-container": "#fff8f2",
+                        "on-surface": "#1a1c1a",
+                        "surface-container-high": "#e9e8e5",
+                        "error": "#ba1a1a",
+                        "tertiary": "#705624",
+                        "tertiary-container": "#8b6e3a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#faf9f6",
+                        "surface-dim": "#dbdad7",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#e7fff5",
+                        "on-secondary-container": "#fffbff",
+                        "background": "#faf9f6",
+                        "secondary-fixed": "#ffdad8",
+                        "surface-container": "#efeeeb",
+                        "tertiary-fixed": "#ffdeaa",
+                        "secondary-container": "#db313f",
+                        "on-tertiary-fixed": "#271900",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed": "#410007",
+                        "secondary": "#b7102a",
+                        "on-tertiary-fixed-variant": "#5b4313",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "primary": "#006754",
+                        "outline": "#6f7975",
+                        "surface-tint": "#066b58",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "surface-container-low": "#f4f3f1",
+                        "tertiary-fixed-dim": "#e6c185",
+                        "primary-fixed": "#a0f2da",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap-sm": "8px",
+                        "stack-gap-lg": "24px",
+                        "section-margin": "32px",
+                        "stack-gap-md": "16px",
+                        "container-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "num-display": ["JetBrains Mono"],
+                        "num-data": ["JetBrains Mono"],
+                        "title-sm": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-reg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "num-display": ["28px", {"lineHeight": "32px", "letterSpacing": "-0.05em", "fontWeight": "600"}],
+                        "num-data": ["16px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "title-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-reg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-reg min-h-screen pb-32">
+<!-- Top Navigation -->
+<header class="w-full top-0 sticky z-50 bg-background flex justify-between items-center px-container-padding h-16">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border-2 border-[#C5A36A] overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="A sophisticated digital portrait of a middle-aged Asian professional, styled in a minimalist and clean aesthetic. The lighting is soft and warm, reflecting a sense of stability and wealth. The background is a soft ivory tone, maintaining a consistent high-end UI feel with a gold accent ring around the circular frame." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2x_Ryn73VLixmuopsZLxgAeNkhYOy39eKWCL9boucQ5hthfF8WncM6mmYtvle9jGzz8Hv9cJfKKuMII2zAaiKzvlcInXeqh4iu060WPABzTgmRhkg0bQwJpFq8CqO-xLJIWbUuuaVPyF-yTznXtJHqmjD5Sj38Sa_J9wECZ6SnB45f7uMCyDwEqyj5KjYSCCDYu9EmJV-l0bpQgkpjNaW8pl8Gbpv37gtKCuXz2_Lk_rpphKsD6aAnvkKNx5INAQeQFWGSTxLTFV3">
+</div>
+<span class="text-title-sm font-title-sm font-bold text-primary">Stewardship</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+</header>
+<main class="px-container-padding pt-6 space-y-section-margin">
+<!-- Total Savings Hero -->
+<section class="relative overflow-hidden bg-surface-container-lowest rounded-lg p-8 custom-shadow border border-surface-container">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<p class="text-on-surface-variant font-label-caps text-label-caps mb-2">储蓄总额</p>
+<div class="flex items-baseline gap-2">
+<span class="text-primary font-num-display text-display-lg">¥</span>
+<h1 class="text-on-surface font-num-display text-display-lg" id="total-amount">128,046.50</h1>
+</div>
+<div class="mt-6 flex gap-4">
+<div class="flex-1 bg-surface-container-low rounded-xl p-4">
+<p class="text-on-surface-variant text-body-sm font-body-sm mb-1">本月新增</p>
+<p class="text-primary font-num-data text-num-data">+ ¥4,200.00</p>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl p-4">
+<p class="text-on-surface-variant text-body-sm font-body-sm mb-1">预计达标</p>
+<p class="text-tertiary font-num-data text-num-data">12月</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Smart Save Suggestion -->
+<section class="bg-primary-container rounded-lg p-6 text-on-primary-container flex items-center justify-between gap-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+<h3 class="font-title-sm text-body-reg font-bold">智能建议</h3>
+</div>
+<p class="text-body-sm opacity-90">由于上周餐饮支出减少，建议将多出的 ¥350 转入“夏季旅行”。</p>
+</div>
+<button class="bg-surface-container-lowest text-primary px-4 py-2 rounded-full font-label-caps text-label-caps whitespace-nowrap active:scale-95 transition-all">
+                立即存入
+            </button>
+</section>
+<!-- Savings Goals -->
+<section class="space-y-stack-gap-lg">
+<div class="flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-surface">蓄水池计划</h2>
+<button class="text-primary font-label-caps text-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    新增目标
+                </button>
+</div>
+<div class="grid grid-cols-1 gap-stack-gap-md">
+<!-- Goal 1 -->
+<div class="bg-surface-container-lowest rounded-lg p-5 custom-shadow border border-surface-container-low group">
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]">beach_access</span>
+</div>
+<div>
+<h4 class="text-on-surface font-title-sm text-title-sm">夏季旅行</h4>
+<p class="text-on-surface-variant text-body-sm">目标: ¥15,000</p>
+</div>
+</div>
+<span class="text-primary font-num-data text-num-data">80%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mb-6 overflow-hidden">
+<div class="bg-primary h-full w-[80%] rounded-full transition-all duration-1000"></div>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex -space-x-2">
+<img alt="member" class="w-6 h-6 rounded-full border-2 border-white" data-alt="Small profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-QdMF7FkXT_BBluQINYyyGn1a7lNQ7QNLUvt99lIcXh33iqGhG7cAAEBsh6u6mylJ2ZgpdoPUc18ZpCiq6DpDU6Jx31q-LQTCAQkIbN8aZWnpvWwAsEfeEn-gRYV1ouHnjwRE8VtD9a_JsylGv_YQo4RcxbmfpTdjSubb_dtiVqYGgIS1aJvrCcIgM5D_6V1acSBbz9LYSuNqf7j_ha9svJnCy4YcRQe2elz9isSidQoDyGuD2FZAAXYaoOlPAf0QHOyxOUymrjkD">
+<img alt="member" class="w-6 h-6 rounded-full border-2 border-white" data-alt="Small profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApOZJAytzv_wZIhi3yGyUInAsbb5cUPlbqY_bLxy5XZz6MUs1KXuzKqoUd66jpgMFEuhOh3hj_7r8dPSZWxBTm5skfVpA5vox4QcV1ib3xK44WwIQe7dZIF0j3iDbA8ADFpeTs9MFt9q0FExiqfDAO5rGBp0cG6NTeMibDk_uQj-DAgwW-zdX3B2tubh0Cc3GkPdTwHZ2oF-IYHuFAzRC2EShPlkTSSNkAcfENjbh85nTJPtZvEV2ch7Z3ih0zFkD7XLjvitNGq9W-">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-white">
+<span class="text-[8px] font-bold text-on-surface-variant">+1</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full text-label-caps font-label-caps hover:opacity-90 active:scale-95 transition-all">
+                            存入
+                        </button>
+</div>
+</div>
+<!-- Goal 2 -->
+<div class="bg-surface-container-lowest rounded-lg p-5 custom-shadow border border-surface-container-low">
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[28px]">kitchen</span>
+</div>
+<div>
+<h4 class="text-on-surface font-title-sm text-title-sm">新冰箱</h4>
+<p class="text-on-surface-variant text-body-sm">目标: ¥8,000</p>
+</div>
+</div>
+<span class="text-tertiary font-num-data text-num-data">35%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mb-6 overflow-hidden">
+<div class="bg-tertiary h-full w-[35%] rounded-full"></div>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-on-surface-variant text-body-sm">还差 ¥5,200</p>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full text-label-caps font-label-caps hover:opacity-90 active:scale-95 transition-all">
+                            存入
+                        </button>
+</div>
+</div>
+<!-- Goal 3 -->
+<div class="bg-surface-container-lowest rounded-lg p-5 custom-shadow border border-surface-container-low opacity-60">
+<div class="flex items-start justify-between mb-4">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-outline-variant/20 flex items-center justify-center text-outline">
+<span class="material-symbols-outlined text-[28px]">home_repair_service</span>
+</div>
+<div>
+<h4 class="text-on-surface font-title-sm text-title-sm">备用基金</h4>
+<p class="text-on-surface-variant text-body-sm">目标: ¥50,000</p>
+</div>
+</div>
+<span class="text-outline font-num-data text-num-data">12%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full mb-6 overflow-hidden">
+<div class="bg-outline h-full w-[12%] rounded-full"></div>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-on-surface-variant text-body-sm">定期存入中</p>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full text-label-caps font-label-caps hover:opacity-90 active:scale-95 transition-all">
+                            存入
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Asymmetric Decorative Card -->
+<section class="grid grid-cols-2 gap-stack-gap-md h-40">
+<div class="bg-secondary-container/10 rounded-lg p-4 flex flex-col justify-between border border-secondary-container/20">
+<span class="material-symbols-outlined text-secondary text-[32px]">savings</span>
+<div>
+<h5 class="text-on-surface font-title-sm text-body-sm font-bold">小猪存钱罐</h5>
+<p class="text-secondary text-[10px] font-label-caps">本周达成度 120%</p>
+</div>
+</div>
+<div class="bg-surface-container rounded-lg relative overflow-hidden group cursor-pointer">
+<img alt="Growth" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A macro photograph of gold coins stacked neatly on a clean white surface with a soft-focus background of greenery. The image is bright, airy, and high-key, using soft morning light to create a feeling of growth, prosperity, and stewardship. The color palette is minimal, focusing on warm gold tones and clean ivory whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh_msBHGkO2ZYWTrBbhaXa7L8dXs37m5NX-W4FFtQOVFNB5IptDZTk8dJzSB4k0o7_nIPJ6NrPBScJN2r0dikUKoMy0esjoUd4dyzWNlkJdtItpuZ7jc7xkJTS59RQqc-grwu7FjZ65NX66rAmazy-A-lURnF3aGPlSqDd1kd3BXHWiO4E-MjSvR68hpVJM33C2Mhy5QdKpXRkFIUfHiR9irV_pT-KHheachPgmyoPXVLTVGvBjEfE4rofFuNVle7venmBgFCxS1Um">
+<div class="absolute inset-0 bg-black/20 p-4 flex flex-col justify-end">
+<p class="text-white font-label-caps text-[10px]">理财周报</p>
+<h5 class="text-white text-body-sm font-bold">如何更快达成目标</h5>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-lowest shadow-[0_-4px_20px_0_rgba(0,0,0,0.04)] z-50 rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-caps font-label-caps">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-95 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">target</span>
+<span class="text-label-caps font-label-caps">目标</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-label-caps font-label-caps">资产</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline p-2 hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-caps font-label-caps">我的</span>
+</a>
+</nav>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animating total amount on load
+            const amountEl = document.getElementById('total-amount');
+            const targetAmount = 128450.00;
+            let currentAmount = 128000.00;
+            
+            const timer = setInterval(() => {
+                if (currentAmount >= targetAmount) {
+                    clearInterval(timer);
+                    amountEl.innerText = targetAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+                } else {
+                    currentAmount += 15.5;
+                    amountEl.innerText = currentAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+                }
+            }, 10);
+
+            // Simple click feedback for all buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', () => {
+                    btn.style.opacity = '0.7';
+                });
+                btn.addEventListener('touchend', () => {
+                    btn.style.opacity = '1';
+                });
+            });
+        });
+    </script>
+</body></html>
