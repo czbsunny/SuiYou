@@ -121,8 +121,8 @@ public class SysInstitutionServiceImpl implements SysInstitutionService {
         List<SysAccountTemplate> templates = accountTemplateRepository.findByInstCodeAndAccountType(instCode, accountType);
         return templates.stream()
                 .map(t -> AccountTemplateRespDTO.builder()
-                        .moduleType(t.getModuleType())
-                        .moduleName(t.getModuleName())
+                        .assetType(t.getAssetType())
+                        .assetName(t.getAssetName())
                         .iconUrl(t.getIconUrl())
                         .required(t.getIsRequired())
                         .enabled(t.getIsEnabled())

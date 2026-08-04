@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface SysAccountTemplateRepository extends JpaRepository<SysAccountTemplate, Long> {
     List<SysAccountTemplate> findByInstCodeAndAccountType(String instCode, String accountType);
-    SysAccountTemplate findByInstCodeAndAccountTypeAndModuleType(String instCode, String accountType, String moduleType);
+    SysAccountTemplate findByInstCodeAndAccountTypeAndAssetType(String instCode, String accountType, String assetType);
 
     void deleteByInstCode(String instCode);
 }

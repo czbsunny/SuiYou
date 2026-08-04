@@ -1,15 +1,15 @@
 package com.suiyou.strategy.impl;
 
-import com.suiyou.dto.asset.AssetCreateRequest;
-import com.suiyou.dto.asset.AssetUpdateRequest;
-import com.suiyou.model.Asset;
-import com.suiyou.strategy.AssetStrategy;
+import com.suiyou.dto.holding.HoldingCreateRequest;
+import com.suiyou.dto.holding.HoldingUpdateRequest;
+import com.suiyou.model.Holding;
+import com.suiyou.strategy.HoldingStrategy;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
-public class GoldStrategy implements AssetStrategy {
+public class GoldStrategy implements HoldingStrategy {
 
     @Override
     public String getStrategyType() {
@@ -17,52 +17,52 @@ public class GoldStrategy implements AssetStrategy {
     }
 
     @Override
-    public Asset createAsset(AssetCreateRequest request) {
-        Asset asset = new Asset();
-        asset.setAccountId(request.getAccountId());
-        asset.setAccountModuleId(request.getAccountModuleId());
-        asset.setOwnerId(request.getOwnerId());
-        asset.setGroupType("INVESTMENT");
-        asset.setCategory("GOLD");
-        asset.setSubCategory(request.getSubCategory() != null ? request.getSubCategory() : "PHYSICAL");
-        asset.setName(request.getName());
-        asset.setTotalBalance(request.getTotalBalance() != null ? request.getTotalBalance() : BigDecimal.ZERO);
-        asset.setFrozenBalance(request.getFrozenBalance() != null ? request.getFrozenBalance() : BigDecimal.ZERO);
-        asset.setCurrency(request.getCurrency() != null ? request.getCurrency() : "CNY");
-        asset.setIncludeInNetWorth(request.getIncludeInNetWorth() != null ? request.getIncludeInNetWorth() : true);
-        asset.setValuationMode("CALCULATED");
-        asset.setStatus(request.getStatus() != null ? request.getStatus() : 1);
-        asset.setAttributes(request.getAttributes());
+    public Holding createHolding(HoldingCreateRequest request) {
+        Holding holding = new Holding();
+        holding.setAccountId(request.getAccountId());
+        holding.setAssetId(request.getAssetId());
+        holding.setOwnerId(request.getOwnerId());
+        holding.setGroupType("INVESTMENT");
+        holding.setCategory("GOLD");
+        holding.setSubCategory(request.getSubCategory() != null ? request.getSubCategory() : "PHYSICAL");
+        holding.setName(request.getName());
+        holding.setTotalBalance(request.getTotalBalance() != null ? request.getTotalBalance() : BigDecimal.ZERO);
+        holding.setFrozenBalance(request.getFrozenBalance() != null ? request.getFrozenBalance() : BigDecimal.ZERO);
+        holding.setCurrency(request.getCurrency() != null ? request.getCurrency() : "CNY");
+        holding.setIncludeInNetWorth(request.getIncludeInNetWorth() != null ? request.getIncludeInNetWorth() : true);
+        holding.setValuationMode("CALCULATED");
+        holding.setStatus(request.getStatus() != null ? request.getStatus() : 1);
+        holding.setAttributes(request.getAttributes());
         
-        asset.setAvailableBalance(asset.getTotalBalance().subtract(asset.getFrozenBalance()));
-        return asset;
+        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+        return holding;
     }
 
     @Override
-    public Asset updateBasicInfo(Asset asset, AssetUpdateRequest request) {
+    public Holding updateBasicInfo(Holding holding, HoldingUpdateRequest request) {
         if (request.getName() != null) {
-            asset.setName(request.getName());
+            holding.setName(request.getName());
         }
         if (request.getSubCategory() != null) {
-            asset.setSubCategory(request.getSubCategory());
+            holding.setSubCategory(request.getSubCategory());
         }
         if (request.getCurrency() != null) {
-            asset.setCurrency(request.getCurrency());
+            holding.setCurrency(request.getCurrency());
         }
         if (request.getIncludeInNetWorth() != null) {
-            asset.setIncludeInNetWorth(request.getIncludeInNetWorth());
+            holding.setIncludeInNetWorth(request.getIncludeInNetWorth());
         }
         if (request.getAttributes() != null) {
-            asset.setAttributes(request.getAttributes());
+            holding.setAttributes(request.getAttributes());
         }
-        return asset;
+        return holding;
     }
 
     @Override
-    public Asset updateNetWorth(Asset asset, BigDecimal newTotalBalance) {
-        asset.setTotalBalance(newTotalBalance != null ? newTotalBalance : BigDecimal.ZERO);
-        asset.setValuationMode("CALCULATED");
-        asset.setAvailableBalance(asset.getTotalBalance().subtract(asset.getFrozenBalance()));
-        return asset;
+    public Holding updateNetWorth(Holding holding, BigDecimal newTotalBalance) {
+        holding.setTotalBalance(newTotalBalance != null ? newTotalBalance : BigDecimal.ZERO);
+        holding.setValuationMode("CALCULATED");
+        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+        return holding;
     }
 }

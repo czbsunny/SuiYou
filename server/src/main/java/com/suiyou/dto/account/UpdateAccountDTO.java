@@ -16,5 +16,5 @@ public class UpdateAccountDTO {
     private String accountNo;
     private String accountName;
     private Boolean includeInNetWorth;
-    private List<AccountModuleDTO> modules;
+    private List<AssetDTO> assets;
 }

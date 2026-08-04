@@ -50,8 +50,8 @@ public class InstitutionController {
         return ResponseEntity.ok(institution);
     }
 
-    @GetMapping("/{instCode}/account-types/{accountType}/modules")
-    public ResponseEntity<List<AccountTemplateRespDTO>> getAccountModules(
+    @GetMapping("/{instCode}/account-types/{accountType}/assets")
+    public ResponseEntity<List<AccountTemplateRespDTO>> getAssets(
             @PathVariable String instCode, 
             @PathVariable String accountType) {
         List<AccountTemplateRespDTO> templates = institutionService.getAccountTemplates(instCode, accountType);

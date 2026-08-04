@@ -15,11 +15,11 @@ public class TransactionRespDTO {
     private BigDecimal amount;
     private BigDecimal targetAmount;
     private BigDecimal fee;
-    private Long sourceAssetId;
+    private Long sourceHoldingId;
     private String sourceAccountName;
     private String sourceAccountInstitution;
     private String sourceAccountIdentifier;
-    private Long targetAssetId;
+    private Long targetHoldingId;
     private String targetAccountName;
     private String targetAccountInstitution;
     private String targetAccountIdentifier;

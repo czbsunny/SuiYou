@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long>, JpaSpecificationExecutor<Transaction> {
 
-    @Query("SELECT t FROM Transaction t WHERE t.sourceAssetId = :assetId OR t.targetAssetId = :assetId")
-    Page<Transaction> findByAssetId(@Param("assetId") Long assetId, Pageable pageable);
+    @Query("SELECT t FROM Transaction t WHERE t.sourceHoldingId = :holdingId OR t.targetHoldingId = :holdingId")
+    Page<Transaction> findByHoldingId(@Param("holdingId") Long holdingId, Pageable pageable);
 
     Page<Transaction> findByFamilyIdAndTransTimeBetween(Long familyId, LocalDateTime startTime, LocalDateTime endTime, Pageable pageable);
 

@@ -1,7 +1,7 @@
 package com.suiyou.loader;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.suiyou.enums.ModuleType;
+import com.suiyou.enums.AssetType;
 import com.suiyou.model.SysAccountTemplate;
 import com.suiyou.repository.SysAccountTemplateRepository;
 import com.suiyou.repository.SysInstitutionRepository;
@@ -43,7 +43,7 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
         Map<String, SysAccountTemplate> templateMap = new HashMap<>();
         
         Map<String, Object> typeRules = (Map<String, Object>) config.get("typeRules");
-        List<Map<String, Object>> instModuleRules = (List<Map<String, Object>>) config.get("instModuleRules");
+        List<Map<String, Object>> instAssetRules = (List<Map<String, Object>>) config.get("instAssetRules");
 
         List<String> allInstCodes = institutionRepository.findAll().stream()
             .map(inst -> inst.getInstCode())
@@ -53,12 +53,12 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
 
         for (Map.Entry<String, Object> typeEntry : typeRules.entrySet()) {
             String accountType = typeEntry.getKey();
-            Map<String, Object> moduleRules = (Map<String, Object>) typeEntry.getValue();
+            Map<String, Object> assetRules = (Map<String, Object>) typeEntry.getValue();
             
             for (String instCode : allInstCodes) {
-                List<SysAccountTemplate> templates = buildTemplates(instCode, accountType, moduleRules);
+                List<SysAccountTemplate> templates = buildTemplates(instCode, accountType, assetRules);
                 for (SysAccountTemplate template : templates) {
-                    String key = instCode + ":" + accountType + ":" + template.getModuleType();
+                    String key = instCode + ":" + accountType + ":" + template.getAssetType();
                     templateMap.put(key, template);
                 }
             }
@@ -66,38 +66,38 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
 
         log.info("基础规则生成完成，已生成 {} 条模板", templateMap.size());
 
-        for (Map<String, Object> instModuleRule : instModuleRules) {
-            String instCode = (String) instModuleRule.get("instCode");
-            String accountType = (String) instModuleRule.get("accountType");
-            String moduleType = (String) instModuleRule.get("moduleType");
-            String moduleName = (String) instModuleRule.get("moduleName");
-            Boolean required = (Boolean) instModuleRule.get("required");
-            Boolean enabled = (Boolean) instModuleRule.get("enabled");
-            String iconUrl = (String) instModuleRule.get("iconUrl");
+        for (Map<String, Object> instAssetRule : instAssetRules) {
+            String instCode = (String) instAssetRule.get("instCode");
+            String accountType = (String) instAssetRule.get("accountType");
+            String assetType = (String) instAssetRule.get("assetType");
+            String assetName = (String) instAssetRule.get("assetName");
+            Boolean required = (Boolean) instAssetRule.get("required");
+            Boolean enabled = (Boolean) instAssetRule.get("enabled");
+            String iconUrl = (String) instAssetRule.get("iconUrl");
 
             if (!allInstCodes.contains(instCode)) {
                 log.warn("机构 {} 不存在于系统中，跳过", instCode);
                 continue;
             }
             
-            ModuleType moduleTypeEnum = ModuleType.ofCode(moduleType);
-            if (moduleTypeEnum == null) {
-                log.warn("模块类型 {} 不存在于枚举中，跳过", moduleType);
+            AssetType assetTypeEnum = AssetType.ofCode(assetType);
+            if (assetTypeEnum == null) {
+                log.warn("模块类型 {} 不存在于枚举中，跳过", assetType);
                 continue;
             }
             
-            String key = instCode + ":" + accountType + ":" + moduleType;
+            String key = instCode + ":" + accountType + ":" + assetType;
             
             SysAccountTemplate template = new SysAccountTemplate();
             template.setInstCode(instCode);
             template.setAccountType(accountType);
-            template.setModuleType(moduleType);
-            template.setModuleName(moduleName);
+            template.setAssetType(assetType);
+            template.setAssetName(assetName);
             template.setIsRequired(required != null ? required : false);
             template.setIsEnabled(enabled != null ? enabled : true);
-            template.setIconUrl(iconUrl != null ? iconUrl : moduleTypeEnum.getIconUrl());
-            template.setSortOrder(moduleTypeEnum.getOrder());
-            template.setCanPay(moduleTypeEnum.isCanPay());
+            template.setIconUrl(iconUrl != null ? iconUrl : assetTypeEnum.getIconUrl());
+            template.setSortOrder(assetTypeEnum.getOrder());
+            template.setCanPay(assetTypeEnum.isCanPay());
 
             templateMap.put(key, template);
         }
@@ -126,46 +126,46 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
         return "账户模板数据加载器";
     }
     
-    private List<SysAccountTemplate> buildTemplates(String instCode, String accountType, Map<String, Object> moduleRules) {
+    private List<SysAccountTemplate> buildTemplates(String instCode, String accountType, Map<String, Object> assetRules) {
         List<SysAccountTemplate> templates = new ArrayList<>();
-        List<Object> requiredModules = (List<Object>) moduleRules.get("required");
-        if (requiredModules != null) {
-            for (Object module : requiredModules) {
-                ModuleType moduleType = ModuleType.ofCode((String) module);
-                if (moduleType == null) {
-                    log.warn("模块类型 {} 不存在于枚举中，跳过", module);
+        List<Object> requiredAssets = (List<Object>) assetRules.get("required");
+        if (requiredAssets != null) {
+            for (Object asset : requiredAssets) {
+                AssetType assetType = AssetType.ofCode((String) asset);
+                if (assetType == null) {
+                    log.warn("模块类型 {} 不存在于枚举中，跳过", asset);
                     continue;
                 }
-                if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType, true, true));
+                if (!containsAsset(templates, assetType.getCode())) {
+                    templates.add(createTemplate(instCode, accountType, assetType, true, true));
                 }
             }
         }
         
-        List<Object> defaultModules = (List<Object>) moduleRules.get("default");
-        if (defaultModules != null) {
-            for (Object module : defaultModules) {
-                ModuleType moduleType = ModuleType.ofCode((String) module);
-                if (moduleType == null) {
-                    log.warn("模块类型 {} 不存在于枚举中，跳过", module);
+        List<Object> defaultAssets = (List<Object>) assetRules.get("default");
+        if (defaultAssets != null) {
+            for (Object asset : defaultAssets) {
+                AssetType assetType = AssetType.ofCode((String) asset);
+                if (assetType == null) {
+                    log.warn("模块类型 {} 不存在于枚举中，跳过", asset);
                     continue;
                 }
-                if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType, false, true));
+                if (!containsAsset(templates, assetType.getCode())) {
+                    templates.add(createTemplate(instCode, accountType, assetType, false, true));
                 }
             }
         }
         
-        List<Object> optionalModules = (List<Object>) moduleRules.get("optional");
-        if (optionalModules != null) {
-            for (Object module : optionalModules) {
-                ModuleType moduleType = ModuleType.ofCode((String) module);
-                if (moduleType == null) {
-                    log.warn("模块类型 {} 不存在于枚举中，跳过", module);
+        List<Object> optionalAssets = (List<Object>) assetRules.get("optional");
+        if (optionalAssets != null) {
+            for (Object asset : optionalAssets) {
+                AssetType assetType = AssetType.ofCode((String) asset);
+                if (assetType == null) {
+                    log.warn("模块类型 {} 不存在于枚举中，跳过", asset);
                     continue;
                 }
-                if (!containsModule(templates, moduleType.getCode())) {
-                    templates.add(createTemplate(instCode, accountType, moduleType, false, false));
+                if (!containsAsset(templates, assetType.getCode())) {
+                    templates.add(createTemplate(instCode, accountType, assetType, false, false));
                 }
             }
         }
@@ -173,21 +173,21 @@ public class AccountTemplateDataLoader extends AbstractConfigLoader {
         return templates;
     }
     
-    private boolean containsModule(List<SysAccountTemplate> templates, String moduleType) {
-        return templates.stream().anyMatch(t -> t.getModuleType().equals(moduleType));
+    private boolean containsAsset(List<SysAccountTemplate> templates, String assetType) {
+        return templates.stream().anyMatch(t -> t.getAssetType().equals(assetType));
     }
     
-    private SysAccountTemplate createTemplate(String instCode, String accountType, ModuleType moduleTypeEnum, boolean required, boolean enabled) {
+    private SysAccountTemplate createTemplate(String instCode, String accountType, AssetType assetTypeEnum, boolean required, boolean enabled) {
         SysAccountTemplate template = new SysAccountTemplate();
         template.setInstCode(instCode);
         template.setAccountType(accountType);
-        template.setModuleType(moduleTypeEnum.getCode());
-        template.setModuleName(moduleTypeEnum.getName());
-        template.setIconUrl(moduleTypeEnum.getIconUrl());
-        template.setCanPay(moduleTypeEnum.isCanPay());
+        template.setAssetType(assetTypeEnum.getCode());
+        template.setAssetName(assetTypeEnum.getName());
+        template.setIconUrl(assetTypeEnum.getIconUrl());
+        template.setCanPay(assetTypeEnum.isCanPay());
         template.setIsRequired(required);
         template.setIsEnabled(enabled);
-        template.setSortOrder(moduleTypeEnum.getOrder());
+        template.setSortOrder(assetTypeEnum.getOrder());
         return template;
     }
 }

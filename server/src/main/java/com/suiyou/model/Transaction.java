@@ -31,11 +31,11 @@ public class Transaction {
     @Column(name = "trans_time", nullable = false)
     private LocalDateTime transTime;
     
-    @Column(name = "source_asset_id")
-    private Long sourceAssetId;
+    @Column(name = "source_holding_id")
+    private Long sourceHoldingId;
     
-    @Column(name = "target_asset_id")
-    private Long targetAssetId;
+    @Column(name = "target_holding_id")
+    private Long targetHoldingId;
     
     @Column(nullable = false, columnDefinition = "decimal(19,4)")
     private BigDecimal amount;

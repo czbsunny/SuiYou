@@ -15,8 +15,8 @@ public class TransactionCreateDTO {
     private BigDecimal fee;
     private LocalDateTime transTime;
     
-    private Long sourceAssetId;
-    private Long targetAssetId;
+    private Long sourceHoldingId;
+    private Long targetHoldingId;
     
     private Long categoryId;
     private String description;

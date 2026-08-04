@@ -15,20 +15,20 @@ public enum TransactionType {
 
     // ============ 3. 债权/应收 (别人欠我钱) ============
     // 场景：借钱给朋友、帮公司垫付差旅费
-    // 逻辑：资金(Asset) -> 应收账款(Asset)
+    // 逻辑：资金(Holding) -> 应收账款(Holding)
     LEND("借出/垫付"),    
 
     // 场景：朋友还钱、公司报销款到账
-    // 逻辑：应收账款(Asset) -> 资金(Asset)
+    // 逻辑：应收账款(Holding) -> 资金(Holding)
     RECOVER("收债/报销"), 
 
     // ============ 4. 债务/应付 (我欠别人钱) ============
     // 场景：问朋友借钱、借呗提现、信用卡刷卡(如果不直接记支出)
-    // 逻辑：资金(Asset) <- 负债(Liability/Asset负值)
+    // 逻辑：资金(Holding) <- 负债(Liability/Holding负值)
     BORROW("借入"),       
 
     // 场景：还信用卡、还朋友钱0
-    // 逻辑：资金(Asset) -> 负债(Liability/Asset负值)
+    // 逻辑：资金(Holding) -> 负债(Liability/Holding负值)
     REPAY("还款"),   
 
     // ============ 5. 系统维护 ============

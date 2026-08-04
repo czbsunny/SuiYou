@@ -2,78 +2,56 @@ package com.suiyou.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "asset")
+@Table(name = "assets", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_account_asset", columnNames = {"account_id", "asset_type"})
+})
 @Data
 public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @Column(name = "account_id", nullable = false)
     private Long accountId;
-
-    @Column(name = "account_module_id", nullable = false)
-    private Long accountModuleId;
-
-    @Column(name = "owner_id", nullable = false)
-    private Long ownerId;
     
-    @Column(nullable = false)
-    private String groupType;
+    @Column(name = "asset_type", nullable = false, length = 20)
+    private String assetType;
     
-    @Column(nullable = false)
-    private String category;
+    @Column(name = "asset_name", nullable = false, length = 100)
+    private String assetName;
     
-    @Column(nullable = false)
-    private String subCategory;
+    @Column(name = "icon_url", nullable = false, length = 255)
+    private String iconUrl;
     
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "bg_color", nullable = false, length = 10)
+    private String bgColor;
     
-    @Column(name = "total_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
-    private BigDecimal totalBalance = BigDecimal.ZERO;
+    @Column(name = "can_pay", nullable = false, columnDefinition = "tinyint(1) default 0")
+    private Integer canPay = 0;
     
-    @Column(name = "frozen_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
-    private BigDecimal frozenBalance = BigDecimal.ZERO;
+    @Column(name = "sort_order", columnDefinition = "int default 0")
+    private Integer sortOrder = 0;
     
-    @Column(name = "available_balance", nullable = false, columnDefinition = "decimal(26,8) default '0.00000000'", precision = 26, scale = 8)
-    private BigDecimal availableBalance = BigDecimal.ZERO;
+    @Column(name = "is_enabled", nullable = false, columnDefinition = "tinyint(1) default 1")
+    private Integer isEnabled = 1;
     
-    @Column(nullable = false, columnDefinition = "varchar(10) default 'CNY'")
-    private String currency = "CNY";
-    
-    @Column(nullable = false, columnDefinition = "bit(1) default 1")
-    private Boolean includeInNetWorth = true;
-    
-    @Column(name = "valuation_mode", nullable = false, columnDefinition = "varchar(20) default 'MANUAL'")
-    private String valuationMode = "MANUAL";
-    
-    @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
-    private Integer status = 1;
-
-    @Column(columnDefinition = "json")
-    private String attributes;
-    
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
+    
     @PrePersist
     protected void onCreate() {
-        this.availableBalance = this.totalBalance.subtract(this.frozenBalance);
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
-
+    
     @PreUpdate
     protected void onUpdate() {
-        this.availableBalance = this.totalBalance.subtract(this.frozenBalance);
         updatedAt = LocalDateTime.now();
     }
 }

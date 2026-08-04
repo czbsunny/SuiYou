@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class MoneyFundStrategy implements HoldingStrategy {
+public class DefaultHoldingStrategy implements HoldingStrategy {
 
     @Override
     public String getStrategyType() {
-        return "MONEY_FUND";
+        return "DEFAULT";
     }
 
     @Override
@@ -22,15 +22,15 @@ public class MoneyFundStrategy implements HoldingStrategy {
         holding.setAccountId(request.getAccountId());
         holding.setAssetId(request.getAssetId());
         holding.setOwnerId(request.getOwnerId());
-        holding.setGroupType("INVESTMENT");
-        holding.setCategory("MONEY_FUND");
-        holding.setSubCategory(request.getSubCategory() != null ? request.getSubCategory() : "CASH_EQUIVALENT");
+        holding.setGroupType(request.getGroupType());
+        holding.setCategory(request.getCategory());
+        holding.setSubCategory(request.getSubCategory());
         holding.setName(request.getName());
         holding.setTotalBalance(request.getTotalBalance() != null ? request.getTotalBalance() : BigDecimal.ZERO);
         holding.setFrozenBalance(request.getFrozenBalance() != null ? request.getFrozenBalance() : BigDecimal.ZERO);
         holding.setCurrency(request.getCurrency() != null ? request.getCurrency() : "CNY");
         holding.setIncludeInNetWorth(request.getIncludeInNetWorth() != null ? request.getIncludeInNetWorth() : true);
-        holding.setValuationMode("CALCULATED");
+        holding.setValuationMode(request.getValuationMode() != null ? request.getValuationMode() : "MANUAL");
         holding.setStatus(request.getStatus() != null ? request.getStatus() : 1);
         holding.setAttributes(request.getAttributes());
         
@@ -43,14 +43,23 @@ public class MoneyFundStrategy implements HoldingStrategy {
         if (request.getName() != null) {
             holding.setName(request.getName());
         }
+        if (request.getCategory() != null) {
+            holding.setCategory(request.getCategory());
+        }
         if (request.getSubCategory() != null) {
             holding.setSubCategory(request.getSubCategory());
+        }
+        if (request.getGroupType() != null) {
+            holding.setGroupType(request.getGroupType());
         }
         if (request.getCurrency() != null) {
             holding.setCurrency(request.getCurrency());
         }
         if (request.getIncludeInNetWorth() != null) {
             holding.setIncludeInNetWorth(request.getIncludeInNetWorth());
+        }
+        if (request.getValuationMode() != null) {
+            holding.setValuationMode(request.getValuationMode());
         }
         if (request.getAttributes() != null) {
             holding.setAttributes(request.getAttributes());
@@ -61,7 +70,6 @@ public class MoneyFundStrategy implements HoldingStrategy {
     @Override
     public Holding updateNetWorth(Holding holding, BigDecimal newTotalBalance) {
         holding.setTotalBalance(newTotalBalance != null ? newTotalBalance : BigDecimal.ZERO);
-        holding.setValuationMode("CALCULATED");
         holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
         return holding;
     }

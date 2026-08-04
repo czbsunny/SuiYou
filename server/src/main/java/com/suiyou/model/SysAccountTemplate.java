@@ -17,11 +17,11 @@ public class SysAccountTemplate {
     @Column(name = "account_type", nullable = false, length = 32)
     private String accountType;
     
-    @Column(name = "module_type", nullable = false, length = 32)
-    private String moduleType;
+    @Column(name = "asset_type", nullable = false, length = 32)
+    private String assetType;
 
-    @Column(name = "module_name", length = 100)
-    private String moduleName;
+    @Column(name = "asset_name", length = 100)
+    private String assetName;
     
     @Column(name = "icon_url", length = 255)
     private String iconUrl;

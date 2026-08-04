@@ -26,35 +26,35 @@
       "optional": []
     }
   },
-  "instModuleRules": [
-    {"instCode": "CMB", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "朝朝宝", "required": true, "enabled": true},
-    {"instCode": "ICBC", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "天天盈", "required": true, "enabled": true},
-    {"instCode": "CCB", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "龙钱宝", "required": true, "enabled": true},
-    {"instCode": "ABC", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "时时付", "required": true, "enabled": true},
-    {"instCode": "BOC", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "活钱宝", "required": true, "enabled": true},
-    {"instCode": "BOCOM", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "活期盈", "required": true, "enabled": true},
-    {"instCode": "PSBC", "accountType": "DEBIT_CARD", "moduleType": "CURRENT_PLUS", "moduleName": "邮益宝", "required": true, "enabled": true},
+  "instAssetRules": [
+    {"instCode": "CMB", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "朝朝宝", "required": true, "enabled": true},
+    {"instCode": "ICBC", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "天天盈", "required": true, "enabled": true},
+    {"instCode": "CCB", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "龙钱宝", "required": true, "enabled": true},
+    {"instCode": "ABC", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "时时付", "required": true, "enabled": true},
+    {"instCode": "BOC", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "活钱宝", "required": true, "enabled": true},
+    {"instCode": "BOCOM", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "活期盈", "required": true, "enabled": true},
+    {"instCode": "PSBC", "accountType": "DEBIT_CARD", "assetType": "CURRENT_PLUS", "assetName": "邮益宝", "required": true, "enabled": true},
 
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "CURRENT", "moduleName": "余额", "iconUrl": "/static/assets/modules/balance.png", "required": true, "enabled": true, "sortOrder": 1},
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "CURRENT_PLUS", "moduleName": "余额宝", "iconUrl": "/static/assets/modules/yuebao.png", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "FUND", "moduleName": "基金", "required": false, "enabled": true, "sortOrder": 3},
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "GOLD", "moduleName": "黄金", "required": false, "enabled": true, "sortOrder": 4},
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "CREDIT", "moduleName": "花呗", "iconUrl": "/static/assets/modules/huabei.png", "required": false, "enabled": false, "sortOrder": 5},
-    {"instCode": "ALIPAY", "accountType": "FINTECH", "moduleType": "LOAN", "moduleName": "借呗", "iconUrl": "/static/assets/modules/jiebei.png", "required": false, "enabled": false, "sortOrder": 6},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "CURRENT", "assetName": "余额", "iconUrl": "/static/assets/modules/balance.png", "required": true, "enabled": true, "sortOrder": 1},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "CURRENT_PLUS", "assetName": "余额宝", "iconUrl": "/static/assets/modules/yuebao.png", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "FUND", "assetName": "基金", "required": false, "enabled": true, "sortOrder": 3},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "GOLD", "assetName": "黄金", "required": false, "enabled": true, "sortOrder": 4},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "CREDIT", "assetName": "花呗", "iconUrl": "/static/assets/modules/huabei.png", "required": false, "enabled": false, "sortOrder": 5},
+    {"instCode": "ALIPAY", "accountType": "FINTECH", "assetType": "LOAN", "assetName": "借呗", "iconUrl": "/static/assets/modules/jiebei.png", "required": false, "enabled": false, "sortOrder": 6},
 
-    {"instCode": "WECHAT", "accountType": "FINTECH", "moduleType": "CURRENT", "moduleName": "零钱", "iconUrl": "/static/assets/modules/change.png", "required": true, "enabled": true, "sortOrder": 1},
-    {"instCode": "WECHAT", "accountType": "FINTECH", "moduleType": "CURRENT_PLUS", "moduleName": "零钱通", "iconUrl": "/static/assets/modules/minifund.png", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
-    {"instCode": "WECHAT", "accountType": "FINTECH", "moduleType": "FUND", "moduleName": "基金", "required": false, "enabled": true, "sortOrder": 3},
-    {"instCode": "WECHAT", "accountType": "FINTECH", "moduleType": "LOAN", "moduleName": "微粒贷", "iconUrl": "/static/assets/modules/weilidai.png", "required": false, "enabled": true, "sortOrder": 4},
+    {"instCode": "WECHAT", "accountType": "FINTECH", "assetType": "CURRENT", "assetName": "零钱", "iconUrl": "/static/assets/modules/change.png", "required": true, "enabled": true, "sortOrder": 1},
+    {"instCode": "WECHAT", "accountType": "FINTECH", "assetType": "CURRENT_PLUS", "assetName": "零钱通", "iconUrl": "/static/assets/modules/minifund.png", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
+    {"instCode": "WECHAT", "accountType": "FINTECH", "assetType": "FUND", "assetName": "基金", "required": false, "enabled": true, "sortOrder": 3},
+    {"instCode": "WECHAT", "accountType": "FINTECH", "assetType": "LOAN", "assetName": "微粒贷", "iconUrl": "/static/assets/modules/weilidai.png", "required": false, "enabled": true, "sortOrder": 4},
 
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "CURRENT", "moduleName": "余额", "required": true, "enabled": true, "sortOrder": 1},
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "CURRENT_PLUS", "moduleName": "小金库", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "FUND", "moduleName": "基金", "required": false, "enabled": true, "sortOrder": 3},
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "GOLD", "moduleName": "黄金", "required": false, "enabled": true, "sortOrder": 4},
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "CREDIT", "moduleName": "白条", "required": false, "enabled": false, "sortOrder": 5},
-    {"instCode": "JDFINANCE", "accountType": "FINTECH", "moduleType": "LOAN", "moduleName": "金条", "required": false, "enabled": false, "sortOrder": 6},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "CURRENT", "assetName": "余额", "required": true, "enabled": true, "sortOrder": 1},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "CURRENT_PLUS", "assetName": "小金库", "required": true, "enabled": true, "sortOrder": 2, "canPay": true},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "FUND", "assetName": "基金", "required": false, "enabled": true, "sortOrder": 3},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "GOLD", "assetName": "黄金", "required": false, "enabled": true, "sortOrder": 4},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "CREDIT", "assetName": "白条", "required": false, "enabled": false, "sortOrder": 5},
+    {"instCode": "JDFINANCE", "accountType": "FINTECH", "assetType": "LOAN", "assetName": "金条", "required": false, "enabled": false, "sortOrder": 6},
 
-    {"instCode": "TIANTIAN", "accountType": "FINTECH", "moduleType": "FUND", "moduleName": "基金", "required": true, "enabled": true, "sortOrder": 2},
-    {"instCode": "DANJUAN", "accountType": "FINTECH", "moduleType": "FUND", "moduleName": "基金", "required": true, "enabled": true, "sortOrder": 2}
+    {"instCode": "TIANTIAN", "accountType": "FINTECH", "assetType": "FUND", "assetName": "基金", "required": true, "enabled": true, "sortOrder": 2},
+    {"instCode": "DANJUAN", "accountType": "FINTECH", "assetType": "FUND", "assetName": "基金", "required": true, "enabled": true, "sortOrder": 2}
   ]
 }

@@ -1,19 +1,19 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.model.Transaction;
-import com.suiyou.model.Asset;
+import com.suiyou.model.Holding;
 import com.suiyou.model.Family;
 import com.suiyou.model.Account;
 import com.suiyou.model.User;
-import com.suiyou.model.AccountModule;
+import com.suiyou.model.Asset;
 import com.suiyou.enums.TransactionType;
 import com.suiyou.dto.transaction.TransactionCreateDTO;
 import com.suiyou.dto.transaction.TransactionQueryDTO;
 import com.suiyou.dto.transaction.TransactionRespDTO;
 
 import com.suiyou.repository.TransactionRepository;
+import com.suiyou.repository.HoldingRepository;
 import com.suiyou.repository.AssetRepository;
-import com.suiyou.repository.AccountModuleRepository;
 import com.suiyou.repository.AccountRepository;
 import com.suiyou.repository.UserRepository;
 import com.suiyou.service.FamilyService;
@@ -47,10 +47,10 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository transactionRepository;
 
     @Resource
-    private AssetRepository assetRepository;
+    private HoldingRepository holdingRepository;
 
     @Resource
-    private AccountModuleRepository accountModuleRepository;
+    private AssetRepository assetRepository;
 
     @Resource
     private AccountRepository accountRepository;
@@ -74,7 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (trans.getTargetAmount() == null) trans.setTargetAmount(trans.getAmount());
         if (trans.getFee() == null) trans.setFee(BigDecimal.ZERO);
 
-        updateAssetBalance(trans, false);
+        updateHoldingBalance(trans, false);
 
         return transactionRepository.save(trans);
     }
@@ -85,12 +85,12 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction trans = transactionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("交易不存在"));
 
-        updateAssetBalance(trans, true);
+        updateHoldingBalance(trans, true);
 
         transactionRepository.delete(trans);
     }
 
-    private void updateAssetBalance(Transaction trans, boolean isRollback) {
+    private void updateHoldingBalance(Transaction trans, boolean isRollback) {
         BigDecimal amount = trans.getAmount();
         BigDecimal targetAmount = trans.getTargetAmount();
         BigDecimal fee = trans.getFee();
@@ -103,63 +103,63 @@ public class TransactionServiceImpl implements TransactionService {
 
         switch (trans.getType()) {
             case EXPENSE:
-                decreaseAsset(trans.getSourceAssetId(), amount.add(fee), trans.getUseFrozenAmount());
+                decreaseHolding(trans.getSourceHoldingId(), amount.add(fee), trans.getUseFrozenAmount());
                 break;
                 
             case INCOME:
-                increaseAsset(trans.getTargetAssetId(), targetAmount);
+                increaseHolding(trans.getTargetHoldingId(), targetAmount);
                 break;
                 
             case TRANSFER:
             case LEND:
             case REPAY:
-                decreaseAsset(trans.getSourceAssetId(), amount.add(fee), trans.getUseFrozenAmount());
-                increaseAsset(trans.getTargetAssetId(), targetAmount);
+                decreaseHolding(trans.getSourceHoldingId(), amount.add(fee), trans.getUseFrozenAmount());
+                increaseHolding(trans.getTargetHoldingId(), targetAmount);
                 break;
                 
             case RECOVER:
             case BORROW:
-                decreaseAsset(trans.getSourceAssetId(), amount, trans.getUseFrozenAmount());
-                increaseAsset(trans.getTargetAssetId(), targetAmount);
+                decreaseHolding(trans.getSourceHoldingId(), amount, trans.getUseFrozenAmount());
+                increaseHolding(trans.getTargetHoldingId(), targetAmount);
                 break;
 
             case ADJUSTMENT:
             case INVESTMENT_RETURN:
-                if (trans.getSourceAssetId() != null) {
-                    increaseAsset(trans.getSourceAssetId(), amount);
+                if (trans.getSourceHoldingId() != null) {
+                    increaseHolding(trans.getSourceHoldingId(), amount);
                 }
                 break;
         }
     }
 
-    private void increaseAsset(Long assetId, BigDecimal amount) {
-        if (assetId == null) return;
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + assetId));
-        asset.setTotalBalance(asset.getTotalBalance().add(amount));
-        assetRepository.save(asset);
+    private void increaseHolding(Long holdingId, BigDecimal amount) {
+        if (holdingId == null) return;
+        Holding holding = holdingRepository.findById(holdingId)
+                .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + holdingId));
+        holding.setTotalBalance(holding.getTotalBalance().add(amount));
+        holdingRepository.save(holding);
     }
 
-    private void decreaseAsset(Long assetId, BigDecimal amount, Boolean useFrozenAmount) {
-        if (assetId == null) return;
+    private void decreaseHolding(Long holdingId, BigDecimal amount, Boolean useFrozenAmount) {
+        if (holdingId == null) return;
         
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + assetId));
+        Holding holding = holdingRepository.findById(holdingId)
+                .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + holdingId));
 
-        BigDecimal availableBalance = asset.getTotalBalance().subtract(asset.getFrozenBalance());
+        BigDecimal availableBalance = holding.getTotalBalance().subtract(holding.getFrozenBalance());
         
         if (!Boolean.TRUE.equals(useFrozenAmount)) {
             if (availableBalance.compareTo(amount) < 0) {
                 throw new IllegalArgumentException("资产可用余额不足，可用余额: " + availableBalance + ", 需要: " + amount);
             }
         } else {
-            if (asset.getTotalBalance().compareTo(amount) < 0) {
-                throw new IllegalArgumentException("资产总余额不足，总余额: " + asset.getTotalBalance() + ", 需要: " + amount);
+            if (holding.getTotalBalance().compareTo(amount) < 0) {
+                throw new IllegalArgumentException("资产总余额不足，总余额: " + holding.getTotalBalance() + ", 需要: " + amount);
             }
         }
 
-        asset.setTotalBalance(asset.getTotalBalance().subtract(amount));
-        assetRepository.save(asset);
+        holding.setTotalBalance(holding.getTotalBalance().subtract(amount));
+        holdingRepository.save(holding);
     }
 
     @Override
@@ -189,9 +189,9 @@ public class TransactionServiceImpl implements TransactionService {
                 predicates.add(criteriaBuilder.equal(root.get("type"), query.getType()));
             }
 
-            if (query.getAssetId() != null) {
-                Predicate isSource = criteriaBuilder.equal(root.get("sourceAssetId"), query.getAssetId());
-                Predicate isTarget = criteriaBuilder.equal(root.get("targetAssetId"), query.getAssetId());
+            if (query.getHoldingId() != null) {
+                Predicate isSource = criteriaBuilder.equal(root.get("sourceHoldingId"), query.getHoldingId());
+                Predicate isTarget = criteriaBuilder.equal(root.get("targetHoldingId"), query.getHoldingId());
                 predicates.add(criteriaBuilder.or(isSource, isTarget));
             }
 
@@ -214,15 +214,15 @@ public class TransactionServiceImpl implements TransactionService {
             TransactionRespDTO dto = new TransactionRespDTO();
             BeanUtils.copyProperties(transaction, dto);
             
-            if (transaction.getSourceAssetId() != null) {
-                Optional<Asset> sourceAssetOpt = assetRepository.findById(transaction.getSourceAssetId());
-                if (sourceAssetOpt.isPresent()) {
-                    Asset sourceAsset = sourceAssetOpt.get();
-                    if (sourceAsset.getAccountModuleId() != null) {
-                        Optional<AccountModule> moduleOpt = accountModuleRepository.findById(sourceAsset.getAccountModuleId());
-                        if (moduleOpt.isPresent()) {
-                            AccountModule module = moduleOpt.get();
-                            Optional<Account> accountOpt = accountRepository.findById(module.getAccountId());
+            if (transaction.getSourceHoldingId() != null) {
+                Optional<Holding> sourceHoldingOpt = holdingRepository.findById(transaction.getSourceHoldingId());
+                if (sourceHoldingOpt.isPresent()) {
+                    Holding sourceHolding = sourceHoldingOpt.get();
+                    if (sourceHolding.getAssetId() != null) {
+                        Optional<Asset> assetOpt = assetRepository.findById(sourceHolding.getAssetId());
+                        if (assetOpt.isPresent()) {
+                            Asset asset = assetOpt.get();
+                            Optional<Account> accountOpt = accountRepository.findById(asset.getAccountId());
                             if (accountOpt.isPresent()) {
                                 Account account = accountOpt.get();
                                 dto.setSourceAccountName(account.getAccountName());
@@ -234,15 +234,15 @@ public class TransactionServiceImpl implements TransactionService {
                 }
             }
             
-            if (transaction.getTargetAssetId() != null) {
-                Optional<Asset> targetAssetOpt = assetRepository.findById(transaction.getTargetAssetId());
-                if (targetAssetOpt.isPresent()) {
-                    Asset targetAsset = targetAssetOpt.get();
-                    if (targetAsset.getAccountModuleId() != null) {
-                        Optional<AccountModule> moduleOpt = accountModuleRepository.findById(targetAsset.getAccountModuleId());
-                        if (moduleOpt.isPresent()) {
-                            AccountModule module = moduleOpt.get();
-                            Optional<Account> accountOpt = accountRepository.findById(module.getAccountId());
+            if (transaction.getTargetHoldingId() != null) {
+                Optional<Holding> targetHoldingOpt = holdingRepository.findById(transaction.getTargetHoldingId());
+                if (targetHoldingOpt.isPresent()) {
+                    Holding targetHolding = targetHoldingOpt.get();
+                    if (targetHolding.getAssetId() != null) {
+                        Optional<Asset> assetOpt = assetRepository.findById(targetHolding.getAssetId());
+                        if (assetOpt.isPresent()) {
+                            Asset asset = assetOpt.get();
+                            Optional<Account> accountOpt = accountRepository.findById(asset.getAccountId());
                             if (accountOpt.isPresent()) {
                                 Account account = accountOpt.get();
                                 dto.setTargetAccountName(account.getAccountName());

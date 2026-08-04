@@ -17,7 +17,7 @@ public class TransactionQueryDTO {
 
     private TransactionType type;
 
-    private Long assetId;
+    private Long holdingId;
 
     private Long categoryId;
 

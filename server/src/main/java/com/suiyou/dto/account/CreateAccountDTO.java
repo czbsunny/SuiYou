@@ -17,5 +17,5 @@ public class CreateAccountDTO {
     private String accountType;
     private String accountName;
     private Boolean includeInNetWorth;
-    private List<AccountModuleDTO> modules;
+    private List<AssetDTO> assets;
 }

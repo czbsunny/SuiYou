@@ -1,21 +1,29 @@
-package com.suiyou.dto.asset;
+package com.suiyou.dto.holding;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetUpdateRequest {
-    private String name;
+public class HoldingCreateRequest {
+    private Long accountId;
+    private Long assetId;
+    private Long ownerId;
+    private String groupType;
     private String category;
     private String subCategory;
-    private String groupType;
+    private String name;
+    private BigDecimal totalBalance;
+    private BigDecimal frozenBalance;
     private String currency;
     private Boolean includeInNetWorth;
     private String valuationMode;
+    private Integer status;
     private String attributes;
 }

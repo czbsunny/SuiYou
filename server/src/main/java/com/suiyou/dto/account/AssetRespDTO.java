@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountModuleRespDTO {
+public class AssetRespDTO {
     private Long id;
-    private String moduleType;
-    private String moduleName;
+    private String assetType;
+    private String assetName;
     private String iconUrl;
     private String bgColor;
     private Integer canPay;

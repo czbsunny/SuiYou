@@ -1,19 +1,19 @@
 package com.suiyou.service.impl;
 
 import com.suiyou.dto.account.AccountListItemRespDTO;
-import com.suiyou.dto.account.AccountModuleDTO;
-import com.suiyou.dto.account.AccountModuleRespDTO;
+import com.suiyou.dto.account.AssetDTO;
+import com.suiyou.dto.account.AssetRespDTO;
 import com.suiyou.dto.account.AccountRespDTO;
 import com.suiyou.dto.account.CreateAccountDTO;
 import com.suiyou.dto.account.UpdateAccountDTO;
 import com.suiyou.enums.AccountType;
 import com.suiyou.enums.InstType;
-import com.suiyou.enums.ModuleType;
+import com.suiyou.enums.AssetType;
 import com.suiyou.model.Account;
-import com.suiyou.model.AccountModule;
+import com.suiyou.model.Asset;
 import com.suiyou.model.SysAccountTemplate;
 import com.suiyou.model.SysInstitution;
-import com.suiyou.repository.AccountModuleRepository;
+import com.suiyou.repository.AssetRepository;
 import com.suiyou.repository.AccountRepository;
 import com.suiyou.repository.SysAccountTemplateRepository;
 import com.suiyou.repository.SysInstitutionRepository;
@@ -37,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private AccountModuleRepository accountModuleRepository;
+    private AssetRepository assetRepository;
 
     @Autowired
     private SysAccountTemplateRepository sysAccountTemplateRepository;
@@ -77,33 +77,33 @@ public class AccountServiceImpl implements AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        if (dto.getModules() != null && !dto.getModules().isEmpty()) {
-            List<AccountModule> modules = new ArrayList<>();
+        if (dto.getAssets() != null && !dto.getAssets().isEmpty()) {
+            List<Asset> assets = new ArrayList<>();
             int sortOrder = 0;
-            for (AccountModuleDTO moduleDTO : dto.getModules()) {
-                AccountModule module = new AccountModule();
-                module.setAccountId(savedAccount.getId());
-                module.setModuleType(moduleDTO.getModuleType());
-                module.setModuleName(moduleDTO.getModuleName());
+            for (AssetDTO assetDTO : dto.getAssets()) {
+                Asset asset = new Asset();
+                asset.setAccountId(savedAccount.getId());
+                asset.setAssetType(assetDTO.getAssetType());
+                asset.setAssetName(assetDTO.getAssetName());
 
-                SysAccountTemplate template = sysAccountTemplateRepository.findByInstCodeAndAccountTypeAndModuleType(dto.getInstCode(), dto.getAccountType(), moduleDTO.getModuleType());
+                SysAccountTemplate template = sysAccountTemplateRepository.findByInstCodeAndAccountTypeAndAssetType(dto.getInstCode(), dto.getAccountType(), assetDTO.getAssetType());
                 if (template != null) {
-                    module.setIconUrl(template.getIconUrl());
-                    module.setCanPay(template.getCanPay() ? 1 : 0);
+                    asset.setIconUrl(template.getIconUrl());
+                    asset.setCanPay(template.getCanPay() ? 1 : 0);
                 }
                 
-                ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
-                if (moduleType == null) {
-                    throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
+                AssetType assetType = AssetType.ofCode(assetDTO.getAssetType());
+                if (assetType == null) {
+                    throw new IllegalArgumentException("Asset type not found: " + assetDTO.getAssetType() + " for asset: " + assetDTO.getAssetName());
                 }
-                module.setBgColor(moduleType.getBgColor());
-                module.setIconUrl(moduleType.getIconUrl());
-                module.setCanPay(moduleType.isCanPay() ? 1 : 0);
+                asset.setBgColor(assetType.getBgColor());
+                asset.setIconUrl(assetType.getIconUrl());
+                asset.setCanPay(assetType.isCanPay() ? 1 : 0);
                 
-                module.setSortOrder(sortOrder++);
-                modules.add(module);
+                asset.setSortOrder(sortOrder++);
+                assets.add(asset);
             }
-            accountModuleRepository.saveAll(modules);
+            assetRepository.saveAll(assets);
         }
 
         return toAccountRespDTO(savedAccount);
@@ -124,45 +124,45 @@ public class AccountServiceImpl implements AccountService {
         Account savedAccount = accountRepository.save(account);
 
         // 同步模块：已存在的启用，不存在的插入，多余的去禁用
-        List<AccountModule> allModules = accountModuleRepository.findByAccountId(savedAccount.getId());
-        Map<String, AccountModule> moduleMap = allModules.stream()
-                .collect(Collectors.toMap(AccountModule::getModuleType, Function.identity()));
+        List<Asset> allAssets = assetRepository.findByAccountId(savedAccount.getId());
+        Map<String, Asset> assetMap = allAssets.stream()
+                .collect(Collectors.toMap(Asset::getAssetType, Function.identity()));
 
-        Set<String> dtoModuleTypes = dto.getModules() != null
-                ? dto.getModules().stream().map(AccountModuleDTO::getModuleType).collect(Collectors.toSet())
+        Set<String> dtoAssetTypes = dto.getAssets() != null
+                ? dto.getAssets().stream().map(AssetDTO::getAssetType).collect(Collectors.toSet())
                 : Collections.emptySet();
 
-        List<AccountModule> modulesToSave = new ArrayList<>();
+        List<Asset> assetsToSave = new ArrayList<>();
 
         // 处理需要禁用或删除的模块（在表中但不在 DTO 中）
-        for (AccountModule existing : allModules) {
-            if (!dtoModuleTypes.contains(existing.getModuleType()) && existing.getIsEnabled() == 1) {
+        for (Asset existing : allAssets) {
+            if (!dtoAssetTypes.contains(existing.getAssetType()) && existing.getIsEnabled() == 1) {
                 existing.setIsEnabled(0);
-                modulesToSave.add(existing);
+                assetsToSave.add(existing);
             }
         }
 
         // 处理 DTO 中的模块
-        if (!CollectionUtils.isEmpty(dto.getModules())) {
+        if (!CollectionUtils.isEmpty(dto.getAssets())) {
             int sortOrder = 0;
-            for (AccountModuleDTO moduleDTO : dto.getModules()) {
-                AccountModule existing = moduleMap.get(moduleDTO.getModuleType());
+            for (AssetDTO assetDTO : dto.getAssets()) {
+                Asset existing = assetMap.get(assetDTO.getAssetType());
                 if (existing != null) {
                     // 已存在，启用并更新
                     existing.setIsEnabled(1);
-                    existing.setModuleName(moduleDTO.getModuleName());
+                    existing.setAssetName(assetDTO.getAssetName());
                     existing.setSortOrder(sortOrder++);
-                    modulesToSave.add(existing);
+                    assetsToSave.add(existing);
                 } else {
                     // 不存在，新建
-                    AccountModule module = buildNewModule(savedAccount.getId(), moduleDTO, sortOrder++);
-                    modulesToSave.add(module);
+                    Asset asset = buildNewAsset(savedAccount.getId(), assetDTO, sortOrder++);
+                    assetsToSave.add(asset);
                 }
             }
         }
 
-        if (!modulesToSave.isEmpty()) {
-            accountModuleRepository.saveAll(modulesToSave);
+        if (!assetsToSave.isEmpty()) {
+            assetRepository.saveAll(assetsToSave);
         }
 
         return toAccountRespDTO(savedAccount);
@@ -176,9 +176,9 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found: " + id));
 
         // 先删除账户关联的模块
-        List<AccountModule> modules = accountModuleRepository.findByAccountId(account.getId());
-        if (!modules.isEmpty()) {
-            accountModuleRepository.deleteAll(modules);
+        List<Asset> assets = assetRepository.findByAccountId(account.getId());
+        if (!assets.isEmpty()) {
+            assetRepository.deleteAll(assets);
         }
 
         accountRepository.delete(account);
@@ -219,9 +219,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private AccountRespDTO toAccountRespDTO(Account account) {
-        List<AccountModule> modules = accountModuleRepository.findByAccountIdAndIsEnabled(account.getId(), 1);
-        List<AccountModuleRespDTO> moduleDTOs = modules.stream()
-                .map(this::toAccountModuleRespDTO)
+        List<Asset> assets = assetRepository.findByAccountIdAndIsEnabled(account.getId(), 1);
+        List<AssetRespDTO> assetDTOs = assets.stream()
+                .map(this::toAssetRespDTO)
                 .collect(Collectors.toList());
 
         SysInstitution institution = sysInstitutionRepository.findByInstCode(account.getInstCode());
@@ -252,38 +252,38 @@ public class AccountServiceImpl implements AccountService {
                 .accountTypeName(accountTypeName)
                 .accountName(account.getAccountName())
                 .includeInNetWorth(account.getIncludeInNetWorth())
-                .modules(moduleDTOs)
+                .assets(assetDTOs)
                 .createdAt(account.getCreatedAt())
                 .build();
     }
 
-    private AccountModuleRespDTO toAccountModuleRespDTO(AccountModule module) {
-        return AccountModuleRespDTO.builder()
-                .id(module.getId())
-                .moduleType(module.getModuleType())
-                .moduleName(module.getModuleName())
-                .iconUrl(module.getIconUrl())
-                .bgColor(module.getBgColor())
-                .canPay(module.getCanPay())
-                .sortOrder(module.getSortOrder())
+    private AssetRespDTO toAssetRespDTO(Asset asset) {
+        return AssetRespDTO.builder()
+                .id(asset.getId())
+                .assetType(asset.getAssetType())
+                .assetName(asset.getAssetName())
+                .iconUrl(asset.getIconUrl())
+                .bgColor(asset.getBgColor())
+                .canPay(asset.getCanPay())
+                .sortOrder(asset.getSortOrder())
                 .build();
     }
 
-    private AccountModule buildNewModule(Long accountId, AccountModuleDTO moduleDTO, int sortOrder) {
-        AccountModule module = new AccountModule();
-        module.setAccountId(accountId);
-        module.setModuleType(moduleDTO.getModuleType());
-        module.setModuleName(moduleDTO.getModuleName());
+    private Asset buildNewAsset(Long accountId, AssetDTO assetDTO, int sortOrder) {
+        Asset asset = new Asset();
+        asset.setAccountId(accountId);
+        asset.setAssetType(assetDTO.getAssetType());
+        asset.setAssetName(assetDTO.getAssetName());
 
-        ModuleType moduleType = ModuleType.ofCode(moduleDTO.getModuleType());
-        if (moduleType == null) {
-            throw new IllegalArgumentException("Module type not found: " + moduleDTO.getModuleType() + " for module: " + moduleDTO.getModuleName());
+        AssetType assetType = AssetType.ofCode(assetDTO.getAssetType());
+        if (assetType == null) {
+            throw new IllegalArgumentException("Asset type not found: " + assetDTO.getAssetType() + " for asset: " + assetDTO.getAssetName());
         }
-        module.setIconUrl(moduleType.getIconUrl());
-        module.setBgColor(moduleType.getBgColor());
-        module.setCanPay(moduleType.isCanPay() ? 1 : 0);
-        module.setSortOrder(sortOrder);
-        module.setIsEnabled(1);
-        return module;
+        asset.setIconUrl(assetType.getIconUrl());
+        asset.setBgColor(assetType.getBgColor());
+        asset.setCanPay(assetType.isCanPay() ? 1 : 0);
+        asset.setSortOrder(sortOrder);
+        asset.setIsEnabled(1);
+        return asset;
     }
 }

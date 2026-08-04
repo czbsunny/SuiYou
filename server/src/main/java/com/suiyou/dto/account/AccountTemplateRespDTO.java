@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountTemplateRespDTO {
-    private String moduleType;
-    private String moduleName;
+    private String assetType;
+    private String assetName;
     private Boolean required;
     private Boolean enabled;
     private Integer sortOrder;

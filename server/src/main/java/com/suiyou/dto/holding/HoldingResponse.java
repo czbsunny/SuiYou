@@ -1,4 +1,4 @@
-package com.suiyou.dto.asset;
+package com.suiyou.dto.holding;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetResponse {
+public class HoldingResponse {
     private Long id;
     private Long accountId;
-    private Long accountModuleId;
+    private Long assetId;
     private Long ownerId;
     private String groupType;
     private String category;

@@ -5,21 +5,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, Long> {
-    List<Asset> findByOwnerId(Long ownerId);
-    
+    /**
+     * 根据账户ID查询账户关联的模块
+     * @param accountId 账户ID
+     * @return 账户关联的模块列表
+     */
     List<Asset> findByAccountId(Long accountId);
     
-    List<Asset> findByAccountModuleId(Long accountModuleId);
-    
-    Optional<Asset> findByIdAndOwnerId(Long id, Long ownerId);
-    
-    List<Asset> findByAccountIdAndStatus(Long accountId, Integer status);
-    
-    List<Asset> findByAccountModuleIdAndStatus(Long accountModuleId, Integer status);
-    
-    List<Asset> findByAccountModuleIdAndCategory(Long accountModuleId, String category);
+    /**
+     * 根据账户ID和是否启用查询账户关联的模块
+     * @param accountId 账户ID
+     * @param isEnabled 是否启用
+     * @return 账户关联的模块列表
+     */
+    List<Asset> findByAccountIdAndIsEnabled(Long accountId, Integer isEnabled);
 }

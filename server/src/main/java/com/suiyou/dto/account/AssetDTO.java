@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountModuleDTO {
-    private String moduleType;
-    private String moduleName;
+public class AssetDTO {
+    private String assetType;
+    private String assetName;
 }

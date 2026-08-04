@@ -23,6 +23,6 @@ public class AccountRespDTO {
     private String instType;
     private String instTypeName;
     private Boolean includeInNetWorth;
-    private List<AccountModuleRespDTO> modules;
+    private List<AssetRespDTO> assets;
     private LocalDateTime createdAt;
 }
