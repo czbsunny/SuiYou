@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface FamilyMemberRepository extends JpaRepository<FamilyMember, Long> {
     List<FamilyMember> findByFamilyIdAndStatus(Long familyId, Integer status);
 
+    List<FamilyMember> findByUserIdAndStatus(Long userId, Integer status);
+
     Optional<FamilyMember> findByFamilyIdAndUserId(Long familyId, Long userId);
 
     boolean existsByFamilyIdAndUserId(Long familyId, Long userId);

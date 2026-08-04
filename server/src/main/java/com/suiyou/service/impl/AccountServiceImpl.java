@@ -82,7 +82,6 @@ public class AccountServiceImpl implements AccountService {
             int sortOrder = 0;
             for (AccountModuleDTO moduleDTO : dto.getModules()) {
                 AccountModule module = new AccountModule();
-                module.setId(UUID.randomUUID().toString().replace("-", ""));
                 module.setAccountId(savedAccount.getId());
                 module.setModuleType(moduleDTO.getModuleType());
                 module.setModuleName(moduleDTO.getModuleName());
@@ -272,7 +271,6 @@ public class AccountServiceImpl implements AccountService {
 
     private AccountModule buildNewModule(Long accountId, AccountModuleDTO moduleDTO, int sortOrder) {
         AccountModule module = new AccountModule();
-        module.setId(UUID.randomUUID().toString().replace("-", ""));
         module.setAccountId(accountId);
         module.setModuleType(moduleDTO.getModuleType());
         module.setModuleName(moduleDTO.getModuleName());

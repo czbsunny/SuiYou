@@ -24,12 +24,12 @@ public class FamilyMember {
     @Column(nullable = false, length = 20, columnDefinition = "varchar(20) default 'MEMBER'")
     private String role = "MEMBER";
 
-    @Column(name = "is_primary", nullable = false, columnDefinition = "tinyint(1) default 0")
-    private Boolean isPrimary = false;
-
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime joinedAt;
+    
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

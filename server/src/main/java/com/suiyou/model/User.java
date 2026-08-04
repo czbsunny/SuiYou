@@ -12,27 +12,43 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    private String wechatOpenId;
-    private String wechatUnionId;
-    private String wechatNickname;
-    private String avatar;
-    private Integer gender;
-    private LocalDateTime lastLoginTime;
-    private Integer isDeleted;
+    @Column(name = "family_id")
+    private Long familyId;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "wechat_open_id")
+    private String wechatOpenId;
+
+    @Column(name = "wechat_union_id")
+    private String wechatUnionId;
+    
+    @Column(name = "wechat_nickname")
+    private String wechatNickname;
+    
+    @Column(name = "avatar")
+    private String avatar;
+    
+    @Column(name = "gender")
+    private Integer gender;
+    
+    @Column(name = "last_login_time")
+    private LocalDateTime lastLoginTime;
+    
+    @Column(name = "is_deleted")
+    private Integer isDeleted;
+    
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist

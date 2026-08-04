@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -64,6 +66,7 @@ public class AuthController {
                 .map(user -> {
                     LoginResponseDTO.UserInfoDTO userInfo = new LoginResponseDTO.UserInfoDTO();
                     userInfo.setId(user.getId());
+                    userInfo.setFamilyId(user.getFamilyId());
                     userInfo.setPhoneNumber(user.getPhoneNumber());
                     userInfo.setUsername(user.getUsername());
                     userInfo.setAvatar(user.getAvatar());
@@ -74,6 +77,16 @@ public class AuthController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/me/family")
+    public ResponseEntity<?> switchFamily(@RequestAttribute("userId") Long userId, @RequestParam Long familyId) {
+        try {
+            User user = userService.switchFamily(userId, familyId);
+            return ResponseEntity.ok(user.getFamilyId());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/me")
     public ResponseEntity<?> updateUserInfo(@RequestAttribute("userId") Long userId, @Valid @RequestBody UpdateUserInfoDTO updateUserInfoDTO) {
         return userService.getUserById(userId)
@@ -82,6 +95,7 @@ public class AuthController {
                     User updatedUser = userService.updateUser(user);
                     LoginResponseDTO.UserInfoDTO userInfo = new LoginResponseDTO.UserInfoDTO();
                     userInfo.setId(updatedUser.getId());
+                    userInfo.setFamilyId(updatedUser.getFamilyId());
                     userInfo.setPhoneNumber(updatedUser.getPhoneNumber());
                     userInfo.setUsername(updatedUser.getUsername());
                     userInfo.setAvatar(updatedUser.getAvatar());

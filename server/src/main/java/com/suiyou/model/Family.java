@@ -24,6 +24,9 @@ public class Family {
     @Column(nullable = false, columnDefinition = "tinyint(1) default 1")
     private Integer status = 1;
 
+    @Column(nullable = false, columnDefinition = "varchar(10) default 'personal'")
+    private String type = "personal";
+    
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

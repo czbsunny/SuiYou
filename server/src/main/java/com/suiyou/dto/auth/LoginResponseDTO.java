@@ -10,6 +10,7 @@ public class LoginResponseDTO {
     @Data
     public static class UserInfoDTO {
         private Long id;
+        private Long familyId;
         private String phoneNumber;
         private String username;
         private String email;

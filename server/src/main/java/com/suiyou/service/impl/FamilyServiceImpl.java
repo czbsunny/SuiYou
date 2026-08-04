@@ -8,6 +8,7 @@ import com.suiyou.service.FamilyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 public class FamilyServiceImpl implements FamilyService {
@@ -19,25 +20,40 @@ public class FamilyServiceImpl implements FamilyService {
     private FamilyMemberRepository familyMemberRepository;
 
     @Override
-    @Transactional
+    public Family initFamily(Long creatorId) {
+        return createFamily(creatorId, "我的家庭", "CNY", "personal");
+    }
+
+    @Override
     public Family createFamily(Long creatorId, String name, String currency) {
+        return createFamily(creatorId, name, currency, "FAMILY");
+    }
+
+    @Transactional
+    private Family createFamily(Long creatorId, String name, String currency, String type) {
+        if (familyRepository.findByCreatorId(creatorId) != null) {
+            throw new RuntimeException("用户已经创建过家庭");
+        }
+
         Family family = new Family();
         family.setCreatorId(creatorId);
         family.setName(name);
-        if (currency != null && !currency.isEmpty()) {
-            family.setCurrency(currency);
-        }
+        family.setType(type);
+        family.setCurrency(currency);
         Family savedFamily = familyRepository.save(family);
 
+        // 创建家庭成员
         FamilyMember creatorMember = new FamilyMember();
         creatorMember.setFamilyId(savedFamily.getId());
         creatorMember.setUserId(creatorId);
         creatorMember.setRole("OWNER");
-        creatorMember.setIsPrimary(true);
+        creatorMember.setJoinedAt(LocalDateTime.now());
+
         familyMemberRepository.save(creatorMember);
 
         return savedFamily;
     }
+
 
     @Override
     public Family getFamilyByUserId(Long userId) {
@@ -45,11 +61,11 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    @Transactional
-    public Family ensureFamily(Long creatorId) {
-        Family family = familyRepository.findByCreatorId(creatorId);
-        if (family != null) return family;
-        return createFamily(creatorId, "我的家庭", "CNY");
+    public Family getRequiredFamilyByUserId(Long userId) {
+        return familyMemberRepository.findByUserIdAndStatus(userId, 1).stream()
+                .findFirst()
+                .map(member -> getFamilyById(member.getFamilyId()))
+                .orElseThrow(() -> new RuntimeException("用户当前不属于任何家庭"));
     }
 
     @Override

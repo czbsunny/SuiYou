@@ -2,6 +2,7 @@ package com.suiyou.service;
 
 import com.suiyou.dto.auth.LoginResponseDTO;
 import com.suiyou.model.User;
+import com.suiyou.repository.FamilyMemberRepository;
 import com.suiyou.repository.UserRepository;
 import com.suiyou.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,6 +27,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FamilyMemberRepository familyMemberRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -66,10 +70,9 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        String familyName = user.getUsername() + "的家庭";
-        familyService.createFamily(savedUser.getId(), familyName, "CNY");
+        savedUser.setFamilyId(familyService.initFamily(savedUser.getId()).getId());
 
-        return savedUser;
+        return userRepository.save(savedUser);
     }
 
     public LoginResponseDTO login(String phoneNumber, String password) {
@@ -94,9 +97,8 @@ public class UserService {
 
         user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
-        familyService.ensureFamily(user.getId());
 
-        String token = jwtTokenProvider.generateToken(user.getPhoneNumber(), user.getId());
+        String token = jwtTokenProvider.generateToken(user.getId());
 
         return buildLoginResponse(user, token);
     }
@@ -145,7 +147,8 @@ public class UserService {
         }
 
         Optional<User> userOptional = userRepository.findByWechatOpenId(openId);
-        User user;
+        User user = null;
+        String token = null;
         String nickName = (nickname != null && !nickname.trim().isEmpty()) ? nickname : ("用户" + openId.substring(0, Math.min(6, openId.length())));
         if (userOptional.isPresent()) {
             user = userOptional.get();
@@ -155,6 +158,8 @@ public class UserService {
             user.setWechatUnionId(unionId);
             user.setWechatNickname(nickName);
             user.setAvatar(avatar);
+            user.setLastLoginTime(LocalDateTime.now());
+            userRepository.save(user);
         } else {
             user = new User();
             user.setWechatOpenId(openId);
@@ -165,15 +170,14 @@ public class UserService {
             user.setUsername(nickName);
             user.setPasswordHash(passwordEncoder.encode("wx_" + openId));
             user.setIsDeleted(0);
+            user.setLastLoginTime(LocalDateTime.now());
+            User savedUser = userRepository.save(user);
+            
+            savedUser.setFamilyId(familyService.initFamily(savedUser.getId()).getId());
+            userRepository.save(savedUser);
         }
 
-        user.setLastLoginTime(LocalDateTime.now());
-        User savedUser = userRepository.save(user);
-
-        familyService.ensureFamily(savedUser.getId());
-
-        String token = jwtTokenProvider.generateToken(user.getPhoneNumber(), user.getId());
-
+        token = jwtTokenProvider.generateToken(user.getId());
         return buildLoginResponse(user, token);
     }
 
@@ -195,8 +199,26 @@ public class UserService {
         return passwordEncoder.matches(password, user.getPasswordHash());
     }
 
+    @Transactional
+    public User switchFamily(Long userId, Long familyId) {
+        if (!familyMemberRepository.findByFamilyIdAndUserId(familyId, userId)
+                .filter(member -> Integer.valueOf(1).equals(member.getStatus()))
+                .isPresent()) {
+            throw new RuntimeException("用户不属于该家庭");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        user.setFamilyId(familyId);
+        return userRepository.save(user);
+    }
+
+    @Transactional
     public User updateUser(User user) {
         return userRepository.save(user);
+    }
+
+    public String generateToken(User user) {
+        return jwtTokenProvider.generateToken(user.getId());
     }
 
     private LoginResponseDTO buildLoginResponse(User user, String token) {
@@ -205,6 +227,7 @@ public class UserService {
 
         LoginResponseDTO.UserInfoDTO userInfo = new LoginResponseDTO.UserInfoDTO();
         userInfo.setId(user.getId());
+        userInfo.setFamilyId(user.getFamilyId());
         userInfo.setPhoneNumber(user.getPhoneNumber());
         userInfo.setUsername(user.getUsername());
         userInfo.setAvatar(user.getAvatar());

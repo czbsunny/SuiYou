@@ -4,6 +4,7 @@ import com.suiyou.model.Transaction;
 import com.suiyou.model.Asset;
 import com.suiyou.model.Family;
 import com.suiyou.model.Account;
+import com.suiyou.model.User;
 import com.suiyou.model.AccountModule;
 import com.suiyou.enums.TransactionType;
 import com.suiyou.dto.transaction.TransactionCreateDTO;
@@ -14,6 +15,7 @@ import com.suiyou.repository.TransactionRepository;
 import com.suiyou.repository.AssetRepository;
 import com.suiyou.repository.AccountModuleRepository;
 import com.suiyou.repository.AccountRepository;
+import com.suiyou.repository.UserRepository;
 import com.suiyou.service.FamilyService;
 import com.suiyou.service.TransactionService;
 
@@ -54,17 +56,18 @@ public class TransactionServiceImpl implements TransactionService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private FamilyService familyService;
+    private UserRepository userRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Transaction createTransaction(Long userId, TransactionCreateDTO req) {
-        Family family = familyService.getFamilyByUserId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
 
         Transaction trans = new Transaction();
         BeanUtils.copyProperties(req, trans);
         trans.setUserId(userId);
-        trans.setFamilyId(family.getId());
+        trans.setFamilyId(user.getFamilyId());
         trans.setUseFrozenAmount(req.getUseFrozenAmount() != null && req.getUseFrozenAmount());
         
         if (trans.getTransTime() == null) trans.setTransTime(LocalDateTime.now());
@@ -161,14 +164,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Page<TransactionRespDTO> queryTransactions(Long userId, TransactionQueryDTO query, Pageable pageable) {
-        Family family = familyService.getFamilyByUserId(userId);
-        if (Objects.isNull(family)) {
-            throw new IllegalArgumentException("用户未关联任何家庭");
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+        
         Specification<Transaction> spec = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            predicates.add(criteriaBuilder.equal(root.get("familyId"), family.getId()));
+            predicates.add(criteriaBuilder.equal(root.get("familyId"), user.getFamilyId()));
 
             if (query.getStartDate() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
@@ -258,17 +260,15 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Map<String, Object>> getMonthlyIncomeExpenseTotal(Long userId) {
-        Family family = familyService.getFamilyByUserId(userId);
-        if (Objects.isNull(family)) {
-            throw new IllegalArgumentException("用户未关联任何家庭");
-        }
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
+        
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime twelveMonthsAgo = now.minusMonths(11).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
         Specification<Transaction> spec = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(root.get("familyId"), family.getId()));
+            predicates.add(criteriaBuilder.equal(root.get("familyId"), user.getFamilyId()));
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("transTime"), twelveMonthsAgo));
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("transTime"), now));
             predicates.add(criteriaBuilder.or(

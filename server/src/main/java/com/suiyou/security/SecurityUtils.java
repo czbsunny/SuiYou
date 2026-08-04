@@ -1,19 +1,22 @@
 package com.suiyou.security;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class SecurityUtils {
 
     public static Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
             throw new RuntimeException("用户未登录");
         }
-        try {
-            return Long.parseLong(authentication.getName());
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("无法从认证信息中获取用户ID");
+
+        Object value = attributes.getRequest().getAttribute("userId");
+        if (value instanceof Long) {
+            return (Long) value;
         }
+
+        throw new RuntimeException("无法从认证信息中获取用户ID");
     }
 }
