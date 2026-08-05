@@ -18,13 +18,11 @@ public class DailyYieldUpdateStrategy implements HoldingUpdateStrategy {
     @Override
     public Holding update(Holding holding, UpdateContext updateContext) {
         BigDecimal dailyYield = updateContext.getDailyYield() != null ? updateContext.getDailyYield() : BigDecimal.ZERO;
-        
-        BigDecimal dailyEarning = holding.getTotalBalance().multiply(dailyYield).divide(new BigDecimal("10000"), 8, BigDecimal.ROUND_HALF_UP);
-        BigDecimal newTotalBalance = holding.getTotalBalance().add(dailyEarning);
-        
-        holding.setTotalBalance(newTotalBalance);
-        holding.setValuationMode("CALCULATED");
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+
+        BigDecimal dailyEarning = holding.getAmount().multiply(dailyYield).divide(new BigDecimal("10000"), 8, BigDecimal.ROUND_HALF_UP);
+        BigDecimal newQty = holding.getQty().add(dailyEarning);
+
+        holding.setQty(newQty);
         return holding;
     }
 }

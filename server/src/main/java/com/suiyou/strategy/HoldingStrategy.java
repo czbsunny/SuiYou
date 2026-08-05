@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 
 public interface HoldingStrategy {
     String getStrategyType();
-    
+
     Holding createHolding(HoldingCreateRequest request);
-    
+
     Holding updateBasicInfo(Holding holding, HoldingUpdateRequest request);
-    
-    Holding updateNetWorth(Holding holding, BigDecimal newTotalBalance);
+
+    Holding updatePrice(Holding holding, BigDecimal newPrice);
 }

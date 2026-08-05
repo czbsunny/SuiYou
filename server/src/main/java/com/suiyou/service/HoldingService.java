@@ -9,16 +9,16 @@ import java.util.List;
 
 public interface HoldingService {
     HoldingResponse createHolding(HoldingCreateRequest request, String strategyType);
-    
+
     HoldingResponse updateBasicInfo(Long id, HoldingUpdateRequest request, String strategyType);
-    
-    HoldingResponse updateNetWorth(Long id, BigDecimal newTotalBalance, String strategyType);
-    
+
+    HoldingResponse updatePrice(Long id, BigDecimal newPrice, String strategyType);
+
     HoldingResponse getHoldingById(Long id);
-    
+
     List<HoldingResponse> getHoldingsByAccountId(Long accountId);
-    
-    List<HoldingResponse> getHoldingsByOwnerId(Long ownerId);
-    
+
+    List<HoldingResponse> getHoldingsByAssetId(Long assetId);
+
     void deleteHolding(Long id);
 }

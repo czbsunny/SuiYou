@@ -19,17 +19,14 @@ public class AccrualUpdateStrategy implements HoldingUpdateStrategy {
     public Holding update(Holding holding, UpdateContext updateContext) {
         BigDecimal annualRate = updateContext.getAnnualRate() != null ? updateContext.getAnnualRate() : BigDecimal.ZERO;
         int days = updateContext.getDays() != null ? updateContext.getDays() : 1;
-        
-        BigDecimal interest = holding.getTotalBalance()
+
+        BigDecimal interest = holding.getAmount()
                 .multiply(annualRate)
                 .multiply(new BigDecimal(days))
                 .divide(new BigDecimal("365"), 8, BigDecimal.ROUND_HALF_UP);
-        
-        BigDecimal newTotalBalance = holding.getTotalBalance().add(interest);
-        
-        holding.setTotalBalance(newTotalBalance);
-        holding.setValuationMode("CALCULATED");
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+
+        BigDecimal newQty = holding.getQty().add(interest);
+        holding.setQty(newQty);
         return holding;
     }
 }

@@ -19,11 +19,9 @@ public class NavUpdateStrategy implements HoldingUpdateStrategy {
     public Holding update(Holding holding, UpdateContext updateContext) {
         BigDecimal price = updateContext.getPrice() != null ? updateContext.getPrice() : BigDecimal.ZERO;
         BigDecimal quantity = updateContext.getQuantity() != null ? updateContext.getQuantity() : BigDecimal.ONE;
-        
-        BigDecimal newTotalBalance = price.multiply(quantity);
-        holding.setTotalBalance(newTotalBalance);
-        holding.setValuationMode("CALCULATED");
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+
+        holding.setPrice(price);
+        holding.setQty(quantity);
         return holding;
     }
 }

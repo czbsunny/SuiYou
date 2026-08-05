@@ -18,24 +18,22 @@ public class RevaluationUpdateStrategy implements HoldingUpdateStrategy {
     @Override
     public Holding update(Holding holding, UpdateContext updateContext) {
         String revaluationType = updateContext.getRevaluationType();
-        
+
         if ("MANUAL".equalsIgnoreCase(revaluationType)) {
             if (updateContext.getPrice() != null) {
-                holding.setTotalBalance(updateContext.getPrice());
+                holding.setPrice(updateContext.getPrice());
             }
         } else if ("DEPRECIATION".equalsIgnoreCase(revaluationType)) {
             BigDecimal depreciationRate = updateContext.getDepreciationRate() != null ? updateContext.getDepreciationRate() : new BigDecimal("0.1");
             int yearsUsed = updateContext.getYearsUsed() != null ? updateContext.getYearsUsed() : 1;
-            
+
             BigDecimal depreciationFactor = BigDecimal.ONE.subtract(depreciationRate).pow(yearsUsed);
-            BigDecimal newTotalBalance = holding.getTotalBalance().multiply(depreciationFactor);
-            holding.setTotalBalance(newTotalBalance);
+            BigDecimal newPrice = holding.getPrice().multiply(depreciationFactor);
+            holding.setPrice(newPrice);
         } else if (updateContext.getPrice() != null) {
-            holding.setTotalBalance(updateContext.getPrice());
+            holding.setPrice(updateContext.getPrice());
         }
-        
-        holding.setValuationMode("MANUAL");
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+
         return holding;
     }
 }

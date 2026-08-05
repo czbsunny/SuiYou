@@ -69,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
         trans.setUserId(userId);
         trans.setFamilyId(user.getFamilyId());
         trans.setUseFrozenAmount(req.getUseFrozenAmount() != null && req.getUseFrozenAmount());
-        
+
         if (trans.getTransTime() == null) trans.setTransTime(LocalDateTime.now());
         if (trans.getTargetAmount() == null) trans.setTargetAmount(trans.getAmount());
         if (trans.getFee() == null) trans.setFee(BigDecimal.ZERO);
@@ -105,18 +105,18 @@ public class TransactionServiceImpl implements TransactionService {
             case EXPENSE:
                 decreaseHolding(trans.getSourceHoldingId(), amount.add(fee), trans.getUseFrozenAmount());
                 break;
-                
+
             case INCOME:
                 increaseHolding(trans.getTargetHoldingId(), targetAmount);
                 break;
-                
+
             case TRANSFER:
             case LEND:
             case REPAY:
                 decreaseHolding(trans.getSourceHoldingId(), amount.add(fee), trans.getUseFrozenAmount());
                 increaseHolding(trans.getTargetHoldingId(), targetAmount);
                 break;
-                
+
             case RECOVER:
             case BORROW:
                 decreaseHolding(trans.getSourceHoldingId(), amount, trans.getUseFrozenAmount());
@@ -136,29 +136,22 @@ public class TransactionServiceImpl implements TransactionService {
         if (holdingId == null) return;
         Holding holding = holdingRepository.findById(holdingId)
                 .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + holdingId));
-        holding.setTotalBalance(holding.getTotalBalance().add(amount));
+        holding.setQty(holding.getQty().add(amount));
         holdingRepository.save(holding);
     }
 
     private void decreaseHolding(Long holdingId, BigDecimal amount, Boolean useFrozenAmount) {
         if (holdingId == null) return;
-        
+
         Holding holding = holdingRepository.findById(holdingId)
                 .orElseThrow(() -> new IllegalArgumentException("资产不存在: " + holdingId));
 
-        BigDecimal availableBalance = holding.getTotalBalance().subtract(holding.getFrozenBalance());
-        
-        if (!Boolean.TRUE.equals(useFrozenAmount)) {
-            if (availableBalance.compareTo(amount) < 0) {
-                throw new IllegalArgumentException("资产可用余额不足，可用余额: " + availableBalance + ", 需要: " + amount);
-            }
-        } else {
-            if (holding.getTotalBalance().compareTo(amount) < 0) {
-                throw new IllegalArgumentException("资产总余额不足，总余额: " + holding.getTotalBalance() + ", 需要: " + amount);
-            }
+        BigDecimal currentQty = holding.getQty();
+        if (currentQty.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("资产数量不足，当前: " + currentQty + ", 需要: " + amount);
         }
 
-        holding.setTotalBalance(holding.getTotalBalance().subtract(amount));
+        holding.setQty(holding.getQty().subtract(amount));
         holdingRepository.save(holding);
     }
 
@@ -166,7 +159,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Page<TransactionRespDTO> queryTransactions(Long userId, TransactionQueryDTO query, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
-        
+
         Specification<Transaction> spec = (root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -174,13 +167,13 @@ public class TransactionServiceImpl implements TransactionService {
 
             if (query.getStartDate() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                    root.get("transTime"), 
+                    root.get("transTime"),
                     query.getStartDate().atStartOfDay()
                 ));
             }
             if (query.getEndDate() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                    root.get("transTime"), 
+                    root.get("transTime"),
                     query.getEndDate().atTime(23, 59, 59, 999999999)
                 ));
             }
@@ -213,7 +206,7 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions.map(transaction -> {
             TransactionRespDTO dto = new TransactionRespDTO();
             BeanUtils.copyProperties(transaction, dto);
-            
+
             if (transaction.getSourceHoldingId() != null) {
                 Optional<Holding> sourceHoldingOpt = holdingRepository.findById(transaction.getSourceHoldingId());
                 if (sourceHoldingOpt.isPresent()) {
@@ -233,7 +226,7 @@ public class TransactionServiceImpl implements TransactionService {
                     }
                 }
             }
-            
+
             if (transaction.getTargetHoldingId() != null) {
                 Optional<Holding> targetHoldingOpt = holdingRepository.findById(transaction.getTargetHoldingId());
                 if (targetHoldingOpt.isPresent()) {
@@ -253,7 +246,7 @@ public class TransactionServiceImpl implements TransactionService {
                     }
                 }
             }
-            
+
             return dto;
         });
     }
@@ -262,7 +255,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Map<String, Object>> getMonthlyIncomeExpenseTotal(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("用户不存在"));
-        
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime twelveMonthsAgo = now.minusMonths(11).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
@@ -295,19 +288,19 @@ public class TransactionServiceImpl implements TransactionService {
 
         for (Transaction transaction : transactions) {
             String monthKey = transaction.getTransTime().getYear() + "-" + String.format("%02d", transaction.getTransTime().getMonthValue());
-            
+
             for (int i = 0; i < result.size(); i++) {
                 Map<String, Object> monthData = result.get(i);
                 if (monthKey.equals(monthData.get("month"))) {
                     BigDecimal income = (BigDecimal) monthData.get("income");
                     BigDecimal expense = (BigDecimal) monthData.get("expense");
-                    
+
                     if (transaction.getType() == TransactionType.INCOME) {
                         income = income.add(transaction.getTargetAmount());
                     } else if (transaction.getType() == TransactionType.EXPENSE) {
                         expense = expense.add(transaction.getAmount());
                     }
-                    
+
                     Map<String, Object> newMonthData = Map.of(
                         "month", monthKey,
                         "income", income,

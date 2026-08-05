@@ -18,17 +18,13 @@ public class DebtRepayUpdateStrategy implements HoldingUpdateStrategy {
     @Override
     public Holding update(Holding holding, UpdateContext updateContext) {
         BigDecimal repayAmount = updateContext.getRepayAmount() != null ? updateContext.getRepayAmount() : BigDecimal.ZERO;
-        BigDecimal principalPart = updateContext.getPrincipalPart() != null ? updateContext.getPrincipalPart() : BigDecimal.ZERO;
-        BigDecimal interestPart = updateContext.getInterestPart() != null ? updateContext.getInterestPart() : BigDecimal.ZERO;
-        
-        BigDecimal newTotalBalance = holding.getTotalBalance().subtract(repayAmount);
-        if (newTotalBalance.compareTo(BigDecimal.ZERO) < 0) {
-            newTotalBalance = BigDecimal.ZERO;
+
+        BigDecimal newQty = holding.getQty().subtract(repayAmount);
+        if (newQty.compareTo(BigDecimal.ZERO) < 0) {
+            newQty = BigDecimal.ZERO;
         }
-        
-        holding.setTotalBalance(newTotalBalance);
-        holding.setValuationMode("CALCULATED");
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+
+        holding.setQty(newQty);
         return holding;
     }
 }

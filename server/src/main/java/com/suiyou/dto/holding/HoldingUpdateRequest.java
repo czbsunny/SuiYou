@@ -5,17 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class HoldingUpdateRequest {
     private String name;
-    private String category;
-    private String subCategory;
-    private String groupType;
-    private String currency;
-    private Boolean includeInNetWorth;
-    private String valuationMode;
-    private String attributes;
+    private BigDecimal qty;
+    private BigDecimal price;
+    private BigDecimal costBasis;
+    private BigDecimal realizedPnl;
+    private String side;
+    private String status;
+    private String holdingType;
+    private String extraAttributes;
 }

@@ -14,16 +14,15 @@ import java.math.BigDecimal;
 public class HoldingCreateRequest {
     private Long accountId;
     private Long assetId;
-    private Long ownerId;
-    private String groupType;
-    private String category;
-    private String subCategory;
+    private Long productId;
     private String name;
-    private BigDecimal totalBalance;
-    private BigDecimal frozenBalance;
-    private String currency;
-    private Boolean includeInNetWorth;
-    private String valuationMode;
-    private Integer status;
-    private String attributes;
+    private BigDecimal qty;
+    private BigDecimal price;
+    private BigDecimal amount;
+    private BigDecimal costBasis;
+    private BigDecimal realizedPnl;
+    private String side;
+    private String status;
+    private String holdingType;
+    private String extraAttributes;
 }

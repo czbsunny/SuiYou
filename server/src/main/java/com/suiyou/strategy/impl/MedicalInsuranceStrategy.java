@@ -3,6 +3,7 @@ package com.suiyou.strategy.impl;
 import com.suiyou.dto.holding.HoldingCreateRequest;
 import com.suiyou.dto.holding.HoldingUpdateRequest;
 import com.suiyou.model.Holding;
+import com.suiyou.enums.HoldingType;
 import com.suiyou.strategy.HoldingStrategy;
 import org.springframework.stereotype.Component;
 
@@ -21,20 +22,20 @@ public class MedicalInsuranceStrategy implements HoldingStrategy {
         Holding holding = new Holding();
         holding.setAccountId(request.getAccountId());
         holding.setAssetId(request.getAssetId());
-        holding.setOwnerId(request.getOwnerId());
-        holding.setGroupType("SOCIAL_SECURITY");
-        holding.setCategory("MEDICAL_INSURANCE");
-        holding.setSubCategory(request.getSubCategory() != null ? request.getSubCategory() : "PERSONAL");
+        holding.setProductId(request.getProductId());
         holding.setName(request.getName());
-        holding.setTotalBalance(request.getTotalBalance() != null ? request.getTotalBalance() : BigDecimal.ZERO);
-        holding.setFrozenBalance(BigDecimal.ZERO);
-        holding.setCurrency(request.getCurrency() != null ? request.getCurrency() : "CNY");
-        holding.setIncludeInNetWorth(request.getIncludeInNetWorth() != null ? request.getIncludeInNetWorth() : true);
-        holding.setValuationMode("CALCULATED");
-        holding.setStatus(request.getStatus() != null ? request.getStatus() : 1);
-        holding.setAttributes(request.getAttributes());
-        
-        holding.setAvailableBalance(holding.getTotalBalance());
+        holding.setQty(request.getQty() != null ? request.getQty() : BigDecimal.ZERO);
+        holding.setPrice(BigDecimal.ONE);
+        holding.setCostBasis(request.getCostBasis() != null ? request.getCostBasis() : BigDecimal.ZERO);
+        holding.setRealizedPnl(BigDecimal.ZERO);
+        holding.setSide(request.getSide() != null ? request.getSide() : "asset");
+        holding.setStatus(request.getStatus() != null ? request.getStatus() : "active");
+        holding.setHoldingType(HoldingType.INSURANCE.getCode());
+        holding.setExtraAttributes(request.getExtraAttributes());
+
+        if (request.getAmount() != null) {
+            holding.setAmount(request.getAmount());
+        }
         return holding;
     }
 
@@ -43,27 +44,21 @@ public class MedicalInsuranceStrategy implements HoldingStrategy {
         if (request.getName() != null) {
             holding.setName(request.getName());
         }
-        if (request.getSubCategory() != null) {
-            holding.setSubCategory(request.getSubCategory());
+        if (request.getQty() != null) {
+            holding.setQty(request.getQty());
         }
-        if (request.getCurrency() != null) {
-            holding.setCurrency(request.getCurrency());
+        if (request.getCostBasis() != null) {
+            holding.setCostBasis(request.getCostBasis());
         }
-        if (request.getIncludeInNetWorth() != null) {
-            holding.setIncludeInNetWorth(request.getIncludeInNetWorth());
-        }
-        if (request.getAttributes() != null) {
-            holding.setAttributes(request.getAttributes());
+        if (request.getExtraAttributes() != null) {
+            holding.setExtraAttributes(request.getExtraAttributes());
         }
         return holding;
     }
 
     @Override
-    public Holding updateNetWorth(Holding holding, BigDecimal newTotalBalance) {
-        holding.setTotalBalance(newTotalBalance != null ? newTotalBalance : BigDecimal.ZERO);
-        holding.setFrozenBalance(BigDecimal.ZERO);
-        holding.setValuationMode("CALCULATED");
-        holding.setAvailableBalance(holding.getTotalBalance());
+    public Holding updatePrice(Holding holding, BigDecimal newPrice) {
+        holding.setPrice(BigDecimal.ONE);
         return holding;
     }
 }

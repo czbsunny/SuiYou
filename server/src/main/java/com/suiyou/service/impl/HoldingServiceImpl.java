@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,7 @@ public class HoldingServiceImpl implements HoldingService {
     public HoldingResponse updateBasicInfo(Long id, HoldingUpdateRequest request, String strategyType) {
         Holding holding = holdingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Holding not found: " + id));
-        
+
         HoldingStrategy strategy = strategyFactory.getStrategy(strategyType);
         Holding updatedHolding = strategy.updateBasicInfo(holding, request);
         Holding savedHolding = holdingRepository.save(updatedHolding);
@@ -50,12 +51,12 @@ public class HoldingServiceImpl implements HoldingService {
 
     @Override
     @Transactional
-    public HoldingResponse updateNetWorth(Long id, BigDecimal newTotalBalance, String strategyType) {
+    public HoldingResponse updatePrice(Long id, BigDecimal newPrice, String strategyType) {
         Holding holding = holdingRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Holding not found: " + id));
-        
+
         HoldingStrategy strategy = strategyFactory.getStrategy(strategyType);
-        Holding updatedHolding = strategy.updateNetWorth(holding, newTotalBalance);
+        Holding updatedHolding = strategy.updatePrice(holding, newPrice);
         Holding savedHolding = holdingRepository.save(updatedHolding);
         return toHoldingResponse(savedHolding);
     }
@@ -76,8 +77,8 @@ public class HoldingServiceImpl implements HoldingService {
     }
 
     @Override
-    public List<HoldingResponse> getHoldingsByOwnerId(Long ownerId) {
-        List<Holding> holdings = holdingRepository.findByOwnerId(ownerId);
+    public List<HoldingResponse> getHoldingsByAssetId(Long assetId) {
+        List<Holding> holdings = holdingRepository.findByAssetId(assetId);
         return holdings.stream()
                 .map(this::toHoldingResponse)
                 .collect(Collectors.toList());
@@ -86,10 +87,10 @@ public class HoldingServiceImpl implements HoldingService {
     @Override
     @Transactional
     public void deleteHolding(Long id) {
-        if (!holdingRepository.existsById(id)) {
-            throw new IllegalArgumentException("Holding not found: " + id);
-        }
-        holdingRepository.deleteById(id);
+        Holding holding = holdingRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Holding not found: " + id));
+        holding.setDeletedAt(LocalDateTime.now());
+        holdingRepository.save(holding);
     }
 
     private HoldingResponse toHoldingResponse(Holding holding) {
@@ -97,19 +98,17 @@ public class HoldingServiceImpl implements HoldingService {
                 .id(holding.getId())
                 .accountId(holding.getAccountId())
                 .assetId(holding.getAssetId())
-                .ownerId(holding.getOwnerId())
-                .groupType(holding.getGroupType())
-                .category(holding.getCategory())
-                .subCategory(holding.getSubCategory())
+                .productId(holding.getProductId())
                 .name(holding.getName())
-                .totalBalance(holding.getTotalBalance())
-                .frozenBalance(holding.getFrozenBalance())
-                .availableBalance(holding.getAvailableBalance())
-                .currency(holding.getCurrency())
-                .includeInNetWorth(holding.getIncludeInNetWorth())
-                .valuationMode(holding.getValuationMode())
+                .qty(holding.getQty())
+                .price(holding.getPrice())
+                .amount(holding.getAmount())
+                .costBasis(holding.getCostBasis())
+                .realizedPnl(holding.getRealizedPnl())
+                .side(holding.getSide())
                 .status(holding.getStatus())
-                .attributes(holding.getAttributes())
+                .holdingType(holding.getHoldingType())
+                .extraAttributes(holding.getExtraAttributes())
                 .createdAt(holding.getCreatedAt())
                 .updatedAt(holding.getUpdatedAt())
                 .build();

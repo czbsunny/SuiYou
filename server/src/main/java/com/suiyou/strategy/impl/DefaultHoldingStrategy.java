@@ -21,20 +21,20 @@ public class DefaultHoldingStrategy implements HoldingStrategy {
         Holding holding = new Holding();
         holding.setAccountId(request.getAccountId());
         holding.setAssetId(request.getAssetId());
-        holding.setOwnerId(request.getOwnerId());
-        holding.setGroupType(request.getGroupType());
-        holding.setCategory(request.getCategory());
-        holding.setSubCategory(request.getSubCategory());
+        holding.setProductId(request.getProductId());
         holding.setName(request.getName());
-        holding.setTotalBalance(request.getTotalBalance() != null ? request.getTotalBalance() : BigDecimal.ZERO);
-        holding.setFrozenBalance(request.getFrozenBalance() != null ? request.getFrozenBalance() : BigDecimal.ZERO);
-        holding.setCurrency(request.getCurrency() != null ? request.getCurrency() : "CNY");
-        holding.setIncludeInNetWorth(request.getIncludeInNetWorth() != null ? request.getIncludeInNetWorth() : true);
-        holding.setValuationMode(request.getValuationMode() != null ? request.getValuationMode() : "MANUAL");
-        holding.setStatus(request.getStatus() != null ? request.getStatus() : 1);
-        holding.setAttributes(request.getAttributes());
-        
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+        holding.setQty(request.getQty() != null ? request.getQty() : BigDecimal.ZERO);
+        holding.setPrice(request.getPrice() != null ? request.getPrice() : BigDecimal.ONE);
+        holding.setCostBasis(request.getCostBasis() != null ? request.getCostBasis() : BigDecimal.ZERO);
+        holding.setRealizedPnl(request.getRealizedPnl() != null ? request.getRealizedPnl() : BigDecimal.ZERO);
+        holding.setSide(request.getSide() != null ? request.getSide() : "asset");
+        holding.setStatus(request.getStatus() != null ? request.getStatus() : "active");
+        holding.setHoldingType(request.getHoldingType());
+        holding.setExtraAttributes(request.getExtraAttributes());
+
+        if (request.getAmount() != null) {
+            holding.setAmount(request.getAmount());
+        }
         return holding;
     }
 
@@ -43,34 +43,36 @@ public class DefaultHoldingStrategy implements HoldingStrategy {
         if (request.getName() != null) {
             holding.setName(request.getName());
         }
-        if (request.getCategory() != null) {
-            holding.setCategory(request.getCategory());
+        if (request.getQty() != null) {
+            holding.setQty(request.getQty());
         }
-        if (request.getSubCategory() != null) {
-            holding.setSubCategory(request.getSubCategory());
+        if (request.getPrice() != null) {
+            holding.setPrice(request.getPrice());
         }
-        if (request.getGroupType() != null) {
-            holding.setGroupType(request.getGroupType());
+        if (request.getCostBasis() != null) {
+            holding.setCostBasis(request.getCostBasis());
         }
-        if (request.getCurrency() != null) {
-            holding.setCurrency(request.getCurrency());
+        if (request.getRealizedPnl() != null) {
+            holding.setRealizedPnl(request.getRealizedPnl());
         }
-        if (request.getIncludeInNetWorth() != null) {
-            holding.setIncludeInNetWorth(request.getIncludeInNetWorth());
+        if (request.getSide() != null) {
+            holding.setSide(request.getSide());
         }
-        if (request.getValuationMode() != null) {
-            holding.setValuationMode(request.getValuationMode());
+        if (request.getStatus() != null) {
+            holding.setStatus(request.getStatus());
         }
-        if (request.getAttributes() != null) {
-            holding.setAttributes(request.getAttributes());
+        if (request.getHoldingType() != null) {
+            holding.setHoldingType(request.getHoldingType());
+        }
+        if (request.getExtraAttributes() != null) {
+            holding.setExtraAttributes(request.getExtraAttributes());
         }
         return holding;
     }
 
     @Override
-    public Holding updateNetWorth(Holding holding, BigDecimal newTotalBalance) {
-        holding.setTotalBalance(newTotalBalance != null ? newTotalBalance : BigDecimal.ZERO);
-        holding.setAvailableBalance(holding.getTotalBalance().subtract(holding.getFrozenBalance()));
+    public Holding updatePrice(Holding holding, BigDecimal newPrice) {
+        holding.setPrice(newPrice != null ? newPrice : BigDecimal.ONE);
         return holding;
     }
 }
