@@ -71,12 +71,18 @@ export const batchUpdateAccounts = (data) => {
   return put('/api/accounts/sync', data)
 }
 
-export const addAccountModule = (accountId, data) => {
-  return post(`/api/accounts/${accountId}/modules`, data)
+/**
+ * 添加账户资产模块
+ */
+export const addAccountAsset = (accountId, data) => {
+  return post(`/api/accounts/${accountId}/assets`, data)
 }
 
-export const removeAccountModule = (accountId, moduleId) => {
-  return del(`/api/accounts/${accountId}/modules/${moduleId}`)
+/**
+ * 删除账户资产模块
+ */
+export const removeAccountAsset = (accountId, assetId) => {
+  return del(`/api/accounts/${accountId}/assets/${assetId}`)
 }
 
 export const getAssetSummary = () => {
@@ -123,8 +129,8 @@ export const getInstitutionDetail = (instCode) => {
 }
 
 /**
- * 获取指定机构账户下的所有账户模块
+ * 获取指定机构账户下的所有资产模块
  */
-export const getAccountModules = (instCode, accountType) => {
-  return get(`/api/inst/${instCode}/account-types/${accountType}/modules`)
+export const getAccountAssets = (instCode, accountType) => {
+  return get(`/api/inst/${instCode}/account-types/${accountType}/assets`)
 }

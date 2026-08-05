@@ -47,28 +47,28 @@
           </view>
         </view>
 
-        <!-- Module List Section -->
+        <!-- Asset List Section -->
         <view class="section">
           <view class="section-header">
             <text class="section-title">资产列表</text>
           </view>
-          <view class="module-list">
+          <view class="asset-list">
             <view 
-              v-for="module in moduleList" 
-              :key="module.id" 
-              class="module-item"
-              @tap="handleModuleTap(module)"
+              v-for="asset in assetList" 
+              :key="asset.id" 
+              class="asset-item"
+              @tap="handleAssetTap(asset)"
             >
-              <view class="module-icon-wrap" :style="{ background: module.bgColor }">
-                <image class="module-icon" :src="module.icon" mode="aspectFit" />
+              <view class="asset-icon-wrap" :style="{ background: asset.bgColor }">
+                <image class="asset-icon" :src="asset.icon" mode="aspectFit" />
               </view>
-              <view class="module-info">
-                <text class="module-name">{{ module.name }}</text>
-                <text class="module-desc">{{ module.desc }}</text>
+              <view class="asset-info">
+                <text class="asset-name">{{ asset.name }}</text>
+                <text class="asset-desc">{{ asset.desc }}</text>
               </view>
-              <view class="module-right">
-                <view class="module-amount-wrap">
-                  <text class="module-amount font-mono">{{ isVisible ? module.amount : '****' }}</text>
+              <view class="asset-right">
+                <view class="asset-amount-wrap">
+                  <text class="asset-amount font-mono">{{ isVisible ? asset.amount : '****' }}</text>
                 </view>
                 <text class="icon-chevron">›</text>
               </view>
@@ -84,7 +84,7 @@
 import { ref, computed } from 'vue'
 import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { getAccountById } from '@/api/modules/asset'
-import { MODULE_ROUTES } from '@/configs/routes'
+import { ASSET_ROUTES } from '@/configs/routes'
 
 const isVisible = ref(true)
 
@@ -109,7 +109,7 @@ const quickActions = ref([
   { id: 'bill', icon: '/static/assets/actions/bill.png', label: '收支' }
 ])
 
-const moduleList = ref([])
+const assetList = ref([])
 
 const formattedBalance = computed(() => {
   return accountData.value.totalBalance.toLocaleString('zh-CN', {
@@ -138,21 +138,21 @@ const handleAction = (actionId) => {
   uni.showToast({ title: `${actionNames[actionId]}功能开发中`, icon: 'none' })
 }
 
-const handleModuleTap = (mod) => {
-  const targetPath = MODULE_ROUTES[mod.type]
+const handleAssetTap = (asset) => {
+  const targetPath = ASSET_ROUTES[asset.type]
   if (targetPath) {
     uni.navigateTo({
       url: `${targetPath}?data=${encodeURIComponent(JSON.stringify({
-        id: mod.id,
-        name: mod.name,
-        availableBalance: parseFloat(String(mod.amount).replace(/,/g, '')) || 0
+        id: asset.id,
+        name: asset.name,
+        availableBalance: parseFloat(String(asset.amount).replace(/,/g, '')) || 0
       }))}`,
       fail: () => {
-        uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
+        uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
       }
     })
   } else {
-    uni.showToast({ title: `${mod.name}详情开发中`, icon: 'none' })
+    uni.showToast({ title: `${asset.name}详情开发中`, icon: 'none' })
   }
 }
 
@@ -176,14 +176,14 @@ const loadAccountData = (accountId) => {
           yesterdayChange: '',
           availableBalance: ''
         }
-        if (data.modules && data.modules.length > 0) {
-          moduleList.value = data.modules.map(m => {
+        if (data.assets && data.assets.length > 0) {
+          assetList.value = data.assets.map(m => {
             return {
               id: m.id,
               icon: m.iconUrl,
               bgColor: m.bgColor,
-              name: m.moduleName,
-              type: m.moduleType,
+              name: m.assetName,
+              type: m.assetType,
               desc: '',
               amount: 0
             }
@@ -380,13 +380,13 @@ onUnload(() => {
   color: $on-surface;
 }
 
-.module-list {
+.asset-list {
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
 }
 
-.module-item {
+.asset-item {
   display: flex;
   align-items: center;
   padding: $spacing-4;
@@ -395,7 +395,7 @@ onUnload(() => {
   box-shadow: $shadow-sm;
 }
 
-.module-icon-wrap {
+.asset-icon-wrap {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
@@ -405,39 +405,39 @@ onUnload(() => {
   background: $surface-container-lowest;
 }
 
-.module-icon {
+.asset-icon {
   width: 40rpx;
   height: 40rpx;
 }
 
-.module-info {
+.asset-info {
   flex: 1;
   padding: 0 $spacing-4;
 }
 
-.module-name {
+.asset-name {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-semibold;
   color: $on-surface;
 }
 
-.module-desc {
+.asset-desc {
   font-size: $font-size-body-sm;
   color: $outline;
   margin-top: 4rpx;
 }
 
-.module-right {
+.asset-right {
   display: flex;
   align-items: center;
   gap: $spacing-2;
 }
 
-.module-amount-wrap {
+.asset-amount-wrap {
   text-align: right;
 }
 
-.module-amount {
+.asset-amount {
   font-size: $font-size-body-reg;
   font-weight: $font-weight-bold;
   color: $on-surface;

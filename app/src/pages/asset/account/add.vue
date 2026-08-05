@@ -84,59 +84,59 @@
         </view>
       </view>
 
-      <view class="modules-section">
+      <view class="assets-section">
         <view class="section-header">
           <image src="/static/images/grid_view.png" class="section-icon" mode="aspectFit" />
           <text class="section-title">资产模块配置</text>
         </view>
 
-        <view v-if="requiredModules.length > 0" class="module-group">
+        <view v-if="requiredAssets.length > 0" class="asset-group">
           <text class="group-label">必选模块</text>
-          <view class="module-list">
+          <view class="asset-list">
             <view 
-              v-for="module in requiredModules" 
-              :key="module.moduleType"
-              class="module-card required-card"
+              v-for="asset in requiredAssets" 
+              :key="asset.assetType"
+              class="asset-card required-card"
             >
-              <view class="module-icon-wrap primary-bg">
-                <image :src="module.iconUrl || '/static/images/default_icon.png'" class="module-icon" mode="aspectFit" />
+              <view class="asset-icon-wrap primary-bg">
+                <image :src="asset.iconUrl || '/static/images/default_icon.png'" class="asset-icon" mode="aspectFit" />
               </view>
-              <view class="module-info">
-                <view class="module-name-row">
-                  <text class="module-name">{{ module.moduleName }}</text>
-                  <view class="module-tag required-tag">必选</view>
+              <view class="asset-info">
+                <view class="asset-name-row">
+                  <text class="asset-name">{{ asset.assetName }}</text>
+                  <view class="asset-tag required-tag">必选</view>
                 </view>
               </view>
-              <image src="/static/images/lock.png" class="module-lock" mode="aspectFit" />
+              <image src="/static/images/lock.png" class="asset-lock" mode="aspectFit" />
             </view>
           </view>
         </view>
 
         
 
-        <view v-if="optionalModules.length > 0" class="module-group">
+        <view v-if="optionalAssets.length > 0" class="asset-group">
           <text class="group-label">可选模块</text>
-          <view class="module-list">
+          <view class="asset-list">
             <view 
-              v-for="module in optionalModules" 
-              :key="module.moduleType"
-              class="module-card"
-              @tap="handleModuleTap(module)"
+              v-for="asset in optionalAssets" 
+              :key="asset.assetType"
+              class="asset-card"
+              @tap="handleAssetTap(asset)"
             >
-              <view class="module-icon-wrap default-bg">
-                <image :src="module.iconUrl || '/static/images/default_icon.png'" class="module-icon" mode="aspectFit" />
+              <view class="asset-icon-wrap default-bg">
+                <image :src="asset.iconUrl || '/static/images/default_icon.png'" class="asset-icon" mode="aspectFit" />
               </view>
-              <view class="module-info">
-                <view class="module-name-row">
-                  <text class="module-name">{{ module.moduleName }}</text>
-                  <view class="module-tag optional-tag">可选</view>
+              <view class="asset-info">
+                <view class="asset-name-row">
+                  <text class="asset-name">{{ asset.assetName }}</text>
+                  <view class="asset-tag optional-tag">可选</view>
                 </view>
               </view>
               <view 
-                class="module-checkbox" 
-                :class="{ checked: getModuleChecked(module) }"
+                class="asset-checkbox" 
+                :class="{ checked: getAssetChecked(asset) }"
               >
-                <view v-if="getModuleChecked(module)" class="check-icon">✓</view>
+                <view v-if="getAssetChecked(asset)" class="check-icon">✓</view>
               </view>
             </view>
           </view>
@@ -157,7 +157,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { getInstitutionDetail, getAccountModules, createAccount } from '@/api/modules/asset'
+import { getInstitutionDetail, getAccountAssets, createAccount } from '@/api/modules/asset'
 
 const instCode = ref('')
 const institution = ref(null)
@@ -175,11 +175,11 @@ const accountForm = ref({
   includeInNetworth: true
 })
 
-const institutionModules = ref([])
-const selectedModules = ref([])
+const institutionAssets = ref([])
+const selectedAssets = ref([])
 
-const requiredModules = computed(() => institutionModules.value.filter(m => m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
-const optionalModules = computed(() => institutionModules.value.filter(m => !m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
+const requiredAssets = computed(() => institutionAssets.value.filter(m => m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
+const optionalAssets = computed(() => institutionAssets.value.filter(m => !m.required).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)))
 
 const accountTypeOptions = computed(() => {
   return accountTypesRaw.value.map(item => {
@@ -213,33 +213,19 @@ const canSubmit = computed(() => {
       && selectedAccountType.value.length > 0
 })
 
-const getModuleChecked = (module) => {
-  if (module.required) return true
-  const key = module.moduleType || module.id
-  return selectedModules.value.includes(key)
+const getAssetChecked = (asset) => {
+  if (asset.required) return true
+  const key = asset.assetType || asset.id
+  return selectedAssets.value.includes(key)
 }
 
-const toggleModule = (module, checked) => {
-  const key = module.moduleType || module.id
-  if (checked) {
-    if (!selectedModules.value.includes(key)) {
-      selectedModules.value.push(key)
-    }
-  } else {
-    const index = selectedModules.value.indexOf(key)
-    if (index > -1) {
-      selectedModules.value.splice(index, 1)
-    }
-  }
-}
-
-const handleModuleTap = (module) => {
-  const key = module.moduleType || module.id
-  const index = selectedModules.value.indexOf(key)
+const handleAssetTap = (asset) => {
+  const key = asset.assetType || asset.id
+  const index = selectedAssets.value.indexOf(key)
   if (index > -1) {
-    selectedModules.value.splice(index, 1)
+    selectedAssets.value.splice(index, 1)
   } else {
-    selectedModules.value.push(key)
+    selectedAssets.value.push(key)
   }
 }
 
@@ -251,7 +237,7 @@ const handleAccountTypeChange = (e) => {
   const index = Number(e.detail.value)
   accountTypePickerIndex.value = index
   selectedAccountType.value = accountTypeOptions.value[index].code
-  loadModules()
+  loadAssets()
 }
 
 const handleNetworthToggle = () => {
@@ -266,12 +252,12 @@ const handleConfirm = async () => {
 
   submitting.value = true
   try {
-    const selectedModules = [
-      ...requiredModules.value.map(m => ({ moduleType: m.moduleType, moduleName: m.moduleName })),
-      ...optionalModules.value
-        .filter(m => getModuleChecked(m))
-        .map(m => ({ moduleType: m.moduleType, moduleName: m.moduleName }))
-    ].filter(m => m.moduleType)
+    const selectedAssets = [
+      ...requiredAssets.value.map(a => ({ assetType: a.assetType, assetName: a.assetName })),
+      ...optionalAssets.value
+        .filter(a => getAssetChecked(a))
+        .map(a => ({ assetType: a.assetType, assetName: a.assetName }))
+    ].filter(a => a.assetType)
 
     const resp = await createAccount({
       instCode: instCode.value,
@@ -279,7 +265,7 @@ const handleConfirm = async () => {
       accountType: selectedAccountType.value,
       accountName: accountForm.value.accountName,
       includeInNetWorth: accountForm.value.includeInNetworth,
-      modules: selectedModules
+      assets: selectedAssets
     })
 
     if (resp?.statusCode === 201) {
@@ -328,20 +314,20 @@ const loadInstitution = async () => {
   }
 }
 
-const loadModules = async () => {
+const loadAssets = async () => {
   if (!instCode.value || !selectedAccountType.value) return
   
   try {
-    const res = await getAccountModules(instCode.value, selectedAccountType.value)
+    const res = await getAccountAssets(instCode.value, selectedAccountType.value)
     if (res && res.data) {
-      institutionModules.value = res.data
-      selectedModules.value = res.data
-        .filter(m => !m.required && m.enabled)
-        .map(m => m.moduleType)
+      institutionAssets.value = res.data
+      selectedAssets.value = res.data
+        .filter(a => !a.required && a.enabled)
+        .map(a => a.assetType)
     }
   } catch (error) {
-    console.error('加载账户模块失败:', error)
-    uni.showToast({ title: '加载模块失败', icon: 'none' })
+    console.error('加载账户资产失败:', error)
+    uni.showToast({ title: '加载资产失败', icon: 'none' })
   }
 }
 
@@ -353,7 +339,7 @@ onLoad((options) => {
 
 onMounted(async () => {
   await loadInstitution()
-  await loadModules()
+  await loadAssets()
 })
 </script>
 
@@ -612,7 +598,7 @@ onMounted(async () => {
   }
 }
 
-.modules-section {
+.assets-section {
   padding: 48rpx 32rpx 64rpx;
 }
 
@@ -634,7 +620,7 @@ onMounted(async () => {
   color: $on-surface;
 }
 
-.module-group {
+.asset-group {
   margin-bottom: 40rpx;
 }
 
@@ -649,13 +635,13 @@ onMounted(async () => {
   padding-left: 8rpx;
 }
 
-.module-list {
+.asset-list {
   display: flex;
   flex-direction: column;
   gap: 16rpx;
 }
 
-.module-card {
+.asset-card {
   display: flex;
   align-items: center;
   padding: 24rpx;
@@ -679,7 +665,7 @@ onMounted(async () => {
   }
 }
 
-.module-icon-wrap {
+.asset-icon-wrap {
   width: 80rpx;
   height: 80rpx;
   border-radius: $rounded-md;
@@ -705,28 +691,28 @@ onMounted(async () => {
   }
 }
 
-.module-icon {
+.asset-icon {
   width: 40rpx;
   height: 40rpx;
 }
 
-.module-info {
+.asset-info {
   flex: 1;
 }
 
-.module-name-row {
+.asset-name-row {
   display: flex;
   align-items: center;
   gap: 12rpx;
 }
 
-.module-name {
+.asset-name {
   font-size: 28rpx;
   font-weight: 700;
   color: $on-surface;
 }
 
-.module-tag {
+.asset-tag {
   padding: 4rpx 12rpx;
   border-radius: $rounded-sm;
   font-size: 20rpx;
@@ -748,18 +734,18 @@ onMounted(async () => {
   }
 }
 
-.module-desc {
+.asset-desc {
   font-size: 24rpx;
   color: $outline;
 }
 
-.module-lock {
+.asset-lock {
   width: 48rpx;
   height: 48rpx;
   opacity: 0.6;
 }
 
-.module-checkbox {
+.asset-checkbox {
   width: 40rpx;
   height: 40rpx;
   border: 3rpx solid $outline-variant;

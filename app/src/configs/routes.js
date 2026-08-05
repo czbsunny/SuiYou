@@ -1,4 +1,4 @@
-export const MODULE_ROUTES = {
+export const ASSET_ROUTES = {
   CURRENT: '/pages/asset/holding/current',
   CURRENT_PLUS: '/pages/asset/holding/current-plus',
   TIME_DEPOSIT: '/pages/asset/holding/deposit',
